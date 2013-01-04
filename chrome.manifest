@@ -1,6 +1,8 @@
 content adbservice content/ contentaccessible=yes
 overlay chrome://browser/content/browser.xul chrome://pelicanclient/content/overlay.xul
 
+interfaces components/adbService.xpt
+
 component {ed7c329e-5b45-4e99-bdae-f4d159a8edc8} components/adbService.js
 contract @mozilla.org/adbservice;1 {ed7c329e-5b45-4e99-bdae-f4d159a8edc8}
 category JavaScript-navigator-property mozADBService @mozilla.org/adbservice;1

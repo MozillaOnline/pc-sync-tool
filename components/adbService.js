@@ -26,17 +26,20 @@ ADBService.prototype = {
                classID: ADBSERVICE_CID,
                contractID: ADBSERVICE_CONTRACT_ID,
                classDescription: "adbService",
-               // interfaces: [Ci.nsIADBService],
-               interfaces: [],
+               interfaces: [Ci.nsIADBService],
                flags: Ci.nsIClassInfo.DOM_OBJECT
              }),
 
-  // QueryInterface: XPCOMUtils.generateQI([Ci.nsIADBService, Ci.nsIDOMGlobalPropertyInitializer]),
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIDOMGlobalPropertyInitializer]),
+  QueryInterface: XPCOMUtils.generateQI([Ci.nsIADBService, Ci.nsIDOMGlobalPropertyInitializer]),
 
   // nsIDOMGlobalPropertyInitializer implementation
   init: function(aWindow) {
 
+  },
+
+  /* implementation */
+  hello: function() {
+    debug('Hello world');
   }
 };
 
