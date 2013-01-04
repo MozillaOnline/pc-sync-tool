@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<head>
+<title>Pelican Client</title>
+<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="code.js"></script>
+<script type="text/javascript" src="pelican.js"></script>
+<link rel="stylesheet" type="text/css" href="client.css"></link>
+</head>
+
+<body> 
+<div id="console"></div>
+<div id="socket-console"></div>
+<br />
+<a href="javascript: void(0);" onclick="clearConsole()">clear console</a>
+<br />
+<input type="input" value="102" id="user-id" /> <a href="javascript: void(0);" onclick="pelican.login($('#user-id')[0].value);">Login</a>
+<br />
+<a href="javascript: void(0);" onclick="pelican.adminGetRoomInfo();">Get Room Info</a>
+</body>
+</html>
+

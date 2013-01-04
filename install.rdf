@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+    <Description about="urn:mozilla:install-manifest">
+        <em:id>adbservice@mozillaonline.com</em:id>
+        <em:name>ADB Service</em:name>
+        <em:version>0.1</em:version>
+        <em:description></em:description>
+        <em:creator>Me</em:creator>
+        <em:homepageURL>http://yourdomain.org/myextension</em:homepageURL>
+        <em:type>2</em:type> <!-- type=extension --> 
+
+        <em:targetApplication>
+           <!-- Firefox -->
+           <Description>
+                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                <em:minVersion>9.*</em:minVersion>
+                <em:maxVersion>21.*</em:maxVersion>
+           </Description>
+        </em:targetApplication>
+    </Description>
+</RDF>
+

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE overlay PUBLIC "-//MOZILLA//DTD XUL V1.0//EN" "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<overlay id="pelicanclientOverlay"
+         xmlns:html="http://www.w3.org/1999/xhtml"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <commandset id="mainCommandSet">
+    <command id="Tasks:HelloWorld" oncommand="alert('Hello World');"/>
+  </commandset>
+
+  <menupopup id="menu_ToolsPopup">
+    <menuitem id="menu_pelicanclient"
+              label="Pelican Client"
+              observes="Tasks:HelloWorld"
+              class="menu-iconic-wide"/>
+  </menupopup>
+    
+</overlay>
