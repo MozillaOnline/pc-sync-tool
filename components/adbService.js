@@ -46,6 +46,44 @@ XPCOMUtils.defineLazyGetter(this, 'libadb', function() {
   }
 });
 
+function exposeReadOnly(obj) {
+  if (null == obj) {
+    return obj;
+  }
+
+  if (typeof obj !== "object") {
+    return obj;
+  }
+
+  if (obj["__exposedProps__"]) {
+    return obj;
+  }
+
+  // If the obj is a navite wrapper, can not modify the attribute.
+  try {
+    obj.__exposedProps__ = {};
+  } catch (e) {
+    return;
+  }
+
+  var exposedProps = obj.__exposedProps__;
+  for (let i in obj) {
+    if (i === "__exposedProps__") {
+      continue;
+    }
+
+    if (i[0] === "_") {
+      continue;
+    }
+
+    exposedProps[i] = "r";
+
+    exposeReadOnly(obj[i]);
+  }
+
+  return obj;
+};
+
 // Local connection to adb forward port
 var _conn = null;
 // Registered callbacks
@@ -71,16 +109,30 @@ ADBService.prototype = {
     // TODO add privileges checking
   },
 
+  _sendError: function(error) {
+    if (_registeredCallbacks && _registeredCallbacks.onerror) {
+      _registeredCallbacks.onerror(exposeReadOnly(error));
+    }
+  },
+
   /* implementation */
   register: function(options) {
+    _registeredCallbacks = options;
+
     if (_conn == null) {
       if (!libadb.findDevice()) {
-        throw 'No Device';
+        this._sendError({
+          data: 'No Device'
+        });
+        return;
       }
 
       let success = libadb.setupDevice();
       if (!success) {
-        throw 'Can not establish the adb forward.';
+        this._sendError({
+          data: 'Can not establish the adb forward'
+        });
+        return;
       }
 
       _conn = new SocketConn({
@@ -103,7 +155,7 @@ ADBService.prototype = {
 
         onMessage: function conn_onmessage(message) {
           if (_registeredCallbacks && _registeredCallbacks.onmessage) {
-            _registeredCallbacks.onmessage(message);
+            _registeredCallbacks.onmessage(exposeReadOnly(message));
           }
         }
       });
@@ -112,13 +164,9 @@ ADBService.prototype = {
         _conn.connect();
       } catch (e) {
         debug('Error occurs when connecting: ' + e);
-        if (_registeredCallbacks && _registeredCallbacks.onerror) {
-          _registeredCallbacks.onerror(e);
-        }
+        this._sendError(e);
       }
     }
-
-    _registeredCallbacks = options;
   },
 
   uregister: function(options) {
@@ -131,18 +179,14 @@ ADBService.prototype = {
   sendMessage: function(obj) {
     if (_conn) {
       try {
-      _conn.sendData(obj);
+        _conn.sendData(obj);
       } catch (e) {
-        if (_registeredCallbacks && _registeredCallbacks.onerror) {
-          _registeredCallbacks.onerror(e);
-        }
+        this._sendError(e);
       }
     } else {
-      if (_registeredCallbacks && _registeredCallbacks.onerror) {
-        _registeredCallbacks.onerror({
-          data: 'No connection'
-        });
-      }
+      this._sendError({
+        data: 'No connection'
+      });
     }
   }
 };
