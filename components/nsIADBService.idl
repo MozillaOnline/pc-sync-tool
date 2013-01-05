@@ -3,6 +3,12 @@
 [scriptable, uuid(9dd6047d-e7c8-43f9-a45d-56794b8bc246)]
 interface nsIADBService : nsISupports
 {
-  void hello();
+  /**
+   * Register connection callbacks
+   *
+   * options:
+   *  onopen, onclose, onmessage
+   */
+  void register(in jsval options);
 };
 

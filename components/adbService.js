@@ -21,6 +21,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetter(this, 'ctypes', 'resource://gre/modules/ctypes.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn', 'resource://adbservice/conn.jsm');
 
 XPCOMUtils.defineLazyGetter(this, 'libadb', function() {
   // TODO open platform related library.
@@ -66,7 +67,7 @@ ADBService.prototype = {
   },
 
   /* implementation */
-  hello: function() {
+  register: function(options) {
     debug('Hello world');
     try {
       let ret = libadb.findDevice();
