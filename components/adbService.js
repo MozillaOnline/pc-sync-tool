@@ -17,6 +17,32 @@ const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
+XPCOMUtils.defineLazyModuleGetter(this, 'ctypes', 'resource://gre/modules/ctypes.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
+
+XPCOMUtils.defineLazyGetter(this, 'libadb', function() {
+  // TODO open platform related library.
+  let fileUri = Services.io.newURI('resource://adbservice-components/libadbservice.so', null, null);
+
+  if (fileUri instanceof Ci.nsIFileURL) {
+    let library = ctypes.open(fileUri.file.path);
+    return {
+      findDevice: library.declare('findDevice', ctypes.default_abi, ctypes.int),
+      setupDevice: library.declare('setupDevice', ctypes.default_abi, ctypes.int)
+    };
+  } else {
+    return {
+      findDevice: function libadb_fake_findDevice() {
+        return 0;
+      },
+
+      setupDevice: function libadb_fake_setupDevice() {
+        return 0;
+      }
+    };
+  }
+});
+
 function ADBService() { }
 
 ADBService.prototype = {
@@ -34,12 +60,18 @@ ADBService.prototype = {
 
   // nsIDOMGlobalPropertyInitializer implementation
   init: function(aWindow) {
-
+    // TODO add privileges checking
   },
 
   /* implementation */
   hello: function() {
     debug('Hello world');
+    try {
+      let ret = libadb.findDevice();
+      debug('return value: ' + ret);
+    } catch (e) {
+      debug('Error occurs when invoking lib: ' + e);
+    }
   }
 };
 
