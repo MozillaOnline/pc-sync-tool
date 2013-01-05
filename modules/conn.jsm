@@ -44,24 +44,24 @@ SocketConn.prototype = {
 
   stop: function() {
     if (this.outputStream) {
-    this.outputStream.close();
-    this.outputStream = null;
-  }
+      this.outputStream.close();
+      this.outputStream = null;
+    }
 
-  if (this.inputStream) {
+    if (this.inputStream) {
       this.inputStream.close();
-    this.inputStream = null;
-  }
+      this.inputStream = null;
+    }
 
-  if (this.nsIConverterOutputStream) {
-    this.nsIConverterOutputStream.close();
-    this.nsIConverterOutputStream = null;
-  }
+    if (this.nsIConverterOutputStream) {
+      this.nsIConverterOutputStream.close();
+      this.nsIConverterOutputStream = null;
+    }
 
-  if (this.nsIConverterInputStream) {
-    this.nsIConverterInputStream.close();
-    this.nsIConverterInputStream = null;
-  }
+    if (this.nsIConverterInputStream) {
+      this.nsIConverterInputStream.close();
+      this.nsIConverterInputStream = null;
+    }
   },
 
   sendData: function(obj) {

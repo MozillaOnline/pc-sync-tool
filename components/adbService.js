@@ -10,7 +10,7 @@ if (DEBUG)
 else
   debug = function (s) { };
 
-const LOCAL_PORT = 6666;
+const LOCAL_PORT = 10010;
 
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 
@@ -46,6 +46,11 @@ XPCOMUtils.defineLazyGetter(this, 'libadb', function() {
   }
 });
 
+// Local connection to adb forward port
+var _conn = null;
+// Registered callbacks
+var _registeredCallbacks = null;
+
 function ADBService() { }
 
 ADBService.prototype = {
@@ -68,12 +73,76 @@ ADBService.prototype = {
 
   /* implementation */
   register: function(options) {
-    debug('Hello world');
-    try {
-      let ret = libadb.findDevice();
-      debug('return value: ' + ret);
-    } catch (e) {
-      debug('Error occurs when invoking lib: ' + e);
+    if (_conn == null) {
+      if (!libadb.findDevice()) {
+        throw 'No Device';
+      }
+
+      let success = libadb.setupDevice();
+      if (!success) {
+        throw 'Can not establish the adb forward.';
+      }
+
+      _conn = new SocketConn({
+        host: '127.0.0.1',
+
+        port: LOCAL_PORT,
+
+        onStartRequest: function conn_onstart() {
+          if (_registeredCallbacks && _registeredCallbacks.onopen) {
+            _registeredCallbacks.onopen();
+          }
+        },
+
+        onStopRequest: function conn_onstop() {
+          _conn = null;
+          if (_registeredCallbacks && _registeredCallbacks.onclose) {
+            _registeredCallbacks.onclose();
+          }
+        },
+
+        onMessage: function conn_onmessage(message) {
+          if (_registeredCallbacks && _registeredCallbacks.onmessage) {
+            _registeredCallbacks.onmessage(message);
+          }
+        }
+      });
+
+      try {
+        _conn.connect();
+      } catch (e) {
+        debug('Error occurs when connecting: ' + e);
+        if (_registeredCallbacks && _registeredCallbacks.onerror) {
+          _registeredCallbacks.onerror(e);
+        }
+      }
+    }
+
+    _registeredCallbacks = options;
+  },
+
+  uregister: function(options) {
+    debug('Uregister');
+    _registeredCallbacks = null;
+    _conn.stop();
+    _conn = null;
+  },
+
+  sendMessage: function(obj) {
+    if (_conn) {
+      try {
+      _conn.sendData(obj);
+      } catch (e) {
+        if (_registeredCallbacks && _registeredCallbacks.onerror) {
+          _registeredCallbacks.onerror(e);
+        }
+      }
+    } else {
+      if (_registeredCallbacks && _registeredCallbacks.onerror) {
+        _registeredCallbacks.onerror({
+          data: 'No connection'
+        });
+      }
     }
   }
 };

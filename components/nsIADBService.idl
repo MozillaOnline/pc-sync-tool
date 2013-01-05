@@ -7,8 +7,10 @@ interface nsIADBService : nsISupports
    * Register connection callbacks
    *
    * options:
-   *  onopen, onclose, onmessage
+   *  onopen, onclose, onmessage, onerror
    */
   void register(in jsval options);
+  void unregister(in jsval options);
+  void sendMessage(in jsval message);
 };
 
