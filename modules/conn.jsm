@@ -1,92 +1,35 @@
-var Cc = Components.classes;
-var Ci = Components.interfaces;
-var Cu = Components.utils;
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-Cu.import("resource://gre/modules/FileUtils.jsm");
-Cu.import("chrome://pelicanclient/content/log4moz.js");
+var EXPORTED_SYMBOLS = ['SocketConn'];
+
+const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetter(this, 'ctypes', 'resource://gre/modules/FileUtils.jsm');
 
 var nsISocketTransportService =
   Cc["@mozilla.org/network/socket-transport-service;1"].
     getService(Ci.nsISocketTransportService);
 
-// setup logging
-function setuplogging() {
-  var formatter = new Log4Moz.BasicFormatter();
-  var root = Log4Moz.repository.rootLogger;
-  root.level = Log4Moz.Level["All"];
-
-  var _appender = new Log4Moz.RotatingFileAppender(FileUtils.getFile("Desk", ["addon.log"]), formatter, 1024 * 1024 * 100);
-
-  root.addAppender(_appender);
-
-  // var _consoleAppender = new Log4Moz.ConsoleAppender(formatter);
-  // root.addAppender(_consoleAppender);
-
-  window.addEventListener("unload", function() {
-    root.removeAppender(_appender);
-  // root.removeAppender(_consoleAppender);
-  }, false);
-}
-
-setuplogging();
-
-var _logger = Log4Moz.repository.getLogger("console");
-var _socketLogger = Log4Moz.repository.getLogger("socket");
-
-function _logInConsole(str, console, level) {
-  if (console == "#socket-console" && typeof SOCKET_DEBUG != 'undefined' && false == SOCKET_DEBUG) {
-    return;
-  }
-
-  var now = new Date();
-  $(console).append($('<div class="' + level + '"><span class="timeline">' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds() + '</span>' + str + "</div>"));
-  $(console)[0].scrollTop = 1000000;
-  if ($(console)[0].childNodes.length > 50) {
-    var idx = 0;
-  while (idx > 0) {
-    idx--;
-    $(console)[0].removeChild($(console)[0].childNodes[0]);
-  }
-  }
-}
-
-var _logSocketWithLogger = false;
-
-function clearConsole() {
-  $("#console").html("");
-  $("#socket-console").html("");
-}
-
-function _log(str) {
-  _logInConsole(str, "#console", "debug");
-  _logger.trace(str);
-}
-
-function _info(str) {
-  _logInConsole(str, "#console", "info");
-  _logger.info(str);
-}
-
 function _error(str) {
-  _logInConsole(str, "#console", "error");
-  _logger.error(str);
+  dump('-*- conn.jsm error -*- ' + str + '\n');
 }
 
 function _logMessage(str) {
-  _logInConsole(str, "#socket-console", "debug");
-  if (_logSocketWithLogger) {
-    _socketLogger.trace(str);
-  }
+  dump('-*- conn.jsm -*- ' + str + '\n');
 }
 
 /**
- Options:
-   host: 127.0.0.1
-   port: 23
-   onStartRequest:
-   onStopRequest:
-   onMessage:
-*/
+ * Options:
+ *  host: 127.0.0.1
+ *  port: 23
+ *  onStartRequest:
+ *  onStopRequest:
+ *  onMessage:
+ */
 function SocketConn(options) {
   this.initialize(options);
 }

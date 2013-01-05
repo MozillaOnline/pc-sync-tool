@@ -10,6 +10,8 @@ if (DEBUG)
 else
   debug = function (s) { };
 
+const LOCAL_PORT = 6666;
+
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 
 const ADBSERVICE_CONTRACT_ID = '@mozilla.org/adbservice;1';
