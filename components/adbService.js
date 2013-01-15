@@ -140,13 +140,13 @@ ADBService.prototype = {
 
         port: LOCAL_PORT,
 
-        onStartRequest: function conn_onstart() {
+        onopen: function conn_onstart() {
           if (_registeredCallbacks && _registeredCallbacks.onopen) {
             _registeredCallbacks.onopen();
           }
         },
 
-        onStopRequest: function conn_onstop() {
+        onclose: function conn_onstop() {
           _conn = null;
           if (_registeredCallbacks && _registeredCallbacks.onclose) {
             _registeredCallbacks.onclose();
