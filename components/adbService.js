@@ -164,6 +164,7 @@ ADBService.prototype = {
         _conn.connect();
       } catch (e) {
         debug('Error occurs when connecting: ' + e);
+        _conn = null;
         this._sendError(e);
       }
     }
