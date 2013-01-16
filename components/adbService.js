@@ -115,11 +115,23 @@ ADBService.prototype = {
     }
   },
 
+  _fireEvent: function(name, args) {
+    var callbackName = 'on' + name;
+
+    if (_registeredCallbacks && _registeredCallbacks[callbackName]) {
+      _registeredCallbacks[callbackName](args);
+    }
+  },
+
   /* implementation */
   register: function(options) {
     _registeredCallbacks = options;
 
-    if (_conn == null) {
+    if (_conn != null) {
+      debug('Connection is already opened.');
+      // Already connected, fire onopen event
+      this._fireEvent('open');
+    } else {
       if (!libadb.findDevice()) {
         this._sendError({
           data: 'No Device'
@@ -135,28 +147,23 @@ ADBService.prototype = {
         return;
       }
 
+      var self = this;
       _conn = new SocketConn({
         host: '127.0.0.1',
 
         port: LOCAL_PORT,
 
         onopen: function conn_onstart() {
-          if (_registeredCallbacks && _registeredCallbacks.onopen) {
-            _registeredCallbacks.onopen();
-          }
+          self._fireEvent('open');
         },
 
         onclose: function conn_onstop() {
           _conn = null;
-          if (_registeredCallbacks && _registeredCallbacks.onclose) {
-            _registeredCallbacks.onclose();
-          }
+          self._fireEvent('close');
         },
 
         onMessage: function conn_onmessage(message) {
-          if (_registeredCallbacks && _registeredCallbacks.onmessage) {
-            _registeredCallbacks.onmessage(exposeReadOnly(message));
-          }
+          self._fireEvent('message', exposeReadOnly(message));
         }
       });
 
