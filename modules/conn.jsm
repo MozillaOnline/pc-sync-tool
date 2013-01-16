@@ -64,8 +64,8 @@ SocketConn.prototype = {
     }
   },
 
-  sendData: function(obj) {
-    this.nsIConverterOutputStream.writeString(JSON.stringify(obj));
+  sendData: function(str) {
+    this.nsIConverterOutputStream.writeString(str);
   },
 
   // nsITransportEventSink (Triggered by transport.setEventSink)
