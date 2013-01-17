@@ -107,11 +107,13 @@ ADBService.prototype = {
   // nsIDOMGlobalPropertyInitializer implementation
   init: function(aWindow) {
     // TODO add privileges checking
+    // TODO check if the page is privileged, if yes, the __exposedProps__ should not be set
   },
 
   _sendError: function(error) {
     if (_registeredCallbacks && _registeredCallbacks.onerror) {
-      _registeredCallbacks.onerror(exposeReadOnly(error));
+      // _registeredCallbacks.onerror(exposeReadOnly(error));
+      _registeredCallbacks.onerror(error);
     }
   },
 
@@ -163,7 +165,9 @@ ADBService.prototype = {
         },
 
         onMessage: function conn_onmessage(message) {
-          self._fireEvent('message', exposeReadOnly(message));
+          // Don't need to expose read only property for privileged pages.
+          // self._fireEvent('message', exposeReadOnly(message));
+          self._fireEvent('message', message);
         }
       });
 
