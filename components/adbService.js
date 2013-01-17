@@ -21,11 +21,11 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetter(this, 'ctypes', 'resource://gre/modules/ctypes.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn', 'resource://adbservice/conn.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn', 'resource://ffosassistant/conn.jsm');
 
 XPCOMUtils.defineLazyGetter(this, 'libadb', function() {
   // TODO open platform related library.
-  let fileUri = Services.io.newURI('resource://adbservice-components/libadbservice.so', null, null);
+  let fileUri = Services.io.newURI('resource://ffosassistant-components/libadbservice.so', null, null);
 
   if (fileUri instanceof Ci.nsIFileURL) {
     let library = ctypes.open(fileUri.file.path);

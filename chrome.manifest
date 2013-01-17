@@ -1,7 +1,7 @@
-content adbservice content/ contentaccessible=yes
-resource adbservice modules/
+content ffosassistant content/ contentaccessible=yes
+resource ffosassistant modules/
 
-resource adbservice-components components/binary/
+resource ffosassistant-components components/binary/
 
 overlay chrome://browser/content/browser.xul chrome://pelicanclient/content/overlay.xul
 
@@ -9,4 +9,7 @@ interfaces components/adbService.xpt
 component {ed7c329e-5b45-4e99-bdae-f4d159a8edc8} components/adbService.js
 contract @mozilla.org/adbservice;1 {ed7c329e-5b45-4e99-bdae-f4d159a8edc8}
 category JavaScript-navigator-property mozADBService @mozilla.org/adbservice;1
+
+component {7a3435e0-5138-4ba1-bcdf-8f60cedefdc8} components/about.js
+contract @mozilla.org/network/protocol/about;1?what=ffos {7a3435e0-5138-4ba1-bcdf-8f60cedefdc8}
 

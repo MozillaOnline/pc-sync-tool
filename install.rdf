@@ -2,13 +2,14 @@
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
     <Description about="urn:mozilla:install-manifest">
-        <em:id>adbservice@mozillaonline.com</em:id>
-        <em:name>ADB Service</em:name>
+        <em:id>ffosassistant@mozillaonline.com</em:id>
+        <em:name>FFOS Assistant</em:name>
         <em:version>0.1</em:version>
         <em:description></em:description>
-        <em:creator>Me</em:creator>
-        <em:homepageURL>http://yourdomain.org/myextension</em:homepageURL>
+        <em:creator>Pin Zhang</em:creator>
+        <em:homepageURL>http://www.firefox.com.cn/</em:homepageURL>
         <em:type>2</em:type> <!-- type=extension --> 
+        <em:unpack>true</em:unpack>
 
         <em:targetApplication>
            <!-- Firefox -->
