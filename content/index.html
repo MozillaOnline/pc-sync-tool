@@ -31,9 +31,13 @@
           </div>
           <div id="mgmt-list" class="list radio-list" hidden>
             <div class="header">ZET Unagi</div>
+            <div id="summary-tab"
+                 class="item summary selected"
+                 data-linked-view="summary-view"
+                 data-l10n-id="summary">基本信息</div>
             <div id="contact-tab"
-                 class="item contact selected"
-                 data-linked-view="contact-view" 
+                 class="item contact"
+                 data-linked-view="contact-view"
                  data-l10n-id="contacts">联系人</div>
             <div id="sms-tab"
                  class="item sms" 
@@ -70,6 +74,9 @@
             <input id="btn_submit" type="button" data-l10n-id="connect" value="Connect"></input>
             <br/>
             <input id="btn_usb_connect" type="button" value="Connect USB"></input>
+          </div>
+          <div id="summary-view" class="view" hidden>
+            <h3>基本信息</h3>
           </div>
           <section id="contact-view" class="view" hidden>
             <div class="view-header" data-l10n-id="contacts">联系人</div>
