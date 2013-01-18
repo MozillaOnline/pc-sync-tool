@@ -10,6 +10,7 @@ html {
 body {
   font-size: 1.4rem;
   padding-top: 1rem;
+  overflow-y: scroll;
 }
 
 ul, ol, dl, dt, dd {
