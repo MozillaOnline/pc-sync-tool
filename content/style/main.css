@@ -286,6 +286,9 @@ input[type="url"], textarea {
 .contact-list-item .avatar-small {
   width: 3.2rem;
   height: 3.2rem;
+}
+
+.contact-list-item .avatar-small[data-noavatar=true] {
   background: url("images/noavatar.png") no-repeat scroll center center  transparent;
 }
 

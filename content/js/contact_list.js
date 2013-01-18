@@ -46,7 +46,7 @@ var ContactList = (function() {
     html += '<div>';
     html += '  <input type="checkbox" data-checked="false"></input>';
     html += '    <div class="bookmark"></div>';
-    html += '    <div class="avatar-small"></div>';
+    html += '    <div class="avatar-small" data-noavatar="true"></div>';
     html += '      <div class="contact-info">';
     html += '        <div class="name">' + contact.name.join(' ') + '</div>';
     // Only show the first phone number
