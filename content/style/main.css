@@ -390,7 +390,7 @@ input[type="url"], textarea {
   position: absolute;
   height: 2.2rem;
   width: 2.2rem;
-  background: url(../images/delete.png) no-repeat;
+  background: url(images/delete.png) no-repeat;
   left: 100%;
   top: 50%;
   margin: -1rem 0 0 1rem;
