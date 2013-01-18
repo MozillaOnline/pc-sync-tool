@@ -324,7 +324,7 @@ var ContactForm = (function() {
     if (updateContact) {
       // Save to device
       var CMD_UPDATE_CONTACTS = 'updateContacts';
-      FFOSAssistor.sendRequest({
+      FFOSAssistant.sendRequest({
         target: 'contact',
         command: CMD_UPDATE_CONTACTS,
         data: [contact]
@@ -342,7 +342,7 @@ var ContactForm = (function() {
     } else {
       // Create new contact
       var CMD_ADD_CONTACTS = 'addContacts';
-      FFOSAssistor.sendRequest({
+      FFOSAssistant.sendRequest({
         target: 'contact',
         command: CMD_ADD_CONTACTS,
         data: [contact]

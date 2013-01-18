@@ -26,7 +26,7 @@ var ContactList = (function() {
 
     // Update contact
     var CMD_UPDATE_CONTACTS = 'updateContacts';
-    FFOSAssistor.sendRequest({
+    FFOSAssistant.sendRequest({
       target: 'contact',
       command: CMD_UPDATE_CONTACTS,
       data: [contact]
@@ -261,6 +261,10 @@ var ContactList = (function() {
         ids.push(item.dataset.contactId);
       });
       ContactList.removeContacts(ids);
+    });
+
+    $id('refresh-contacts').addEventListener('click', function onclick_refreshContacts(event) {
+      FFOSAssistant.getAndShowAllContacts();
     });
   });
 

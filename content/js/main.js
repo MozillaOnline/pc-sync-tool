@@ -2,7 +2,7 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var FFOSAssistor = (function() {
+var FFOSAssistant = (function() {
   var CMD_MANAGE_DEVICE = "manageDevice";
   var CMD_GET_ALL_CONTACTS = "getAllContacts";
 
@@ -62,12 +62,19 @@ var FFOSAssistor = (function() {
   function showContactView() {
     // Switch view to manage view
     ViewManager.showView('contact-view');
+    getAndShowAllContacts();
+  }
+
+  function getAndShowAllContacts() {
     // Get contact lists
     socket.sendRequest({
       target: 'contact',
       command: CMD_GET_ALL_CONTACTS,
       data: null
     }, function onresponse_getAllContacts(message) {
+      // Make sure the 'select-all' box is not checked.
+      ContactList.selectAllContacts(false);
+
       ContactList.init(message.data);
       if (message.data.length > 0) {
         ContactList.showContactInfo(message.data[0]);
@@ -133,7 +140,9 @@ var FFOSAssistor = (function() {
       if (socket) {
         socket.sendRequest(request, onresponse, onerror);
       }
-    }
+    },
+
+    getAndShowAllContacts: getAndShowAllContacts
   };
 })();
 
