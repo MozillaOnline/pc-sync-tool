@@ -243,10 +243,22 @@ input[type="url"], textarea {
   padding: 1rem;
 }
 
+.contact-list-item {
+  margin-top: .5rem;
+}
+
+.contact-list-item:active {
+  background-color: #EEE;
+}
+
+.contact-list-item[data-focused=true] {
+  background-color: #EEE;
+}
+
 .contact-list-item > div {
   overflow: hidden;
-  margin: 1rem 0 0 1rem;
   cursor: pointer;
+  padding: .5rem 0 0 1rem;
 }
 
 .contact-list-item > div > * {

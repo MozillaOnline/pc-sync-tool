@@ -85,6 +85,12 @@ var ContactList = (function() {
    * Show the contact info in the contact card view
    */
   function showVcardInView(contact) {
+    // Set focused dataset which means it's shown in the vcard view.
+    $expr('.contact-list-item[data-focused=true]').forEach(function(item) {
+      delete item.dataset.focused;
+    });
+    $id('contact-' + contact.id).dataset.focused = true;
+
     ViewManager.showCardView('contact-vcard-view');
     $id('contact-vcard-view').dataset.contactId = contact.id;
 
