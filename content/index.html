@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf8">
-  <title>Test Device Page</title>
-  <link rel="stylesheet" href="chrome://ffosassistant/content/css/main.css">
+  <title data-l10n-id="ffos-assistant">FFOS Assistant</title>
+  <link rel="stylesheet" href="chrome://ffosassistant/content/style/main.css">
   <link rel="resource" type="application/l10n" href="chrome://ffosassistant/content/locales/locales.ini">
   <script type="text/javascript" src="chrome://ffosassistant/content/js/l10n.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/utils.js"></script>
@@ -58,9 +58,9 @@
           </div>
           <div class="list">
             <div class="header" data-l10n-id="resources">资源推荐</div>
-            <div class="item marketplace" data-l10n-id="marketplace">火狐官方应用市场</div>
-            <div class="item theme" data-l10n-id="themes">免费手机壁纸</div>
-            <div class="item ringtone" data-l10n-id="ringtone">手机铃声专区</div>
+            <div id="marketplace-tab" class="item marketplace" data-l10n-id="marketplace">火狐官方应用市场</div>
+            <div id="themes-tab" class="item theme" data-l10n-id="themes">免费手机壁纸</div>
+            <div id="ringtone-tab" class="item ringtone" data-l10n-id="ringtone">手机铃声专区</div>
           </div>
         </div>
         <div class="content">
@@ -76,19 +76,20 @@
             <div class="view-body">
               <div class="contact-list-box">
                 <div class="contact-ops-box">
-                  <div class="contact-op">
-                    <label data-l10n-id="selectall">全选</label>
+                  <div id="select-all-contacts" class="contact-op">
+                    <input id="select-all" type="checkbox">
+                    <label for="select-all" data-l10n-id="selectall">全选</label>
                   </div>
-                  <div id="remove-contacts" class="contact-op">
+                  <div id="remove-contacts" data-disabled="true" class="contact-op">
                     <label data-l10n-id="delete">删除</label>
                   </div>
-                  <div class="contact-op">
+                  <div id="export-contacts" class="contact-op">
                     <label data-l10n-id="export">导出</label>
                   </div>
-                  <div class="contact-op">
+                  <div id="import-contacts" class="contact-op">
                     <label data-l10n-id="import">导入</label>
                   </div>
-                  <div class="contact-op">
+                  <div id="refresh-contacts" class="contact-op">
                     <label data-l10n-id="refresh">刷新</label>
                   </div>
                   <div id="add-new-contact" class="contact-op">

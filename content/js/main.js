@@ -111,14 +111,6 @@ var FFOSAssistor = (function() {
       ContactForm.editContact();
     });
 
-    $id('remove-contacts').addEventListener('click', function onclick_removeContacts(event) {
-      var ids = [];
-      $expr('#contact-list-container > div.selected').forEach(function(item) {
-        ids.push(item.dataset.contactId);
-      });
-      ContactList.removeContacts(ids);
-    });
-
     window.setTimeout(function() {
 //      manageDevice();
 //      ViewManager.showView('contact-view');

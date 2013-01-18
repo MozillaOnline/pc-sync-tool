@@ -44,7 +44,7 @@ var ContactList = (function() {
   function createContactListItem(contact) {
     var html = '';
     html += '<div>';
-    html += '  <input type="checkbox"></input>';
+    html += '  <input type="checkbox" data-checked="false"></input>';
     html += '    <div class="bookmark"></div>';
     html += '    <div class="avatar-small"></div>';
     html += '      <div class="contact-info">';
@@ -70,11 +70,7 @@ var ContactList = (function() {
     elem.onclick = function onclick_contact_list(event) {
       var target = event.target;
       if (target instanceof HTMLInputElement) {
-        if (target.checked) {
-          elem.classList.add('selected');
-        } else {
-          elem.classList.remove('selected');
-        }
+        selectContactItem(elem, target.checked);
       } else if(target.classList.contains('bookmark')) {
         toggleFavorite(elem);
       } else {
@@ -182,8 +178,30 @@ var ContactList = (function() {
     });
   }
 
-  function addContact(contact) {
+  function selectAllContacts(select) {
+    $expr('#contact-list-container .contact-list-item').forEach(function(item) {
+      selectContactItem(item, select);
+    });
 
+    $id('select-all').checked = select;
+  }
+
+  function selectContactItem(item, select) {
+    if (select) {
+      item.classList.add('selected');
+    } else {
+      item.classList.remove('selected');
+    }
+
+    $expr('input[type=checkbox]', item).forEach(function(checkbox) {
+      checkbox.checked = select;
+      checkbox.dataset.checked = !!select;
+    });
+
+    $id('select-all').checked =
+      $expr('#contact-list-container input[data-checked=false]').length === 0;
+    $id('remove-contacts').dataset.disabled =
+      $expr('#contact-list-container input[data-checked=true]').length === 0;
   }
 
   /**
@@ -221,12 +239,32 @@ var ContactList = (function() {
     return JSON.parse(contactItem.dataset.contact);
   }
 
+  window.addEventListener('load', function wnd_onload(event) {
+    $id('select-all').addEventListener('change', function sall_onclick(event) {
+      selectAllContacts(this.checked);
+    });
+
+    $id('remove-contacts').addEventListener('click', function onclick_removeContacts(event) {
+      // Do nothing if the button is disabled.
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      var ids = [];
+      $expr('#contact-list-container > div.selected').forEach(function(item) {
+        ids.push(item.dataset.contactId);
+      });
+      ContactList.removeContacts(ids);
+    });
+  });
+
   return {
     init: initList,
     removeContacts: removeContacts,
     updateContacts: updateContacts,
     getContact: getContact,
-    showContactInfo: showVcardInView
+    showContactInfo: showVcardInView,
+    selectAllContacts: selectAllContacts
   };
 })();
 
