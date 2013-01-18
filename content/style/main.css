@@ -258,7 +258,7 @@ input[type="url"], textarea {
 .contact-list-item > div {
   overflow: hidden;
   cursor: pointer;
-  padding: .5rem 0 0 1rem;
+  padding: .5rem 0 .5rem 1rem;
 }
 
 .contact-list-item > div > * {
@@ -283,9 +283,9 @@ input[type="url"], textarea {
 }
 
 .contact-list-item .avatar-small {
-  width: 3rem;
-  height: 3rem;
-  background-color: #EEE;
+  width: 3.2rem;
+  height: 3.2rem;
+  background: url("images/noavatar.png") no-repeat scroll center center  transparent;
 }
 
 .contact-list-item .contact-info {
