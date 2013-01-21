@@ -18,33 +18,14 @@ const ADBSERVICE_CONTRACT_ID = '@mozilla.org/adbservice;1';
 const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
 
+XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
+                                   "@mozilla.org/childprocessmessagemanager;1",
+                                   "nsISyncMessageSender");
 XPCOMUtils.defineLazyModuleGetter(this, 'ctypes', 'resource://gre/modules/ctypes.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn', 'resource://ffosassistant/conn.jsm');
-
-XPCOMUtils.defineLazyGetter(this, 'libadb', function() {
-  // TODO open platform related library.
-  let fileUri = Services.io.newURI('resource://ffosassistant-components/libadbservice.so', null, null);
-
-  if (fileUri instanceof Ci.nsIFileURL) {
-    let library = ctypes.open(fileUri.file.path);
-    return {
-      findDevice: library.declare('findDevice', ctypes.default_abi, ctypes.int),
-      setupDevice: library.declare('setupDevice', ctypes.default_abi, ctypes.int)
-    };
-  } else {
-    return {
-      findDevice: function libadb_fake_findDevice() {
-        return 0;
-      },
-
-      setupDevice: function libadb_fake_setupDevice() {
-        return 0;
-      }
-    };
-  }
-});
 
 function exposeReadOnly(obj) {
   if (null == obj) {
@@ -85,13 +66,16 @@ function exposeReadOnly(obj) {
 };
 
 // Local connection to adb forward port
-var _conn = null;
+let _conn = null;
 // Registered callbacks
-var _registeredCallbacks = null;
+let _registeredCallbacks = null;
 
+/***** Component definition *****/
 function ADBService() { }
 
 ADBService.prototype = {
+  __proto__: DOMRequestIpcHelper.prototype,
+
   classID: ADBSERVICE_CID,
 
   classInfo: XPCOMUtils.generateCI({
@@ -108,6 +92,32 @@ ADBService.prototype = {
   init: function(aWindow) {
     // TODO add privileges checking
     // TODO check if the page is privileged, if yes, the __exposedProps__ should not be set
+
+    const messages = ['ADBService:connect:Return:OK', 'ADBService:connect:Return:NO',
+                      'ADBService:disconnect:Return:OK', 'ADBService:disconnect:Return:NO'];
+    this.initHelper(aWindow, messages);
+  },
+
+  // Called from DOMRequestIpcHelper
+  uninit: function() {
+
+  },
+
+  _call: function(name, arg) {
+    var request = this.createRequest();
+    this._sendMessageForRequest("ADBService:" + name, arg, request);
+    return request;
+  },
+
+  _sendMessageForRequest: function(name, data, request) {
+    let id = this.getRequestId(request);
+    cpmm.sendAsyncMessage(name, {
+      data: data,
+      rid: id,
+      mid: this._id
+    });
+
+    debug('Send async message: ' + name + ' with id: ' + id);
   },
 
   _sendError: function(error) {
@@ -125,6 +135,54 @@ ADBService.prototype = {
     }
   },
 
+  receiveMessage: function(aMessage) {
+    let msg = aMessage.json;
+    if (msg.mid && msg.mid != this._id) {
+      return;
+    }
+
+    let request = null;
+    switch (aMessage.name) {
+      case 'ADBService:connect:Return:OK':
+        request = this.takeRequest(msg.rid);
+        if (!request) {
+          return;
+        }
+        Services.DOMRequest.fireSuccess(request, null);
+        break;
+      case 'ADBService:connect:Return:NO':
+        request = this.takeRequest(msg.rid);
+        if (!request) {
+          return;
+        }
+        Services.DOMRequest.fireError(request, "Failed to call ADB forward");
+        break;
+      case 'ADBService:disconnect:Return:OK':
+        request = this.takeRequest(msg.rid);
+        if (!request) {
+          return;
+        }
+        Services.DOMRequest.fireSuccess(request, null);
+        break;
+      case 'ADBService:disconnect:Return:NO':
+        request = this.takeRequest(msg.rid);
+        if (!request) {
+          return;
+        }
+        Services.DOMRequest.fireError(request, "Failed to disconnect");
+        break;
+      case 'ADBService:statechange':
+        this._onStateChange();
+        break;
+      default:
+        break;
+    }
+  },
+
+  _onStateChange: function() {
+
+  },
+
   /* implementation */
   register: function(options) {
     _registeredCallbacks = options;
@@ -133,23 +191,23 @@ ADBService.prototype = {
       debug('Connection is already opened.');
       // Already connected, fire onopen event
       this._fireEvent('open');
-    } else {
-      if (!libadb.findDevice()) {
-        this._sendError({
-          data: 'No Device'
-        });
+      return;
+    }
+
+    debug('Create connection');
+
+    let self = this;
+    let request = this._call('connect');
+    request.onsuccess = function onsuccess_connect(event) {
+      debug('Call connect successfully');
+
+      if (_conn) {
+        debug('Connection is already opened.');
+        // Already connected, fire onopen event
+        self._fireEvent('open');
         return;
       }
 
-      let success = libadb.setupDevice();
-      if (!success) {
-        this._sendError({
-          data: 'Can not establish the adb forward'
-        });
-        return;
-      }
-
-      var self = this;
       _conn = new SocketConn({
         host: '127.0.0.1',
 
@@ -176,9 +234,17 @@ ADBService.prototype = {
       } catch (e) {
         debug('Error occurs when connecting: ' + e);
         _conn = null;
-        this._sendError(e);
+        self._sendError(e);
       }
-    }
+    };
+
+    request.onerror = function onerror_connect(event) {
+      debug('Failed to connect');
+
+      self._sendError({
+        data: 'No Device'
+      });
+    };
   },
 
   uregister: function(options) {
