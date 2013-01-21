@@ -69,7 +69,16 @@
         </div>
         <div class="content">
           <div id="connect-view" class="view">
-            <h3 data-l10n-id="pls_connect_device">请连接手机</h3>
+            <div id="welcome-msg">
+              <h3 data-l10n-id="pls_connect_device">请连接手机</h3>
+              <p data-l10n-id="ffos-description"></p>
+            </div>
+
+            <section id="user-guide">
+              <p data-l10n-id="nodevice-found-msg">您的手机尚未链接到电脑，请通过USB数据线或者wiki链接</p>
+              <p><a href="http://mozilla.com.cn/" target="_blank" data-l10n-id="usb-problem">已链接USB数据线，无法识别手机？</a></p>
+            </section>
+
             <input id="device_id" type="input" value="123abc"></input>
             <input id="btn_submit" type="button" data-l10n-id="connect" value="Connect"></input>
             <br/>
