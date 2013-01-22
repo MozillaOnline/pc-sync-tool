@@ -66,8 +66,6 @@ function _connectFailed() {
 
 let messageReceiver = {
   receiveMessage: function msgRev_receiveMessage(aMessage) {
-    debug('Receive message: ' + aMessage.name);
-
     let msg = aMessage.json || {};
     msg.manager = aMessage.target;
 

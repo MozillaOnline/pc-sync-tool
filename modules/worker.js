@@ -66,12 +66,13 @@ self.onmessage = function(e) {
       break;
     case 'setupDevice':
       let result = libadb.setupDevice();
-      connected = !!result;
 
       postMessage({
         id: id,
         result: result
       });
+
+      setConnected(!!result);
       break;
     default:
       postMessage({
@@ -82,16 +83,12 @@ self.onmessage = function(e) {
   }
 };
 
-setInterval(function checkConnectState() {
+/**
+ * Change connected state, and send 'statechange' message if changed.
+ */
+function setConnected(newState) {
   let oldState = connected;
-
-  if (!libadb.findDevice()) {
-    connected = false;
-  } else if (!libadb.setupDevice()) {
-    connected = false;
-  } else {
-    connected = true;
-  }
+  connected = newState;
 
   if (oldState !== connected) {
     debug('Connection state is changed!');
@@ -99,6 +96,16 @@ setInterval(function checkConnectState() {
       cmd: 'statechange',
       connected: connected
     });
+  }
+}
+
+setInterval(function checkConnectState() {
+  if (!libadb.findDevice()) {
+    setConnected(false);
+  } else if (!libadb.setupDevice()) {
+    setConnected(false);
+  } else {
+    setConnected(true);
   }
 }, 2000);
 

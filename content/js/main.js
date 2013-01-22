@@ -84,39 +84,53 @@ var FFOSAssistant = (function() {
     });
   }
 
+  function connectToUSB(event) {
+    var timeout = null;
+    socket = ConnectManager.connectTo({
+      usb: true,
+      url: wsurl,
+      onopen: function onopen() {
+        log("USB Socket is opened!");
+        // FIXME 此时server端还未完成data监听事件注册，延迟显示
+        timeout = window.setTimeout(showContactView, 1000);
+      },
+      onclose: function onclose() {
+        log('USB Socket is closed');
+        window.clearTimeout(timeout);
+        showConnectView();
+        socket = null;
+      },
+      onerror: function onerror(message) {
+        log("Error occurs!");
+      },
+      onrequest: function onmessage(message) {
+        handleRequest(message);
+      }
+    });
+  }
+
   function init() {
     $id("btn_submit").addEventListener('click', function btn_onclick(event) {
       manageDevice();
     });
 
-    $id('btn_usb_connect').addEventListener('click', function btn_usb_connect_onclick(event) {
-      var timeout = null;
-      socket = ConnectManager.connectTo({
-        usb: true,
-        url: wsurl,
-        onopen: function onopen() {
-          log("USB Socket is opened!");
-          // FIXME 此时server端还未完成data监听事件注册，延迟显示
-          timeout = window.setTimeout(showContactView, 1000);
-        },
-        onclose: function onclose() {
-          log('USB Socket is closed');
-          window.clearTimeout(timeout);
-          showConnectView();
-          socket = null;
-        },
-        onerror: function onerror(message) {
-          log("Error occurs!");
-        },
-        onrequest: function onmessage(message) {
-          handleRequest(message);
-        }
-      });
-    });
+    $id('btn_usb_connect').addEventListener('click', connectToUSB);
 
     $id('add-new-contact').addEventListener('click', function onclick_addNewContact(event) {
       ContactForm.editContact();
     });
+
+    if (navigator.mozADBService) {
+      navigator.mozADBService.onadbstatechange = function onADBStateChange(event) {
+        if (navigator.mozADBService.adbConnected === true) {
+          connectToUSB();
+        }
+      };
+
+      if (navigator.mozADBService.adbConnected === true) {
+        connectToUSB();
+      }
+    }
 
     window.setTimeout(function() {
 //      manageDevice();

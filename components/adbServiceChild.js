@@ -94,13 +94,14 @@ ADBService.prototype = {
     // TODO check if the page is privileged, if yes, the __exposedProps__ should not be set
 
     const messages = ['ADBService:connect:Return:OK', 'ADBService:connect:Return:NO',
-                      'ADBService:disconnect:Return:OK', 'ADBService:disconnect:Return:NO'];
+                      'ADBService:disconnect:Return:OK', 'ADBService:disconnect:Return:NO',
+                      'ADBService:statechange'];
     this.initHelper(aWindow, messages);
   },
 
   // Called from DOMRequestIpcHelper
   uninit: function() {
-
+    this._onADBStateChange = null;
   },
 
   _call: function(name, arg) {
@@ -116,8 +117,6 @@ ADBService.prototype = {
       rid: id,
       mid: this._id
     });
-
-    debug('Send async message: ' + name + ' with id: ' + id);
   },
 
   _sendError: function(error) {
@@ -135,8 +134,13 @@ ADBService.prototype = {
     }
   },
 
+  _createEvent: function(name) {
+    return new this._window.Event(name);
+  },
+
   receiveMessage: function(aMessage) {
     let msg = aMessage.json;
+    debug('Receive message: ' + JSON.stringify(msg));
     if (msg.mid && msg.mid != this._id) {
       return;
     }
@@ -180,7 +184,11 @@ ADBService.prototype = {
   },
 
   _onStateChange: function() {
-
+    let e = this._createEvent('adbstatechange');
+    if (this._onADBStateChange) {
+      this._onADBStateChange.handleEvent(e);
+    }
+    this.dispatchEvent(e);
   },
 
   /* implementation */
@@ -199,8 +207,6 @@ ADBService.prototype = {
     let self = this;
     let request = this._call('connect');
     request.onsuccess = function onsuccess_connect(event) {
-      debug('Call connect successfully');
-
       if (_conn) {
         debug('Connection is already opened.');
         // Already connected, fire onopen event
@@ -265,6 +271,87 @@ ADBService.prototype = {
       this._sendError({
         data: 'No connection'
       });
+    }
+  },
+
+  get adbConnected() {
+    return cpmm.sendSyncMessage('ADBService:connected')[0];
+  },
+
+  set onadbstatechange(callback) {
+    this._onADBStateChange = callback;
+  },
+
+  // These are fake implementations, will be replaced by using
+  // nsJSDOMEventTargetHelper, see bug 731746
+  addEventListener: function(type, listener, useCapture) {
+    if (!this._eventListenersByType) {
+      this._eventListenersByType = {};
+    }
+
+    if (!listener) {
+      return;
+    }
+
+    var listeners = this._eventListenersByType[type];
+    if (!listeners) {
+      listeners = this._eventListenersByType[type] = [];
+    }
+
+    useCapture = !!useCapture;
+    for (let i = 0, len = listeners.length; i < len; i++) {
+      let l = listeners[i];
+      if (l && l.listener === listener && l.useCapture === useCapture) {
+        return;
+      }
+    }
+
+    listeners.push({
+      listener: listener,
+      useCapture: useCapture
+    });
+  },
+
+  removeEventListener: function(type, listener, useCapture) {
+    if (!this._eventListenersByType) {
+      return;
+    }
+
+    useCapture = !!useCapture;
+
+    var listeners = this._eventListenersByType[type];
+    if (listeners) {
+      for (let i = 0, len = listeners.length; i < len; i++) {
+        let l = listeners[i];
+        if (l && l.listener === listener && l.useCapture === useCapture) {
+          listeners.splice(i, 1);
+        }
+      }
+    }
+  },
+
+  dispatchEvent: function(evt) {
+    if (!this._eventListenersByType) {
+      return;
+    }
+
+    let type = evt.type;
+    var listeners = this._eventListenersByType[type];
+    if (listeners) {
+      for (let i = 0, len = listeners.length; i < len; i++) {
+        let listener = listeners[i].listener;
+
+        try {
+          if (typeof listener == "function") {
+            listener.call(this, evt);
+          } else if (listener && listener.handleEvent &&
+                     typeof listener.handleEvent == "function") {
+            listener.handleEvent(evt);
+          }
+        } catch (e) {
+          debug("Exception is caught: " + e);
+        }
+      }
     }
   }
 };
