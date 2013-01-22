@@ -56,13 +56,75 @@ var FFOSAssistant = (function() {
     ViewManager.showView('connect-view');
   }
 
+  function showSummaryView() {
+    ViewManager.showView('summary-view');
+  }
+
+  /**
+   * Format storage size.
+   */
+  function formatStorage(sizeInBytes) {
+    var sizeInMega = sizeInBytes / 1024 / 1024;
+
+    if (sizeInMega > 900) {
+      var sizeInGiga = sizeInMega / 1024;
+      return (sizeInGiga.toFixed ? sizeInGiga.toFixed(2) : sizeInGiga) + 'G';
+    }
+
+    return (sizeInMega.toFixed ? sizeInMega.toFixed(2) : sizeInMega) + 'M';
+  }
+
+  function fillStorageSummaryInfo(elemId, info) {
+    var elem = $id(elemId);
+    var total = info.usedInBytes + info.freeInBytes;
+    var usedInP = Math.floor(info.usedInBytes / total * 100) + '%';
+    $expr('.storage-number', elem)[0].textContent =
+      formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
+    $expr('.storage-graph .used', elem)[0].style.width = usedInP;
+  }
+
+  function getAndShowSummaryInfo() {
+    // get summary info through API
+    socket.sendRequest({
+      target: 'device',
+      command: 'getdeviceinfo',
+      data: null
+    }, function onresponse_getDeviceInfo(message) {
+      var deviceInfo = {};
+      var sdcardInfo = {
+        usedInBytes: 0,
+        freeInBytes: 0
+      };
+
+      message.data.forEach(function(item) {
+        var usedInBytes = item.data[0];
+        var freeInBytes = item.data[1];
+        if (item.type === 'apps') {
+          deviceInfo.usedInBytes = usedInBytes;
+          deviceInfo.freeInBytes = freeInBytes;
+        } else {
+          sdcardInfo.usedInBytes += usedInBytes;
+          sdcardInfo.freeInBytes = freeInBytes;
+        }
+      });
+
+      try {
+      fillStorageSummaryInfo('device-storage-summary', deviceInfo);
+      fillStorageSummaryInfo('sdcard-storage-summary', sdcardInfo);
+      } catch (e) {
+       alert(e);
+      }
+    }, function onerror_getDeviceInfo(message) {
+      alert('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
+    });
+  }
+
   /**
    * Show the contact view, and start fetching the contacts data from device.
    */
   function showContactView() {
     // Switch view to manage view
     ViewManager.showView('contact-view');
-    getAndShowAllContacts();
   }
 
   function getAndShowAllContacts() {
@@ -93,7 +155,7 @@ var FFOSAssistant = (function() {
       onopen: function onopen() {
         log("USB Socket is opened!");
         // FIXME 此时server端还未完成data监听事件注册，延迟显示
-        timeout = window.setTimeout(showContactView, 1000);
+        timeout = window.setTimeout(showSummaryView, 1000);
       },
       onclose: function onclose() {
         log('USB Socket is closed');
@@ -145,6 +207,10 @@ var FFOSAssistant = (function() {
         connectToUSB();
       }
     }
+
+    // Register view event callbacks
+    ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
+    ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);
 
     window.setTimeout(function() {
 //      manageDevice();

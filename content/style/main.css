@@ -217,3 +217,63 @@ input[type="url"], textarea {
   line-height: 4rem;
 }
 
+/******** summary view ******/
+#summary-view h1 {
+  padding: 1rem;
+  background-color: #FFF8F2;
+}
+
+#device-image {
+  float: left;
+  width: 50%;
+  height: 42rem;
+  background: url("images/device.png") no-repeat center center transparent;
+}
+
+#device-image .device-name {
+  line-height: 2rem;
+  font-size: 1.2rem;
+  text-align: center;
+  margin: 3.5rem auto;
+  width: 14rem;
+  background-color: #AAA;
+  border-radius: .5rem;
+  color: #FFF;
+  font-weight: bold;
+}
+
+#summary-infos {
+  float: left;
+  width: 25rem;
+  margin: 7rem 0 0;
+}
+
+#summary-infos > div {
+  margin-top: 1rem;
+}
+
+#summary-infos .storage-detail > div:first-child {
+  float: left;
+}
+
+#summary-infos .storage-detail > div:last-child {
+  float: right;
+}
+
+#summary-infos .storage-graph {
+  height: .8rem;
+  border-radius: .5rem;
+  border: .1rem solid;
+  clear: both;
+}
+
+#summary-infos .storage-graph .used {
+  width: 0;
+  height: 100%;
+  float: left;
+  border-radius: .5rem;
+  background-color: #FEA000;
+  transition-property: width;
+  transition-duration: 1s;
+}
+

@@ -41,6 +41,11 @@ var ViewManager = (function () {
       view.hidden = true;
     });
     viewElem.hidden = false;
+
+    if (!viewElem.shown) {
+      viewElem.shown = true;
+      callEvent('firstshow', viewId);
+    }
   }
 
   /**
@@ -62,6 +67,36 @@ var ViewManager = (function () {
       } else {
         cv.hidden = true;
       }
+    });
+  }
+
+  var callbacks = {};
+
+  /**
+   * Supported event name:
+   *   firstshow
+   */
+  function addViewEventListener(viewId, name, callback) {
+    if (!callbacks[viewId]) {
+      callbacks[viewId] = {};
+    }
+
+    if (!callbacks[viewId][name]) {
+      callbacks[viewId][name] = [];
+    }
+
+    callbacks[viewId][name].push(callback);
+  }
+
+  function callEvent(name, viewId) {
+    console.log('Call event ' + name + ' on ' + viewId);
+
+    if (!callbacks[viewId] || !callbacks[viewId][name]) {
+      return;
+    }
+
+    callbacks[viewId][name].forEach(function(callback) {
+      callback();
     });
   }
 
@@ -96,7 +131,8 @@ var ViewManager = (function () {
     showView: showView,
     setTitle: setTitle,
     // Show the card view by given id, and hide all other sibling views
-    showCardView: showCardView
+    showCardView: showCardView,
+    addViewEventListener: addViewEventListener
   };
 })();
 
