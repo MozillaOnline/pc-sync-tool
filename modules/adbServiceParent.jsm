@@ -59,9 +59,36 @@ const WORKER_FILE = 'resource://ffosassistant/worker.js';
 let libWorker = new ChromeWorker(WORKER_FILE);
 libWorker.onmessage = worker_onMessage;
 
-function _connectFailed() {
-  connected = false;
-  self._sendMessage('ADBService:connect:Return', false, null, msg);
+function startADBForward(onsuccess, onerror) {
+  onsuccess = onsuccess || function() {};
+  onerror = onerror || function() {};
+
+  let fileUri = Services.io.newURI(LIB_FILE_URL, null, null);
+  if (!(fileUri instanceof Ci.nsIFileURL)) {
+    onerror();
+    return;
+  }
+
+  controlMessage({
+    cmd: 'loadlib',
+    path: fileUri.file.path
+  }, function callback_loadlib(data) {
+    if (!data.result) {
+      onerror();
+      return;
+    }
+
+    controlMessage({
+      cmd: 'setupDevice'
+    }, function callback_setupDevice(data) {
+      debug('Setup device result: ' + data.result);
+      if (!data.result) {
+        onerror();
+      } else {
+        onsuccess();
+      }
+    });
+  });
 }
 
 let messageReceiver = {
@@ -75,34 +102,13 @@ let messageReceiver = {
         // This message is sync
         return connected;
       case 'ADBService:connect':
-        let fileUri = Services.io.newURI(LIB_FILE_URL, null, null);
-        if (!(fileUri instanceof Ci.nsIFileURL)) {
-          _connectFailed();
-          break;
-        }
-
-        controlMessage({
-          cmd: 'loadlib',
-          path: fileUri.file.path
-        }, function callback_loadlib(data) {
-          if (!data.result) {
-            _connectFailed();
-            return;
-          }
-
-          controlMessage({
-            cmd: 'setupDevice'
-          }, function callback_setupDevice(data) {
-            debug('Setup device result: ' + data.result);
-            if (!data.result) {
-              _connectFailed();
-            } else {
-              connected = true;
-              self._sendMessage('ADBService:connect:Return', true, null, msg);
-            }
-          });
+        startADBForward(function onsuccess() {
+          connected = true;
+          self._sendMessage('ADBService:connect:Return', true, null, msg);
+        }, function onerror() {
+          connected = false;
+          self._sendMessage('ADBService:connect:Return', false, null, msg);
         });
-
         break;
       case 'ADBService:disconnect':
         // Not implemented
@@ -138,5 +144,7 @@ messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });
 
+// Tell the worker to load lib and forward
+startADBForward();
 debug('ADBService module is inited.');
 
