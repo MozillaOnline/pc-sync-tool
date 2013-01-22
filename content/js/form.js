@@ -96,7 +96,10 @@ ContactField.prototype = {
       html += '      <legend class="action">';
       html += '        <select name="type">';
       this.options.typeList.forEach(function(type) {
-        html += '        <option value="' + type + '" data-l10n-id="' + type + '">';
+        var selected = (initValue && initValue.type &&
+                        type.toLowerCase() === initValue.type.toLowerCase()) ? true : false;
+        html += '        <option value="' + type +
+                '" data-l10n-id="' + type + '"' + (selected ? ' selected' : '') + '>';
         html += _(type);
         html += '        </option>';
       });
@@ -192,7 +195,7 @@ var ContactForm = (function() {
 
     fields['tel']   = new ContactField({
       id: 'tel',
-      typeList: ['mobile', 'home', 'work', 'personal', 'faxHome', 'faxOffice', 'faxOther', 'other'],
+      typeList: ['Mobile', 'Home', 'Work', 'Personal', 'FaxHome', 'FaxOffice', 'FaxOther', 'Other'],
       fields: [{
         name: 'value',
         placeholder: 'Phone',
@@ -209,7 +212,7 @@ var ContactForm = (function() {
 
     fields['adr']   = new ContactField({
       id: 'address',
-      typeList: ['home', 'work'],
+      typeList: ['Home', 'Work'],
       fields: [{
         name: 'streetAddress',
         placeholder: 'Street',
@@ -234,7 +237,7 @@ var ContactForm = (function() {
 
     fields['email'] = new ContactField({
       id: 'email',
-      typeList: ['personal', 'work', 'home'],
+      typeList: ['Personal', 'Work', 'Home'],
       fields: [{
         name: 'value',
         placeholder: 'Email',
