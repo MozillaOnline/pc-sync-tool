@@ -65,11 +65,6 @@ function exposeReadOnly(obj) {
   return obj;
 };
 
-// Local connection to adb forward port
-let _conn = null;
-// Registered callbacks
-let _registeredCallbacks = null;
-
 /***** Component definition *****/
 function ADBService() { }
 
@@ -117,21 +112,6 @@ ADBService.prototype = {
       rid: id,
       mid: this._id
     });
-  },
-
-  _sendError: function(error) {
-    if (_registeredCallbacks && _registeredCallbacks.onerror) {
-      // _registeredCallbacks.onerror(exposeReadOnly(error));
-      _registeredCallbacks.onerror(error);
-    }
-  },
-
-  _fireEvent: function(name, args) {
-    var callbackName = 'on' + name;
-
-    if (_registeredCallbacks && _registeredCallbacks[callbackName]) {
-      _registeredCallbacks[callbackName](args);
-    }
   },
 
   _createEvent: function(name) {
@@ -191,89 +171,7 @@ ADBService.prototype = {
     this.dispatchEvent(e);
   },
 
-  /* implementation */
-  register: function(options) {
-    _registeredCallbacks = options;
-
-    if (_conn != null) {
-      debug('Connection is already opened.');
-      // Already connected, fire onopen event
-      this._fireEvent('open');
-      return;
-    }
-
-    debug('Create connection');
-
-    let self = this;
-    let request = this._call('connect');
-    request.onsuccess = function onsuccess_connect(event) {
-      if (_conn) {
-        debug('Connection is already opened.');
-        // Already connected, fire onopen event
-        self._fireEvent('open');
-        return;
-      }
-
-      _conn = new SocketConn({
-        host: '127.0.0.1',
-
-        port: LOCAL_PORT,
-
-        onopen: function conn_onstart() {
-          self._fireEvent('open');
-        },
-
-        onclose: function conn_onstop() {
-          _conn = null;
-          self._fireEvent('close');
-        },
-
-        onMessage: function conn_onmessage(message) {
-          // Don't need to expose read only property for privileged pages.
-          // self._fireEvent('message', exposeReadOnly(message));
-          self._fireEvent('message', message);
-        }
-      });
-
-      try {
-        _conn.connect();
-      } catch (e) {
-        debug('Error occurs when connecting: ' + e);
-        _conn = null;
-        self._sendError(e);
-      }
-    };
-
-    request.onerror = function onerror_connect(event) {
-      debug('Failed to connect');
-
-      self._sendError({
-        data: 'No Device'
-      });
-    };
-  },
-
-  uregister: function(options) {
-    debug('Uregister');
-    _registeredCallbacks = null;
-    _conn.stop();
-    _conn = null;
-  },
-
-  sendMessage: function(obj) {
-    if (_conn) {
-      try {
-        _conn.sendData(obj);
-      } catch (e) {
-        this._sendError(e);
-      }
-    } else {
-      this._sendError({
-        data: 'No connection'
-      });
-    }
-  },
-
+  /* Implementations */
   get adbConnected() {
     return cpmm.sendSyncMessage('ADBService:connected')[0];
   },

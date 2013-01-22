@@ -23,32 +23,34 @@ var ConnectManager = (function() {
 
     initialize: function(options) {
       this.options = extend({
-        usb: true,
+        webTCPSocket: true,
         url:       null,
+        host: 'localhost',
+        port: 10010,
         onclose:   emptyFunction,
         onopen:    emptyFunction,
         onrequest: emptyFunction,
         onerror:   emptyFunction
       }, options);
 
-      if (!this.options.url) {
+      if (!this.options.webTCPSocket && !this.options.url) {
         throw new Error('No url is defined');
+      } else if (!this.options.host || !this.options.port) {
+        throw new Error('Host and port should be defined.');
       }
     },
 
-    get usb() {
-      return this.options.usb && navigator.mozADBService;
+    get useWebTCPSocket() {
+      return this.options.webTCPSocket && navigator.mozTCPSocket;
     },
 
     connect: function wrapper_connect() {
-      // wrap tcp socket
-      if (this.usb) {
-        navigator.mozADBService.register({
-          onopen:    this._onopen.bind(this),
-          onclose:   this._onclose.bind(this),
-          onmessage: this._onmessage.bind(this),
-          onerror:   this._onerror.bind(this)
-        });
+      if (this.useWebTCPSocket) {
+        this.socket = navigator.mozTCPSocket.open(this.options.host, this.options.port);
+        this.socket.onopen    = this._onopen.bind(this);
+        this.socket.onclose   = this._onclose.bind(this);
+        this.socket.ondata    = this._onmessage.bind(this);
+        this.socket.onerror   = this._onerror.bind(this);
       } else {
         this.socket = new WebSocket(this.options.url);
         this.socket.onopen    = this._onopen.bind(this);
@@ -146,7 +148,8 @@ var ConnectManager = (function() {
 
     _onerror: function wrapper_onerror(event) {
       this.options.onerror({
-        status: 400
+        status: 400,
+        data: event.data
       });
     }
   };

@@ -15,7 +15,7 @@ var FFOSAssistant = (function() {
       alert("Please input the device id!");
     } else {
       socket = ConnectManager.connectTo({
-        usb: false,
+        webTCPSocket: false,
         url: wsurl,
         onopen: function onopen_ws() {
           log("Websocket is opened!");
@@ -87,8 +87,9 @@ var FFOSAssistant = (function() {
   function connectToUSB(event) {
     var timeout = null;
     socket = ConnectManager.connectTo({
-      usb: true,
-      url: wsurl,
+      webTCPSocket: true,
+      host: 'localhost',
+      port: 10010,
       onopen: function onopen() {
         log("USB Socket is opened!");
         // FIXME 此时server端还未完成data监听事件注册，延迟显示

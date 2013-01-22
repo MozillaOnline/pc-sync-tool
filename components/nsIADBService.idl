@@ -13,16 +13,6 @@ interface nsIADBService : nsISupports
   attribute nsIDOMEventListener onadbstatechange;
 
   /**
-   * Register connection callbacks
-   *
-   * options:
-   *  onopen, onclose, onmessage, onerror
-   */
-  void register(in jsval options);
-  void unregister(in jsval options);
-  void sendMessage(in jsval message);
-
-  /**
    * These functions related to EventTarget are temporary hacks:
    *   - addEventListener
    *   - removeEventListener
