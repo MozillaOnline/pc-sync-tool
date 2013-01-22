@@ -211,18 +211,12 @@ input[type="url"], textarea {
   overflow: hidden;
 }
 
-.content .view .view-header {
-  background-color: #FFF8F2;
-  height: 4rem;
-  line-height: 4rem;
-}
-
-/******** summary view ******/
-#summary-view h1 {
+.content .view h1.title {
   padding: 1rem;
   background-color: #FFF8F2;
 }
 
+/******** summary view ******/
 #device-image {
   float: left;
   width: 50%;
