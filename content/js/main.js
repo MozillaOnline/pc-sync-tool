@@ -121,6 +121,19 @@ var FFOSAssistant = (function() {
       ContactForm.editContact();
     });
 
+    $id('lang-settings').addEventListener('click', function onclick_langsetting(event) {
+      if (!event.target.classList.contains('language-code-button')) {
+        return;
+      }
+
+      navigator.mozL10n.language.code = event.target.dataset.languageCode;
+      $expr('.language-code-button', this).forEach(function(elem) {
+        elem.classList.remove('current');
+      });
+
+      event.target.classList.add('current');
+    });
+
     if (navigator.mozADBService) {
       navigator.mozADBService.onadbstatechange = function onADBStateChange(event) {
         if (navigator.mozADBService.adbConnected === true) {

@@ -74,9 +74,32 @@ input[type="url"], textarea {
 
 .title-bar {
   font-size: 2rem;
+  line-height: 2rem;
   color: #FFF;
   background-color: #FFC280;
   padding: 1rem;
+}
+
+#lang-settings {
+  float: right;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  -moz-user-select: none;
+}
+
+#lang-settings label {
+  padding: 0 .5rem;
+  cursor: pointer;
+}
+
+#lang-settings label.current {
+  cursor: default;
+  color: #999;
+  display: none;
+}
+
+#lang-settings .selected {
+  cursor: default;
 }
 
 #welcome-msg {
