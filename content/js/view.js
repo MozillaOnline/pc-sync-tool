@@ -25,9 +25,11 @@ var ViewManager = (function () {
     var tabElem = $id(tabId);
 
     // Hide other radio list
-    $expr('#container .radio-list').forEach(function hideList(list) {
-      list.hidden = true;
-    });
+    if (tabElem.classList.contains('radio-list')) {
+      $expr('#container .radio-list').forEach(function hideList(list) {
+        list.hidden = true;
+      });
+    }
 
     // unselect selected item
     $expr('#container .selected').forEach(function unselect(elem) {
