@@ -56,6 +56,11 @@ input[type="url"], textarea {
   height: 100%;
 }
 
+.coming-soon {
+  height: 50rem;
+  background: url("images/coming-soon.jpg") no-repeat center center transparent;
+}
+
 #container {
   width: 96rem;
   margin: 0 auto;
