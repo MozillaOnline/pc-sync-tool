@@ -41,6 +41,10 @@ input[type="url"], textarea {
   margin: .5rem 0;
 }
 
+.clear-fix {
+  clear: both;
+}
+
 .table {
   display: table;
   width: 100%;
@@ -59,6 +63,24 @@ input[type="url"], textarea {
 .coming-soon {
   height: 50rem;
   background: url("images/coming-soon.jpg") no-repeat center center transparent;
+}
+
+.button {
+  cursor: pointer;
+  border-radius: .5rem;
+  border: .1rem solid #A9A9A9;
+  padding: .5rem 2rem;
+  text-align: center;
+  text-decoration: none;
+  margin: 1rem 0;
+  background: -moz-linear-gradient(center top , #EFEFEF, #CFCFCF) repeat scroll 0 0 transparent;
+}
+
+.button:hover,
+.active-button {
+  color: #FFF;
+  background: -moz-linear-gradient(center top , #2D9B00, #2D9B00) repeat scroll 0 0 transparent;
+  border: .1rem solid #3A8B07;
 }
 
 #container {
@@ -225,7 +247,7 @@ input[type="url"], textarea {
 #device-image {
   float: left;
   width: 50%;
-  height: 42rem;
+  height: 47rem;
   background: url("images/device.png") no-repeat center center transparent;
 }
 
@@ -274,5 +296,17 @@ input[type="url"], textarea {
   background-color: #FEA000;
   transition-property: width;
   transition-duration: 1s;
+}
+
+#summary-ops {
+  margin-top: 5rem !important;
+}
+
+#backup-button {
+  float: left;
+}
+
+#restore-button {
+  float: right;
 }
 

@@ -138,6 +138,10 @@
   overflow: hidden;
 }
 
+#contact-vcard-box .edit {
+  width: 4rem;
+}
+
 #contact-vcard-box .vcard-header {
   color: #CCC;
   text-align: center;
@@ -166,17 +170,6 @@
 
 #vcard-basic-info-box .company {
   color: #CCC;
-}
-
-.edit-button {
-  color: #FFF;
-  background-color: #2D9B00;
-  border-radius: .5rem;
-  width: 4rem;
-  padding: .5rem 2rem;
-  text-align: center;
-  text-decoration: none;
-  margin: 1rem 0;
 }
 
 #vcard-basic-info-box > div:last-child {
