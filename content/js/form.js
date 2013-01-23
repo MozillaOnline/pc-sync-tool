@@ -356,7 +356,7 @@ var ContactForm = (function() {
             contactsAdded.push(m.data);
           }
         });
-        ContactList.updateContacts(contactsAdded);
+        ContactList.addContacts(contactsAdded);
       }, function onerror_addcontact(message) {
         alert('Error occurs when adding contacts: ' + JSON.stringify(message));
       });

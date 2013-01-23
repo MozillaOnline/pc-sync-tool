@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=utf8">
   <title data-l10n-id="ffos-assistant">FFOS Assistant</title>
@@ -158,6 +159,7 @@
                     <label data-l10n-id="new">新建</label>
                   </div>
                 </div>
+                <!-- Contact list -->
                 <div id="contact-list-container">
                   <!-- div class="contact-index">P</div>
                   <div class="contact-list-item">
@@ -186,25 +188,8 @@
                       </div>
                       <p><input id="org" type="text" value="" placeholder="Company"></input></p>
                     </section>
-                    <ul>
-                      <!-- li>
-                        <section>
-                          <div id="add-phone-0" class="phone-template" data-index=0>
-                            <fieldset>
-                              <legend class="action">
-                                <span id="phone-type-0" value="Home">移动电话</span>
-                              </legend>
-                              <section>
-                                <p><input type="tel" placeholder="Phone"/></p>
-                                <p><input type="tel" placeholder="Carrier"/></p>
-                              </section>
-                            </fieldset>
-                            <div class="action-delete"></div>
-                          </div>
-                        </section>
-                        <button id="add-new-phone" data-l10n-id="add-phone">新增电话号码</button>
-                      </li -->
-                    </ul>
+                    <!-- Contact field containter -->
+                    <ul></ul>
                     <a id="save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a>
                     <a id="cancel-edit-contact" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
                   </form>
@@ -221,20 +206,8 @@
                   </div>
                   <div id="vcard-contact-ways" class="vcard-info-bar">
                     <div class="header" data-l10n-id="contact-ways">联系信息</div>
-                    <div class="info-table table">
-                      <!-- div>
-                        <div class="contact-way-name">移动电话</div>
-                        <div>10086</div>
-                      </div>
-                      <div>
-                        <div>工作电话</div>
-                        <div>13800138000</div>
-                      </div>
-                      <div>
-                        <div>工作邮箱</div>
-                        <div>info-cn@mozilla.com</div>
-                      </div -->
-                    </div>
+                    <!-- Contact ways -->
+                    <div class="info-table table"></div>
                   </div>
                 </section>
               </div>
@@ -269,3 +242,5 @@
     </div>
   </div>
 </body>
+</html>
+

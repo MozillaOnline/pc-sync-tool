@@ -164,7 +164,7 @@ var FFOSAssistant = (function() {
         socket = null;
       },
       onerror: function onerror(message) {
-        log("Error occurs!");
+        log("Error occurs: " + JSON.stringify(message));
       },
       onrequest: function onmessage(message) {
         handleRequest(message);

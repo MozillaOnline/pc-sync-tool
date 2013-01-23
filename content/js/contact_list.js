@@ -125,20 +125,22 @@ var ContactList = (function() {
     });
   }
 
+  var groupedList = null;
+
   function initList(contacts) {
     var container = getListContainer();
     container.innerHTML = '';
 
-    var contactIndex = document.createElement('div');
-    contactIndex.className = 'contact-index';
-    contactIndex.textContent = 'P';
-
-    container.appendChild(contactIndex);
-
-    contacts.forEach(function(contact) {
-      var elem = createContactListItem(contact);
-      container.appendChild(elem);
+    groupedList = new GroupedList({
+      dataList: contacts,
+      dataIndexer: function getContactIndex(contact) {
+        return contact.name[0].charAt(0).toUpperCase();
+      },
+      renderFunc: createContactListItem,
+      container: container
     });
+
+    groupedList.render();
   }
 
   /**
@@ -150,6 +152,9 @@ var ContactList = (function() {
       command: CMD_REMOVE_CONTACTS,
       data: ids
     }, function onresponse_removeContacts(message) {
+      // Make sure the 'select-all' box is not checked.
+      ContactList.selectAllContacts(false);
+
       var keepVcardView = true;
       var vcardView = $id('contact-vcard-view');
 
@@ -159,12 +164,16 @@ var ContactList = (function() {
           return;
         }
 
+        // Check if contact exists in the list.
         var id = m.data;
         var item = $id('contact-' + id);
         if (!item) {
           return;
         }
-        item.parentNode.removeChild(item);
+
+        // Remove contact from grouped list
+        groupedList.remove(getContact(id));
+
         if (vcardView.dataset.contactId == id) {
           keepVcardView = false;
         }
@@ -211,6 +220,21 @@ var ContactList = (function() {
   }
 
   /**
+   * Add contact lists.
+   */
+  function addContacts(contacts) {
+    contacts.forEach(function(contact) {
+      if (!contact.id) {
+        return;
+      }
+
+      groupedList.add(contact);
+
+      showVcardInView(contact);
+    });
+  }
+
+  /**
    * Update contact lists.
    */
   function updateContacts(contacts) {
@@ -219,18 +243,11 @@ var ContactList = (function() {
         return;
       }
 
-      contacts.forEach(function(contact) {
-        var contactItem = $id('contact-' + contact.id);
-        if (!contactItem) {
-          var newItem = createContactListItem(contact);
-          getListContainer().appendChild(newItem);
-        } else {
-          var newItem = createContactListItem(contact);
-          contactItem.parentNode.insertBefore(newItem, contactItem);
-          contactItem.parentNode.removeChild(contactItem);
-        }
-        showVcardInView(contact);
-      });
+      var existingContact = getContact(contact.id);
+      groupedList.remove(existingContact);
+      groupedList.add(contact);
+
+      showVcardInView(contact);
     });
   }
 
@@ -257,7 +274,7 @@ var ContactList = (function() {
       }
 
       var ids = [];
-      $expr('#contact-list-container > div.selected').forEach(function(item) {
+      $expr('#contact-list-container div.selected').forEach(function(item) {
         ids.push(item.dataset.contactId);
       });
       ContactList.removeContacts(ids);
@@ -269,11 +286,12 @@ var ContactList = (function() {
   });
 
   return {
-    init: initList,
-    removeContacts: removeContacts,
-    updateContacts: updateContacts,
-    getContact: getContact,
-    showContactInfo: showVcardInView,
+    init:              initList,
+    removeContacts:    removeContacts,
+    updateContacts:    updateContacts,
+    addContacts:       addContacts,
+    getContact:        getContact,
+    showContactInfo:   showVcardInView,
     selectAllContacts: selectAllContacts
   };
 })();

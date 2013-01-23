@@ -133,7 +133,13 @@ var ConnectManager = (function() {
         var callbacks = requests[requestId];
         if (callbacks) {
           if (message.status === 200) {
-            callbacks.onresponse(message);
+            try {
+              callbacks.onresponse(message);
+            } catch (e) {
+              callbacks.onerror({
+                data: e.toString()
+              });
+            }
           } else {
             callbacks.onerror(message);
           }
