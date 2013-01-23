@@ -234,6 +234,10 @@ input[type="url"], textarea {
   height: 100%;
 }
 
+.content .view {
+  min-height: 50rem;
+}
+
 .content .view .view-body {
   overflow: hidden;
 }
@@ -265,7 +269,7 @@ input[type="url"], textarea {
 
 #summary-infos {
   float: left;
-  width: 25rem;
+  width: 23rem;
   margin: 7rem 0 0;
 }
 
@@ -284,7 +288,7 @@ input[type="url"], textarea {
 #summary-infos .storage-graph {
   height: .8rem;
   border-radius: .5rem;
-  border: .1rem solid;
+  border: .1rem solid #D3D3D3;
   clear: both;
 }
 
