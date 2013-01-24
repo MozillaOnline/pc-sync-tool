@@ -304,6 +304,10 @@ var ContactList = (function() {
         if (status) {
           alert('Contacts have been save to disk.');
         }
+      }, {
+        title: 'Choose where to save',
+        name: 'contacts.vcf',
+        extension: 'vcf'
       });
     });
   });

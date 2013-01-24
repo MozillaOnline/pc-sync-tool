@@ -18,7 +18,7 @@ interface nsIFFOSAssistant : nsISupports
    *   {
    *     title: 'Save As VCard',   // The title of file picker
    *     name:  'myfile', // The file name
-   *     ext: 'txt' // The file extension
+   *     extention: 'txt' // The file extension
    *   }
    */
   boolean saveToDisk(in DOMString content,

@@ -185,7 +185,19 @@ FFOSAssistant.prototype = {
   saveToDisk: function(content, callback, options) {
     var filePicker = Cc["@mozilla.org/filepicker;1"]
                        .createInstance(Ci.nsIFilePicker);
-    filePicker.init(this._window, null, Ci.nsIFilePicker.modeSave);
+    let title = options && options.title ? options.title : null;
+    filePicker.init(this._window, title, Ci.nsIFilePicker.modeSave);
+    if (options) {
+      if (options.name) {
+        filePicker.defaultString = options.name;
+      }
+      if (options.extension) {
+        filePicker.defaultExtension = options.extension;
+        // Create filter from extension
+        filePicker.appendFilter('*.' + options.extension, '*.' + options.extension);
+        filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
+      }
+    }
 
     let self = this;
     callback = (typeof callback === 'function') ? callback : function() {};
