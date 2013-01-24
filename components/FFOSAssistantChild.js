@@ -214,7 +214,7 @@ FFOSAssistant.prototype = {
           break;
         case Ci.nsIFilePicker.returnCancel:
         default:
-          callback(returnCode);
+          callback(false);
           break;
       }
     });

@@ -283,6 +283,29 @@ var ContactList = (function() {
     $id('refresh-contacts').addEventListener('click', function onclick_refreshContacts(event) {
       FFOSAssistant.getAndShowAllContacts();
     });
+
+    // TODO write a vcard module to parse and construct vcard
+    $id('export-contacts').addEventListener('click', function onclick_exportContacts(event) {
+      var content = '';
+      groupedList.getGroupedData().forEach(function(group) {
+        group.dataList.forEach(function(contact) {
+          var vcard = 'BEGIN:VCARD';
+          vcard += '\nVERSION:3.0';
+          vcard += '\nN:' + contact.name.join(';');
+          contact.tel.forEach(function(t) {
+            vcard += '\nTEL;TYPE=' + t.type + ':' + t.value;
+          });
+          vcard += '\nEND:VCARD';
+          content += vcard + '\n';
+        });
+      });
+
+      navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
+        if (status) {
+          alert('Contacts have been save to disk.');
+        }
+      });
+    });
   });
 
   return {

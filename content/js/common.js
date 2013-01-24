@@ -311,6 +311,10 @@ GroupedList.prototype = {
         }
       }
     }
+  },
+
+  getGroupedData: function gl_getGroupedData() {
+    return this._groupedData;
   }
 };
 
