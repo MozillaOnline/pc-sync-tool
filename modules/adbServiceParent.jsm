@@ -13,7 +13,7 @@ else
 var EXPORTED_SYMBOLS = [];
 
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
-const LIB_FILE_URL = 'resource://ffosassistant-components/libadbservice.so';
+const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 

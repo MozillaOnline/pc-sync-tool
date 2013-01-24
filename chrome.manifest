@@ -1,7 +1,11 @@
 content ffosassistant content/ contentaccessible=yes
 resource ffosassistant modules/
 
-resource ffosassistant-components components/binary/
+resource ffosassistant-binary components/binary/
+
+resource ffosassistant-libadbservice components/binary/linux/libadbservice.so os=Linux
+resource ffosassistant-libadbservice components/binary/mac/libadbservice.so   os=Darwin
+resource ffosassistant-libadbservice components/binary/win/adbservice.dll     os=WINNT
 
 overlay chrome://browser/content/browser.xul chrome://ffosassistant/content/overlay.xul
 
