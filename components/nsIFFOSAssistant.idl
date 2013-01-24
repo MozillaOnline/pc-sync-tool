@@ -2,7 +2,7 @@
 #include "nsIDOMDOMRequest.idl"
 
 [scriptable, uuid(9dd6047d-e7c8-43f9-a45d-56794b8bc246)]
-interface nsIADBService : nsISupports
+interface nsIFFOSAssistant : nsISupports
 {
   /**
    * Indicates if the USB cable is connected and ADB forward success
@@ -11,6 +11,19 @@ interface nsIADBService : nsISupports
 
   /* Fired when USB cable or ADB forward disconnected */
   attribute nsIDOMEventListener onadbstatechange;
+
+  /**
+   * Save content to disk
+   * options:
+   *   {
+   *     title: 'Save As VCard',   // The title of file picker
+   *     name:  'myfile', // The file name
+   *     ext: 'txt' // The file extension
+   *   }
+   */
+  boolean saveToDisk(in DOMString content,
+                     in jsval callback,
+                     [optional] in jsval options);
 
   /**
    * These functions related to EventTarget are temporary hacks:

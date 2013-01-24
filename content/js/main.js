@@ -196,14 +196,14 @@ var FFOSAssistant = (function() {
       event.target.classList.add('current');
     });
 
-    if (navigator.mozADBService) {
-      navigator.mozADBService.onadbstatechange = function onADBStateChange(event) {
-        if (navigator.mozADBService.adbConnected === true) {
+    if (navigator.mozFFOSAssistant) {
+      navigator.mozFFOSAssistant.onadbstatechange = function onADBStateChange(event) {
+        if (navigator.mozFFOSAssistant.adbConnected === true) {
           connectToUSB();
         }
       };
 
-      if (navigator.mozADBService.adbConnected === true) {
+      if (navigator.mozFFOSAssistant.adbConnected === true) {
         connectToUSB();
       }
     }

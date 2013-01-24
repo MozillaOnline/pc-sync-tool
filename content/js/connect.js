@@ -71,7 +71,7 @@ var ConnectManager = (function() {
       msg.action = 'request';
 
       if (this.usb) {
-        navigator.mozADBService.sendMessage(JSON.stringify(msg));
+        navigator.mozFFOSAssistant.sendMessage(JSON.stringify(msg));
       } else {
         this.socket.send(JSON.stringify(msg));
       }

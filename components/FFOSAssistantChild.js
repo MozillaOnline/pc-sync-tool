@@ -23,6 +23,8 @@ Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
 XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
                                    "@mozilla.org/childprocessmessagemanager;1",
                                    "nsISyncMessageSender");
+XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils', 'resource://gre/modules/FileUtils.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil', 'resource://gre/modules/NetUtil.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'ctypes', 'resource://gre/modules/ctypes.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn', 'resource://ffosassistant/conn.jsm');
@@ -66,9 +68,9 @@ function exposeReadOnly(obj) {
 };
 
 /***** Component definition *****/
-function ADBService() { }
+function FFOSAssistant() { }
 
-ADBService.prototype = {
+FFOSAssistant.prototype = {
   __proto__: DOMRequestIpcHelper.prototype,
 
   classID: ADBSERVICE_CID,
@@ -76,12 +78,12 @@ ADBService.prototype = {
   classInfo: XPCOMUtils.generateCI({
                classID: ADBSERVICE_CID,
                contractID: ADBSERVICE_CONTRACT_ID,
-               classDescription: "adbService",
-               interfaces: [Ci.nsIADBService],
+               classDescription: "FFOS Assistant",
+               interfaces: [Ci.nsIFFOSAssistant],
                flags: Ci.nsIClassInfo.DOM_OBJECT
              }),
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIADBService, Ci.nsIDOMGlobalPropertyInitializer]),
+  QueryInterface: XPCOMUtils.generateQI([Ci.nsIFFOSAssistant, Ci.nsIDOMGlobalPropertyInitializer]),
 
   // nsIDOMGlobalPropertyInitializer implementation
   init: function(aWindow) {
@@ -180,6 +182,44 @@ ADBService.prototype = {
     this._onADBStateChange = callback;
   },
 
+  saveToDisk: function(content, callback, options) {
+    var filePicker = Cc["@mozilla.org/filepicker;1"]
+                       .createInstance(Ci.nsIFilePicker);
+    filePicker.init(this._window, null, Ci.nsIFilePicker.modeSave);
+
+    let self = this;
+    callback = (typeof callback === 'function') ? callback : function() {};
+
+    filePicker.open(function onPickComplete(returnCode) {
+      switch (returnCode) {
+        case Ci.nsIFilePicker.returnOK:
+        case Ci.nsIFilePicker.returnReplace:
+          let file = filePicker.file;
+          var ostream = FileUtils.openSafeFileOutputStream(file);
+
+          var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter'].
+                            createInstance(Ci.nsIScriptableUnicodeConverter);
+          converter.charset = 'UTF-8';
+          var istream = converter.convertToInputStream(content);
+
+          NetUtil.asyncCopy(istream, ostream, function(status) {
+            if (!Components.isSuccessCode(status)) {
+              // TODO report error
+              callback(false);
+            } else {
+              // Content has been written to the file.
+              callback(true);
+            }
+          });
+          break;
+        case Ci.nsIFilePicker.returnCancel:
+        default:
+          callback(returnCode);
+          break;
+      }
+    });
+  },
+
   // These are fake implementations, will be replaced by using
   // nsJSDOMEventTargetHelper, see bug 731746
   addEventListener: function(type, listener, useCapture) {
@@ -254,5 +294,5 @@ ADBService.prototype = {
   }
 };
 
-this.NSGetFactory = XPCOMUtils.generateNSGetFactory([ADBService]);
+this.NSGetFactory = XPCOMUtils.generateNSGetFactory([FFOSAssistant]);
 

@@ -13,7 +13,7 @@
     // Import ADB Service module
     debug('Import adbService module');
     try {
-      Components.utils.import('resource://ffosassistant/adbServiceParent.jsm');
+      Components.utils.import('resource://ffosassistant/ADBService.jsm');
     } catch (e) {
       debug('Error occurs when load module: ' + e);
     }
