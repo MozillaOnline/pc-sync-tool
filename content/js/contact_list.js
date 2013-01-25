@@ -277,7 +277,10 @@ var ContactList = (function() {
       $expr('#contact-list-container div.selected').forEach(function(item) {
         ids.push(item.dataset.contactId);
       });
-      ContactList.removeContacts(ids);
+
+      if (window.confirm(_('delete-contacts-confirm', {n: ids.length}))) {
+        ContactList.removeContacts(ids);
+      }
     });
 
     $id('refresh-contacts').addEventListener('click', function onclick_refreshContacts(event) {
