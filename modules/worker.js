@@ -12,6 +12,7 @@ var libadb = (function() {
   let library = null;
   let findDevice = null;
   let setupDevice = null;
+  let setupPath = null;
 
   return {
     loadLib: function(path) {
@@ -21,8 +22,9 @@ var libadb = (function() {
       }
 
       library = ctypes.open(path);
-      findDevice = library.declare('findDevice', ctypes.default_abi, ctypes.int);
+      findDevice  = library.declare('findDevice',  ctypes.default_abi, ctypes.int);
       setupDevice = library.declare('setupDevice', ctypes.default_abi, ctypes.int);
+      setupPath   = library.declare('setupPath',   ctypes.default_abi, ctypes.void_t, ctypes.jschar.ptr);
     },
 
     findDevice: function() {
@@ -39,6 +41,14 @@ var libadb = (function() {
       }
 
       return 0;
+    },
+
+    setupPath: function(adbPath) {
+      if (setupPath) {
+        return setupPath(adbPath);
+      }
+
+      return;
     }
   };
 })();
@@ -52,7 +62,10 @@ self.onmessage = function(e) {
 
   switch (cmd) {
     case 'loadlib':
-      libadb.loadLib(e.data.path);
+      // Load adb service library
+      libadb.loadLib(e.data.libPath);
+      // Set the path of adb executive file
+      libadb.setupPath(e.data.adbPath);
       postMessage({
         id: id,
         result: true

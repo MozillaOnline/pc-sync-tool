@@ -7,6 +7,10 @@ resource ffosassistant-libadbservice components/binary/linux/libadbservice.so os
 resource ffosassistant-libadbservice components/binary/mac/libadbservice.so   os=Darwin
 resource ffosassistant-libadbservice components/binary/win/adbservice.dll     os=WINNT
 
+resource ffosassistant-adb           components/binary/linux/adb              os=linux
+resource ffosassistant-adb           components/binary/mac/adb                os=Darwin
+resource ffosassistant-adb           components/binary/win/adb.exe            os=WINNT
+
 overlay chrome://browser/content/browser.xul chrome://ffosassistant/content/overlay.xul
 
 interfaces components/FFOSAssistant.xpt

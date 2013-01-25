@@ -14,6 +14,7 @@ var EXPORTED_SYMBOLS = [];
 
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
+const ADB_FILE_URL = 'resource://ffosassistant-adb';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
@@ -59,19 +60,30 @@ const WORKER_FILE = 'resource://ffosassistant/worker.js';
 let libWorker = new ChromeWorker(WORKER_FILE);
 libWorker.onmessage = worker_onMessage;
 
+function getChromeFileUri(chromeUri) {
+  let fileUri = Services.io.newURI(chromeUri, null, null);
+  if (!(fileUri instanceof Ci.nsIFileURL)) {
+    return null;
+  }
+
+  return fileUri;
+}
+
 function startADBForward(onsuccess, onerror) {
   onsuccess = onsuccess || function() {};
   onerror = onerror || function() {};
 
-  let fileUri = Services.io.newURI(LIB_FILE_URL, null, null);
-  if (!(fileUri instanceof Ci.nsIFileURL)) {
+  let libFileUri = getChromeFileUri(LIB_FILE_URL);
+  let adbFileUri = getChromeFileUri(ADB_FILE_URL);
+  if (!libFileUri || !adbFileUri) {
     onerror();
     return;
   }
 
   controlMessage({
     cmd: 'loadlib',
-    path: fileUri.file.path
+    libPath: libFileUri.file.path,
+    adbPath: adbFileUri.file.path
   }, function callback_loadlib(data) {
     if (!data.result) {
       onerror();
@@ -144,7 +156,15 @@ messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });
 
-// Tell the worker to load lib and forward
+/**
+ * Tell the worker to load lib and forward.
+ * I tried to send ADBService:connect when mozFFOSAssistant is inited, but in
+ * some cases, the messages listeners in this module haven't been added, for
+ * example: the browser is restarted when the current page is about:ffos.
+ *
+ * TODO make it be lazily loaded, and make sure that messages listeners are
+ * registered before it can receive any messages.
+ */
 startADBForward();
 debug('ADBService module is inited.');
 
