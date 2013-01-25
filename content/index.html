@@ -175,7 +175,8 @@
               </div>
               <div id="contact-vcard-box">
                 <section id="contact-edit-view" class="card-view contact-form" hidden="true">
-                  <div class="vcard-header" data-l10n-id="contact-edit-header">
+                  <div id="add-contact-header" class="vcard-header" data-l10n-id="add-contact-header"></div>
+                  <div id="edit-contact-header" class="vcard-header" data-l10n-id="edit-contact-header">
                     编辑联系人信息
                   </div>
                   <form id="contact-form" action="#" onsubmit="return false;">
@@ -183,10 +184,10 @@
                     <section>
                       <div class="avatar"></div>
                       <div class="item-body-exp">
-                        <p><input id="givenName" type="text" value="" placeholder="Name"></input></p>
-                        <p><input id="familyName" type="text" value="" placeholder="Last name"></input></p>
+                        <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
+                        <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
                       </div>
-                      <p><input id="org" type="text" value="" placeholder="Company"></input></p>
+                      <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
                     </section>
                     <!-- Contact field containter -->
                     <ul></ul>

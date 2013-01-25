@@ -146,11 +146,29 @@
   color: #CCC;
   text-align: center;
   padding-bottom: 1rem;
+  font-size: 2.4rem;
+  font-weight: bold;
 }
 
 #vcard-basic-info-box {
   1eight: 7rem;
   padding-bottom: 2rem;
+}
+
+#contact-edit-view[data-add-contact=false] #add-contact-header{
+  display: none;
+}
+
+#contact-edit-view[data-add-contact=false] #edit-contact-header{
+  display: inherit;
+}
+
+#contact-edit-view[data-add-contact=true] #add-contact-header{
+  display: inherit;
+}
+
+#contact-edit-view[data-add-contact=true] #edit-contact-header{
+  display: none;
 }
 
 #vcard-basic-info-box > div:last-child {

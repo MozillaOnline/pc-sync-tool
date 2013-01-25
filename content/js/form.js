@@ -73,6 +73,9 @@ ContactField.prototype = {
       }
     });
 
+    // Translate the fields
+    navigator.mozL10n.translate(this.elem);
+
     return this;
   },
 
@@ -111,9 +114,9 @@ ContactField.prototype = {
     this.options.fields.forEach(function(f) {
       html += '      <p>';
       if (self.options.fieldType == 'string') {
-        html += '      <input placeholder="' + f.placeholder + '" type="' + f.type +'" value="' + initValue + '"></input>';
+        html += '      <input data-l10n-id="' + f.l10nId + '" type="' + f.type +'" value="' + initValue + '"></input>';
       } else {
-        html += '      <input data-name="' + f.name + '" type="' + f.type +'" placeholder="' + f.placeholder + '" value="' + _f(initValue, f.name) + '"></input>';
+        html += '      <input data-name="' + f.name + '" type="' + f.type +'" data-l10n-id="' + f.l10nId + '" value="' + _f(initValue, f.name) + '"></input>';
       }
       html += '      </p>';
     });
@@ -183,6 +186,9 @@ var ContactForm = (function() {
   function editContact(contact) {
     ViewManager.showCardView('contact-edit-view');
 
+    // Mark form as adding new contact
+    $id('contact-edit-view').dataset.addContact = !contact;
+
     var container = $expr('#contact-form ul')[0];
     container.innerHTML = '';
     fields = [];
@@ -198,11 +204,11 @@ var ContactForm = (function() {
       typeList: ['Mobile', 'Home', 'Work', 'Personal', 'FaxHome', 'FaxOffice', 'FaxOther', 'Other'],
       fields: [{
         name: 'value',
-        placeholder: 'Phone',
+        l10nId: 'phone',
         type: 'tel'
       }, {
         name: 'carrier',
-        placeholder: 'Carrier Name',
+        l10nId: 'carrier-name',
         type: 'text'
       }],
       initValues: contact && contact.tel ? contact.tel : [],
@@ -215,19 +221,19 @@ var ContactForm = (function() {
       typeList: ['Home', 'Work'],
       fields: [{
         name: 'streetAddress',
-        placeholder: 'Street',
+        l10nId: 'street',
         type: 'text'
       }, {
         name: 'postalCode',
-        placeholder: 'Zip code',
+        l10nId: 'zipcode',
         type: 'number'
       }, {
         name: 'region',
-        placeholder: 'City',
+        l10nId: 'city',
         type: 'text'
       }, {
         name: 'countryName',
-        placeholder: 'Country',
+        l10nId: 'country',
         type: 'text'
       }],
       initValues: contact && contact.adr ? contact.adr : [],
@@ -240,7 +246,7 @@ var ContactForm = (function() {
       typeList: ['Personal', 'Work', 'Home'],
       fields: [{
         name: 'value',
-        placeholder: 'Email',
+        l10nId: 'email',
         type: 'email'
       }],
       initValues: contact && contact.email ? contact.email : [],
@@ -253,7 +259,7 @@ var ContactForm = (function() {
       // Default is ContactField
       fieldType: 'string',
       fields: [{
-        placeholder: 'Comment',
+        l10nId: 'comment',
         type: 'text'
       }],
       initValues: contact && contact.note ? contact.note : [],
