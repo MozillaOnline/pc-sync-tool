@@ -24,7 +24,7 @@ var libadb = (function() {
       library = ctypes.open(path);
       findDevice  = library.declare('findDevice',  ctypes.default_abi, ctypes.int);
       setupDevice = library.declare('setupDevice', ctypes.default_abi, ctypes.int);
-      setupPath   = library.declare('setupPath',   ctypes.default_abi, ctypes.void_t, ctypes.jschar.ptr);
+      setupPath   = library.declare('setupPath',   ctypes.default_abi, ctypes.void_t, ctypes.char.ptr);
     },
 
     findDevice: function() {
