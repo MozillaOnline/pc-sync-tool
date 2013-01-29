@@ -6,6 +6,8 @@ var CMD = (function() {
   /* Wifi cmds */
   var CMD_MANAGE_DEVICE    = 'manageDevice';
 
+  var CMD_DEVICE_GETINFO   = 'getdeviceinfo';
+
   /* Contacts cmds */
   var CMD_GET_ALL_CONTACTS = 'getAllContacts';
   var CMD_UPDATE_CONTACTS  = 'updateContacts';
@@ -55,8 +57,18 @@ var CMD = (function() {
     };
   }
 
+  /**
+   * All the available commands grouped by target.
+   */
   return {
-    manageDevice:    createCommand('init', CMD_MANAGE_DEVICE),
+    manageDevice:      createCommand('init', CMD_MANAGE_DEVICE),
+
+    Device: {
+      /**
+       * get the summary info of the device
+       */
+      getDeviceInfo:   createCommandWithNonData('device', CMD_DEVICE_GETINFO),
+    },
 
     /***** Contacts commands *****/
     Contacts: {

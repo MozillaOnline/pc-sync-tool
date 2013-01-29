@@ -72,12 +72,7 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowSummaryInfo() {
-    // get summary info through API
-    socket.sendRequest({
-      target: 'device',
-      command: 'getdeviceinfo',
-      data: null
-    }, function onresponse_getDeviceInfo(message) {
+    CMD.Device.getDeviceInfo(function onresponse_getDeviceInfo(message) {
       var deviceInfo = {};
       var sdcardInfo = {
         usedInBytes: 0,
