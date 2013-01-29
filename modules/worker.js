@@ -87,6 +87,9 @@ self.onmessage = function(e) {
 
       setConnected(!!result);
       break;
+    case 'startDeviceDetecting':
+      startDetecting(e.data.start);
+      break;
     default:
       postMessage({
         id: id,
@@ -112,15 +115,26 @@ function setConnected(newState) {
   }
 }
 
-setInterval(function checkConnectState() {
-  if (!libadb.findDevice()) {
-    setConnected(false);
-  } else if (!libadb.setupDevice()) {
-    setConnected(false);
-  } else {
-    setConnected(true);
+let detectingInterval = null;
+function startDetecting(start) {
+  if (detectingInterval) {
+    clearInterval(detectingInterval);
+    detectingInterval = null;
   }
-}, 2000);
 
+  if (start) {
+    detectingInterval = setInterval(function checkConnectState() {
+      if (!libadb.findDevice()) {
+        setConnected(false);
+      } else if (!libadb.setupDevice()) {
+        setConnected(false);
+      } else {
+        setConnected(true);
+      }
+    }, 2000);
+  }
+}
+
+startDetecting(true);
 debug('ADB Service worker is inited.');
 

@@ -10,7 +10,7 @@ if (DEBUG)
 else
   debug = function (s) { };
 
-var EXPORTED_SYMBOLS = [];
+var EXPORTED_SYMBOLS = ['ADBService'];
 
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
@@ -135,7 +135,7 @@ let messageReceiver = {
       case 'statechange':
         // Update ADB forward state
         connected = msg.connected;
-        ppmm.broadcastAsyncMessage('ADBService:statechange', { });
+        ppmm.broadcastAsyncMessage('ADBService:statechange', { connected: connected });
         break;
       default:
         break;
@@ -155,6 +155,17 @@ const messages = ['ADBService:connect', 'ADBService:connected'];
 messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });
+
+var ADBService = {
+  startDeviceDetecting: function startDeviceDetecting(start) {
+    controlMessage({
+      cmd: 'startDeviceDetecting',
+      start: start
+    }, function startDeviceDetecting_callback() {
+      // pass
+    });
+  }
+};
 
 /**
  * Tell the worker to load lib and forward.
