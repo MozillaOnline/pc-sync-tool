@@ -3,8 +3,6 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var ContactList = (function() {
-  var CMD_REMOVE_CONTACTS = 'removeContacts';
-
   function getListContainer() {
     return $id('contact-list-container');
   }
@@ -25,12 +23,7 @@ var ContactList = (function() {
     }
 
     // Update contact
-    var CMD_UPDATE_CONTACTS = 'updateContacts';
-    FFOSAssistant.sendRequest({
-      target: 'contact',
-      command: CMD_UPDATE_CONTACTS,
-      data: [contact]
-    }, function onresponse_updatecontact(message) {
+    CMD.updateContacts([contact], function onresponse_updatecontact(message) {
       // Update failed
       if (!message.data || message.data.length == 0) {
         item.classList.toggle('favorite');
@@ -147,11 +140,7 @@ var ContactList = (function() {
    * Remove contacts
    */
   function removeContacts(ids) {
-    socket.sendRequest({
-      target: 'contact',
-      command: CMD_REMOVE_CONTACTS,
-      data: ids
-    }, function onresponse_removeContacts(message) {
+    CMD.removeContacts(ids, function onresponse_removeContacts(message) {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
 

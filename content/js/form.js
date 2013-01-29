@@ -332,12 +332,7 @@ var ContactForm = (function() {
 
     if (updateContact) {
       // Save to device
-      var CMD_UPDATE_CONTACTS = 'updateContacts';
-      FFOSAssistant.sendRequest({
-        target: 'contact',
-        command: CMD_UPDATE_CONTACTS,
-        data: [contact]
-      }, function onresponse_updatecontact(message) {
+      CMD.updateContacts([contact], function onresponse_updatecontact(message) {
         var contactsUpdated = [];
         message.data.forEach(function(m) {
           if (m.status == 200) {
@@ -350,12 +345,7 @@ var ContactForm = (function() {
       });
     } else {
       // Create new contact
-      var CMD_ADD_CONTACTS = 'addContacts';
-      FFOSAssistant.sendRequest({
-        target: 'contact',
-        command: CMD_ADD_CONTACTS,
-        data: [contact]
-      }, function onresponse_addcontact(message) {
+      CMD.addContacts([contact], function onresponse_addcontact(message) {
         var contactsAdded = [];
         message.data.forEach(function(m) {
           if (m.status == 200) {

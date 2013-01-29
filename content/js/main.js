@@ -3,9 +3,6 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var FFOSAssistant = (function() {
-  var CMD_MANAGE_DEVICE = "manageDevice";
-  var CMD_GET_ALL_CONTACTS = "getAllContacts";
-
   var wsurl = "ws://" + location.host + "/ws";
   // var wsurl = "ws://localhost:8888/ws";
 
@@ -19,7 +16,11 @@ var FFOSAssistant = (function() {
         url: wsurl,
         onopen: function onopen_ws() {
           log("Websocket is opened!");
-          submitDeviceId();
+          CMD.manageDevice($id("device_id").value.trim(), function onresponse(message) {
+            showContactView();
+          }, function onerror(message) {
+            log('There is an error when mamage device');
+          } );
         },
         onerror: function onerror_ws(message) {
           log("Error occurs!");
@@ -37,19 +38,6 @@ var FFOSAssistant = (function() {
   function handleRequest(message) {
     // Handle request message
     log("Got request: " + JSON.stringify(message));
-  }
-
-  function submitDeviceId() {
-    // Send client ID to the server
-    socket.sendRequest({
-      target: "init",
-      command: CMD_MANAGE_DEVICE,
-      data: $id("device_id").value.trim()
-    }, function onresponse(message) {
-      showContactView();
-    }, function onerror(message) {
-      log('There is an error when mamage device');
-    });
   }
 
   function showConnectView() {
@@ -128,12 +116,7 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowAllContacts() {
-    // Get contact lists
-    socket.sendRequest({
-      target: 'contact',
-      command: CMD_GET_ALL_CONTACTS,
-      data: null
-    }, function onresponse_getAllContacts(message) {
+    CMD.getAllContacts(function onresponse_getAllContacts(message) {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
 
