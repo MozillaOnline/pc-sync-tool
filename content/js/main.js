@@ -96,12 +96,8 @@ var FFOSAssistant = (function() {
         }
       });
 
-      try {
       fillStorageSummaryInfo('device-storage-summary', deviceInfo);
       fillStorageSummaryInfo('sdcard-storage-summary', sdcardInfo);
-      } catch (e) {
-       alert(e);
-      }
     }, function onerror_getDeviceInfo(message) {
       alert('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
     });

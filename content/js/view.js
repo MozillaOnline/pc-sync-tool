@@ -25,7 +25,7 @@ var ViewManager = (function () {
     var tabElem = $id(tabId);
 
     // Hide other radio list
-    if (tabElem.classList.contains('radio-list')) {
+    if (tabElem.parentNode.classList.contains('radio-list')) {
       $expr('#container .radio-list').forEach(function hideList(list) {
         list.hidden = true;
       });
