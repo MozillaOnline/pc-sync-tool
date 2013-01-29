@@ -9,10 +9,10 @@ var CMD = (function() {
   var CMD_DEVICE_GETINFO   = 'getdeviceinfo';
 
   /* Contacts cmds */
-  var CMD_GET_ALL_CONTACTS = 'getAllContacts';
-  var CMD_UPDATE_CONTACTS  = 'updateContacts';
-  var CMD_ADD_CONTACTS     = 'addContacts';
-  var CMD_REMOVE_CONTACTS  = 'removeContacts';
+  var CMD_CONTACT_GET_ALL  = 'getAllContacts';
+  var CMD_CONTACT_UPDATE   = 'updateContacts';
+  var CMD_CONTACT_ADD      = 'addContacts';
+  var CMD_CONTACT_REMOVE   = 'removeContacts';
 
   var CMD_SMS_GETMESSAGES  = 'getMessages';
   var CMD_SMS_SENTMESSAGE  = 'sendsms';
@@ -72,22 +72,22 @@ var CMD = (function() {
 
     /***** Contacts commands *****/
     Contacts: {
-      getAllContacts:  createCommandWithNonData('contact', CMD_GET_ALL_CONTACTS),
+      getAllContacts:  createCommandWithNonData('contact', CMD_CONTACT_GET_ALL),
       /**
        * data:
        *   contact array
        */
-      updateContacts:  createCommand('contact', CMD_UPDATE_CONTACTS),
+      updateContacts:  createCommand('contact', CMD_CONTACT_UPDATE),
       /**
        * data:
        *   contact array
        */
-      addContacts:     createCommand('contact', CMD_ADD_CONTACTS),
+      addContacts:     createCommand('contact', CMD_CONTACT_ADD),
       /**
        * data:
        *   contact id array
        */
-      removeContacts:  createCommand('contact', CMD_REMOVE_CONTACTS),
+      removeContacts:  createCommand('contact', CMD_CONTACT_REMOVE),
     },
 
     /***** Picture commands ******/
