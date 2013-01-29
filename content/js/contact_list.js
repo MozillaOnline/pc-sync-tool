@@ -23,7 +23,7 @@ var ContactList = (function() {
     }
 
     // Update contact
-    CMD.updateContacts([contact], function onresponse_updatecontact(message) {
+    CMD.Contacts.updateContacts([contact], function onresponse_updatecontact(message) {
       // Update failed
       if (!message.data || message.data.length == 0) {
         item.classList.toggle('favorite');
@@ -140,7 +140,7 @@ var ContactList = (function() {
    * Remove contacts
    */
   function removeContacts(ids) {
-    CMD.removeContacts(ids, function onresponse_removeContacts(message) {
+    CMD.Contacts.removeContacts(ids, function onresponse_removeContacts(message) {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
 

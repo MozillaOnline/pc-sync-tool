@@ -12,6 +12,17 @@ var CMD = (function() {
   var CMD_ADD_CONTACTS     = 'addContacts';
   var CMD_REMOVE_CONTACTS  = 'removeContacts';
 
+  var CMD_SMS_GETMESSAGES  = 'getMessages';
+  var CMD_SMS_SENTMESSAGE  = 'sendsms';
+  var CMD_SMS_MARK_READ    = 'markMessagesRead';
+  var CMD_SMS_DELETE       = 'deletesms';
+
+  var CMD_PIC_GETALLINFO   = 'getAllPicsInfo';
+  var CMD_PIC_GETCONTENT   = 'getPics';
+  var CMD_PIC_DELETE       = 'deletePics';
+  var CMD_PIC_ADD          = 'addPics';
+  var CMD_PIC_RENAME       = 'renamePic';
+
   /**
    * Return function with three parameters:
    *  - data
@@ -45,25 +56,86 @@ var CMD = (function() {
   }
 
   return {
-    manageDevice:   createCommand('init', CMD_MANAGE_DEVICE),
+    manageDevice:    createCommand('init', CMD_MANAGE_DEVICE),
 
     /***** Contacts commands *****/
-    getAllContacts: createCommandWithNonData('contact', CMD_GET_ALL_CONTACTS),
-    /**
-     * data:
-     *   contact array
-     */
-    updateContacts: createCommand('contact', CMD_UPDATE_CONTACTS),
-    /**
-     * data:
-     *   contact array
-     */
-    addContacts:    createCommand('contact', CMD_ADD_CONTACTS),
-    /**
-     * data:
-     *   contact id array
-     */
-    removeContacts: createCommand('contact', CMD_REMOVE_CONTACTS)
+    Contacts: {
+      getAllContacts:  createCommandWithNonData('contact', CMD_GET_ALL_CONTACTS),
+      /**
+       * data:
+       *   contact array
+       */
+      updateContacts:  createCommand('contact', CMD_UPDATE_CONTACTS),
+      /**
+       * data:
+       *   contact array
+       */
+      addContacts:     createCommand('contact', CMD_ADD_CONTACTS),
+      /**
+       * data:
+       *   contact id array
+       */
+      removeContacts:  createCommand('contact', CMD_REMOVE_CONTACTS),
+    },
+
+    /***** Picture commands ******/
+    Pictures: {
+      getAllPicsInfo:  createCommandWithNonData('pictures', CMD_PIC_GETALLINFO),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      getPicsContent:  createCommand('pictures', CMD_PIC_GETCONTENT),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      deletePics:      createCommand('pictures', CMD_PIC_DELETE),
+      /**
+       * data:
+       *   [{
+       *     fileName1: content
+       *   }, {
+       *     fileName2: content
+       *   }]
+       */
+      addPics:         createCommand('pictures'. CMD_PIC_ADD),
+      /**
+       * data:
+       *   [oldName, newName]
+       */
+      renamePic:       createCommand('pictures'. CMD_PIC_RENAME),
+    },
+
+    /***** SMS commands *****/
+    SMS: {
+      /**
+       * data:
+       *   SMS Filter
+       */
+      getMessages:    createCommand('sms', CMD_SMS_GETMESSAGES),
+      /**
+       * data:
+       *   {
+       *     id: ['10086', '10010'],
+       *     message: 'Here is the message content'
+       *   }
+       */
+      sendMessage:     createCommand('sms', CMD_SMS_SENTMESSAGE),
+      /**
+       * data:
+       *   {
+       *     id: [id1, id2],
+       *     readbool: true   // or false
+       *   }
+       */
+      markMessageRead: createCommand('sms', CMD_SMS_MARK_READ),
+      /**
+       * data:
+       *   [id1, id2]
+       */
+      deleteMessages:  createCommand('sms', CMD_SMS_DELETE)
+    }
   };
 })();
 

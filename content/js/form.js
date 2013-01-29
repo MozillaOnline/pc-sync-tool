@@ -332,7 +332,7 @@ var ContactForm = (function() {
 
     if (updateContact) {
       // Save to device
-      CMD.updateContacts([contact], function onresponse_updatecontact(message) {
+      CMD.Contacts.updateContacts([contact], function onresponse_updatecontact(message) {
         var contactsUpdated = [];
         message.data.forEach(function(m) {
           if (m.status == 200) {
@@ -345,7 +345,7 @@ var ContactForm = (function() {
       });
     } else {
       // Create new contact
-      CMD.addContacts([contact], function onresponse_addcontact(message) {
+      CMD.Contacts.addContacts([contact], function onresponse_addcontact(message) {
         var contactsAdded = [];
         message.data.forEach(function(m) {
           if (m.status == 200) {

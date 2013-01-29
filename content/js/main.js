@@ -16,7 +16,7 @@ var FFOSAssistant = (function() {
         url: wsurl,
         onopen: function onopen_ws() {
           log("Websocket is opened!");
-          CMD.manageDevice($id("device_id").value.trim(), function onresponse(message) {
+          CMD.Contacts.manageDevice($id("device_id").value.trim(), function onresponse(message) {
             showContactView();
           }, function onerror(message) {
             log('There is an error when mamage device');
@@ -112,7 +112,7 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowAllContacts() {
-    CMD.getAllContacts(function onresponse_getAllContacts(message) {
+    CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
 
