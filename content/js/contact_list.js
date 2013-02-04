@@ -89,7 +89,7 @@ var ContactList = (function() {
 
     $expr('#vcard-basic-info-box .name')[0].textContent = contact.name.join(' ');
     $expr('#vcard-basic-info-box .company')[0].textContent
-      = contact.org.length > 0 ? contact.org[0] : 'unknown';
+      = (contact.org && contact.org.length) > 0 ? contact.org[0] : 'unknown';
     var editButton = $expr('#vcard-basic-info-box .edit')[0];
     editButton.dataset.contactId = contact.id;
     editButton.onclick = function(event) {

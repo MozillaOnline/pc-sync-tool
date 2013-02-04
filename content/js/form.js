@@ -194,9 +194,9 @@ var ContactForm = (function() {
     fields = [];
 
     $id('contact-form-id').value = contact ? contact.id : '';
-    $id('givenName').value       = contact ? contact.givenName.join(' ') : '';
-    $id('familyName').value      = contact ? contact.familyName.join(' ') : '';
-    $id('org').value             = contact ? contact.org.join(' ') : '';
+    $id('givenName').value       = contact && contact.givenName ? contact.givenName.join(' ') : '';
+    $id('familyName').value      = contact && contact.familyName ? contact.familyName.join(' ') : '';
+    $id('org').value             = contact && contact.org ? contact.org.join(' ') : '';
     $id('givenName').focus();
 
     fields['tel']   = new ContactField({
