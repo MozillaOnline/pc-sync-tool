@@ -153,10 +153,6 @@ var FFOSAssistant = (function() {
 
     $id('btn_usb_connect').addEventListener('click', connectToUSB);
 
-    $id('add-new-contact').addEventListener('click', function onclick_addNewContact(event) {
-      ContactForm.editContact();
-    });
-
     $id('lang-settings').addEventListener('click', function onclick_langsetting(event) {
       if (!event.target.classList.contains('language-code-button')) {
         return;

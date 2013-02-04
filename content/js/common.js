@@ -106,6 +106,8 @@ function removeFromArray(objOrFunc, array) {
  *     Function to render html node for the given item, usually, event listeners will be added.
  *   - container
  *     List container
+ *   - ondatachange
+ *     Function to be invoked if the data is added or removed
  */
 var GroupedList = function(options) {
   this.initailize(options);
@@ -121,7 +123,8 @@ GroupedList.prototype = {
       dataIdentifier: this._identifyById,
       indexRender: this._renderIndex,
       renderFunc: null,
-      container: document.body
+      container: document.body,
+      ondatachange: function() {}
     }, options);
 
     if (!this.options.dataList || !this.options.dataIndexer || !this.options.renderFunc) {
@@ -292,6 +295,8 @@ GroupedList.prototype = {
       this.options.container.insertBefore(groupElem,
         this._getGroupElem(groupAfter.index));
     }
+
+    this.options.ondatachange();
   },
 
   remove: function gl_remove(dataObj) {
@@ -311,10 +316,22 @@ GroupedList.prototype = {
         }
       }
     }
+
+    this.options.ondatachange();
   },
 
   getGroupedData: function gl_getGroupedData() {
     return this._groupedData;
+  },
+
+  count: function gl_count() {
+    var count = 0;
+
+    this.getGroupedData().forEach(function(group) {
+      count += group.dataList.length;
+    });
+
+    return count;
   }
 };
 

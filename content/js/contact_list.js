@@ -118,6 +118,16 @@ var ContactList = (function() {
     });
   }
 
+  function checkIfContactListEmpty() {
+    var isEmpty = groupedList.count() == 0;
+    if (isEmpty) {
+      ContactForm.editContact();
+      $id('contact-list-container').classList.add('empty');
+    } else {
+      $id('contact-list-container').classList.remove('empty');
+    }
+  }
+
   var groupedList = null;
 
   function initList(contacts) {
@@ -130,10 +140,13 @@ var ContactList = (function() {
         return contact.name[0].charAt(0).toUpperCase();
       },
       renderFunc: createContactListItem,
-      container: container
+      container: container,
+      ondatachange: checkIfContactListEmpty
     });
 
     groupedList.render();
+
+    checkIfContactListEmpty();
   }
 
   /**
@@ -270,6 +283,10 @@ var ContactList = (function() {
       if (window.confirm(_('delete-contacts-confirm', {n: ids.length}))) {
         ContactList.removeContacts(ids);
       }
+    });
+
+    $id('add-new-contact').addEventListener('click', function onclick_addNewContact(event) {
+      ContactForm.editContact();
     });
 
     $id('refresh-contacts').addEventListener('click', function onclick_refreshContacts(event) {
