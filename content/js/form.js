@@ -73,9 +73,6 @@ ContactField.prototype = {
       }
     });
 
-    // Translate the fields
-    navigator.mozL10n.translate(this.elem);
-
     return this;
   },
 
@@ -129,6 +126,9 @@ ContactField.prototype = {
     section.innerHTML = html;
 
     this.elem.insertBefore(section, this._getAddNewButton());
+
+    // Translate the fields
+    navigator.mozL10n.translate(section);
 
     // Remove self when clicking on the delete button.
     section.addEventListener('click', function onclick_deleteButton(event) {
