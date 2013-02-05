@@ -5,6 +5,10 @@
 var ConnectManager = (function() {
   var TIMEOUT = 30000;
 
+  var WEB_TCP_SOCKET_OPTIONS = {
+    binaryType: 'arraybuffer'
+  };
+
   // Record request id and callback functions
   var requests = {};
 
@@ -46,7 +50,7 @@ var ConnectManager = (function() {
 
     connect: function wrapper_connect() {
       if (this.useWebTCPSocket) {
-        this.socket = navigator.mozTCPSocket.open(this.options.host, this.options.port);
+        this.socket = navigator.mozTCPSocket.open(this.options.host, this.options.port, WEB_TCP_SOCKET_OPTIONS);
         this.socket.onopen    = this._onopen.bind(this);
         this.socket.onclose   = this._onclose.bind(this);
         this.socket.ondata    = this._onmessage.bind(this);
@@ -60,6 +64,14 @@ var ConnectManager = (function() {
       }
     },
 
+    printArray: function(array) {
+      var value = [];
+      for (var i = 0; i < array.length; i++) {
+        value[i] = array[i];
+      }
+      alert(value.join(', '));
+    },
+
     sendRequest: function wrapper_sendRequest(msg, onresponse, onerror) {
       if (typeof msg !== 'object') {
         throw new Error('Message should be an object');
@@ -70,8 +82,9 @@ var ConnectManager = (function() {
       // Mark the message as a request
       msg.action = 'request';
 
-      if (this.usb) {
-        navigator.mozFFOSAssistant.sendMessage(JSON.stringify(msg));
+      if (this.options.webTCPSocket) {
+        // Send Uint8Array, make sure the chinese characters could be decoded correctly.
+        this.socket.send(TextEncoder('utf-8').encode(JSON.stringify(msg)));
       } else {
         this.socket.send(JSON.stringify(msg));
       }
@@ -117,8 +130,8 @@ var ConnectManager = (function() {
       var message = null;
 
       try {
-        if (this.usb) {
-          message = event;
+        if (this.options.webTCPSocket) {
+          message = JSON.parse(TextDecoder('utf-8').decode(event.data));
         } else {
           message = JSON.parse(event.data);
         }
