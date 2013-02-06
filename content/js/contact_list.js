@@ -122,9 +122,9 @@ var ContactList = (function() {
     var isEmpty = groupedList.count() == 0;
     if (isEmpty) {
       ContactForm.editContact();
-      $id('contact-list-container').classList.add('empty');
+      $id('contact-view').classList.add('empty-list');
     } else {
-      $id('contact-list-container').classList.remove('empty');
+      $id('contact-view').classList.remove('empty-list');
     }
   }
 

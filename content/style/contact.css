@@ -321,3 +321,7 @@ button.add-new-button {
   vertical-align: middle;
 }
 
+.empty-list #cancel-edit-contact {
+  display: none;
+}
+
