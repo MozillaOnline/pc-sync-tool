@@ -137,7 +137,11 @@ var ContactList = (function() {
     groupedList = new GroupedList({
       dataList: contacts,
       dataIndexer: function getContactIndex(contact) {
-        return contact.name[0].charAt(0).toUpperCase();
+        // TODO
+        // - index family name for Chinese name
+        // - filter the special chars
+        var firstChar = contact.name[0].charAt(0).toUpperCase();
+        return String(makePy(firstChar)).toUpperCase();
       },
       renderFunc: createContactListItem,
       container: container,
