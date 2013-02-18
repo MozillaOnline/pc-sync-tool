@@ -160,7 +160,7 @@ GroupedList.prototype = {
 
   _getGroupPosition: function gl_getGroupPosition(index) {
     for (var i = 0; i < this._groupedData.length; i++) {
-      if (this._groupedData[i].index === index) {
+      if (String(this._groupedData[i].index) === String(index)) {
         return i;
       }
     }
