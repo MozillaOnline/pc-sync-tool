@@ -141,7 +141,14 @@ var ContactList = (function() {
         // - index family name for Chinese name
         // - filter the special chars
         var firstChar = contact.name[0].charAt(0).toUpperCase();
-        return String(makePy(firstChar)).toUpperCase();
+        var pinyin = makePy(firstChar);
+
+        // Sometimes no pinyin found, like: 红
+        if (pinyin.length == 0) {
+          return '#';
+        }
+
+        return pinyin[0].toUpperCase();
       },
       renderFunc: createContactListItem,
       container: container,
