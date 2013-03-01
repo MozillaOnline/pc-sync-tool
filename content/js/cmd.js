@@ -18,12 +18,20 @@ var CMD = (function() {
   var CMD_SMS_SENTMESSAGE  = 'sendsms';
   var CMD_SMS_MARK_READ    = 'markMessagesRead';
   var CMD_SMS_DELETE       = 'deletesms';
-
+ 
+  /* Pictures cmds */
   var CMD_PIC_GETALLINFO   = 'getAllPicsInfo';
   var CMD_PIC_GETCONTENT   = 'getPics';
   var CMD_PIC_DELETE       = 'deletePics';
   var CMD_PIC_ADD          = 'addPics';
   var CMD_PIC_RENAME       = 'renamePic';
+
+  /* Videos cmds */
+  var CMD_VIDEO_GETALLINFO = 'getAllVideosInfo';
+  var CMD_VIDEO_GETCONTENT = 'getVidoes';
+  var CMD_VIDEO_DELETE     = 'deleteVideos';
+  var CMD_VIDEO_ADD        = 'addVideos';
+  var CMD_VIDEO_RENAME     = 'renameVideo';
 
   /**
    * Return function with three parameters:
@@ -111,12 +119,41 @@ var CMD = (function() {
        *     fileName2: content
        *   }]
        */
-      addPics:         createCommand('pictures'. CMD_PIC_ADD),
+      addPics:         createCommand('pictures', CMD_PIC_ADD),
       /**
        * data:
        *   [oldName, newName]
        */
-      renamePic:       createCommand('pictures'. CMD_PIC_RENAME),
+      renamePic:       createCommand('pictures', CMD_PIC_RENAME),
+    },
+
+    /***** Videos commands ******/
+    Videos: {
+      getAllVideosInfo:  createCommandWithNonData('videos', CMD_VIDEO_GETALLINFO),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      getVideosContent:  createCommand('videos', CMD_VIDEO_GETCONTENT),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      deleteVideos:      createCommand('videos', CMD_VIDEO_DELETE),
+      /**
+       * data:
+       *   [{
+       *     fileName1: content
+       *   }, {
+       *     fileName2: content
+       *   }]
+       */
+      addVideos:         createCommand('videos', CMD_VIDEO_ADD),
+      /**
+       * data:
+       *   [oldName, newName]
+       */
+      renameVideo:       createCommand('videos', CMD_VIDEO_RENAME),
     },
 
     /***** SMS commands *****/
