@@ -30,7 +30,7 @@ var CMD = (function() {
 
   /* Videos cmds */
   var CMD_VIDEO_GETALLINFO = 'getAllVideosInfo';
-  var CMD_VIDEO_GETCONTENT = 'getVidoes';
+  var CMD_VIDEO_GETCONTENT = 'getVideos';
   var CMD_VIDEO_DELETE     = 'deleteVideos';
   var CMD_VIDEO_ADD        = 'addVideos';
   var CMD_VIDEO_RENAME     = 'renameVideo';

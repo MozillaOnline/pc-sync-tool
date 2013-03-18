@@ -132,6 +132,7 @@ var ConnectManager = (function() {
       try {
         if (this.options.webTCPSocket) {
           message = JSON.parse(TextDecoder('utf-8').decode(event.data));
+         // log(TextDecoder('utf-8').decode(event.data));
         } else {
           message = JSON.parse(event.data);
         }
@@ -139,7 +140,7 @@ var ConnectManager = (function() {
         log("Parse error, received msg from mgmt: " + event.data);
         return;
       }
-
+    
       // Check if it is a response to some recorded request.
       if (message.action == 'response') {
         var requestId = message.id;
@@ -163,6 +164,7 @@ var ConnectManager = (function() {
       } else if (message.action == 'request') {
         this.options.onrequest(message);
       }
+      
     },
 
     _onerror: function wrapper_onerror(event) {
