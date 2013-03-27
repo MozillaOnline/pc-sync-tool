@@ -345,13 +345,18 @@ var ContactForm = (function() {
       });
     } else {
       // Create new contact
-      CMD.Contacts.addContacts([contact], function onresponse_addcontact(message) {
+      CMD.Contacts.addContacts(contact, function onresponse_addcontact(message) {
         var contactsAdded = [];
+        if (message.data.result == 0) {
+          contactsAdded.push(message.data);
+        }
+        /*
         message.data.forEach(function(m) {
-          if (m.status == 200) {
+          if (m.result == 0) {
             contactsAdded.push(m.data);
           }
         });
+        */
         ContactList.addContacts(contactsAdded);
       }, function onerror_addcontact(message) {
         alert('Error occurs when adding contacts: ' + JSON.stringify(message));

@@ -11,7 +11,7 @@ var CMD = (function() {
   /* Contacts cmds */
   var CMD_CONTACT_GET_ALL  = 'getAllContacts';
   var CMD_CONTACT_UPDATE   = 'updateContacts';
-  var CMD_CONTACT_ADD      = 'addContacts';
+  var CMD_CONTACT_ADD      = 'addContact';
   var CMD_CONTACT_REMOVE   = 'removeContacts';
   var CMD_CONTACT_GETCONTACTPROFILEPIC   = 'getContactProfilePic';
   var CMD_CONTACT_TEST     = 'test';
@@ -54,9 +54,10 @@ var CMD = (function() {
   function createCommand(target, command) {
     return function(data, onresponse, onerror) {
       FFOSAssistant.sendRequest({
-        typet: target,
+        type: target,
         command: command,
-        data: data
+        data: JSON.stringify(data),
+        exdatalength: 0 
       }, onresponse, onerror);
     };
   }
@@ -70,7 +71,7 @@ var CMD = (function() {
         type: target,
         command: command,
         data: null,
-        exdatalength:0
+        exdatalength: 0
       }, onresponse, onerror);
     };
   }
