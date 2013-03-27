@@ -35,6 +35,13 @@ var CMD = (function() {
   var CMD_VIDEO_ADD        = 'addVideos';
   var CMD_VIDEO_RENAME     = 'renameVideo';
 
+  /*Musics cmd*/
+  var CMD_MUSIC_GETALLINFO = 'getAllMusicsInfo';
+  var CMD_MUSIC_GETCONTENT = 'getMusics';
+  var CMD_MUSIC_DELETE     = 'deleteMusics';
+  var CMD_MUSIC_ADD        = 'addMusics';
+  var CMD_MUSIC_RENAME     = 'renameMusic';
+
   /**
    * Return function with three parameters:
    *  - data
@@ -47,7 +54,7 @@ var CMD = (function() {
   function createCommand(target, command) {
     return function(data, onresponse, onerror) {
       FFOSAssistant.sendRequest({
-        target: target,
+        typet: target,
         command: command,
         data: data
       }, onresponse, onerror);
@@ -60,9 +67,10 @@ var CMD = (function() {
   function createCommandWithNonData(target, command) {
     return function(onresponse, onerror) {
       FFOSAssistant.sendRequest({
-        target: target,
+        type: target,
         command: command,
-        data: null
+        data: null,
+        exdatalength:0
       }, onresponse, onerror);
     };
   }
@@ -164,7 +172,36 @@ var CMD = (function() {
       renameVideo:       createCommand('videos', CMD_VIDEO_RENAME),
     },
 
-    /***** SMS commands *****/
+    /***** musics commands ******/
+    Musics: {
+      getAllMusicsInfo:  createCommandWithNonData('musics', CMD_MUSIC_GETALLINFO),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      getMusicsContent:  createCommand('musics', CMD_MUSIC_GETCONTENT),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      deleteMusics:      createCommand('musics', CMD_MUSIC_DELETE),
+      /**
+       * data:
+       *   [{
+       *     fileName1: content
+       *   }, {
+       *     fileName2: content
+       *   }]
+       */
+      addMusics:         createCommand('musics', CMD_MUSIC_ADD),
+      /**
+       * data:
+       *   [oldName, newName]
+       */
+      renameMusic:       createCommand('musics', CMD_MUSIC_RENAME),
+    },
+ 
+   /***** SMS commands *****/
     SMS: {
       /**
        * data:

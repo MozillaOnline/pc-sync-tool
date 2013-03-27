@@ -108,12 +108,11 @@ var FFOSAssistant = (function() {
 
   function getAndShowAllContacts() {
     CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
-      // Make sure the 'select-all' box is not checked.
-      ContactList.selectAllContacts(false);
-
-      ContactList.init(message.data);
+      // Make sure the 'select-all' box is not checked.  
+      ContactList.selectAllContacts(false); 
+      ContactList.init(JSON.parse(message.data));
       if (message.data.length > 0) {
-        ContactList.showContactInfo(message.data[0]);
+        ContactList.showContactInfo((JSON.parse(message.data)[0]));
       }
     }, function onerror_getAllContacts(message) {
       log('Error occurs when fetching all contacts.');

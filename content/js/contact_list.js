@@ -109,13 +109,17 @@ var ContactList = (function() {
     var infoTable = $expr('#vcard-contact-ways .info-table')[0];
     infoTable.innerHTML = '';
 
-    contact.tel.forEach(function(t) {
-      infoTable.appendChild(_createInfoElem(t.type, t.value));
-    });
+    if (contact.tel) {
+      contact.tel.forEach(function(t) {
+        infoTable.appendChild(_createInfoElem(t.type, t.value));
+      });
+    }
 
-    contact.email.forEach(function(e) {
-      infoTable.appendChild(_createInfoElem(e.type, e.value));
-    });
+    if (contact.email) {
+      contact.email.forEach(function(e) {
+        infoTable.appendChild(_createInfoElem(e.type, e.value));
+      });
+    }
   }
 
   function checkIfContactListEmpty() {

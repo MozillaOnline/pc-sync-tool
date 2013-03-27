@@ -80,11 +80,12 @@ var ConnectManager = (function() {
       // Assign an id to identify this request
       msg.id = getNextId();
       // Mark the message as a request
-      msg.action = 'request';
+      //msg.action = 'request';
 
       if (this.options.webTCPSocket) {
         // Send Uint8Array, make sure the chinese characters could be decoded correctly.
         this.socket.send(TextEncoder('utf-8').encode(JSON.stringify(msg)));
+        console.log(JSON.stringify(msg));
       } else {
         this.socket.send(JSON.stringify(msg));
       }
@@ -132,7 +133,7 @@ var ConnectManager = (function() {
       try {
         if (this.options.webTCPSocket) {
           message = JSON.parse(TextDecoder('utf-8').decode(event.data));
-         // log(TextDecoder('utf-8').decode(event.data));
+          log(TextDecoder('utf-8').decode(event.data));
         } else {
           message = JSON.parse(event.data);
         }
@@ -141,28 +142,23 @@ var ConnectManager = (function() {
         return;
       }
     
-      // Check if it is a response to some recorded request.
-      if (message.action == 'response') {
-        var requestId = message.id;
-        var callbacks = requests[requestId];
-        if (callbacks) {
-          if (message.status === 200) {
-            try {
-              callbacks.onresponse(message);
-            } catch (e) {
-              callbacks.onerror({
-                data: e.toString()
-              });
-            }
-          } else {
-            callbacks.onerror(message);
+      var requestId = message.id;
+      var callbacks = requests[requestId];
+      if (callbacks) {
+        if (message.result === 0) {
+          try {
+            callbacks.onresponse(message);
+          } catch (e) {
+            callbacks.onerror({
+              data: e.toString()
+            });
           }
-          // Clear timeout
-          window.clearTimeout(callbacks.timeout);
-          delete requests[requestId];
+        } else {
+          callbacks.onerror(message);
         }
-      } else if (message.action == 'request') {
-        this.options.onrequest(message);
+        // Clear timeout
+        window.clearTimeout(callbacks.timeout);
+        delete requests[requestId];
       }
       
     },
