@@ -107,7 +107,7 @@ var CMD = (function() {
        * data:
        *   contact array
        */
-      addContacts:     createCommand('contact', CMD_CONTACT_ADD),
+      addContact:     createCommand('contact', CMD_CONTACT_ADD),
       /**
        * data:
        *   contact id array

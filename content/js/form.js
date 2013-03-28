@@ -345,9 +345,9 @@ var ContactForm = (function() {
       });
     } else {
       // Create new contact
-      CMD.Contacts.addContacts(contact, function onresponse_addcontact(message) {
+      CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
         var contactsAdded = [];
-        if (message.data.result == 0) {
+        if (message.result == 0) {
           contactsAdded.push(message.data);
         }
         /*

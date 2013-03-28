@@ -181,45 +181,40 @@ var ContactList = (function() {
    * Remove contacts
    */
   function removeContact(id) {
-    alert(id);
-    //ids.forEach(function(id) {
-      CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
-        // Make sure the 'select-all' box is not checked.
-        ContactList.selectAllContacts(false);
+    CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
+      // Make sure the 'select-all' box is not checked.
+      ContactList.selectAllContacts(false);
+      var keepVcardView = true;
+      var vcardView = $id('contact-vcard-view');
+      if (message.result) {
+        return;
+      }
 
-        var keepVcardView = true;
-        var vcardView = $id('contact-vcard-view');
+      // Check if contact exists in the list.
+      var item = $id('contact-' + id);
+      if (!item) {
+        return;
+      }
 
-        if (message.result) {
-          return;
-        }
+      // Remove contact from grouped list
+      groupedList.remove(getContact(id));
 
-        // Check if contact exists in the list.
-        var item = $id('contact-' + id);
-        if (!item) {
-          return;
-        }
-
-        // Remove contact from grouped list
-        groupedList.remove(getContact(id));
-
-        if (vcardView.dataset.contactId == id) {
-          keepVcardView = false;
-        }
+      if (vcardView.dataset.contactId == id) {
+        keepVcardView = false;
+      }
       
-        if (!keepVcardView) {
-          // Pick a contact to show
-          var availableContacts = $expr('#contact-list-container .contact-list-item');
-          if (availableContacts.length == 0) {
-            vcardView.hidden = true;
-          } else {
-            showVcardInView(JSON.parse(availableContacts[0].dataset.contact));
-          }
+      if (!keepVcardView) {
+        // Pick a contact to show
+        var availableContacts = $expr('#contact-list-container .contact-list-item');
+        if (availableContacts.length == 0) {
+          vcardView.hidden = true;
+        } else {
+          showVcardInView(JSON.parse(availableContacts[0].dataset.contact));
         }
-      }, function onerror_removeContact(message) {
-        alert('Error occurs when removing contacts!');
-      });
-    //});
+      }
+    }, function onerror_removeContact(message) {
+      alert('Error occurs when removing contacts!');
+    });
   }
 
   function selectAllContacts(select) {
@@ -256,7 +251,6 @@ var ContactList = (function() {
       if (!contact.id) {
         return;
       }
-
       groupedList.add(contact);
 
       showVcardInView(contact);
