@@ -10,7 +10,7 @@ var CMD = (function() {
 
   /* Contacts cmds */
   var CMD_CONTACT_GET_ALL  = 'getAllContacts';
-  var CMD_CONTACT_UPDATE   = 'updateContacts';
+  var CMD_CONTACT_UPDATE   = 'updateContactById';
   var CMD_CONTACT_ADD      = 'addContact';
   var CMD_CONTACT_CLEAR    = 'clearAllContacts';
   var CMD_CONTACT_REMOVE   = 'removeContactById';
@@ -102,7 +102,7 @@ var CMD = (function() {
        * data:
        *   contact array
        */
-      updateContacts:  createCommand('contact', CMD_CONTACT_UPDATE),
+      updateContact:  createCommand('contact', CMD_CONTACT_UPDATE),
       /**
        * data:
        *   contact array

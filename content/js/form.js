@@ -332,13 +332,11 @@ var ContactForm = (function() {
 
     if (updateContact) {
       // Save to device
-      CMD.Contacts.updateContacts([contact], function onresponse_updatecontact(message) {
+      CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {
         var contactsUpdated = [];
-        message.data.forEach(function(m) {
-          if (m.status == 200) {
-            contactsUpdated.push(m.data);
-          }
-        });
+        if (!message.result) {
+          contactsUpdated.push(JSON.parse(message.data));
+        }
         ContactList.updateContacts(contactsUpdated);
       }, function onerror_updatecontact(message) {
         alert('Error occurs when updating contacts: ' + JSON.stringify(message));
@@ -347,16 +345,9 @@ var ContactForm = (function() {
       // Create new contact
       CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
         var contactsAdded = [];
-        if (message.result == 0) {
-          contactsAdded.push(message.data);
+        if (!message.result) {
+          contactsAdded.push(JSON.parse(message.data));
         }
-        /*
-        message.data.forEach(function(m) {
-          if (m.result == 0) {
-            contactsAdded.push(m.data);
-          }
-        });
-        */
         ContactList.addContacts(contactsAdded);
       }, function onerror_addcontact(message) {
         alert('Error occurs when adding contacts: ' + JSON.stringify(message));
