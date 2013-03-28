@@ -14,7 +14,7 @@ var CMD = (function() {
   var CMD_CONTACT_ADD      = 'addContact';
   var CMD_CONTACT_CLEAR    = 'clearAllContacts';
   var CMD_CONTACT_REMOVE   = 'removeContactById';
-  var CMD_CONTACT_GETCONTACTPROFILEPIC   = 'getContactProfilePic';
+  var CMD_CONTACT_GETPIC   = 'getContactPicById';
 
   var CMD_SMS_GETMESSAGES  = 'getMessages';
   var CMD_SMS_SENTMESSAGE  = 'sendsms';
@@ -97,7 +97,7 @@ var CMD = (function() {
        * data:
        *   contact ID
        * */
-      getContactProfilePic:  createCommand('contact', CMD_CONTACT_GETCONTACTPROFILEPIC),
+      getContactProfilePic:  createCommand('contact', CMD_CONTACT_GETPIC),
       /**
        * data:
        *   contact array
