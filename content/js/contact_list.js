@@ -3,6 +3,7 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var ContactList = (function() {
+  var bSelectAll = false;
   function getListContainer() {
     return $id('contact-list-container');
   }
@@ -158,6 +159,26 @@ var ContactList = (function() {
   }
 
   /**
+   * Clear all contacts
+   */
+  function clearAllContacts() {
+    CMD.Contacts.clearAllContacts(function onresponse_clearAllContacts(message) {
+      // Make sure the 'select-all' box is not checked.
+      ContactList.selectAllContacts(false);
+
+      if (message.result) {
+        alert(message.result);
+        return;
+      }
+      $id('contact-list-container').innerHTML = '';
+      var vcardView = $id('contact-vcard-view');
+      vcardView.hidden = true;
+    }, function onerror_clearAllContacts(message) {
+      alert('Error occurs when removing contacts!');
+    });
+  }
+
+  /**
    * Remove contacts
    */
   function removeContacts(ids) {
@@ -170,7 +191,7 @@ var ContactList = (function() {
 
       // Remove list item
       message.data.forEach(function(m) {
-        if (m.status != 200) {
+        if (m.result) {
           return;
         }
 
@@ -289,7 +310,13 @@ var ContactList = (function() {
       });
 
       if (window.confirm(_('delete-contacts-confirm', {n: ids.length}))) {
-        ContactList.removeContacts(ids);
+        if ($id('select-all').checked) {
+          ContactList.clearAllContacts();
+        } else {
+          ids.forEach(function(item) {
+            ContatList.removeContacts(item);
+          });
+        }
       }
     });
 
@@ -331,6 +358,7 @@ var ContactList = (function() {
 
   return {
     init:              initList,
+    clearAllContacts:  clearAllContacts,
     removeContacts:    removeContacts,
     updateContacts:    updateContacts,
     addContacts:       addContacts,

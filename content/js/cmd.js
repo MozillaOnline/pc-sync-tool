@@ -12,6 +12,7 @@ var CMD = (function() {
   var CMD_CONTACT_GET_ALL  = 'getAllContacts';
   var CMD_CONTACT_UPDATE   = 'updateContacts';
   var CMD_CONTACT_ADD      = 'addContact';
+  var CMD_CONTACT_CLEAR   = 'clearAllContacts';
   var CMD_CONTACT_REMOVE   = 'removeContacts';
   var CMD_CONTACT_GETCONTACTPROFILEPIC   = 'getContactProfilePic';
   var CMD_CONTACT_TEST     = 'test';
@@ -91,7 +92,6 @@ var CMD = (function() {
 
     /***** Contacts commands *****/
     Contacts: {
-      test: createCommand('contact', CMD_CONTACT_TEST),
       getAllContacts:  createCommandWithNonData('contact', CMD_CONTACT_GET_ALL),
       /**
        * data:
@@ -113,6 +113,8 @@ var CMD = (function() {
        *   contact id array
        */
       removeContacts:  createCommand('contact', CMD_CONTACT_REMOVE),
+      
+      clearAllContacts:  createCommandWithNonData('contact', CMD_CONTACT_CLEAR)
     },
 
     /***** Picture commands ******/
