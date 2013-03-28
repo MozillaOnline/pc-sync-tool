@@ -12,10 +12,9 @@ var CMD = (function() {
   var CMD_CONTACT_GET_ALL  = 'getAllContacts';
   var CMD_CONTACT_UPDATE   = 'updateContacts';
   var CMD_CONTACT_ADD      = 'addContact';
-  var CMD_CONTACT_CLEAR   = 'clearAllContacts';
-  var CMD_CONTACT_REMOVE   = 'removeContacts';
+  var CMD_CONTACT_CLEAR    = 'clearAllContacts';
+  var CMD_CONTACT_REMOVE   = 'removeContactById';
   var CMD_CONTACT_GETCONTACTPROFILEPIC   = 'getContactProfilePic';
-  var CMD_CONTACT_TEST     = 'test';
 
   var CMD_SMS_GETMESSAGES  = 'getMessages';
   var CMD_SMS_SENTMESSAGE  = 'sendsms';
@@ -53,11 +52,12 @@ var CMD = (function() {
    *    the callback function when error occurs
    */
   function createCommand(target, command) {
+    console.log("create command");
     return function(data, onresponse, onerror) {
       FFOSAssistant.sendRequest({
         type: target,
         command: command,
-        data: JSON.stringify(data),
+        data: data,
         exdatalength: 0 
       }, onresponse, onerror);
     };
@@ -112,7 +112,7 @@ var CMD = (function() {
        * data:
        *   contact id array
        */
-      removeContacts:  createCommand('contact', CMD_CONTACT_REMOVE),
+      removeContact:  createCommand('contact', CMD_CONTACT_REMOVE),
       
       clearAllContacts:  createCommandWithNonData('contact', CMD_CONTACT_CLEAR)
     },
