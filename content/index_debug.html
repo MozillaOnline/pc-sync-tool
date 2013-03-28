@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf8">
+  <title data-l10n-id="ffos-assistant">FFOS Assistant</title>
+  <link rel="stylesheet" href="style/main.css">
+  <link rel="stylesheet" href="style/contact.css">
+  <link rel="resource" type="application/l10n" href="locales/locales.ini">
+  <script type="text/javascript" src="js/l10n.js"></script>
+  <script type="text/javascript" src="js/common/common.js"></script>
+  <script type="text/javascript" src="js/common/socket.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/3rd/encoding-indexes.js"></script>
+  <script type="text/javascript" src="js/3rd/encoding.js"></script>
+  <script type="text/javascript" src="js/3rd/pinyin.js"></script>
+  <script type="text/javascript" src="js/cmd.js"></script>
+  <script type="text/javascript" src="js/connectPool.js"></script>
+  <script type="text/javascript" src="js/contact_list.js"></script>
+  <script type="text/javascript" src="js/form.js"></script>
+  <script type="text/javascript" src="js/main.js"></script>
+  <script type="text/javascript" src="js/view.js"></script>
+</head>
+<body hidden="true">
+  <div id="container">
+    <div class="title-bar" data-l10n-id="ffos-assistant">
+      FFOS 手机助手
+      <label id="view-title"></label>
+      <div id="lang-settings">
+        <label class="language-code-button current" data-language-code="en-US" data-l10n-id="en-US"></label>
+        <label class="language-code-button" data-language-code="zh-CN" data-l10n-id="zh-CN"></label>
+      </div>
+    </div>
+    <div id="container-body" class="table">
+      <div>
+        <div class="sidebar">
+          <div class="login-area">
+            <a href="#" data-l10n-id="signin">登录</a> | <a href="#" data-l10n-id="signup">注册</a>
+          </div>
+          <div id="connect-list" class="list radio-list">
+            <div id="connect-tab"
+                 class="item"
+                 data-l10n-id="pls_connect_device"
+                 data-linked-view="connect-view">
+              请链接手机...
+            </div>
+          </div>
+          <div id="mgmt-list" class="list radio-list" hidden>
+            <div class="header">ZET Unagi</div>
+            <div id="summary-tab"
+                 class="item summary selected"
+                 data-linked-view="summary-view"
+                 data-l10n-id="summary">基本信息</div>
+            <div id="contact-tab"
+                 class="item contact"
+                 data-linked-view="contact-view"
+                 data-l10n-id="contacts">联系人</div>
+            <div id="sms-tab"
+                 class="item sms"
+                 data-linked-view="sms-view"
+                 data-l10n-id="sms">短信</div>
+            <div id="apps-tab"
+                 class="item apps"
+                 data-linked-view="apps-view"
+                 data-l10n-id="apps">应用程序</div>
+            <div id="music-tab"
+                 class="item music"
+                 data-linked-view="music-view"
+                 data-l10n-id="music">音乐</div>
+            <div id="gallery-tab"
+                 class="item gallery"
+                 data-linked-view="gallery-view"
+                 data-l10n-id="gallery">相册图片</div>
+            <div id="videos-tab"
+                 class="item videos"
+                 data-linked-view="videos-view"
+                 data-l10n-id="videos">视频</div>
+          </div>
+          <div class="list">
+            <div class="header" data-l10n-id="resources">资源推荐</div>
+            <div id="marketplace-tab"
+                 class="item marketplace"
+                 data-linked-view="marketplace-view"
+                 data-l10n-id="marketplace">火狐官方应用市场</div>
+            <div id="themes-tab"
+                 class="item theme"
+                 data-linked-view="theme-view"
+                 data-l10n-id="themes">免费手机壁纸</div>
+            <div id="ringtone-tab"
+                 class="item ringtone"
+                 data-linked-view="ringtone-view"
+                 data-l10n-id="ringtone">手机铃声专区</div>
+          </div>
+        </div>
+        <div class="content">
+          <div id="connect-view" class="view">
+            <div id="welcome-msg">
+              <h3 data-l10n-id="pls_connect_device">请连接手机</h3>
+              <p data-l10n-id="ffos-description"></p>
+            </div>
+
+            <section id="user-guide">
+              <p data-l10n-id="nodevice-found-msg">您的手机尚未链接到电脑，请通过USB数据线或者wiki链接</p>
+              <p><a href="http://mozilla.com.cn/" target="_blank" data-l10n-id="usb-problem">已链接USB数据线，无法识别手机？</a></p>
+            </section>
+
+            <input id="device_id" type="input" value="123abc"></input>
+            <input id="btn_submit" type="button" data-l10n-id="connect" value="Connect"></input>
+            <br/>
+            <input id="btn_usb_connect" type="button" value="Connect USB"></input>
+          </div>
+          <section id="summary-view" class="view" hidden>
+            <h1 data-l10n-id="summary" class="title">基本信息</h1>
+            <div id="device-image">
+              <div class="device-name">ZTE Unagi</div>
+            </div>
+            <div id="summary-infos">
+              <div id="device-storage-summary">
+                <div class="storage-detail">
+                  <div class="storage-name" data-l10n-id="handset">手机</div>
+                  <div class="storage-number"></div>
+                </div>
+                <div class="storage-graph">
+                  <div class="used"></div>
+                </div>
+              </div>
+              <div id="sdcard-storage-summary">
+                <div class="storage-detail">
+                  <div class="storage-name" data-l10n-id="sdcard">SD卡</div>
+                  <div class="storage-number"></div>
+                </div>
+                <div class="storage-graph">
+                  <div class="used"></div>
+                </div>
+              </div>
+              <div id="summary-ops">
+               <div id="backup-button" class="button active-button" data-l10n-id="backup"></div>
+                <div id="restore-button" class="button" data-l10n-id="restore"></div>
+                <div class="button clear-fix" data-l10n-id="sdcard-mgmt"></div>
+                <div class="button clear-fix" data-l10n-id="bind-device"></div>
+              </div>
+            </div>
+          </section>
+          <section id="contact-view" class="view" hidden>
+            <h1 class="title" data-l10n-id="contacts">联系人</h1>
+            <div class="view-body">
+              <div class="contact-list-box">
+                <div class="contact-ops-box">
+                  <div id="select-all-contacts" class="contact-op">
+                    <input id="select-all" type="checkbox">
+                    <label for="select-all" data-l10n-id="selectall">全选</label>
+                  </div>
+                  <div id="remove-contacts" data-disabled="true" class="contact-op">
+                    <label data-l10n-id="delete">删除</label>
+                  </div>
+                  <div id="export-contacts" class="contact-op">
+                    <label data-l10n-id="export">导出</label>
+                  </div>
+                  <div id="import-contacts" class="contact-op">
+                    <label data-l10n-id="import">导入</label>
+                  </div>
+                  <div id="refresh-contacts" class="contact-op">
+                    <label data-l10n-id="refresh">刷新</label>
+                  </div>
+                  <div id="add-new-contact" class="contact-op">
+                    <label data-l10n-id="new">新建</label>
+                  </div>
+                </div>
+                <!-- Contact list -->
+                <div id="contact-list-container">
+                  <!-- div class="contact-index">P</div>
+                  <div class="contact-list-item">
+                    <input type="checkbox"></input>
+                    <div class="bookmark"></div>
+                    <div class="avatar-small"></div>
+                    <div class="contact-info">
+                      <div class="name">Pin Zhang</div>
+                      <div class="tel">10086</div>
+                    </div>
+                  </div -->
+                </div>
+              </div>
+              <div id="contact-vcard-box">
+                <section id="contact-edit-view" class="card-view contact-form" hidden="true">
+                  <div id="add-contact-header" class="vcard-header" data-l10n-id="add-contact-header"></div>
+                  <div id="edit-contact-header" class="vcard-header" data-l10n-id="edit-contact-header">
+                    编辑联系人信息
+                  </div>
+                  <form id="contact-form" action="#" onsubmit="return false;">
+                    <input id="contact-form-id" name="id" type="hidden" value="" />
+                    <section>
+                      <div class="avatar"></div>
+                      <div class="item-body-exp">
+                        <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
+                        <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
+                      </div>
+                      <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
+                    </section>
+                    <!-- Contact field containter -->
+                    <ul></ul>
+                    <a id="save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a>
+                    <a id="cancel-edit-contact" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
+                  </form>
+                </section>
+                <section id="contact-vcard-view" class="card-view" hidden="true">
+                  <h2 class="vcard-header" data-l10n-id="vcard-header">联系人信息</h2>
+                  <div id="vcard-basic-info-box">
+                    <div class="avatar"></div>
+                    <div>
+                      <div class="name"></div>
+                      <div class="company"></div>
+                      <div class="edit button active-button" data-l10n-id="edit">编辑</div>
+                    </div>
+                  </div>
+                  <div id="vcard-contact-ways" class="vcard-info-bar">
+                    <div class="header" data-l10n-id="contact-ways">联系信息</div>
+                    <!-- Contact ways -->
+                    <div class="info-table table"></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </section>
+          <section id="sms-view" class="view coming-soon" hidden>
+            <h1 data-l10n-id="sms" class="title">短信</h1>
+          </section>
+          <section id="apps-view" class="view coming-soon" hidden>
+            <h1 data-l10n-id="apps" class="title">应用程序</h1>
+          </section>
+          <section id="music-view" class="view coming-soon" hidden>
+            <h1 data-l10n-id="music" class="title">音乐</h1>
+          </section>
+          <section id="gallery-view" class="view coming-soon" hidden>
+            <h1 data-l10n-id="gallery" class="title"></h1>
+          </section>
+          <section id="videos-view" class="view coming-soon" hidden>
+            <h1 data-l10n-id="videos" class="title"></h1>
+          </section>
+          <section id="marketplace-view" class="view coming-soon" hidden>
+            <h1 data-l10n-id="marketplace" class="title"></h1>
+          </section>
+          <section id="theme-view" class="view coming-soon" hidden>
+            <h1 data-l10n-id="themes" class="title"></h1>
+          </section>
+          <section id="ringtone-view" class="view coming-soon" hidden>
+            <h1 data-l10n-id="ringtone" class="title"></h1>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

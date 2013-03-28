@@ -48,6 +48,16 @@
     }
   };
 
+  // Add tcp socket permissions for debugging
+  if (Services.prefs.getBoolPref('extensions.ffosassistant.debug')) {
+    let domain = Services.prefs.getCharPref('extensions.ffosassistant.tcp_socket_allow_domain');
+    var ios = Components.classes['@mozilla.org/network/io-service;1']
+                .getService(Components.interfaces.nsIIOService);
+    uri = ios.newURI(domain, null, null);
+
+    Services.perms.add(uri, 'tcp-socket', Components.interfaces.nsIPermissionManager.ALLOW_ACTION);
+  }
+
   window.addEventListener('load', function wnd_onload(e) {
     window.removeEventListener('load', wnd_onload);
     window.setTimeout(init, 1000);
