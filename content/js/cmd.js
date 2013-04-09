@@ -3,45 +3,6 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var CMD = (function() {
-  /* Wifi cmds */
-  var CMD_MANAGE_DEVICE    = 'manageDevice';
-
-  var CMD_DEVICE_GETINFO   = 'getdeviceinfo';
-
-  /* Contacts cmds */
-  var CMD_CONTACT_GET_ALL  = 'getAllContacts';
-  var CMD_CONTACT_UPDATE   = 'updateContactById';
-  var CMD_CONTACT_ADD      = 'addContact';
-  var CMD_CONTACT_CLEAR    = 'clearAllContacts';
-  var CMD_CONTACT_REMOVE   = 'removeContactById';
-  var CMD_CONTACT_GETPIC   = 'getContactPicById';
-
-  var CMD_SMS_GETMESSAGES  = 'getMessages';
-  var CMD_SMS_SENTMESSAGE  = 'sendsms';
-  var CMD_SMS_MARK_READ    = 'markMessagesRead';
-  var CMD_SMS_DELETE       = 'deletesms';
- 
-  /* Pictures cmds */
-  var CMD_PIC_GETALLINFO   = 'getAllPicsInfo';
-  var CMD_PIC_GETCONTENT   = 'getPics';
-  var CMD_PIC_DELETE       = 'deletePics';
-  var CMD_PIC_ADD          = 'addPics';
-  var CMD_PIC_RENAME       = 'renamePic';
-
-  /* Videos cmds */
-  var CMD_VIDEO_GETALLINFO = 'getAllVideosInfo';
-  var CMD_VIDEO_GETCONTENT = 'getVideos';
-  var CMD_VIDEO_DELETE     = 'deleteVideos';
-  var CMD_VIDEO_ADD        = 'addVideos';
-  var CMD_VIDEO_RENAME     = 'renameVideo';
-
-  /*Musics cmd*/
-  var CMD_MUSIC_GETALLINFO = 'getAllMusicsInfo';
-  var CMD_MUSIC_GETCONTENT = 'getMusics';
-  var CMD_MUSIC_DELETE     = 'deleteMusics';
-  var CMD_MUSIC_ADD        = 'addMusics';
-  var CMD_MUSIC_RENAME     = 'renameMusic';
-
   /**
    * Return function with three parameters:
    *  - data
@@ -52,14 +13,20 @@ var CMD = (function() {
    *    the callback function when error occurs
    */
   function createCommand(target, command) {
-    console.log("create command");
     return function(data, onresponse, onerror) {
       FFOSAssistant.sendRequest({
-        type: target,
-        command: command,
-        data: data,
-        exdatalength: 0 
-      }, onresponse, onerror);
+        cmd: {
+          type: target,
+          command: command,
+          result: 0,
+          firstData: data,
+          firstDatalength: data.length,
+          secondData: null,
+          secondDatalength: 0
+        },
+        onresponse: onresponse,
+        onerror: onerror
+      });
     };
   }
 
@@ -69,11 +36,18 @@ var CMD = (function() {
   function createCommandWithNonData(target, command) {
     return function(onresponse, onerror) {
       FFOSAssistant.sendRequest({
-        type: target,
-        command: command,
-        data: null,
-        exdatalength: 0
-      }, onresponse, onerror);
+        cmd: {
+          type: target,
+          command: command,
+          result: 0,
+          firstData: null,
+          firstDatalength: 0,
+          secondData: null,
+          secondDatalength: 0
+        },
+        onresponse: onresponse,
+        onerror: onerror
+      });
     };
   }
 
@@ -81,55 +55,53 @@ var CMD = (function() {
    * All the available commands grouped by target.
    */
   return {
-    manageDevice:      createCommand('init', CMD_MANAGE_DEVICE),
-
     Device: {
       /**
        * get the summary info of the device
        */
-      getDeviceInfo:   createCommandWithNonData('device', CMD_DEVICE_GETINFO),
+      getDeviceInfo:   createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorage),
     },
 
     /***** Contacts commands *****/
     Contacts: {
-      getAllContacts:  createCommandWithNonData('contact', CMD_CONTACT_GET_ALL),
+      getAllContacts:  createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.getAllContacts),
       /**
        * data:
        *   contact ID
        * */
-      getContactProfilePic:  createCommand('contact', CMD_CONTACT_GETPIC),
+      getContactProfilePic:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactPicById),
+      /**
+       * data:
+       *   contact object
+       */
+      updateContact:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.updateContactById),
       /**
        * data:
        *   contact array
        */
-      updateContact:  createCommand('contact', CMD_CONTACT_UPDATE),
-      /**
-       * data:
-       *   contact array
-       */
-      addContact:     createCommand('contact', CMD_CONTACT_ADD),
+      addContact:     createCommand(CMD_TYPE.contact, CONTACT_COMMAND.addContact),
       /**
        * data:
        *   contact id array
        */
-      removeContact:  createCommand('contact', CMD_CONTACT_REMOVE),
-      
-      clearAllContacts:  createCommandWithNonData('contact', CMD_CONTACT_CLEAR)
+      removeContact:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.removeContactById),
+
+      clearAllContacts:  createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.clearAllContacts)
     },
 
     /***** Picture commands ******/
     Pictures: {
-      getAllPicsInfo:  createCommandWithNonData('pictures', CMD_PIC_GETALLINFO),
+      getAllPicsInfo:  createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getAllPicsInfo),
       /**
        * data:
        *   [fileName1, fileName2]
        */
-      getPicsContent:  createCommand('pictures', CMD_PIC_GETCONTENT),
+      // getPicsContent:  createCommand(CMD_TYPE.picture, PICTURE_COMMAND.getPicsContent),
       /**
        * data:
        *   [fileName1, fileName2]
        */
-      deletePics:      createCommand('pictures', CMD_PIC_DELETE),
+      deletePictureByPath:      createCommand(CMD_TYPE.picture, PICTURE_COMMAND.deletePictureByPath),
       /**
        * data:
        *   [{
@@ -138,27 +110,27 @@ var CMD = (function() {
        *     fileName2: content
        *   }]
        */
-      addPics:         createCommand('pictures', CMD_PIC_ADD),
+      // addPics:         createCommand(CMD_TYPE.picture, CMD_PIC_ADD),
       /**
        * data:
        *   [oldName, newName]
        */
-      renamePic:       createCommand('pictures', CMD_PIC_RENAME),
+      //renamePic:       createCommand(CMD_TYPE.picture, CMD_PIC_RENAME),
     },
 
     /***** Videos commands ******/
     Videos: {
-      getAllVideosInfo:  createCommandWithNonData('videos', CMD_VIDEO_GETALLINFO),
+      getAllVideosInfo:  createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getAllVideosInfo),
       /**
        * data:
        *   [fileName1, fileName2]
        */
-      getVideosContent:  createCommand('videos', CMD_VIDEO_GETCONTENT),
+      // getVideosContent:  createCommand(CMD_TYPE.video, CMD_VIDEO_GETCONTENT),
       /**
        * data:
        *   [fileName1, fileName2]
        */
-      deleteVideos:      createCommand('videos', CMD_VIDEO_DELETE),
+      deleteVideoByPath:      createCommand(CMD_TYPE.video, VIDEO_COMMAND.deleteVideoByPath),
       /**
        * data:
        *   [{
@@ -167,27 +139,27 @@ var CMD = (function() {
        *     fileName2: content
        *   }]
        */
-      addVideos:         createCommand('videos', CMD_VIDEO_ADD),
+      // addVideos:         createCommand(CMD_TYPE.video, CMD_VIDEO_ADD),
       /**
        * data:
        *   [oldName, newName]
        */
-      renameVideo:       createCommand('videos', CMD_VIDEO_RENAME),
+      // renameVideo:       createCommand(CMD_TYPE.video, CMD_VIDEO_RENAME),
     },
 
     /***** musics commands ******/
     Musics: {
-      getAllMusicsInfo:  createCommandWithNonData('musics', CMD_MUSIC_GETALLINFO),
+      getAllMusicsInfo:  createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getAllMusicsInfo),
       /**
        * data:
        *   [fileName1, fileName2]
        */
-      getMusicsContent:  createCommand('musics', CMD_MUSIC_GETCONTENT),
+      // getMusicsContent:  createCommand(CMD_TYPE.music, CMD_MUSIC_GETCONTENT),
       /**
        * data:
        *   [fileName1, fileName2]
        */
-      deleteMusics:      createCommand('musics', CMD_MUSIC_DELETE),
+      // deleteMusics:      createCommand(CMD_TYPE.music, CMD_MUSIC_DELETE),
       /**
        * data:
        *   [{
@@ -196,21 +168,21 @@ var CMD = (function() {
        *     fileName2: content
        *   }]
        */
-      addMusics:         createCommand('musics', CMD_MUSIC_ADD),
+      // addMusics:         createCommand(CMD_TYPE.music, CMD_MUSIC_ADD),
       /**
        * data:
        *   [oldName, newName]
        */
-      renameMusic:       createCommand('musics', CMD_MUSIC_RENAME),
+      // renameMusic:       createCommand(CMD_TYPE.music, CMD_MUSIC_RENAME),
     },
- 
+
    /***** SMS commands *****/
     SMS: {
       /**
        * data:
        *   SMS Filter
        */
-      getMessages:    createCommand('sms', CMD_SMS_GETMESSAGES),
+      // getMessages:    createCommand(CMD_TYPE.sms, CMD_SMS_GETMESSAGES),
       /**
        * data:
        *   {
@@ -218,7 +190,7 @@ var CMD = (function() {
        *     message: 'Here is the message content'
        *   }
        */
-      sendMessage:     createCommand('sms', CMD_SMS_SENTMESSAGE),
+      // sendMessage:     createCommand(CMD_TYPE.sms, CMD_SMS_SENTMESSAGE),
       /**
        * data:
        *   {
@@ -226,12 +198,12 @@ var CMD = (function() {
        *     readbool: true   // or false
        *   }
        */
-      markMessageRead: createCommand('sms', CMD_SMS_MARK_READ),
+      // markMessageRead: createCommand(CMD_TYPE.sms, CMD_SMS_MARK_READ),
       /**
        * data:
        *   [id1, id2]
        */
-      deleteMessages:  createCommand('sms', CMD_SMS_DELETE)
+      // deleteMessages:  createCommand(CMD_TYPE.sms, CMD_SMS_DELETE)
     }
   };
 })();
