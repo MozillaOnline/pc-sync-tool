@@ -109,13 +109,17 @@ var ContactList = (function() {
     var infoTable = $expr('#vcard-contact-ways .info-table')[0];
     infoTable.innerHTML = '';
 
-    contact.tel.forEach(function(t) {
-      infoTable.appendChild(_createInfoElem(t.type, t.value));
-    });
+    if (contact.tel) {
+      contact.tel.forEach(function(t) {
+        infoTable.appendChild(_createInfoElem(t.type, t.value));
+      });
+    }
 
-    contact.email.forEach(function(e) {
-      infoTable.appendChild(_createInfoElem(e.type, e.value));
-    });
+    if (contact.email) {
+      contact.email.forEach(function(e) {
+        infoTable.appendChild(_createInfoElem(e.type, e.value));
+      });
+    }
   }
 
   function checkIfContactListEmpty() {
@@ -161,37 +165,51 @@ var ContactList = (function() {
   }
 
   /**
-   * Remove contacts
+   * Clear all contacts
    */
-  function removeContacts(ids) {
-    CMD.Contacts.removeContacts(ids, function onresponse_removeContacts(message) {
+  function clearAllContacts() {
+    CMD.Contacts.clearAllContacts(function onresponse_clearAllContacts(message) {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
 
+      if (message.result) {
+        alert(message.result);
+        return;
+      }
+      $id('contact-list-container').innerHTML = '';
+      var vcardView = $id('contact-vcard-view');
+      vcardView.hidden = true;
+    }, function onerror_clearAllContacts(message) {
+      alert('Error occurs when removing contacts!');
+    });
+  }
+
+  /**
+   * Remove contacts
+   */
+  function removeContact(id) {
+    CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
+      // Make sure the 'select-all' box is not checked.
+      ContactList.selectAllContacts(false);
       var keepVcardView = true;
       var vcardView = $id('contact-vcard-view');
+      if (message.result) {
+        return;
+      }
 
-      // Remove list item
-      message.data.forEach(function(m) {
-        if (m.status != 200) {
-          return;
-        }
+      // Check if contact exists in the list.
+      var item = $id('contact-' + id);
+      if (!item) {
+        return;
+      }
 
-        // Check if contact exists in the list.
-        var id = m.data;
-        var item = $id('contact-' + id);
-        if (!item) {
-          return;
-        }
+      // Remove contact from grouped list
+      groupedList.remove(getContact(id));
 
-        // Remove contact from grouped list
-        groupedList.remove(getContact(id));
-
-        if (vcardView.dataset.contactId == id) {
-          keepVcardView = false;
-        }
-      });
-
+      if (vcardView.dataset.contactId == id) {
+        keepVcardView = false;
+      }
+      
       if (!keepVcardView) {
         // Pick a contact to show
         var availableContacts = $expr('#contact-list-container .contact-list-item');
@@ -201,7 +219,7 @@ var ContactList = (function() {
           showVcardInView(JSON.parse(availableContacts[0].dataset.contact));
         }
       }
-    }, function onerror_removeContacts(message) {
+    }, function onerror_removeContact(message) {
       alert('Error occurs when removing contacts!');
     });
   }
@@ -240,7 +258,6 @@ var ContactList = (function() {
       if (!contact.id) {
         return;
       }
-
       groupedList.add(contact);
 
       showVcardInView(contact);
@@ -280,7 +297,7 @@ var ContactList = (function() {
       selectAllContacts(this.checked);
     });
 
-    $id('remove-contacts').addEventListener('click', function onclick_removeContacts(event) {
+    $id('remove-contacts').addEventListener('click', function onclick_removeContact(event) {
       // Do nothing if the button is disabled.
       if (this.dataset.disabled == 'true') {
         return;
@@ -290,9 +307,15 @@ var ContactList = (function() {
       $expr('#contact-list-container div.selected').forEach(function(item) {
         ids.push(item.dataset.contactId);
       });
-
+      
       if (window.confirm(_('delete-contacts-confirm', {n: ids.length}))) {
-        ContactList.removeContacts(ids);
+        if ($id('select-all').checked) {
+          ContactList.clearAllContacts();
+        } else {
+          ids.forEach(function(item) {
+            ContactList.removeContact(item);
+          });
+        }
       }
     });
 
@@ -334,7 +357,8 @@ var ContactList = (function() {
 
   return {
     init:              initList,
-    removeContacts:    removeContacts,
+    clearAllContacts:  clearAllContacts,
+    removeContact:     removeContact,
     updateContacts:    updateContacts,
     addContacts:       addContacts,
     getContact:        getContact,

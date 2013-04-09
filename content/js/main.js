@@ -3,6 +3,8 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var FFOSAssistant = (function() {
+  var connPool = null;
+
   var wsurl = "ws://" + location.host + "/ws";
   // var wsurl = "ws://localhost:8888/ws";
 
@@ -30,14 +32,6 @@ var FFOSAssistant = (function() {
         }
       });
     }
-  }
-
-  /**
-   * Handle all message coming from server.
-   */
-  function handleRequest(message) {
-    // Handle request message
-    log("Got request: " + JSON.stringify(message));
   }
 
   function showConnectView() {
@@ -108,12 +102,11 @@ var FFOSAssistant = (function() {
 
   function getAndShowAllContacts() {
     CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
-      // Make sure the 'select-all' box is not checked.
-      ContactList.selectAllContacts(false);
-
-      ContactList.init(message.data);
+      // Make sure the 'select-all' box is not checked.  
+      ContactList.selectAllContacts(false); 
+      ContactList.init(JSON.parse(message.data));
       if (message.data.length > 0) {
-        ContactList.showContactInfo(message.data[0]);
+        ContactList.showContactInfo((JSON.parse(message.data)[0]));
       }
     }, function onerror_getAllContacts(message) {
       log('Error occurs when fetching all contacts.');
@@ -122,26 +115,23 @@ var FFOSAssistant = (function() {
 
   function connectToUSB(event) {
     var timeout = null;
-    socket = ConnectManager.connectTo({
-      webTCPSocket: true,
-      host: 'localhost',
-      port: 10010,
-      onopen: function onopen() {
-        log("USB Socket is opened!");
+
+    if (connPool) {
+      connPool.finalize();
+      connPool = null;
+    }
+
+    connPool = new TCPConnectionPool({
+      size: 2,
+      onenable: function onenable() {
         // FIXME 此时server端还未完成data监听事件注册，延迟显示
         timeout = window.setTimeout(showSummaryView, 1000);
       },
-      onclose: function onclose() {
+      ondisable: function ondisable() {
         log('USB Socket is closed');
         window.clearTimeout(timeout);
         showConnectView();
         socket = null;
-      },
-      onerror: function onerror(message) {
-        log("Error occurs: " + JSON.stringify(message));
-      },
-      onrequest: function onmessage(message) {
-        handleRequest(message);
       }
     });
   }
@@ -200,10 +190,8 @@ var FFOSAssistant = (function() {
   });
 
   return {
-    sendRequest: function(request, onresponse, onerror) {
-      if (socket) {
-        socket.sendRequest(request, onresponse, onerror);
-      }
+    sendRequest: function(obj) {
+      connPool.send(obj);
     },
 
     getAndShowAllContacts: getAndShowAllContacts

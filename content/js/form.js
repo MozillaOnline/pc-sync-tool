@@ -332,26 +332,22 @@ var ContactForm = (function() {
 
     if (updateContact) {
       // Save to device
-      CMD.Contacts.updateContacts([contact], function onresponse_updatecontact(message) {
+      CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {
         var contactsUpdated = [];
-        message.data.forEach(function(m) {
-          if (m.status == 200) {
-            contactsUpdated.push(m.data);
-          }
-        });
+        if (!message.result) {
+          contactsUpdated.push(JSON.parse(message.data));
+        }
         ContactList.updateContacts(contactsUpdated);
       }, function onerror_updatecontact(message) {
         alert('Error occurs when updating contacts: ' + JSON.stringify(message));
       });
     } else {
       // Create new contact
-      CMD.Contacts.addContacts([contact], function onresponse_addcontact(message) {
+      CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
         var contactsAdded = [];
-        message.data.forEach(function(m) {
-          if (m.status == 200) {
-            contactsAdded.push(m.data);
-          }
-        });
+        if (!message.result) {
+          contactsAdded.push(JSON.parse(message.data));
+        }
         ContactList.addContacts(contactsAdded);
       }, function onerror_addcontact(message) {
         alert('Error occurs when adding contacts: ' + JSON.stringify(message));

@@ -3,28 +3,6 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var CMD = (function() {
-  /* Wifi cmds */
-  var CMD_MANAGE_DEVICE    = 'manageDevice';
-
-  var CMD_DEVICE_GETINFO   = 'getdeviceinfo';
-
-  /* Contacts cmds */
-  var CMD_CONTACT_GET_ALL  = 'getAllContacts';
-  var CMD_CONTACT_UPDATE   = 'updateContacts';
-  var CMD_CONTACT_ADD      = 'addContacts';
-  var CMD_CONTACT_REMOVE   = 'removeContacts';
-
-  var CMD_SMS_GETMESSAGES  = 'getMessages';
-  var CMD_SMS_SENTMESSAGE  = 'sendsms';
-  var CMD_SMS_MARK_READ    = 'markMessagesRead';
-  var CMD_SMS_DELETE       = 'deletesms';
-
-  var CMD_PIC_GETALLINFO   = 'getAllPicsInfo';
-  var CMD_PIC_GETCONTENT   = 'getPics';
-  var CMD_PIC_DELETE       = 'deletePics';
-  var CMD_PIC_ADD          = 'addPics';
-  var CMD_PIC_RENAME       = 'renamePic';
-
   /**
    * Return function with three parameters:
    *  - data
@@ -37,10 +15,18 @@ var CMD = (function() {
   function createCommand(target, command) {
     return function(data, onresponse, onerror) {
       FFOSAssistant.sendRequest({
-        target: target,
-        command: command,
-        data: data
-      }, onresponse, onerror);
+        cmd: {
+          type: target,
+          command: command,
+          result: 0,
+          firstData: data,
+          firstDatalength: data.length,
+          secondData: null,
+          secondDatalength: 0
+        },
+        onresponse: onresponse,
+        onerror: onerror
+      });
     };
   }
 
@@ -50,10 +36,18 @@ var CMD = (function() {
   function createCommandWithNonData(target, command) {
     return function(onresponse, onerror) {
       FFOSAssistant.sendRequest({
-        target: target,
-        command: command,
-        data: null
-      }, onresponse, onerror);
+        cmd: {
+          type: target,
+          command: command,
+          result: 0,
+          firstData: null,
+          firstDatalength: 0,
+          secondData: null,
+          secondDatalength: 0
+        },
+        onresponse: onresponse,
+        onerror: onerror
+      });
     };
   }
 
@@ -61,48 +55,53 @@ var CMD = (function() {
    * All the available commands grouped by target.
    */
   return {
-    manageDevice:      createCommand('init', CMD_MANAGE_DEVICE),
-
     Device: {
       /**
        * get the summary info of the device
        */
-      getDeviceInfo:   createCommandWithNonData('device', CMD_DEVICE_GETINFO),
+      getDeviceInfo:   createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorage),
     },
 
     /***** Contacts commands *****/
     Contacts: {
-      getAllContacts:  createCommandWithNonData('contact', CMD_CONTACT_GET_ALL),
+      getAllContacts:  createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.getAllContacts),
+      /**
+       * data:
+       *   contact ID
+       * */
+      getContactProfilePic:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactPicById),
+      /**
+       * data:
+       *   contact object
+       */
+      updateContact:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.updateContactById),
       /**
        * data:
        *   contact array
        */
-      updateContacts:  createCommand('contact', CMD_CONTACT_UPDATE),
-      /**
-       * data:
-       *   contact array
-       */
-      addContacts:     createCommand('contact', CMD_CONTACT_ADD),
+      addContact:     createCommand(CMD_TYPE.contact, CONTACT_COMMAND.addContact),
       /**
        * data:
        *   contact id array
        */
-      removeContacts:  createCommand('contact', CMD_CONTACT_REMOVE),
+      removeContact:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.removeContactById),
+
+      clearAllContacts:  createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.clearAllContacts)
     },
 
     /***** Picture commands ******/
     Pictures: {
-      getAllPicsInfo:  createCommandWithNonData('pictures', CMD_PIC_GETALLINFO),
+      getAllPicsInfo:  createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getAllPicsInfo),
       /**
        * data:
        *   [fileName1, fileName2]
        */
-      getPicsContent:  createCommand('pictures', CMD_PIC_GETCONTENT),
+      // getPicsContent:  createCommand(CMD_TYPE.picture, PICTURE_COMMAND.getPicsContent),
       /**
        * data:
        *   [fileName1, fileName2]
        */
-      deletePics:      createCommand('pictures', CMD_PIC_DELETE),
+      deletePictureByPath:      createCommand(CMD_TYPE.picture, PICTURE_COMMAND.deletePictureByPath),
       /**
        * data:
        *   [{
@@ -111,21 +110,79 @@ var CMD = (function() {
        *     fileName2: content
        *   }]
        */
-      addPics:         createCommand('pictures'. CMD_PIC_ADD),
+      // addPics:         createCommand(CMD_TYPE.picture, CMD_PIC_ADD),
       /**
        * data:
        *   [oldName, newName]
        */
-      renamePic:       createCommand('pictures'. CMD_PIC_RENAME),
+      //renamePic:       createCommand(CMD_TYPE.picture, CMD_PIC_RENAME),
     },
 
-    /***** SMS commands *****/
+    /***** Videos commands ******/
+    Videos: {
+      getAllVideosInfo:  createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getAllVideosInfo),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      // getVideosContent:  createCommand(CMD_TYPE.video, CMD_VIDEO_GETCONTENT),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      deleteVideoByPath:      createCommand(CMD_TYPE.video, VIDEO_COMMAND.deleteVideoByPath),
+      /**
+       * data:
+       *   [{
+       *     fileName1: content
+       *   }, {
+       *     fileName2: content
+       *   }]
+       */
+      // addVideos:         createCommand(CMD_TYPE.video, CMD_VIDEO_ADD),
+      /**
+       * data:
+       *   [oldName, newName]
+       */
+      // renameVideo:       createCommand(CMD_TYPE.video, CMD_VIDEO_RENAME),
+    },
+
+    /***** musics commands ******/
+    Musics: {
+      getAllMusicsInfo:  createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getAllMusicsInfo),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      // getMusicsContent:  createCommand(CMD_TYPE.music, CMD_MUSIC_GETCONTENT),
+      /**
+       * data:
+       *   [fileName1, fileName2]
+       */
+      // deleteMusics:      createCommand(CMD_TYPE.music, CMD_MUSIC_DELETE),
+      /**
+       * data:
+       *   [{
+       *     fileName1: content
+       *   }, {
+       *     fileName2: content
+       *   }]
+       */
+      // addMusics:         createCommand(CMD_TYPE.music, CMD_MUSIC_ADD),
+      /**
+       * data:
+       *   [oldName, newName]
+       */
+      // renameMusic:       createCommand(CMD_TYPE.music, CMD_MUSIC_RENAME),
+    },
+
+   /***** SMS commands *****/
     SMS: {
       /**
        * data:
        *   SMS Filter
        */
-      getMessages:    createCommand('sms', CMD_SMS_GETMESSAGES),
+      // getMessages:    createCommand(CMD_TYPE.sms, CMD_SMS_GETMESSAGES),
       /**
        * data:
        *   {
@@ -133,7 +190,7 @@ var CMD = (function() {
        *     message: 'Here is the message content'
        *   }
        */
-      sendMessage:     createCommand('sms', CMD_SMS_SENTMESSAGE),
+      // sendMessage:     createCommand(CMD_TYPE.sms, CMD_SMS_SENTMESSAGE),
       /**
        * data:
        *   {
@@ -141,12 +198,12 @@ var CMD = (function() {
        *     readbool: true   // or false
        *   }
        */
-      markMessageRead: createCommand('sms', CMD_SMS_MARK_READ),
+      // markMessageRead: createCommand(CMD_TYPE.sms, CMD_SMS_MARK_READ),
       /**
        * data:
        *   [id1, id2]
        */
-      deleteMessages:  createCommand('sms', CMD_SMS_DELETE)
+      // deleteMessages:  createCommand(CMD_TYPE.sms, CMD_SMS_DELETE)
     }
   };
 })();
