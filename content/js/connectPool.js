@@ -210,7 +210,7 @@ TCPConnectionPool.prototype = {
 
   _doSend: function tc_doSend(wrapper, obj) {
     this._setSocketWrapperBusy(wrapper);
-    wrapper.send(obj.cmd, obj.firstData, obj.secondData);
+    wrapper.send(obj.cmd, obj.cmd.firstData, obj.cmd.secondData);
   },
 
   /**
@@ -224,19 +224,19 @@ TCPConnectionPool.prototype = {
    * };
    */
   send: function tc_send(obj) {
-    obj = extend({
+    obj.cmd = extend({
       cmd: null,
       firstData: null,
       secondData: null,
       firstDatalength: 0,
       secondDatalength: 0,
       json: false    // Indicates if the reulst is an JSON string
-    }, obj);
+    }, obj.cmd);
 
     var wrapper = this._getAvailableSocketWrapper();
     obj.cmd.id = this._getNextId();
 
-    this._cacheCallback(obj.cmd.id, obj.json, obj.onresponse, obj.onerror);
+    this._cacheCallback(obj.cmd.id, obj.cmd.json, obj.onresponse, obj.onerror);
 
     if (!wrapper) {
       // queue the message
