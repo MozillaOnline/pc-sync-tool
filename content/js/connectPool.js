@@ -247,30 +247,3 @@ TCPConnectionPool.prototype = {
   }
 };
 
-
-function testConnectionPool() {
-  var pool = new TCPConnectionPool({
-    size: 2
-  });
-
-  var self = this;
-  id = '2ca4a2557e904834acb377f8783920bd';
-  pool.send({
-    cmd: {
-      type:    CMD_TYPE.contact,
-      command: CONTACT_COMMAND.getContactById,
-      result:  0,
-      firstDatalength: id.length,
-      secondDatalength: 0
-    },
-    firstData: id,
-    json: true,
-    onresponse: function onresponse(result) {
-      self.log('response');
-    },
-    onerror: function onerror() {
-      self.log('error');
-    }
-  });
-}
-
