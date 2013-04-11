@@ -334,9 +334,23 @@ var ContactList = (function() {
         group.dataList.forEach(function(contact) {
           var vcard = 'BEGIN:VCARD';
           vcard += '\nVERSION:3.0';
-          vcard += '\nN:' + contact.name.join(';');
+          vcard += '\nN:' + contact.familyName + ' ' + contact.givenName + ';;;;';
+          vcard += '\nFN:' + contact.familyName + ' ' + contact.givenName;
+          if (contact.org != '') {
+            vcard += '\nORG:' + contact.org;
+          }
           contact.tel.forEach(function(t) {
             vcard += '\nTEL;TYPE=' + t.type + ':' + t.value;
+          });
+          contact.email.forEach(function(e) {
+            vcard += '\nEMAIL;TYPE=' + e.type + ':' + e.value;
+          });
+          contact.adr.forEach(function(adr) {
+            vcard += '\nADR;TYPE=' + adr.type + ':;;' + adr.streetAddress + ';'
+                                                     + adr.locality + ';'
+                                                     + adr.region + ';'
+                                                     + adr.postalCode + ';'
+                                                     + adr.countryName;
           });
           vcard += '\nEND:VCARD';
           content += vcard + '\n';
