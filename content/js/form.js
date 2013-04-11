@@ -320,6 +320,7 @@ var ContactForm = (function() {
     // Concat given name with family name as the name
     contact.name       = getFieldValue('givenName').concat(getFieldValue('familyName'));
     contact.tel        = getFieldValue('tel');
+    contact.adr        = getFieldValue('adr');
     contact.email      = getFieldValue('email');
     contact.org        = getFieldValue('org');
     contact.note       = getFieldValue('note');
