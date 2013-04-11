@@ -327,7 +327,25 @@ var ContactList = (function() {
       FFOSAssistant.getAndShowAllContacts();
     });
 
-    // TODO write a vcard module to parse and construct vcard
+    $id('import-contacts').addEventListener('click', function onclick_importContacts(event) {
+      navigator.mozFFOSAssistant.readFromDisk(function (state, contactList){
+        if(state) {
+          var jsonContactList = JSON.parse(contactList);
+          jsonContactList.forEach(function(contact) {
+              CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
+              var contactsAdded = [];
+              if (!message.result) {
+                contactsAdded.push(JSON.parse(message.data));
+              }
+              ContactList.addContacts(contactsAdded);
+              }, function onerror_addcontact(message) {
+              alert('Error occurs when adding contacts: ' + JSON.stringify(message));
+            });
+          });
+        }
+      });
+    });
+
     $id('export-contacts').addEventListener('click', function onclick_exportContacts(event) {
       var content = '';
       groupedList.getGroupedData().forEach(function(group) {

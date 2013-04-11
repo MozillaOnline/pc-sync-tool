@@ -24,6 +24,10 @@ interface nsIFFOSAssistant : nsISupports
   boolean saveToDisk(in DOMString content,
                      in jsval callback,
                      [optional] in jsval options);
+  /**
+   * Read content from disk
+   */
+  boolean readFromDisk(in jsval callback);
 
   /**
    * These functions related to EventTarget are temporary hacks:

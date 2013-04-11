@@ -299,7 +299,6 @@ var ContactForm = (function() {
         honorificSuffix: [],
         nickname: [],
         email: [],
-        photo: [],
         url: [],
         category: [],
         adr: [],
