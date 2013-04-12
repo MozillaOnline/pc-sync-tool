@@ -59,6 +59,7 @@ var ContactList = (function() {
     elem.dataset.contact = JSON.stringify(contact);
     elem.dataset.contactId = contact.id;
     elem.id = 'contact-' + contact.id;
+    elem.dataset.avatar = '';
 
     elem.onclick = function onclick_contact_list(event) {
       var target = event.target;
@@ -87,6 +88,22 @@ var ContactList = (function() {
     ViewManager.showCardView('contact-vcard-view');
     $id('contact-vcard-view').dataset.contactId = contact.id;
 
+    if ($id('contact-' + contact.id).dataset.avatar != '' &&
+        $id('contact-' + contact.id).dataset.avatar != DEFAULT_AVATAR) {
+      $id('avatar-s').src = $id('contact-' + contact.id).dataset.avatar;
+    } else {
+      CMD.Contacts.getContactProfilePic(contact.id, function(result) {
+        if (result.data == '') {
+          $id('avatar-s').src = DEFAULT_AVATAR;//'style/images/avatar.jpeg';
+          $id('contact-' + contact.id).dataset.avatar = DEFAULT_AVATAR;
+        } else {
+          $id('avatar-s').src = result.data;
+          $id('contact-' + contact.id).dataset.avatar = result.data;
+        }
+      }, function(e) {
+        alert('get contact avatar error:' + e);
+      });
+    }
     $expr('#vcard-basic-info-box .name')[0].textContent = contact.name.join(' ');
     $expr('#vcard-basic-info-box .company')[0].textContent
       = (contact.org && contact.org.length) > 0 ? contact.org[0] : 'unknown';
@@ -94,6 +111,7 @@ var ContactList = (function() {
     editButton.dataset.contactId = contact.id;
     editButton.onclick = function(event) {
       var contact = ContactList.getContact(this.dataset.contactId);
+      contact.photo = [$id('avatar-s').src];
       ContactForm.editContact(contact);
     };
 

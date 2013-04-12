@@ -142,6 +142,52 @@ var FFOSAssistant = (function() {
       manageDevice();
     });
 
+    $id('avatar-e').addEventListener('click', function (e) {
+      $id('image').click();
+    });
+
+    $id('image').addEventListener('change', function() {
+      var MAX_WIDTH = 320;
+      var MAX_HEIGHT = 320;
+      var pic = $id('avatar-e');
+
+      var offscreenImage = new Image();
+      var url = URL.createObjectURL($id('image').files[0]);
+      offscreenImage.src = url;
+      offscreenImage.onerror = function () {
+        URL.revokeObjectURL(url);
+        alert('error');
+      };
+      offscreenImage.onload = function () {
+        URL.revokeObjectURL(url);
+
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        canvas.width = MAX_WIDTH;
+        canvas.height = MAX_HEIGHT;
+        var scalex = canvas.width / offscreenImage.width;
+        var scaley = canvas.height / offscreenImage.height;
+
+        var scale = Math.max(scalex, scaley);
+
+        var w = Math.round(MAX_WIDTH / scale);
+        var h = Math.round(MAX_HEIGHT / scale);
+        var x = Math.round((offscreenImage.width - w) / 2);
+        var y = Math.round((offscreenImage.height - h) / 2);
+
+        context.drawImage(offscreenImage, x, y, w, h,
+                      0, 0, MAX_WIDTH, MAX_HEIGHT);
+        canvas.toBlob(function (blob) {
+          var fr = new FileReader();
+          fr.readAsDataURL(blob);
+          fr.onload = function (e) {
+            pic.src = e.target.result;
+          };
+        });
+      };
+    });
+
+
     $id('btn_usb_connect').addEventListener('click', connectToUSB);
 
     $id('lang-settings').addEventListener('click', function onclick_langsetting(event) {

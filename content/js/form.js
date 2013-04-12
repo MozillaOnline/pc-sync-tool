@@ -194,6 +194,7 @@ var ContactForm = (function() {
     fields = [];
 
     $id('contact-form-id').value = contact ? contact.id : '';
+    $id('avatar-e').src = contact ? contact.photo[0] : DEFAULT_AVATAR;
     $id('givenName').value       = contact && contact.givenName ? contact.givenName.join(' ') : '';
     $id('familyName').value      = contact && contact.familyName ? contact.familyName.join(' ') : '';
     $id('org').value             = contact && contact.org ? contact.org.join(' ') : '';
@@ -324,6 +325,12 @@ var ContactForm = (function() {
     contact.email      = getFieldValue('email');
     contact.org        = getFieldValue('org');
     contact.note       = getFieldValue('note');
+
+    if ($id('avatar-e').src != DEFAULT_AVATAR) {
+         contact.photo = [$id('avatar-e').src];
+    } else {
+         contact.photo = [];
+    }
 
     if (contact.givenName.length == 0 || contact.familyName.length == 0) {
       alert('Please input the givenName and familyName!');

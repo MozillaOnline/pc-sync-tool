@@ -188,7 +188,10 @@
                   <form id="contact-form" action="#" onsubmit="return false;">
                     <input id="contact-form-id" name="id" type="hidden" value="" />
                     <section>
-                      <div class="avatar"></div>
+                      <div class="avatar">
+                        <img id="avatar-e" class="headpic" src="" />
+                        <input id="image" type="file" accept="image/*" hidden/>
+                      </div>
                       <div class="item-body-exp">
                         <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
                         <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
@@ -204,7 +207,9 @@
                 <section id="contact-vcard-view" class="card-view" hidden="true">
                   <h2 class="vcard-header" data-l10n-id="vcard-header">联系人信息</h2>
                   <div id="vcard-basic-info-box">
-                    <div class="avatar"></div>
+                    <div class="avatar">
+                      <img id="avatar-s" class="headpic" src="" />
+                    </div>
                     <div>
                       <div class="name"></div>
                       <div class="company"></div>

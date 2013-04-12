@@ -118,6 +118,10 @@
   height: 3.2rem;
 }
 
+.contact-list-item .profilePic {
+  width: 9rem;
+}
+
 .contact-list-item .avatar-small[data-noavatar=true] {
   background: url("images/noavatar.png") no-repeat scroll center center  transparent;
 }
@@ -180,6 +184,10 @@
   height: 8rem;
   width: 8rem;
   background-color: #F2F2F2;
+}
+
+.headpic {
+  width: 8rem;
 }
 
 #vcard-basic-info-box .name {
