@@ -28,6 +28,7 @@ XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil', 'resource://gre/modules/NetUt
 XPCOMUtils.defineLazyModuleGetter(this, 'ctypes', 'resource://gre/modules/ctypes.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn', 'resource://ffosassistant/conn.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
 
 function exposeReadOnly(obj) {
   if (null == obj) {
@@ -92,7 +93,9 @@ FFOSAssistant.prototype = {
 
     const messages = ['ADBService:connect:Return:OK', 'ADBService:connect:Return:NO',
                       'ADBService:disconnect:Return:OK', 'ADBService:disconnect:Return:NO',
-                      'ADBService:statechange'];
+                      'ADBService:statechange',
+                      'DriverDownloader:asyncCommand:Return:OK', 'DriverDownloader:asyncCommand:Return:NO',
+                      'DriverDownloader:message'];
     this.initHelper(aWindow, messages);
   },
 
@@ -101,9 +104,15 @@ FFOSAssistant.prototype = {
     this._onADBStateChange = null;
   },
 
-  _call: function(name, arg) {
+  _callADBService: function(name, arg) {
     var request = this.createRequest();
     this._sendMessageForRequest("ADBService:" + name, arg, request);
+    return request;
+  },
+
+  _callDriverDownloader: function(name, arg) {
+    var request = this.createRequest();
+    this._sendMessageForRequest("DriverDownloader:" + name, arg, request);
     return request;
   },
 
@@ -160,6 +169,23 @@ FFOSAssistant.prototype = {
       case 'ADBService:statechange':
         this._onStateChange();
         break;
+      case 'DriverDownloader:asyncCommand:Return:OK':
+        request = this.takeRequest(msg.rid);
+        if (!request) {
+          return;
+        }
+        Services.DOMRequest.fireSuccess(request, msg.data);
+        break;
+      case 'DriverDownloader:asyncCommand:Return:NO':
+        request = this.takeRequest(msg.rid);
+        if (!request) {
+          return;
+        }
+        Services.DOMRequest.fireError(request, "Failed to excute async command");
+        break;
+      case 'DriverDownloader:message':
+        this._onRevDriverDownloaderMessage(msg.data);
+        break;
       default:
         break;
     }
@@ -173,6 +199,14 @@ FFOSAssistant.prototype = {
     this.dispatchEvent(e);
   },
 
+  _onRevDriverDownloaderMessage: function(message) {
+    let e = this._createEvent('driverdownloadermessage');
+    if (this._onDriverDownloaderMessage) {
+      this._onDriverDownloaderMessage.handleEvent(e);
+    }
+    this.dispatchEvent(e);
+  },
+
   /* Implementations */
   get adbConnected() {
     return cpmm.sendSyncMessage('ADBService:connected')[0];
@@ -180,6 +214,20 @@ FFOSAssistant.prototype = {
 
   set onadbstatechange(callback) {
     this._onADBStateChange = callback;
+  },
+
+  set ondriverdownloadermessage(callback) {
+    this._onDriverDownloaderMessage = callback;
+  },
+
+  sendCmdToDriverDownloader: function(cmd, async) {
+    if (async) {
+      return this._callDriverDownloader('asyncCommand', cmd);
+    } else {
+      var obj = cpmm.sendSyncMessage('DriverDownloader:syncCommand')[0];
+      debug('sync command: ' + JSON.stringify(obj));
+      return obj;
+    }
   },
 
   saveToDisk: function(content, callback, options) {
