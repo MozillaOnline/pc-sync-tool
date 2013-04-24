@@ -15,6 +15,8 @@ interface nsIFFOSAssistant : nsISupports
    */
   readonly attribute long driverManagerPort;
 
+  readonly attribute boolean isDriverManagerRunning;
+
   /* Fired when USB cable or ADB forward disconnected */
   attribute nsIDOMEventListener onadbstatechange;
 
@@ -55,6 +57,11 @@ interface nsIFFOSAssistant : nsISupports
    * }
    */
   jsval sendCmdToDriverDownloader(in jsval cmd, [optional] in boolean async);
+
+  /**
+   * Start the USB Monitor Daemon
+   */
+  void startDriverManager();
 
   /**
    * These functions related to EventTarget are temporary hacks:
