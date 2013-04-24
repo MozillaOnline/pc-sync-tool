@@ -23,12 +23,13 @@ Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
 XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
                                    "@mozilla.org/childprocessmessagemanager;1",
                                    "nsISyncMessageSender");
-XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils', 'resource://gre/modules/FileUtils.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil', 'resource://gre/modules/NetUtil.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'ctypes', 'resource://gre/modules/ctypes.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn', 'resource://ffosassistant/conn.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils',        'resource://gre/modules/FileUtils.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil',          'resource://gre/modules/NetUtil.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'ctypes',           'resource://gre/modules/ctypes.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'Services',         'resource://gre/modules/Services.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn',       'resource://ffosassistant/conn.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'utils',            'resource://ffosassistant/utils.jsm');
 
 function exposeReadOnly(obj) {
   if (null == obj) {
@@ -212,6 +213,21 @@ FFOSAssistant.prototype = {
     return cpmm.sendSyncMessage('ADBService:connected')[0];
   },
 
+  get driverManagerPort() {
+    // Read port number from driver_manager.ini
+    try {
+      let content = utils.getContentFromURL('resource://ffosassistant-managerini');
+      let matched = /\nport\s*=\s*(\d+)/ig.exec(content);
+      if (matched && matched.length > 1) {
+        return parseInt(matched[1]);
+      }
+    } catch (e) {
+      return 0;
+    }
+
+    return 0;
+  },
+
   set onadbstatechange(callback) {
     this._onADBStateChange = callback;
   },
@@ -220,13 +236,14 @@ FFOSAssistant.prototype = {
     this._onDriverDownloaderMessage = callback;
   },
 
+  /**
+   * If it's an async command, a request object will be returned.
+   */
   sendCmdToDriverDownloader: function(cmd, async) {
     if (async) {
       return this._callDriverDownloader('asyncCommand', cmd);
     } else {
-      var obj = cpmm.sendSyncMessage('DriverDownloader:syncCommand')[0];
-      debug('sync command: ' + JSON.stringify(obj));
-      return obj;
+      return cpmm.sendSyncMessage('DriverDownloader:syncCommand')[0];
     }
   },
 

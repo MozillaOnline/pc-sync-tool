@@ -11,6 +11,14 @@ resource ffosassistant-adb           components/binary/linux/adb              os
 resource ffosassistant-adb           components/binary/mac/adb                os=Darwin
 resource ffosassistant-adb           components/binary/win/adb.exe            os=WINNT
 
+resource ffosassistant-drivermanager components/binary/linux/drivermanager    os=linux
+resource ffosassistant-drivermanager components/binary/mac/drivermanager      os=Darwin
+resource ffosassistant-drivermanager components/binary/win/USBMonitor.exe     os=WINNT
+
+resource ffosassistant-managerini    components/binary/linux/driver_manager.ini os=linux
+resource ffosassistant-managerini    components/binary/mac/driver_manager.ini   os=Darwin
+resource ffosassistant-managerini    components/binary/win/driver_manager.ini   os=WINNT
+
 overlay chrome://browser/content/browser.xul chrome://ffosassistant/content/overlay.xul
 
 interfaces components/FFOSAssistant.xpt

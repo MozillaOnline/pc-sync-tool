@@ -19,6 +19,13 @@ XPCOMUtils.defineLazyServiceGetter(this, "ppmm",
                                    "@mozilla.org/parentprocessmessagemanager;1",
                                    "nsIMessageListenerManager");
 
+function handleCommand(cmd) {
+  switch(cmd.command) {
+    case 'addDownload':
+      break;
+  }
+};
+
 let messageReceiver = {
   receiveMessage: function ddMsgRev_receiveMessage(aMessage) {
     debug('Receive message: ' + JSON.stringify(aMessage));
@@ -51,6 +58,4 @@ const messages = ['DriverDownloader:syncCommand', 'DriverDownloader:asyncCommand
 messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });
-
-debug('Inited');
 
