@@ -61,6 +61,23 @@ var utils = {
     }
 
     return obj;
+  },
+
+  md5: function md5(str) {
+    var data = str.split('');
+    var ch = Cc["@mozilla.org/security/hash;1"]
+               .createInstance(Ci.nsICryptoHash);
+    ch.init(ch.MD5);
+    ch.update(data, data.length);
+    var hash = ch.finish(true);
+
+    // return the two-digit hexadecimal code for a byte
+    function toHexString(charCode) {
+      return ("0" + charCode.toString(16)).slice(-2);
+    }
+
+    // convert the binary hash data to a hex string.
+    return [toHexString(hash.charCodeAt(i)) for (i in hash)].join("");
   }
 };
 

@@ -205,7 +205,7 @@ FFOSAssistant.prototype = {
     if (async) {
       return this._callDriverDownloader('asyncCommand', cmd);
     } else {
-      return cpmm.sendSyncMessage('DriverDownloader:syncCommand')[0];
+      return cpmm.sendSyncMessage('DriverDownloader:syncCommand', cmd)[0];
     }
   },
 

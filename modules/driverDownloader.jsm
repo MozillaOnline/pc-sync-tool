@@ -13,18 +13,75 @@ else
 var EXPORTED_SYMBOLS = ['DriverDownloader'];
 
 const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+const DRIVER_HOME = "USBDrivers";
+const DRIVER_LIST_URI = "resource://ffosassistant-driverlist";
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyServiceGetter(this, "ppmm",
                                    "@mozilla.org/parentprocessmessagemanager;1",
                                    "nsIMessageListenerManager");
+XPCOMUtils.defineLazyModuleGetter(this, "utils",     "resource://ffosassistant/utils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "FileUtils", "resource://gre/modules/FileUtils.jsm");
 
-function handleCommand(cmd) {
-  switch(cmd.command) {
-    case 'addDownload':
-      break;
+let driverList = null;
+
+/**
+ * Get download url from the driver_list.json
+ */
+function getDownloadURLForInstanceId(id) {
+  // TODO update cached driver list
+  if (null == driverList) {
+    driverList = JSON.parse(utils.getContentFromURL(DRIVER_LIST_URI));
   }
-};
+
+  let downloadURL = null;
+  for (var i = 0; i < driverList.devices.length; i++) {
+    if (id == driverList.devices[i].device_instance_id) {
+      downloadURL = driverList.devices[i].driver_download_url;
+      break;
+    }
+  }
+
+  return downloadURL;
+}
+
+/**
+ * Get local path of the driver.
+ *
+ * First, we will check if the download url is a remote url, if no,
+ * then return the download url as the local path; if yes, then check
+ * if it's been downloaded, and then return the downloaded path if yes.
+ */
+function getLocalPathForInstanceId(id) {
+  let downloadURL = getDownloadURLForInstanceId(id);
+  if (!downloadURL) {
+    return null;
+  }
+
+  let isRemoteURL = /^http(s?):\/\//ig.test(downloadURL);
+  if (!isRemoteURL) {
+    return downloadURL;
+  }
+
+  let driverName = getDriverName(downloadURL);
+  let file = FileUtils.getFile("ProfD", [DRIVER_HOME, driverName]);
+
+  return file.exists() ? file.path : null;
+}
+
+function getDriverName(downloadUrl) {
+  // FIXME keep file extension?
+  return "USBDriver-" + utils.md5(downloadUrl);
+}
+
+function handleSyncCommand(cmd) {
+  switch(cmd.command) {
+    // If install file for the given USB ID has been found, then
+    // return the path, or return null value.
+    case 'getInstallerPath':
+      return getLocalPathForInstanceId(cmd.deviceInstanceId);
+  }
+}
 
 let messageReceiver = {
   receiveMessage: function ddMsgRev_receiveMessage(aMessage) {
@@ -37,9 +94,7 @@ let messageReceiver = {
     switch (aMessage.name) {
       // This is a sync message.
       case 'DriverDownloader:syncCommand':
-        return {
-          data: 'OK'
-        };
+        return handleSyncCommand(msg);
       case 'DriverDownloader:asyncCommand':
         break;
     }
