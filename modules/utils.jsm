@@ -4,7 +4,10 @@
 
 "use strict"
 
-const {classes: Cc, interfaces: Ci} = Components;
+const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
 
 var EXPORTED_SYMBOLS = ['utils'];
 
@@ -78,6 +81,15 @@ var utils = {
 
     // convert the binary hash data to a hex string.
     return [toHexString(hash.charCodeAt(i)) for (i in hash)].join("");
+  },
+
+  getChromeFileURI: function getChromeFileURI(uri) {
+    let fileURI = Services.io.newURI(uri, null, null);
+    if (!(fileURI instanceof Ci.nsIFileURL)) {
+      return null;
+    }
+
+    return fileURI;
   }
 };
 

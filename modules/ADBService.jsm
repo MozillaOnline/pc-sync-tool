@@ -22,7 +22,7 @@ XPCOMUtils.defineLazyServiceGetter(this, "ppmm",
                                    "@mozilla.org/parentprocessmessagemanager;1",
                                    "nsIMessageListenerManager");
 
-XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 
 let connected = false;
 let libWorker = null;
@@ -60,21 +60,12 @@ const WORKER_FILE = 'resource://ffosassistant/worker.js';
 let libWorker = new ChromeWorker(WORKER_FILE);
 libWorker.onmessage = worker_onMessage;
 
-function getChromeFileUri(chromeUri) {
-  let fileUri = Services.io.newURI(chromeUri, null, null);
-  if (!(fileUri instanceof Ci.nsIFileURL)) {
-    return null;
-  }
-
-  return fileUri;
-}
-
 function startADBForward(onsuccess, onerror) {
   onsuccess = onsuccess || function() {};
   onerror = onerror || function() {};
 
-  let libFileUri = getChromeFileUri(LIB_FILE_URL);
-  let adbFileUri = getChromeFileUri(ADB_FILE_URL);
+  let libFileUri = utils.getChromeFileURI(LIB_FILE_URL);
+  let adbFileUri = utils.getChromeFileURI(ADB_FILE_URL);
   if (!libFileUri || !adbFileUri) {
     onerror();
     return;
