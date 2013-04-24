@@ -31,44 +31,6 @@ XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn',       'resource://ffosassi
 XPCOMUtils.defineLazyModuleGetter(this, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'utils',            'resource://ffosassistant/utils.jsm');
 
-function exposeReadOnly(obj) {
-  if (null == obj) {
-    return obj;
-  }
-
-  if (typeof obj !== "object") {
-    return obj;
-  }
-
-  if (obj["__exposedProps__"]) {
-    return obj;
-  }
-
-  // If the obj is a navite wrapper, can not modify the attribute.
-  try {
-    obj.__exposedProps__ = {};
-  } catch (e) {
-    return;
-  }
-
-  var exposedProps = obj.__exposedProps__;
-  for (let i in obj) {
-    if (i === "__exposedProps__") {
-      continue;
-    }
-
-    if (i[0] === "_") {
-      continue;
-    }
-
-    exposedProps[i] = "r";
-
-    exposeReadOnly(obj[i]);
-  }
-
-  return obj;
-};
-
 /***** Component definition *****/
 function FFOSAssistant() { }
 

@@ -3,21 +3,30 @@ resource ffosassistant modules/
 
 resource ffosassistant-binary components/binary/
 
+# libadbservice
 resource ffosassistant-libadbservice components/binary/linux/libadbservice.so os=Linux
 resource ffosassistant-libadbservice components/binary/mac/libadbservice.so   os=Darwin
 resource ffosassistant-libadbservice components/binary/win/adbservice.dll     os=WINNT
 
+# adb
 resource ffosassistant-adb           components/binary/linux/adb              os=linux
 resource ffosassistant-adb           components/binary/mac/adb                os=Darwin
 resource ffosassistant-adb           components/binary/win/adb.exe            os=WINNT
 
+# Driver Manager
 resource ffosassistant-drivermanager components/binary/linux/drivermanager    os=linux
 resource ffosassistant-drivermanager components/binary/mac/drivermanager      os=Darwin
 resource ffosassistant-drivermanager components/binary/win/USBMonitor.exe     os=WINNT
 
 resource ffosassistant-managerini    components/binary/linux/driver_manager.ini os=linux
 resource ffosassistant-managerini    components/binary/mac/driver_manager.ini   os=Darwin
+# ini file should be placed in the same dir as USBMonitor.exe
 resource ffosassistant-managerini    components/binary/win/driver_manager.ini   os=WINNT
+
+# json file should be placed in the same dir as USBMonitor.exe
+resource ffosassistant-driverlist    components/binary/win/driver_list.json     os=WINNT
+resource ffosassistant-driverlist    components/binary/win/driver_list.json     os=linux
+resource ffosassistant-driverlist    components/binary/win/driver_list.json     os=Darwin
 
 overlay chrome://browser/content/browser.xul chrome://ffosassistant/content/overlay.xul
 
