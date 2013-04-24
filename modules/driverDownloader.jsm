@@ -17,11 +17,9 @@ const DRIVER_HOME = "USBDrivers";
 const DRIVER_LIST_URI = "resource://ffosassistant-driverlist";
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-XPCOMUtils.defineLazyServiceGetter(this, "ppmm",
-                                   "@mozilla.org/parentprocessmessagemanager;1",
-                                   "nsIMessageListenerManager");
-XPCOMUtils.defineLazyModuleGetter(this, "utils",     "resource://ffosassistant/utils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "FileUtils", "resource://gre/modules/FileUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "utils",        "resource://ffosassistant/utils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "ParentModule", "resource://ffosassistant/parentModule.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "FileUtils",    "resource://gre/modules/FileUtils.jsm");
 
 let driverList = null;
 
@@ -83,34 +81,19 @@ function handleSyncCommand(cmd) {
   }
 }
 
-let messageReceiver = {
-  receiveMessage: function ddMsgRev_receiveMessage(aMessage) {
-    debug('Receive message: ' + JSON.stringify(aMessage));
+var driverDownloaderModule = new ParentModule({
+   messages: ['DriverDownloader:syncCommand', 'DriverDownloader:asyncCommand'],
 
-    let msg = aMessage.json || {};
-    msg.manager = aMessage.target;
-
-    var self = this;
-    switch (aMessage.name) {
-      // This is a sync message.
-      case 'DriverDownloader:syncCommand':
-        return handleSyncCommand(msg);
-      case 'DriverDownloader:asyncCommand':
-        break;
-    }
-  },
-
-  _sendMessage: function(message, success, data, msg) {
-    msg.manager.sendAsyncMessage(message + (success ? ":OK" : ":NO"), {
-      data: data,
-      rid: msg.rid,
-      mid: msg.mid
-    });
-  }
-};
-
-const messages = ['DriverDownloader:syncCommand', 'DriverDownloader:asyncCommand'];
-messages.forEach(function(msgName) {
-  ppmm.addMessageListener(msgName, messageReceiver);
+   onmessage: function dm_onmessage(name, msg) {
+     debug('Receive message: ' + name);
+     var self = this;
+     switch (name) {
+       // This is a sync message.
+       case 'DriverDownloader:syncCommand':
+         return handleSyncCommand(msg);
+       case 'DriverDownloader:asyncCommand':
+         break;
+     }
+   }
 });
 

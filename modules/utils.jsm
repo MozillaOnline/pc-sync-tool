@@ -90,6 +90,20 @@ var utils = {
     }
 
     return fileURI;
-  }
+  },
+
+  emptyFunction: function emptyFunction() { }
 };
+
+(function() {
+  function extend(destination, source) {
+    for (var property in source)
+      destination[property] = source[property];
+    return destination;
+  }
+
+  extend(utils, {
+    extend: extend
+  });
+})();
 
