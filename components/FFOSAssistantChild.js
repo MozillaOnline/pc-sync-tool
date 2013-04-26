@@ -16,8 +16,10 @@ const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 
 const ADBSERVICE_CONTRACT_ID = '@mozilla.org/adbservice;1';
 const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
-const MANAGER_INI = 'resource://ffosassistant-managerini';
+const MANAGER_BINHOME = 'resource://ffosassistant-binhome';
+const MANAGER_DMHOME  = 'resource://ffosassistant-dmhome';
 const MANAGER_EXE = 'resource://ffosassistant-drivermanager';
+const MANAGER_INI_FILE_NAME = 'drvier_manager.ini';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
@@ -187,12 +189,20 @@ FFOSAssistant.prototype = {
   get driverManagerPort() {
     // Read port number from driver_manager.ini
     try {
-      let content = utils.getContentFromURL(MANAGER_INI);
+	  let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
+	  file.append(MANAGER_INI_FILE_NAME);
+	  if (!file.exists()) {
+		debug('No ini file is found');
+	    return 0;
+	  }
+
+	  let content = utils.readStrFromFile(file);
       let matched = /\nport\s*=\s*(\d+)/ig.exec(content);
       if (matched && matched.length > 1) {
         return parseInt(matched[1]);
       }
     } catch (e) {
+	  debug(e);
       return 0;
     }
 
