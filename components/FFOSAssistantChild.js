@@ -51,8 +51,7 @@ FFOSAssistant.prototype = {
              }),
 
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIFFOSAssistant,
-                                         Ci.nsIDOMGlobalPropertyInitializer,
-                                         Ci.nsIObserver]),
+                                         Ci.nsIDOMGlobalPropertyInitializer]),
 
   // nsIDOMGlobalPropertyInitializer implementation
   init: function(aWindow) {
@@ -70,11 +69,6 @@ FFOSAssistant.prototype = {
   // Called from DOMRequestIpcHelper
   uninit: function() {
     this._onADBStateChange = null;
-  },
-
-  /* nsIObserver */
-  observe: function observe(aSubject, aTopic, aData) {
-    debug('subject:' + aSubject + ', topic:' + aTopic + ', data: ' + aData);
   },
 
   _callADBService: function(name, arg) {

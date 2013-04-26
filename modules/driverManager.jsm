@@ -18,6 +18,7 @@ const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, "ParentModule", "resource://ffosassistant/parentModule.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "WinMutex", "resource://ffosassistant/WinMutex.jsm");
 
 var driverManagerModule = new ParentModule({
   messages: ['DriverManager:isRunning', 'DriverManager:start'],
@@ -38,9 +39,22 @@ var driverManagerModule = new ParentModule({
 });
 
 let process = null;
+const DM_MUTEX_NAME = "FirefoxOS USB Daemon";
 
 function isDriverManagerRunning() {
-  return process && process.isRunning;
+  // FIXME only works on Windows
+  try {
+    // Trying to get and release the MUTEX which supposed to
+    // be acquired by DriverManager, if failed, then it means the
+    // Driver Manager is running.
+    let mutex = new WinMutex(DM_MUTEX_NAME);
+    mutex.release();
+    mutex.close();
+  } catch (e) {
+    return true;
+  }
+
+  return false;
 }
 
 function startDriverManager() {
@@ -50,16 +64,12 @@ function startDriverManager() {
   }
 
   debug("Run process.");
-  try {
   var managerFile = utils.getChromeFileURI(MANAGER_EXE).file;
   process = Cc['@mozilla.org/process/util;1']
               .createInstance(Ci.nsIProcess);
   process.init(managerFile);
   var args = [];
   process.runAsync(args, args.length, processObserver);
-  } catch (e) {
-    debug(e);
-  }
 }
 
 var processObserver = {
