@@ -116,8 +116,13 @@ let WinMutex = function(mutexName)
   this.name = mutexName;
   let hMutex = CreateMutexW(null, 1, this.name);
   
-  if (!hMutex || ctypes.winLastError == ERROR_ALREADY_EXISTS)
+  if (!hMutex || ctypes.winLastError == ERROR_ALREADY_EXISTS) {
+    if (!!hMutex) {
+      CloseHandle(hMutex);
+    }
+
     throw "CreateMutexW failed with ERROR " + (ctypes.winLastError || 0);
+  }
     
   this.handle = hMutex;
 }

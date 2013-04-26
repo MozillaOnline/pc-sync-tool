@@ -4,7 +4,7 @@
 
 'use strict';
 
-let DEBUG = 1;
+let DEBUG = 0;
 if (DEBUG)
   debug = function (s) { dump("-*- ParentModule: " + s + "\n"); };
 else

@@ -22,6 +22,12 @@ TelnetClient.prototype = {
 
     this._connected = false;
     this._socket = null;
+
+    var self = this;
+    window.addEventListener("unload", function(event) {
+      console.log('unload window');
+      self.disconnect();
+    }, true);
   },
 
   _onopen: function onopen(event) {
@@ -29,11 +35,14 @@ TelnetClient.prototype = {
     this._connected = true;
     this._socket.onclose = this._onclose.bind(this);
     this._socket.ondata = this._ondata.bind(this);
+    this.options.onopen(event);
   },
 
   _onclose: function onclose(event) {
+    console.log('Connection is closed.');
     this._connected = false;
     this._socket = null;
+    this.options.onclose(event);
   },
 
   _ondata: function ondata(event) {
@@ -47,16 +56,22 @@ TelnetClient.prototype = {
 
   connect: function() {
     if (this._socket) {
-      return;
+      return this;
     }
 
     this._socket = navigator.mozTCPSocket.open(this.options.host,
       this.options.port, { binaryType: 'string' });
 
     this._socket.onopen = this._onopen.bind(this);
+    this._socket.onerror = function(event) {
+      alert(event);
+    };
+
+    return this;
   },
 
   disconnect: function() {
+    console.log("disconnect socket: " + this._connected);
     if (this._connected) {
       this._socket.close();
     }
@@ -82,7 +97,7 @@ TelnetClient.prototype = {
       args.push(arguments[i]);
     }
 
-    var command = args.join(" ");
+    var command = args.join(" ") + "\n";
     this._socket.send(command);
   }
 };
