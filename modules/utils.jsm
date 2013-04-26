@@ -28,6 +28,42 @@ var utils = {
     return utf8Converter.convertURISpecToUTF8 (str, "UTF-8");
   },
 
+  readStrFromFile: function(file) {
+    if (!file) {
+      return '';
+    }
+
+    var data = '';
+    var fstream = Cc['@mozilla.org/network/file-input-stream;1']
+      .createInstance(Ci.nsIFileInputStream);
+    var cstream = Cc['@mozilla.org/intl/converter-input-stream;1']
+      .createInstance(Ci.nsIConverterInputStream);
+
+    try {
+      fstream.init(file, -1, 0, 0);
+      cstream.init(fstream, 'UTF-8', 0, 0);
+
+      var str = {};
+      var read = 0;
+      do {
+        read = cstream.readString(0xffffffff, str);  // read as much as we can and  put it in str.value
+        data += str.value;
+      } while (read != 0);
+    } catch(err) {
+      dump('Error occured when reading file: ' + err);
+    } finally {
+      if (cstream) {
+        try {
+          cstream.close();
+        } catch (err) {
+          dump('Error occured when closing file : ' + err);
+        }
+      }
+    }
+
+    return data;
+  },
+
   exposeReadOnly: function exposeReadOnly(obj) {
     if (null == obj) {
       return obj;
