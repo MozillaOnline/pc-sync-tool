@@ -18,7 +18,6 @@ const ADBSERVICE_CONTRACT_ID = '@mozilla.org/adbservice;1';
 const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
 const MANAGER_BINHOME = 'resource://ffosassistant-binhome';
 const MANAGER_DMHOME  = 'resource://ffosassistant-dmhome';
-const MANAGER_EXE = 'resource://ffosassistant-drivermanager';
 const MANAGER_INI_FILE_NAME = 'drvier_manager.ini';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -79,14 +78,20 @@ FFOSAssistant.prototype = {
   },
 
   _callADBService: function(name, arg) {
-    var request = this.createRequest();
-    this._sendMessageForRequest("ADBService:" + name, arg, request);
-    return request;
+    return this._callMessage("ADBService", name, arg);
   },
 
   _callDriverDownloader: function(name, arg) {
+    return this._callMessage("DriverDownloader", name, arg);
+  },
+
+  _callDriverManager: function(name, arg) {
+    return this._callMessage("DriverManager", name, arg);
+  },
+
+  _callMessage: function(moduleName, msgName, arg) {
     var request = this.createRequest();
-    this._sendMessageForRequest("DriverDownloader:" + name, arg, request);
+    this._sendMessageForRequest(moduleName + ":" + msgName, arg, request);
     return request;
   },
 
@@ -189,20 +194,20 @@ FFOSAssistant.prototype = {
   get driverManagerPort() {
     // Read port number from driver_manager.ini
     try {
-	  let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
-	  file.append(MANAGER_INI_FILE_NAME);
-	  if (!file.exists()) {
-		debug('No ini file is found');
-	    return 0;
-	  }
+      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
+      file.append(MANAGER_INI_FILE_NAME);
+      if (!file.exists()) {
+        debug('No ini file is found');
+        return 0;
+      }
 
-	  let content = utils.readStrFromFile(file);
+      let content = utils.readStrFromFile(file);
       let matched = /\nport\s*=\s*(\d+)/ig.exec(content);
       if (matched && matched.length > 1) {
         return parseInt(matched[1]);
       }
     } catch (e) {
-	  debug(e);
+      debug(e);
       return 0;
     }
 
@@ -218,7 +223,7 @@ FFOSAssistant.prototype = {
   },
 
   get isDriverManagerRunning() {
-    return this._driverProcess && this._driverProcess.isRunning;
+    return cpmm.sendSyncMessage('DriverManager:isRunning')[0];
   },
 
   startDriverManager: function() {
@@ -226,17 +231,7 @@ FFOSAssistant.prototype = {
       return;
     }
 
-    var managerFile = utils.getChromeFileURI(MANAGER_EXE).file;
-    //var managerFile = Components.classes["@mozilla.org/file/local;1"]
-    //                    .createInstance(Components.interfaces.nsIFile);
-    //managerFile.initWithPath('/usr/bin/firefox');
-
-    // Create an nsIProcess
-    this._driverProcess = Cc['@mozilla.org/process/util;1']
-                            .createInstance(Ci.nsIProcess);
-    this._driverProcess.init(managerFile);
-    var args = ['-no-remote', '-p', 'restart'];
-    this._driverProcess.runAsync(args, args.length, this);
+    this._callDriverManager('start', null);
   },
 
   /**

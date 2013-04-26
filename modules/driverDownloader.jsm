@@ -82,18 +82,18 @@ function handleSyncCommand(cmd) {
 }
 
 var driverDownloaderModule = new ParentModule({
-   messages: ['DriverDownloader:syncCommand', 'DriverDownloader:asyncCommand'],
+  messages: ['DriverDownloader:syncCommand', 'DriverDownloader:asyncCommand'],
 
-   onmessage: function dm_onmessage(name, msg) {
-     debug('Receive message: ' + name);
-     var self = this;
-     switch (name) {
-       // This is a sync message.
-       case 'DriverDownloader:syncCommand':
-         return handleSyncCommand(msg);
-       case 'DriverDownloader:asyncCommand':
-         break;
-     }
-   }
+  onmessage: function dm_onmessage(name, msg) {
+    debug('Receive message: ' + name);
+    var self = this;
+    switch (name) {
+      // This is a sync message.
+      case 'DriverDownloader:syncCommand':
+        return handleSyncCommand(msg);
+      case 'DriverDownloader:asyncCommand':
+        break;
+    }
+  }
 });
 

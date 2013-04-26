@@ -20,6 +20,7 @@
     try {
     Components.utils.import('resource://ffosassistant/ADBService.jsm');
     Components.utils.import('resource://ffosassistant/driverDownloader.jsm');
+    Components.utils.import('resource://ffosassistant/driverManager.jsm');
     } catch (e) {
       debug('Error occurs when import modules: ' + e);
     }
