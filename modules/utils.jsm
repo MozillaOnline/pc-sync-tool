@@ -4,10 +4,19 @@
 
 "use strict"
 
+let DEBUG = 1;
+if (DEBUG)
+  debug = function (s) { dump("-*- utils: " + s + "\n"); };
+else
+  debug = function (s) { };
+
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
+XPCOMUtils.defineLazyServiceGetter(this, 'iniFactory',
+                                   '@mozilla.org/xpcom/ini-processor-factory;1',
+                                   'nsIINIParserFactory');
 
 var EXPORTED_SYMBOLS = ['utils'];
 
@@ -128,7 +137,72 @@ var utils = {
     return fileURI;
   },
 
-  emptyFunction: function emptyFunction() { }
+  emptyFunction: function emptyFunction() { },
+
+  /**
+   * Returns the value for a given property in an INI file
+   * @param {nsIFile} iniFile
+   *   The ini file to get the value from
+   * @param {String} section
+   *   The name of the section in the ini file.
+   * @param {String} prop
+   *   The name of the property to get
+   */
+  getIniValue: function getIniValue(iniFile, section, prop) {
+    try {
+      let iniParser = iniFactory.createINIParser(iniFile);
+      return iniParser.getString(section, prop);
+    } catch (e) {
+      return undefined;
+    }
+  },
+
+  /**
+   * Save value for a given property in an INI file
+   * @param {nsIFile} iniFile
+   *   The ini file to save the value to
+   * @param {String} section
+   *   The name of the section in the ini file
+   * @param {String} prop
+   *   The name of the property to get
+   */
+  saveIniValue: function saveIniValue(iniFile, section, prop, value) {
+    try {
+      let iniWriter = iniFactory.createINIParser(iniFile)
+                                .QueryInterface(Ci.nsIINIParserWriter);
+      iniWriter.setString(section, prop, value);
+      iniWriter.writeFile();
+      return true;
+    } catch (e) {
+      debug(e);
+      return false;
+    }
+  },
+
+  writeToFile: function(file, json) {
+    var foStream = Cc['@mozilla.org/network/file-output-stream;1']
+                     .createInstance(Ci.nsIFileOutputStream);
+
+    foStream.init(file, 0x02 | 0x08 | 0x20, parseInt('0666', 8), 0);
+
+    var converter = Cc['@mozilla.org/intl/converter-output-stream;1']
+                      .createInstance(Ci.nsIConverterOutputStream);
+
+    try {
+      converter.init(foStream, 'UTF-8', 0, 0);
+      converter.writeString(json);
+    } catch(err) {
+      debug('Error occured when writing file: ' + err);
+    } finally {
+       if (converter) {
+         try {
+           converter.close();
+         } catch (err) {
+           debug('Error occured when closing writing addon-notification/rules.json : ' + err);
+         }
+       }
+    }
+  }
 };
 
 (function() {

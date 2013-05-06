@@ -10,7 +10,7 @@ var DriverManager = (function() {
         navigator.mozFFOSAssistant.driverManagerPort) {
       client = new TelnetClient({
         // host: '10.241.5.197',
-        host: '10.241.5.178',
+        host: '127.0.0.1',
         port: navigator.mozFFOSAssistant.driverManagerPort,
         onmessage: onmessage,
         onopen: onopen,

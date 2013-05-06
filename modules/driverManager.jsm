@@ -42,9 +42,8 @@ let process = null;
 const DM_MUTEX_NAME = "FirefoxOS USB Daemon";
 
 function isDriverManagerRunning() {
-  // FIXME only works on Windows
   try {
-    // Trying to get and release the MUTEX which supposed to
+    // Trying to get and release the MUTEX which is supposed to
     // be acquired by DriverManager, if failed, then it means the
     // Driver Manager is running.
     let mutex = new WinMutex(DM_MUTEX_NAME);

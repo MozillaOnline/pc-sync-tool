@@ -1,4 +1,5 @@
 *.sw*
 *.ini
 *~
+driver_manager
 

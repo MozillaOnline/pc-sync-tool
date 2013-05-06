@@ -18,7 +18,7 @@ const ADBSERVICE_CONTRACT_ID = '@mozilla.org/adbservice;1';
 const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
 const MANAGER_BINHOME = 'resource://ffosassistant-binhome';
 const MANAGER_DMHOME  = 'resource://ffosassistant-dmhome';
-const MANAGER_INI_FILE_NAME = 'drvier_manager.ini';
+const MANAGER_INI_FILE_NAME = 'driver_manager.ini';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
@@ -195,11 +195,7 @@ FFOSAssistant.prototype = {
         return 0;
       }
 
-      let content = utils.readStrFromFile(file);
-      let matched = /\nport\s*=\s*(\d+)/ig.exec(content);
-      if (matched && matched.length > 1) {
-        return parseInt(matched[1]);
-      }
+      return parseInt(utils.getIniValue(file, 'socket', 'port'));
     } catch (e) {
       debug(e);
       return 0;
@@ -223,6 +219,19 @@ FFOSAssistant.prototype = {
   startDriverManager: function() {
     if (this.isDriverManagerRunning) {
       return;
+    }
+
+    // Write firefox path to the ini file
+    try {
+      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
+      file.append(MANAGER_INI_FILE_NAME);
+      if (!file.exists()) {
+        file.create(Ci.nsIFile.NORMAL_FILE_TYPE, '0644');
+      }
+
+      utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
+    } catch (e) {
+      debug(e);
     }
 
     this._callDriverManager('start', null);
@@ -486,6 +495,23 @@ FFOSAssistant.prototype = {
     }
   }
 };
+
+function getFirefoxPath() {
+  // FIXME only available on Windows (Single Process)
+  let BUFFER_SIZE = 260;
+  let buffer = new ctypes.jschar(BUFFER_SIZE).address();
+  let lib = ctypes.open("Kernel32.dll");
+  let getModuleFileName = lib.declare("GetModuleFileNameW",
+                            ctypes.winapi_abi,
+                            ctypes.uint32_t,
+                            ctypes.int32_t,
+                            ctypes.jschar.ptr,
+                            ctypes.uint32_t);
+  getModuleFileName(0, buffer, BUFFER_SIZE);
+  lib.close();
+
+  return buffer.readString();
+}
 
 this.NSGetFactory = XPCOMUtils.generateNSGetFactory([FFOSAssistant]);
 
