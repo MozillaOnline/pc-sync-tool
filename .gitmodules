@@ -1,3 +1,6 @@
 [submodule "content/js/common"]
 	path = content/js/common
 	url = ssh://git@tool1.g-fox.cn/repository/git/repositories/ratel-common.git
+[submodule "components/binary"]
+	path = components/binary
+	url = ssh://git@223.202.6.29/repository/git/repositories/ratel-addon-binary.git
