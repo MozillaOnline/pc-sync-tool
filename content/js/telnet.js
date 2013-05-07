@@ -37,6 +37,7 @@ TelnetClient.prototype = {
     }
 
     this._callback = null;
+    this._queue = [];
     this._connected = false;
     this._socket = null;
 
@@ -60,6 +61,7 @@ TelnetClient.prototype = {
     this._connected = false;
     this._socket = null;
     this._callback = null;
+    this._queue = [];
     this.options.onclose(event);
   },
 
@@ -88,6 +90,7 @@ TelnetClient.prototype = {
       console.log('Error occurs when invoking callback: ' + e); 
     } finally {
       this._callback = null;
+      this._sendQueuedCommand();
     }
   },
 
@@ -101,8 +104,7 @@ TelnetClient.prototype = {
       if (charCode == 7) {
         // We got a notification.
         this.options.onmessage({
-          type: 'message',
-          name: 'notification'
+          type: 'notification'
         });
       } else {
         filteredStr += str.charAt(i);
@@ -110,6 +112,12 @@ TelnetClient.prototype = {
     }
 
     return filteredStr;
+  },
+
+  _sendQueuedCommand: function() {
+    if (this._queue.length > 0) {
+      this.sendCommand.apply(this, this._queue.shift());
+    }
   },
 
   /* Interfaces */
@@ -127,7 +135,7 @@ TelnetClient.prototype = {
 
     this._socket.onopen = this._onopen.bind(this);
     this._socket.onerror = function(event) {
-      alert(event);
+      alert("telnet error: " + event.data);
     };
 
     return this;
@@ -149,6 +157,12 @@ TelnetClient.prototype = {
    */
   sendCommand: function tc_sendCommand() {
     if (!this.isConnected()) {
+      throw Error('Server is disconnected.');
+    }
+
+    // One command at a time.
+    if (this._callback) {
+      this._queue.push(arguments);
       return;
     }
 
@@ -168,7 +182,7 @@ TelnetClient.prototype = {
     // initiative message from the server.
     this._callback = this._callback || emptyFunction;
 
-    var command = args.join(" ") + "\n";
+    var command = args.join("\t") + "\n";
     this._socket.send(command);
   }
 };

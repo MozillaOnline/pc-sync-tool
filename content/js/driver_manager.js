@@ -12,13 +12,99 @@ var DriverManager = (function() {
         // host: '10.241.5.197',
         host: '127.0.0.1',
         port: navigator.mozFFOSAssistant.driverManagerPort,
-        onmessage: onmessage,
+        onmessage: handleMessage,
         onopen: onopen,
         onclose: onclose
       }).connect();
     } else {
       console.log("DriverManager process is not running!");
     }
+  }
+
+  function handleMessage(msg) {
+    if (!msg) {
+      return;
+    }
+
+    switch (msg.type) {
+      case 'notification':
+        console.log('Got an notification');
+        checkNotification();
+        break;
+      case 'deviceChanged':
+        onDeviceChanged(msg);
+        break;
+      case 'driverInstalled':
+        onDriverInstalled();
+        break;
+    }
+  }
+
+  function onDeviceChanged(msg) {
+    fireEvent(DriverManager.EVENT_DEVICE_CHANGED, {
+      eventType: msg.data.eventType,
+      deviceInstanceId: msg.data.deviceInstanceId
+    });
+  }
+
+  function onDriverInstalled() {
+    fireEvent(DriverManager.EVENT_DRIVER_INSTALLED);
+    fireEvent(DriverManager.EVENT_DEVICE_READY);
+  }
+
+  function checkAndInstallDrivers() {
+    client.sendCommand('list', function(message) {
+      if (message.data.length == 0) {
+        fireEvent(DriverManager.EVENT_NO_DEVICE_FOUND);
+        return;
+      }
+
+      // TODO handle all devices
+      if (message.data[0].state == 'installed') {
+        fireEvent(DriverManager.EVENT_DEVICE_READY);
+        return;
+      }
+
+      var instanceId = message.data[0].deviceInstanceId;
+      var driverPath = navigator.mozFFOSAssistant.sendCmdToDriverDownloader({
+        command: 'getInstallerPath',
+        deviceInstanceId: instanceId
+      });
+
+      fireEvent(DriverManager.EVENT_INSTALLING_DRIVER, {
+        deviceInstanceId: instanceId
+      });
+
+      client.sendCommand('install', instanceId, driverPath, function(message) {
+        console.log('Receive install message: ' + JSON.stringify(message));
+      });
+    });
+  }
+
+  function onopen() {
+    console.log('Telnet client is opened.');
+    client.sendCommand("info", function(message) {
+      console.log("info: " + message);
+    });
+
+    checkAndInstallDrivers();
+  }
+
+  function onclose() {
+    console.log('telnet client is closed.');
+  }
+
+  function checkNotification() {
+    // Check the message, and decide what to do next.
+    client.sendCommand('message', handleMessage);
+  }
+
+  function fireEvent(name, data) {
+    console.log(name);
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    document.dispatchEvent(evt);
   }
 
   window.addEventListener('load', function(event) {
@@ -35,38 +121,13 @@ var DriverManager = (function() {
     }, 1000);
   });
 
-  function onmessage(msg) {
-    if (!msg) {
-      return;
-    }
-
-    switch (msg.name) {
-      case 'notification':
-        console.log('Got an notification');
-        onDeviceChanged();
-        break;
-    }
-  }
-
-  function onopen() {
-    console.log('Telnet client is opened.');
-    client.sendCommand("info", function(message) {
-      console.log("info: " + message);
-    });
-  }
-
-  function onclose() {
-    console.log('telnet client is closed.');
-  }
-
-  function onDeviceChanged() {
-    // Check the message, and decide what to do next.
-    client.sendCommand('message', function(message) {
-      
-    });
-  }
-
   return {
+    EVENT_INSTALLING_DRIVER: 'DriverManager:installingDriver',
+    EVENT_DRIVER_INSTALLED: 'DriverManager:driverInstalled',
+    EVENT_DEVICE_CHANGED: 'DriverManager:deviceChanged',
+    EVENT_NO_DEVICE_FOUND: 'DriverManager:noDeviceFound',
+    EVENT_DEVICE_READY: 'DriverManager:deviceReady',
+
     sendCommand: function() {
       if (client) {
         client.sendCommand.apply(client, arguments);
