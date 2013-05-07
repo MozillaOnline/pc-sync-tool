@@ -56,9 +56,7 @@ interface nsIFFOSAssistant : nsISupports
    *   }
    * }
    */
-  jsval sendCmdToDriverDownloader(in jsval cmd,
-                                  [optional] in jsval data,
-                                  [optional] in boolean async);
+  jsval sendCmdToDriverDownloader(in jsval cmd, [optional] in boolean async);
 
   /**
    * Start the USB Monitor Daemon
