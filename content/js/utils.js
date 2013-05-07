@@ -335,6 +335,89 @@ GroupedList.prototype = {
   }
 };
 
+function ModalDialog(options) {
+  this.initailize(options);
+}
+
+ModalDialog.prototype = {
+  initailize: function(options) {
+    this.options = extend({
+      title: 'Modal Title',
+      element: null,
+      showCloseButton: true,
+      onclose: emptyFunction
+    }, options);
+
+    if (!this.options.element) {
+      throw Error('Element should be specified');
+    }
+
+    this._modalElement = null;
+    this._mask = null;
+    this.build();
+  },
+
+  build: function() {
+    this._mask = document.createElement('div');
+    this._mask.className = 'modal-mask';
+    document.body.appendChild(this._mask);
+
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    this._modalElement.innerHTML = '<div class="modal-container">'
+      + '  <div class="modal-close-btn">X</div>'
+      + '  <div class="modal-title">'
+      + this.options.title
+      + '   </div>'
+      + '   <div class="modal-body">'
+      + '   </div>'
+      + '</div>';
+
+    $expr('.modal-body', this._modalElement)[0].appendChild(this.options.element);
+    var closeBtn = $expr('.modal-close-btn', this._modalElement)[0];
+    if (this.options.showCloseButton) {
+      closeBtn.addEventListener('click', this.close.bind(this));
+    } else {
+      closeBtn.hidden = true;
+    }
+
+    document.body.appendChild(this._modalElement);
+
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      // Show a popup dialog at a time.
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+
+      self.close();
+    }
+
+    document.addEventListener('ModalDialog:show', this._onModalDialogShown);
+
+    this.fireEvent('ModalDialog:show');
+  },
+
+  close: function() {
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+
+    document.removeEventListener('ModalDialog:show', this._onModalDialogShown);
+
+    this.options.onclose();
+  },
+
+  fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  }
+};
+
 /**
  * Return the index character of the given string in lowercase.
  * Usually, the first character will be returned.

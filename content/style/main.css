@@ -314,3 +314,52 @@ input[type="url"], textarea {
   float: right;
 }
 
+/******* Popup dialog *****/
+div.modal-mask {
+  background-color: #000;
+  position: fixed;
+  top: 0;
+  left: 0; 
+  height: 100%;
+  width: 100%;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+div.modal-dialog {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  z-index: 2;
+}
+
+div.modal-container {
+  background-color: white;
+  height: 20rem;
+  width: 40rem;
+  margin: 10rem auto;
+  border-radius: .5rem;
+  overflow: hidden;
+  position: relative;
+}
+
+div.modal-title {
+  height: 2rem;
+  line-height: 2rem;
+  background-color: #FFDCA6;
+  padding: 0 1rem;
+}
+
+div.modal-close-btn {
+  position: absolute;
+  height: 2rem;
+  line-height: 2rem;
+  right: 1rem;
+  top: 0;
+  z-index: 10;
+  cursor: pointer;
+}
+/******** End ******/
+
