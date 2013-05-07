@@ -36,20 +36,42 @@ var DriverManager = (function() {
   });
 
   function onmessage(msg) {
-    console.log("Message: " + msg);
+    if (!msg) {
+      return;
+    }
+
+    switch (msg.name) {
+      case 'notification':
+        console.log('Got an notification');
+        onDeviceChanged();
+        break;
+    }
   }
 
   function onopen() {
     console.log('Telnet client is opened.');
-    client.sendCommand("info");
+    client.sendCommand("info", function(message) {
+      console.log("info: " + message);
+    });
   }
 
   function onclose() {
-    console.log('Telnet client is closed.');
+    console.log('telnet client is closed.');
+  }
+
+  function onDeviceChanged() {
+    // Check the message, and decide what to do next.
+    client.sendCommand('message', function(message) {
+      
+    });
   }
 
   return {
-
+    sendCommand: function() {
+      if (client) {
+        client.sendCommand.apply(client, arguments);
+      }
+    }
   };
 })();
 

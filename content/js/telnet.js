@@ -2,6 +2,22 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/**
+ * Attributes in the options object:
+ *   host: 
+ *     Default value is localhost.
+ *   port:
+ *     Default value is 0, which means no port is specified.
+ *   onmessage:
+ *     Callback function for initiative messages from server.
+ *     It is different from the echo message, if you send a command,
+ *     you should pass the callback function as the last argument 
+ *     to receive the echo message.
+ *   onopen:
+ *     Callback function for connection opening.
+ *   onclose:
+ *     Callback function for connection closing.
+ */
 function TelnetClient(options) {
   this.initialize(options);
 }
@@ -20,6 +36,7 @@ TelnetClient.prototype = {
       throw Error('No port is specified.');
     }
 
+    this._callback = null;
     this._connected = false;
     this._socket = null;
 
@@ -42,11 +59,57 @@ TelnetClient.prototype = {
     console.log('Connection is closed.');
     this._connected = false;
     this._socket = null;
+    this._callback = null;
     this.options.onclose(event);
   },
 
   _ondata: function ondata(event) {
     console.log('Received data: ' + event.data);
+    var recvData = this._filterNotification(event.data);
+
+    var data = null;
+    
+    try {
+      data = JSON.parse(recvData);
+    } catch (e) {
+      console.log('Not a valid JSON string.');
+      return;
+    }
+
+    // Check if the _callback is null, if yes, it means the message
+    // is the echo for last command.
+    try {
+      if (this._callback) {
+        this._callback(data);
+      } else {
+        this.options.onmessage(data);
+      }
+    } catch (e) {
+      console.log('Error occurs when invoking callback: ' + e); 
+    } finally {
+      this._callback = null;
+    }
+  },
+
+  _filterNotification: function(str) {
+    // Tranverse the event.data, if we received '\b' (charcode: 7), it
+    // means we received a notification.
+    var filteredStr = '';
+
+    for (var i = 0; i < str.length; i++) {
+      var charCode = str.charCodeAt(i);
+      if (charCode == 7) {
+        // We got a notification.
+        this.options.onmessage({
+          type: 'message',
+          name: 'notification'
+        });
+      } else {
+        filteredStr += str.charAt(i);
+      }
+    }
+
+    return filteredStr;
   },
 
   /* Interfaces */
@@ -81,21 +144,29 @@ TelnetClient.prototype = {
    * arguments:
    *   command, arg1, arg2 ... argn, callback
    *
+   * The last argument should be the callback function to receive
+   * the echo message.
    */
   sendCommand: function tc_sendCommand() {
     if (!this.isConnected()) {
       return;
     }
 
+    // There will be an echo sent back whenever we send a command,
+    // so we need cache the callback here.
     var args = [];
-    var callback = null;
     for (var i = 0; i < arguments.length; i++) {
       if (typeof arguments[i] == 'function') {
-        callback = arguments[i];
+        this._callback = arguments[i];
         break;
       }
       args.push(arguments[i]);
     }
+
+    // Check if the callback is null, if yes, set it with emptyFunction
+    // which means the next message is an echo for this command, not an
+    // initiative message from the server.
+    this._callback = this._callback || emptyFunction;
 
     var command = args.join(" ") + "\n";
     this._socket.send(command);
