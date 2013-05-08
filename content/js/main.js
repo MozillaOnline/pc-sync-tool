@@ -8,32 +8,6 @@ var FFOSAssistant = (function() {
   var wsurl = "ws://" + location.host + "/ws";
   // var wsurl = "ws://localhost:8888/ws";
 
-  function manageDevice() {
-    var deviceId = $id('device_id').value.trim();
-    if (!deviceId) {
-      alert("Please input the device id!");
-    } else {
-      socket = ConnectManager.connectTo({
-        webTCPSocket: false,
-        url: wsurl,
-        onopen: function onopen_ws() {
-          log("Websocket is opened!");
-          CMD.Contacts.manageDevice($id("device_id").value.trim(), function onresponse(message) {
-            showContactView();
-          }, function onerror(message) {
-            log('There is an error when mamage device');
-          } );
-        },
-        onerror: function onerror_ws(message) {
-          log("Error occurs!");
-        },
-        onrequest: function onmessage_ws(message) {
-          handleRequest(message);
-        }
-      });
-    }
-  }
-
   function showConnectView() {
     ViewManager.showView('connect-view');
   }
@@ -138,10 +112,6 @@ var FFOSAssistant = (function() {
   }
 
   function init() {
-    $id("btn_submit").addEventListener('click', function btn_onclick(event) {
-      manageDevice();
-    });
-
     $id('avatar-e').addEventListener('click', function (e) {
       $id('image').click();
     });
@@ -187,9 +157,6 @@ var FFOSAssistant = (function() {
       };
     });
 
-
-    $id('btn_usb_connect').addEventListener('click', connectToUSB);
-
     $id('lang-settings').addEventListener('click', function onclick_langsetting(event) {
       if (!event.target.classList.contains('language-code-button')) {
         return;
@@ -218,16 +185,42 @@ var FFOSAssistant = (function() {
     // Register view event callbacks
     ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
     ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);
+  }
 
-    window.setTimeout(function() {
-//      manageDevice();
-//      ViewManager.showView('contact-view');
-    }, 100);
+  function addDeviceManagerEventListeners() {
+    document.addEventListener(DriverManager.EVENT_INSTALLING_DRIVER, function(event) {
+      new ModalDialog({
+        title: 'Installing driver',
+        bodyText: 'We are installing driver for you.'
+      });
+    });
+
+    document.addEventListener(DriverManager.EVENT_DRIVER_FAIL_INSTALLED, function(event) {
+      new ModalDialog({
+        title: 'Failed To Install Driver',
+        bodyText: 'We encountered an error when installing driver: ' + event.data.errorMessage
+      });
+    });
+
+    document.addEventListener(DriverManager.EVENT_DEVICE_READY, function(event) {
+      new ModalDialog({
+        title: 'Device Ready',
+        bodyText: 'Device is ready to be managed.'
+      });
+    });
+
+    document.addEventListener(DriverManager.EVENT_NO_DEVICE_FOUND, function(event) {
+      new ModalDialog({
+        title: 'No Device',
+        bodyText: 'No device is found.'
+      });
+    });
   }
 
   window.addEventListener('load', function window_onload(event) {
     window.removeEventListener('load', window_onload);
     init();
+    addDeviceManagerEventListeners();
   });
 
   window.addEventListener('localized', function showBody() {

@@ -35,7 +35,7 @@ var DriverManager = (function() {
         onDeviceChanged(msg);
         break;
       case 'driverInstalled':
-        onDriverInstalled();
+        onDriverInstalled(msg);
         break;
     }
   }
@@ -45,11 +45,19 @@ var DriverManager = (function() {
       eventType: msg.data.eventType,
       deviceInstanceId: msg.data.deviceInstanceId
     });
+
+    checkAndInstallDrivers();
   }
 
-  function onDriverInstalled() {
-    fireEvent(DriverManager.EVENT_DRIVER_INSTALLED);
-    fireEvent(DriverManager.EVENT_DEVICE_READY);
+  function onDriverInstalled(msg) {
+    if (msg.data.errorMessage) {
+      fireEvent(DriverManager.EVENT_DRIVER_FAIL_INSTALLED, {
+        errorMessage: msg.data.errorMessage
+      });
+    } else {
+      fireEvent(DriverManager.EVENT_DRIVER_INSTALLED);
+      fireEvent(DriverManager.EVENT_DEVICE_READY);
+    }
   }
 
   function checkAndInstallDrivers() {
@@ -123,8 +131,12 @@ var DriverManager = (function() {
 
   return {
     EVENT_INSTALLING_DRIVER: 'DriverManager:installingDriver',
+
     EVENT_DRIVER_INSTALLED: 'DriverManager:driverInstalled',
+    EVENT_DRIVER_FAIL_INSTALLED: 'DriverManager:driverFailInstalled',
+
     EVENT_DEVICE_CHANGED: 'DriverManager:deviceChanged',
+
     EVENT_NO_DEVICE_FOUND: 'DriverManager:noDeviceFound',
     EVENT_DEVICE_READY: 'DriverManager:deviceReady',
 

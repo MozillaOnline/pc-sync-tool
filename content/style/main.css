@@ -361,5 +361,8 @@ div.modal-close-btn {
   z-index: 10;
   cursor: pointer;
 }
-/******** End ******/
+
+div.modal-body {
+  padding: 0 1rem;
+}
 

@@ -343,13 +343,14 @@ ModalDialog.prototype = {
   initailize: function(options) {
     this.options = extend({
       title: 'Modal Title',
-      element: null,
+      bodyElement: null,
+      bodyText: null,
       showCloseButton: true,
       onclose: emptyFunction
     }, options);
 
-    if (!this.options.element) {
-      throw Error('Element should be specified');
+    if (!this.options.bodyElement && !this.options.bodyText) {
+      throw Error('bodyElement or bodyText should be specified');
     }
 
     this._modalElement = null;
@@ -373,7 +374,13 @@ ModalDialog.prototype = {
       + '   </div>'
       + '</div>';
 
-    $expr('.modal-body', this._modalElement)[0].appendChild(this.options.element);
+    var bodyContainer = $expr('.modal-body', this._modalElement)[0];
+    if (this.options.bodyElement) {
+      bodyContainer.appendChild(this.options.bodyElement);
+    } else {
+      bodyContainer.textContent = this.options.bodyText;
+    }
+
     var closeBtn = $expr('.modal-close-btn', this._modalElement)[0];
     if (this.options.showCloseButton) {
       closeBtn.addEventListener('click', this.close.bind(this));
