@@ -370,3 +370,15 @@ div.modal-body {
   font-size: 2.5rem;
 }
 
+div.modal-btn-container {
+  margin: 0 auto;
+  width: 100%;
+  position: absolute;
+  text-align: center;
+  bottom: 2rem;
+}
+
+input.modal-btn {
+  padding: 0 1rem;
+}
+

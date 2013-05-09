@@ -193,7 +193,7 @@ var FFOSAssistant = (function() {
         title: 'Installing driver',
         titleL10n: 'installing-driver-body',
         bodyText: 'We are installing driver for you.',
-        bodyText: 'installing-driver-body',
+        bodyTextL10n: 'installing-driver-body',
         cancelable: false
       });
     });

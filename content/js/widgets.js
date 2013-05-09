@@ -291,9 +291,12 @@ ModalDialog.prototype = {
       + '  <div class="modal-close-btn" hidden="true">X</div>'
       + '  <div class="modal-title">'
       + this.options.title
-      + '   </div>'
-      + '   <div class="modal-body">'
-      + '   </div>'
+      + '  </div>'
+      + '  <div class="modal-body">'
+      + '  </div>'
+      + '  <div class="modal-btn-container">'
+      + '    <input hidden="true" class="modal-btn modal-btn-ok" type="button" data-l10n-id="OK" value="OK" />'
+      + '  </div>'
       + '</div>';
 
     var titleElem = $expr('.modal-title', this._modalElement)[0];
@@ -311,23 +314,13 @@ ModalDialog.prototype = {
       }
     }
 
-    var self = this;
-    var closeBtn = $expr('.modal-close-btn', this._modalElement)[0];
-    if (this.options.cancelable) {
-      closeBtn.hidden = false;
-      closeBtn.addEventListener('click', this.close.bind(this));
-
-      this._modalElement.addEventListener('mousedown', this.close.bind(this));
-      var container = $expr('.modal-container', this._modalElement)[0];
-      container.addEventListener('mousedown', function(event) {
-        event.stopPropagation();
-      }, true);
-    } else {
-      closeBtn.hidden = true;
-    }
 
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
+
+    if (this.options.cancelable) {
+      this._makeDialogCancelable(); 
+    }
 
     // Translate l10n value
     navigator.mozL10n.translate(this._modalElement);
@@ -352,6 +345,34 @@ ModalDialog.prototype = {
       self._adjustModalPosition();
     };
     window.addEventListener('resize', this._onWindowResize);
+  },
+
+  _makeDialogCancelable: function() {
+   var closeBtn = $expr('.modal-close-btn', this._modalElement)[0];
+
+   closeBtn.hidden = false;
+   closeBtn.addEventListener('click', this.close.bind(this));
+
+   var okBtn = $expr('.modal-btn-ok', this._modalElement)[0];
+   okBtn.hidden = false;
+   okBtn.addEventListener('click', this.close.bind(this));
+
+   var self = this;
+   okBtn.addEventListener('keydown', function(event) {
+     if (event.keyCode == 27) {
+       self.close();
+     }
+   });
+
+   // Make sure we can close the dialog by hitting ENTER or ESC
+   okBtn.focus();
+
+   // Close modal dialog when mousedown on the realestate outside.
+   this._modalElement.addEventListener('mousedown', this.close.bind(this));
+   var container = $expr('.modal-container', this._modalElement)[0];
+   container.addEventListener('mousedown', function(event) {
+     event.stopPropagation();
+   }, true); 
   },
 
   _adjustModalPosition: function() {
