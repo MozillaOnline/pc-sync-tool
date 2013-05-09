@@ -236,6 +236,14 @@ var FFOSAssistant = (function() {
     document.documentElement.lang = navigator.mozL10n.language.code;
     document.documentElement.dir = navigator.mozL10n.language.direction;
     document.body.hidden = false;
+
+    $expr('#lang-settings .language-code-button').forEach(function(label) {
+      if (label.dataset.languageCode == navigator.mozL10n.language.code) {
+        label.classList.add('current');
+      } else {
+        label.classList.remove('current');
+      }
+    });
   });
 
   return {
