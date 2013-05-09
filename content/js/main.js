@@ -62,7 +62,7 @@ var FFOSAssistant = (function() {
       fillStorageSummaryInfo('device-storage-summary', deviceInfo);
       fillStorageSummaryInfo('sdcard-storage-summary', sdcardInfo);
     }, function onerror_getDeviceInfo(message) {
-      alert('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
+      console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
     });
   }
 
@@ -191,7 +191,8 @@ var FFOSAssistant = (function() {
     document.addEventListener(DriverManager.EVENT_INSTALLING_DRIVER, function(event) {
       new ModalDialog({
         title: 'Installing driver',
-        bodyText: 'We are installing driver for you.'
+        bodyText: 'We are installing driver for you.',
+        cancelable: false
       });
     });
 

@@ -339,10 +339,11 @@ div.modal-container {
   background-color: white;
   height: 20rem;
   width: 40rem;
-  margin: 10rem auto;
+  margin: 0 auto;
   border-radius: .5rem;
   overflow: hidden;
   position: relative;
+  top: 10rem;
 }
 
 div.modal-title {
@@ -364,5 +365,6 @@ div.modal-close-btn {
 
 div.modal-body {
   padding: 0 1rem;
+  font-size: 3rem;
 }
 
