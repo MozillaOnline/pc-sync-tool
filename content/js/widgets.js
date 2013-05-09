@@ -262,8 +262,10 @@ ModalDialog.prototype = {
   initailize: function(options) {
     this.options = extend({
       title: 'Modal Title',
+      titleL10n: null,
       bodyElement: null,
       bodyText: null,
+      bodyTextL10n: null,
       cancelable: true,
       onclose: emptyFunction
     }, options);
@@ -282,6 +284,7 @@ ModalDialog.prototype = {
     this._mask.className = 'modal-mask';
     document.body.appendChild(this._mask);
 
+    // TODO using template
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
     this._modalElement.innerHTML = '<div class="modal-container">'
@@ -293,11 +296,19 @@ ModalDialog.prototype = {
       + '   </div>'
       + '</div>';
 
+    var titleElem = $expr('.modal-title', this._modalElement)[0];
+    if (this.options.titleL10n) {
+      titleElem.dataset.l10nId = this.options.titleL10n;
+    }
+
     var bodyContainer = $expr('.modal-body', this._modalElement)[0];
     if (this.options.bodyElement) {
       bodyContainer.appendChild(this.options.bodyElement);
     } else {
       bodyContainer.textContent = this.options.bodyText;
+      if (this.options.bodyTextL10n) {
+        bodyContainer.dataset.l10nId = this.options.bodyTextL10n;
+      }
     }
 
     var self = this;
@@ -317,6 +328,9 @@ ModalDialog.prototype = {
 
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
+
+    // Translate l10n value
+    navigator.mozL10n.translate(this._modalElement);
 
     // Only one modal dialog is shown at a time.
     var self = this;

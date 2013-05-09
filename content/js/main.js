@@ -191,7 +191,9 @@ var FFOSAssistant = (function() {
     document.addEventListener(DriverManager.EVENT_INSTALLING_DRIVER, function(event) {
       new ModalDialog({
         title: 'Installing driver',
+        titleL10n: 'installing-driver-body',
         bodyText: 'We are installing driver for you.',
+        bodyText: 'installing-driver-body',
         cancelable: false
       });
     });
@@ -199,21 +201,27 @@ var FFOSAssistant = (function() {
     document.addEventListener(DriverManager.EVENT_DRIVER_FAIL_INSTALLED, function(event) {
       new ModalDialog({
         title: 'Failed To Install Driver',
-        bodyText: 'We encountered an error when installing driver: ' + event.data.errorMessage
+        titleL10n: 'failed-install-driver-title',
+        bodyText: 'We encountered an error when installing driver: ' + event.data.errorMessage,
+        bodyTextL10n: 'failed-install-driver-body'
       });
     });
 
     document.addEventListener(DriverManager.EVENT_DEVICE_READY, function(event) {
       new ModalDialog({
         title: 'Device Ready',
-        bodyText: 'Device is ready to be managed.'
+        titleL10n: 'device-ready-title',
+        bodyText: 'Device is ready to be managed.',
+        bodyTextL10n: 'device-ready-body'
       });
     });
 
     document.addEventListener(DriverManager.EVENT_NO_DEVICE_FOUND, function(event) {
       new ModalDialog({
         title: 'No Device',
-        bodyText: 'No device is found.'
+        titleL10n: 'no-device-title',
+        bodyText: 'No device is found.',
+        bodyTextL10n: 'no-device-body'
       });
     });
   }
