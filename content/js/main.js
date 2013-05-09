@@ -191,7 +191,7 @@ var FFOSAssistant = (function() {
     document.addEventListener(DriverManager.EVENT_INSTALLING_DRIVER, function(event) {
       new ModalDialog({
         title: 'Installing driver',
-        titleL10n: 'installing-driver-body',
+        titleL10n: 'installing-driver-title',
         bodyText: 'We are installing driver for you.',
         bodyTextL10n: 'installing-driver-body',
         cancelable: false
