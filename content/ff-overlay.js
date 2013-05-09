@@ -13,6 +13,7 @@
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm",
                                      "@mozilla.org/childprocessmessagemanager;1",
                                      "nsISyncMessageSender");
+
   function init() {
     // Import ADB Service module
     debug('Import adbService module');
@@ -30,6 +31,84 @@
     messages.forEach(function(msgName) {
       modules.cpmm.addMessageListener(msgName, messageHandler)
     });
+
+    checkFirstRun();
+  }
+
+  function checkFirstRun() {
+    var firstRunPref = 'extensions.ffosassistant@mozillaonline.com.firstrun';
+    if (Services.prefs.getBoolPref(firstRunPref, true)) {
+      Services.prefs.setBoolPref(firstRunPref, false);
+      var tab = null;
+      if (isTabEmpty(gBrowser.selectedTab)) {
+        tab = gBrowser.selectedTab;
+        gBrowser.selectedBrowser.loadURI('about:ffos');
+      } else {
+        tab = gBrowser.loadOneTab('about:ffos', { inBackground: false });
+      }
+
+      var pinPref = 'extensions.ffosassistant@mozillaonline.com.pinnedOnOpen';
+      if (Services.prefs.getBoolPref(pinPref, true)) {
+        gBrowser.pinTab(tab);
+      }
+    }
+  }
+
+  // Copy from Firefox4
+  if (!window["switchToTabHavingURI"]) {
+      window["isTabEmpty"] = function (aTab) {
+          var browser = aTab.linkedBrowser;
+          return  browser.sessionHistory.count < 2 &&
+                  browser.currentURI.spec == "about:blank" &&
+                  !browser.contentDocument.body.hasChildNodes() &&
+                  !aTab.hasAttribute("busy");
+      }
+
+      window["switchToTabHavingURI"] = function(aURI, aOpenNew) {
+          function switchIfURIInWindow(aWindow) {
+              var browsers = aWindow.gBrowser.browsers;
+              for (var i = 0; i < browsers.length; i++) {
+                  var browser = browsers[i];
+                  if (browser.currentURI.equals(aURI)) {
+                      aWindow.focus();
+                      aWindow.gBrowser.tabContainer.selectedIndex = i;
+                      return true;
+                  }
+              }
+              return false;
+          }
+
+          if (!(aURI instanceof Ci.nsIURI)) {
+              var ioServices = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
+              aURI = ioServices.newURI(aURI, null, null);
+          }
+
+          var isBrowserWindow = !!window.gBrowser;
+          if (isBrowserWindow && switchIfURIInWindow(window)) {
+              return true;
+          }
+
+          var winEnum = jsm.windowMediator.getEnumerator("navigator:browser");
+          while (winEnum.hasMoreElements()) {
+              var browserWin = winEnum.getNext();
+              if (browserWin.closed || browserWin == window) {
+                  continue;
+              }
+              if (switchIfURIInWindow(browserWin)) {
+                  return true;
+              }
+          }
+
+          if (aOpenNew) {
+              if (isBrowserWindow && isTabEmpty(gBrowser.selectedTab)) {
+                  gBrowser.selectedBrowser.loadURI(aURI.spec);
+              } else {
+                  openUILinkIn(aURI.spec, "tab");
+              }
+          }
+
+          return false;
+      }
   }
 
   let heartBeatSocket = null;
@@ -51,8 +130,8 @@
   };
 
   // Add tcp socket permissions for debugging
-  if (Services.prefs.getBoolPref('extensions.ffosassistant.debug')) {
-    let domain = Services.prefs.getCharPref('extensions.ffosassistant.tcp_socket_allow_domain');
+  if (Services.prefs.getBoolPref('extensions.ffosassistant@mozillaonline.com.debug')) {
+    let domain = Services.prefs.getCharPref('extensions.ffosassistant@mozillaonline.com.tcp_socket_allow_domain');
     var ios = Components.classes['@mozilla.org/network/io-service;1']
                 .getService(Components.interfaces.nsIIOService);
     uri = ios.newURI(domain, null, null);
