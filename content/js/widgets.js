@@ -274,10 +274,10 @@ ModalDialog.prototype = {
 
     this._modalElement = null;
     this._mask = null;
-    this.build();
+    this._build();
   },
 
-  build: function() {
+  _build: function() {
     this._mask = document.createElement('div');
     this._mask.className = 'modal-mask';
     document.body.appendChild(this._mask);
@@ -316,7 +316,9 @@ ModalDialog.prototype = {
     }
 
     document.body.appendChild(this._modalElement);
+    this._adjustModalPosition();
 
+    // Only one modal dialog is shown at a time.
     var self = this;
     this._onModalDialogShown = function(event) {
       // Show a popup dialog at a time.
@@ -326,10 +328,32 @@ ModalDialog.prototype = {
 
       self.close();
     }
-
     document.addEventListener('ModalDialog:show', this._onModalDialogShown);
 
-    this.fireEvent('ModalDialog:show');
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('ModalDialog:show');
+
+    // Tweak modal dialog position when resizing.
+    this._onWindowResize = function(event) {
+      self._adjustModalPosition();
+    };
+    window.addEventListener('resize', this._onWindowResize);
+  },
+
+  _adjustModalPosition: function() {
+    var container = $expr('.modal-container', this._modalElement)[0];
+    var documentHeight = document.documentElement.clientHeight;
+    var containerHeight = container.clientHeight;
+    container.style.top = (documentHeight > containerHeight ?
+      (documentHeight - containerHeight) / 2 : 0) + 'px';
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
   },
 
   close: function() {
@@ -339,16 +363,9 @@ ModalDialog.prototype = {
     this._modalElement = null;
 
     document.removeEventListener('ModalDialog:show', this._onModalDialogShown);
+    window.removeEventListener('resize', this._onWindowResize)
 
     this.options.onclose();
-  },
-
-  fireEvent: function(name, data) {
-    var evt = document.createEvent('Event');
-    evt.initEvent(name, true, true);
-    evt.data = data;
-    evt.targetElement = this._modalElement;
-    document.dispatchEvent(evt);
   }
 };
 
