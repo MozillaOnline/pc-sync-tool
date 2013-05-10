@@ -46,7 +46,7 @@ var DriverManager = (function() {
       deviceInstanceId: msg.data.deviceInstanceId
     });
 
-    checkAndInstallDrivers();
+    checkDriverStatus();
   }
 
   function onDriverInstalled(msg) {
@@ -60,7 +60,33 @@ var DriverManager = (function() {
     }
   }
 
-  function checkAndInstallDrivers() {
+  var _doubleCheckTimeout = null;
+  function checkDriverStatus() {
+    client.sendCommand('list', function(message) {
+      if (message.data.length == 0) {
+        fireEvent(DriverManager.EVENT_NO_DEVICE_FOUND);
+        return;
+      } else {
+        fireEvent(DriverManager.EVENT_DEVICE_FOUND);
+      }
+
+      // TODO handle all devices
+      if (message.data[0].state == 'installed') {
+        fireEvent(DriverManager.EVENT_DEVICE_READY);
+        return;
+      }
+
+      // Windows need to load the driver when USB connected, so sometimes
+      // the message told us it's not installed, we need wait for seconds
+      // and query again to double check the status.
+      window.clearTimeout(_doubleCheckTimeout);
+
+      _doubleCheckTimeout = window.setTimeout(doCheckAndInstallDrivers, 5000);
+    });
+  }
+
+  function doCheckAndInstallDrivers() {
+    console.log('Double check the driver installation state.');
     client.sendCommand('list', function(message) {
       if (message.data.length == 0) {
         fireEvent(DriverManager.EVENT_NO_DEVICE_FOUND);
@@ -95,7 +121,7 @@ var DriverManager = (function() {
       console.log("info: " + message);
     });
 
-    checkAndInstallDrivers();
+    checkDriverStatus();
   }
 
   function onclose() {
@@ -137,6 +163,7 @@ var DriverManager = (function() {
 
     EVENT_DEVICE_CHANGED: 'DriverManager:deviceChanged',
 
+    EVENT_DEVICE_FOUND: 'DriverManager:deviceFound',
     EVENT_NO_DEVICE_FOUND: 'DriverManager:noDeviceFound',
     EVENT_DEVICE_READY: 'DriverManager:deviceReady',
 

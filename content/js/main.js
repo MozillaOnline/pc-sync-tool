@@ -76,8 +76,8 @@ var FFOSAssistant = (function() {
 
   function getAndShowAllContacts() {
     CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
-      // Make sure the 'select-all' box is not checked.  
-      ContactList.selectAllContacts(false); 
+      // Make sure the 'select-all' box is not checked.
+      ContactList.selectAllContacts(false);
       var dataJSON = JSON.parse(message.data);
       ContactList.init(dataJSON);
       if (dataJSON.length > 0) {
@@ -222,6 +222,24 @@ var FFOSAssistant = (function() {
         titleL10n: 'no-device-title',
         bodyText: 'No device is found.',
         bodyTextL10n: 'no-device-body'
+      });
+    });
+
+    document.addEventListener(DriverManager.EVENT_DEVICE_CHANGED, function(event) {
+      new ModalDialog({
+        title: 'Device Changed',
+        titleL10n: 'device-changed-title',
+        bodyText: 'We detected that device is changed.',
+        bodyTextL10n: 'device-changed-body'
+      });
+    });
+
+    document.addEventListener(DriverManager.EVENT_DEVICE_FOUND, function(event) {
+      new ModalDialog({
+        title: 'Device Found',
+        titleL10n: 'device-found-title',
+        bodyText: 'We detected a FFOS device',
+        bodyTextL10n: 'device-found-body'
       });
     });
   }
