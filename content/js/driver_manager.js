@@ -17,7 +17,8 @@ var DriverManager = (function() {
         onclose: onclose
       }).connect();
     } else {
-      console.log("DriverManager process is not running!");
+      window.setTimeout(connectToDriverManager, 1000);
+      console.log("DriverManager process is not running, try to connect it again!");
     }
   }
 
