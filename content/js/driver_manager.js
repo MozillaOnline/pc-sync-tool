@@ -50,13 +50,18 @@ var DriverManager = (function() {
   }
 
   function onDriverInstalled(msg) {
-    if (msg.data.errorMessage) {
+    // `driverInstalled` means the driver installer running completes, however it
+    // does not mean the driver for the plugged device is installed, so it's not
+    // a reliable event for ensuring driver-failed-to-be-installed, we need to try
+    // to connect to the device and double check `adbConnected`.
+    //
+    // We don't need to fire device-ready-event here, we will receive an device-change
+    // event if driver is installed successfully.
+    if (msg.data.errorName && !navigator.mozFFOSAssistant.adbConnected) {
       fireEvent(DriverManager.EVENT_DRIVER_FAIL_INSTALLED, {
-        errorMessage: msg.data.errorMessage
+        errorMessage: msg.data.errorMessage,
+        errorCode: msg.data.errorCode
       });
-    } else {
-      fireEvent(DriverManager.EVENT_DRIVER_INSTALLED);
-      fireEvent(DriverManager.EVENT_DEVICE_READY);
     }
   }
 
