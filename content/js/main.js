@@ -2,6 +2,7 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+
 var FFOSAssistant = (function() {
   var connPool = null;
 
@@ -247,7 +248,10 @@ var FFOSAssistant = (function() {
   window.addEventListener('load', function window_onload(event) {
     window.removeEventListener('load', window_onload);
     init();
-    addDeviceManagerEventListeners();
+
+    if (os.isWindows) {
+      addDeviceManagerEventListeners();
+    }
   });
 
   window.addEventListener('localized', function showBody() {

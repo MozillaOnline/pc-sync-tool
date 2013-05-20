@@ -148,6 +148,10 @@ var DriverManager = (function() {
   }
 
   window.addEventListener('load', function(event) {
+    if (!os.isWindows) {
+      return;
+    }
+
     window.setTimeout(function() {
       // TODO Check peirodically
       // Check if the process is running, start it if not

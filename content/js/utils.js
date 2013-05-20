@@ -83,36 +83,12 @@ function removeFromArray(objOrFunc, array) {
   return newArray;
 }
 
-/**
- * Return the index character of the given string in lowercase.
- * Usually, the first character will be returned.
- *
- * TODO handle chinese character
- */
-function getIndexCharacter(str) {
-  if (!str || str.length == 0) {
-    return null;
-  }
-
-  for (var i = 0; i < str.length; i++) {
-    var c = str.charAt(i).toLowerCase();
-    if (c >= 'a' && c <= 'z') {
-      return c;
-    }
-  }
-
-  return null;
-}
-
-/**
- * Group contacts by name ASC
- *
- * Return:
- * [{
- *   a
- * }]
- */
-function ascGroupContacts() {
-
-}
+var os = (function() {
+  var oscpu = navigator.oscpu.toLowerCase();
+  return {
+    isWindows: /windows/.test(oscpu),
+    isLinux: /linux/.test(oscpu),
+    isMac: /mac/.test(oscpu)
+  };
+})();
 
