@@ -39,18 +39,56 @@
     var firstRunPref = 'extensions.ffosassistant@mozillaonline.com.firstrun';
     if (Services.prefs.getBoolPref(firstRunPref, true)) {
       Services.prefs.setBoolPref(firstRunPref, false);
-      var tab = null;
-      if (isTabEmpty(gBrowser.selectedTab)) {
-        tab = gBrowser.selectedTab;
-        gBrowser.selectedBrowser.loadURI('about:ffos');
-      } else {
-        tab = gBrowser.loadOneTab('about:ffos', { inBackground: false });
+      openFFOSInAPinnedTab();
+      addToolbarButton();
+    }
+  }
+
+  function addToolbarButton() {
+    var navBar = document.getElementById('nav-bar');
+    var currentSet = navBar.currentSet;
+
+    var buttonId = 'ffosassistant-button';
+    if (currentSet.indexOf(buttonId) == -1) {
+      var set = navBar.currentSet + '';
+      var MANULLAY_REMOVE_PREF = 'extensions.ffosassistant@mozillaonline.com.manuallyRemovedButton';
+      var manuallyRemovedButton = Services.prefs.getBoolPref(MANULLAY_REMOVE_PREF, false);
+
+      if (manuallyRemovedButton) {
+        return;
       }
 
-      var pinPref = 'extensions.ffosassistant@mozillaonline.com.pinnedOnOpen';
-      if (Services.prefs.getBoolPref(pinPref, true)) {
-        gBrowser.pinTab(tab);
+      set = set + ',' + buttonId;
+
+      navBar.setAttribute('currentset', set);
+      navBar.currentSet = set;
+      document.persist('nav-bar', 'currentset');
+
+      BrowserToolboxCustomizeDone(true);
+    }
+
+    // Check whether user has manually removed the toolbar button
+    navBar.addEventListener('DOMAttrModified', function(event) {
+      if (event.type == 'DOMAttrModified' && event.attrName == 'currentset') {
+        if (event.newValue.indexOf('ffosassistant-button') == -1) {
+          Services.prefs.setBoolPref(MANULLAY_REMOVE_PREF, true);
+        }
       }
+    });
+  }
+
+  function openFFOSInAPinnedTab() {
+    var tab = null;
+    if (isTabEmpty(gBrowser.selectedTab)) {
+      tab = gBrowser.selectedTab;
+      gBrowser.selectedBrowser.loadURI('about:ffos');
+    } else {
+      tab = gBrowser.loadOneTab('about:ffos', { inBackground: false });
+    }
+
+    var pinPref = 'extensions.ffosassistant@mozillaonline.com.pinnedOnOpen';
+    if (Services.prefs.getBoolPref(pinPref, true)) {
+      gBrowser.pinTab(tab);
     }
   }
 

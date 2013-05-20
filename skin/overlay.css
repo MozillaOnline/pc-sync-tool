@@ -1,0 +1,5 @@
+toolbar[iconsize="small"] #ffosassistant-button,
+#ffosassistant-button {
+  list-style-image: url("chrome://ffosassistant/skin/logo-20.png");
+}
+

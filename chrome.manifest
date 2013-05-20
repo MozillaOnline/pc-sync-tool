@@ -1,4 +1,9 @@
-content ffosassistant content/ contentaccessible=yes
+content  ffosassistant content/ contentaccessible=yes
+
+skin     ffosassistant classic/1.0 skin/
+
+style    chrome://global/content/customizeToolbar.xul   chrome://ffosassistant/skin/overlay.css
+
 resource ffosassistant modules/
 
 resource ffosassistant-binary components/binary/
