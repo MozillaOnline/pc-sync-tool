@@ -39,7 +39,7 @@ var ContactList = (function() {
     html += '<div>';
     html += '  <input type="checkbox" data-checked="false"></input>';
     html += '    <div class="bookmark"></div>';
-    html += '    <div class="avatar-small" data-noavatar="true"></div>';
+    html += '    <div> <img src=' + DEFAULT_AVATAR + ' class="avatar-small"/></div>';
     html += '      <div class="contact-info">';
     html += '        <div class="name">' + contact.name.join(' ') + '</div>';
     // Only show the first phone number
@@ -150,6 +150,21 @@ var ContactList = (function() {
     }
   }
 
+  function updateAvatar() {
+    groupedList.getGroupedData().forEach(function(group) {
+      group.dataList.forEach( function (contact) {
+        CMD.Contacts.getContactProfilePic(contact.id, function(result) {
+          if (result.data != '') {
+            var item = $id('contact-' + contact.id);
+            item.getElementsByTagName('img')[0].src = result.data;
+          }
+        }, function(e) {
+          alert('get contact avatar error:' + e);
+        });
+      });
+    });
+  }
+
   var groupedList = null;
 
   function initList(contacts) {
@@ -178,7 +193,7 @@ var ContactList = (function() {
     });
 
     groupedList.render();
-
+    updateAvatar();
     checkIfContactListEmpty();
   }
 
