@@ -88,6 +88,18 @@ var FFOSAssistant = (function() {
       log('Error occurs when fetching all contacts.');
     });
   }
+  
+  function getAndShowAllSMSs() {
+    CMD.SMS.getAllMessages(function onresponse_getAllMessages(messages) {
+      // Make sure the 'select-all' box is not checked.  
+      MessageList.selectAllMessages(false); 
+      var dataJSON = JSON.parse(messages.data);
+      //console.log(messages.data);
+      MessageList.init(dataJSON);
+    }, function onerror_getAllMessages(messages) {
+      log('Error occurs when fetching all messages' + messages.message);  
+    });
+  }
 
   function connectToUSB(event) {
     var timeout = null;
@@ -108,6 +120,9 @@ var FFOSAssistant = (function() {
         window.clearTimeout(timeout);
         showConnectView();
         socket = null;
+      } ,
+      onMsmListening: function onMsmListening(message) {
+        MessageList.onMessage(message);
       }
     });
   }
@@ -186,6 +201,7 @@ var FFOSAssistant = (function() {
     // Register view event callbacks
     ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
     ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);
+    ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSs);
   }
 
   function addDeviceManagerEventListeners() {
@@ -270,10 +286,13 @@ var FFOSAssistant = (function() {
 
   return {
     sendRequest: function(obj) {
-      connPool.send(obj);
+      if (connPool) {
+        connPool.send(obj);
+      }
     },
 
-    getAndShowAllContacts: getAndShowAllContacts
+    getAndShowAllContacts: getAndShowAllContacts,
+    getAndShowAllSMSs: getAndShowAllSMSs
   };
 })();
 

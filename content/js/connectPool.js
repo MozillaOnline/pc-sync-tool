@@ -26,7 +26,8 @@ TCPConnectionPool.prototype = {
       host: 'localhost',
       port: 10010,
       onenable: emptyFunction,
-      ondisable: emptyFunction
+      ondisable: emptyFunction,
+      onMsmListening: emptyFunction
     }, options);
 
     this._connPool = [];
@@ -130,7 +131,7 @@ TCPConnectionPool.prototype = {
    */
   _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd,
                                                   sendCallback, recvList) {
-    this.log('Receive msg: ' + jsonCmd);
+    this.log('Receive msg: ' + JSON.stringify(jsonCmd));
 
     var wrapper = this._getWrapperBySocket(socket);
     if (!wrapper) {
@@ -147,6 +148,12 @@ TCPConnectionPool.prototype = {
     var dataList = wrapper.recvList;
     // reset the recvList of the wrapper which is really important.
     wrapper.recvList = [];
+
+    //set message listener handle
+    if (jsonCmd.type == 5 && jsonCmd.command == 4 && jsonCmd.result == 0) {
+      this.options.onMsmListening(JSON.parse(dataList.join('')));
+      return;
+    }
 
     try {
       if (callback.json) {

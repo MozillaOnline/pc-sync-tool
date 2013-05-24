@@ -178,32 +178,36 @@ var CMD = (function() {
 
    /***** SMS commands *****/
     SMS: {
+      getAllMessages:  createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.getAllMessages),
       /**
        * data:
        *   SMS Filter
        */
-      // getMessages:    createCommand(CMD_TYPE.sms, CMD_SMS_GETMESSAGES),
+      getMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.getMessageById),
+
       /**
        * data:
-       *   {
-       *     id: ['10086', '10010'],
-       *     message: 'Here is the message content'
+       *   string like: "number: '10086', message: 'Here is the message content'"
        *   }
        */
-      // sendMessage:     createCommand(CMD_TYPE.sms, CMD_SMS_SENTMESSAGE),
+      sendMessage:     createCommand(CMD_TYPE.sms, SMS_COMMAND.sendMessage),
+
       /**
        * data:
-       *   {
-       *     id: [id1, id2],
-       *     readbool: true   // or false
+       *   string like: "number: ['10086','13584651421'], message: 'Here is the message content'"
        *   }
        */
-      // markMessageRead: createCommand(CMD_TYPE.sms, CMD_SMS_MARK_READ),
+      sendMessages:     createCommand(CMD_TYPE.sms, SMS_COMMAND.sendMessages),
+
       /**
        * data:
        *   [id1, id2]
        */
-      // deleteMessages:  createCommand(CMD_TYPE.sms, CMD_SMS_DELETE)
+      deleteMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.deleteMessageById),
+
+      listenMessage:  createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.listenMessage),
+
+      markReadMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.markReadMessageById)
     }
   };
 })();
