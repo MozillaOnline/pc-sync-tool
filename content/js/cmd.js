@@ -154,12 +154,12 @@ var CMD = (function() {
        * data:
        *   [fileName1, fileName2]
        */
-      // getMusicsContent:  createCommand(CMD_TYPE.music, CMD_MUSIC_GETCONTENT),
+      initMusic:  createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.initMusic),
       /**
        * data:
        *   [fileName1, fileName2]
        */
-      // deleteMusics:      createCommand(CMD_TYPE.music, CMD_MUSIC_DELETE),
+      //deleteMusics:      createCommand(CMD_TYPE.music, CMD_MUSIC_DELETE),
       /**
        * data:
        *   [{
@@ -173,7 +173,7 @@ var CMD = (function() {
        * data:
        *   [oldName, newName]
        */
-      // renameMusic:       createCommand(CMD_TYPE.music, CMD_MUSIC_RENAME),
+      //renameMusic:       createCommand(CMD_TYPE.music, CMD_MUSIC_RENAME),
     },
 
    /***** SMS commands *****/

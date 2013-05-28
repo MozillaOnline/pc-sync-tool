@@ -5,6 +5,7 @@
   <title data-l10n-id="ffos-assistant">FFOS Assistant</title>
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/main.css">
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/contact.css">
+  <link rel="stylesheet" href="chrome://ffosassistant/content/style/music.css">
   <link rel="resource" type="application/l10n" href="chrome://ffosassistant/content/locales/locales.ini">
   <link REL="shortcut icon" HREF="chrome://ffosassistant/content/style/icons/favicon.ico">
   <script type="text/javascript" src="chrome://ffosassistant/content/js/l10n.js"></script>
@@ -18,6 +19,7 @@
   <script type="text/javascript" src="chrome://ffosassistant/content/js/cmd.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/connectPool.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/contact_list.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/music_list.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/form.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/main.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/view.js"></script>
@@ -230,8 +232,43 @@
           <section id="apps-view" class="view coming-soon" hidden>
             <h1 data-l10n-id="apps" class="title">应用程序</h1>
           </section>
-          <section id="music-view" class="view coming-soon" hidden>
+          <section id="music-view" class="view" hidden>
             <h1 data-l10n-id="music" class="title">音乐</h1>
+            <div class="view-body">
+              <div class="music-list-box">
+                <div class="music-ops-box">
+                  <div id="select-all-musics" class="music-op">
+                    <input id="select-all" type="checkbox">
+                    <label for="select-all" data-l10n-id="selectall">全选</label>
+                  </div>
+                  <div id="remove-musics" data-disabled="true" class="music-op">
+                    <label data-l10n-id="delete">删除</label>
+                  </div>
+                  <div id="export-musics" class="music-op">
+                    <label data-l10n-id="export">导出</label>
+                  </div>
+                  <div id="import-musics" class="music-op">
+                    <label data-l10n-id="import">导入</label>
+                  </div>
+                  <div id="refresh-musics" class="music-op">
+                    <label data-l10n-id="refresh">刷新</label>
+                  </div>
+                </div>
+                <!-- music list -->
+                <div id="music-list-container">
+                  <!-- div class="music-index">P</div>
+                  <div class="music-list-item">
+                    <input type="checkbox"></input>
+                    <div class="bookmark"></div>
+                    <div class="avatar-small"></div>
+                    <div class="music-info">
+                      <div class="name">Pin Zhang</div>
+                      <div class="tel">10086</div>
+                    </div>
+                  </div -->
+                </div>
+              </div>
+            </div>
           </section>
           <section id="gallery-view" class="view coming-soon" hidden>
             <h1 data-l10n-id="gallery" class="title"></h1>
