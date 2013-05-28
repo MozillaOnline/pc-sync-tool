@@ -101,6 +101,21 @@ var FFOSAssistant = (function() {
     });
   }
 
+  function initAndGetAndShowAllMusics() {
+    CMD.Musics.initMusic(function onresponse_initMusic(message) {
+      CMD.Musics.getAllMusicsInfo(function onresponse_getAllMusicsInfo(message) {
+	// Make sure the 'select-all' box is not checked.
+	MusicList.selectAllMusics(false);
+	var dataJSON = JSON.parse(message.data);
+	MusicList.init(dataJSON);
+      }, function onerror_getAllMusicsInfo(message) {
+	log('Error occurs when fetching all musics.');
+      });
+    }, function onerror_initMusic(message) {
+      log('Error occurs when fetching all musics.');
+    });
+  }
+  
   function connectToUSB(event) {
     var timeout = null;
 
@@ -202,6 +217,7 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
     ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);
     ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSs);
+    ViewManager.addViewEventListener('music-view', 'firstshow', initAndGetAndShowAllMusics);
   }
 
   function addDeviceManagerEventListeners() {
