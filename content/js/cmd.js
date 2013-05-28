@@ -154,7 +154,7 @@ var CMD = (function() {
        * data:
        *   [fileName1, fileName2]
        */
-      initMusic:  createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.initMusic),
+      //initMusic:  createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.initMusic),
       /**
        * data:
        *   [fileName1, fileName2]
