@@ -36,6 +36,19 @@ function getDownloadURLForInstanceId(id) {
   for (var i = 0; i < driverList.devices.length; i++) {
     if (id == driverList.devices[i].device_instance_id) {
       downloadURL = driverList.devices[i].driver_download_url;
+      // Check 32 or 64 bit
+      if (typeof downloadURL == 'object'
+          && !!downloadURL['32']
+          && !!downloadURL['64']) {
+        var oscpu = Cc["@mozilla.org/network/protocol;1?name=http"]
+                      .getService(Ci.nsIHttpProtocolHandler).oscpu;
+        dump('oscpu: ' + oscpu + '\n');
+        if (oscpu.indexOf('64') > 0) {
+          return downloadURL['64'];
+        } else {
+          return downloadURL['32'];
+        }
+      }
       break;
     }
   }
