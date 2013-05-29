@@ -213,7 +213,7 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
     ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);
     ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSs);
-    ViewManager.addViewEventListener('music-view', 'firstshow', initAndGetAndShowAllMusics);
+    ViewManager.addViewEventListener('music-view', 'firstshow', getAndShowAllMusics);
   }
 
   function addDeviceManagerEventListeners() {
