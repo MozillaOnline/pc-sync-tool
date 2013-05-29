@@ -103,13 +103,13 @@ var FFOSAssistant = (function() {
 
   function getAndShowAllMusics() {
     CMD.Musics.getAllMusicsInfo(function onresponse_getAllMusicsInfo(message) {
-	// Make sure the 'select-all' box is not checked.
-	MusicList.selectAllMusics(false);
-	var dataJSON = JSON.parse(message.data);
-	MusicList.init(dataJSON);
-      }, function onerror_getAllMusicsInfo(message) {
-	log('Error occurs when fetching all musics.');
-      });
+      // Make sure the 'select-all' box is not checked.
+      MusicList.selectAllMusics(false);
+      var dataJSON = JSON.parse(message.data);
+      MusicList.init(dataJSON);
+    }, function onerror_getAllMusicsInfo(message) {
+      log('Error occurs when fetching all musics.');
+    });
   }
   
   function connectToUSB(event) {
@@ -237,21 +237,13 @@ var FFOSAssistant = (function() {
     });
 
     document.addEventListener(DriverManager.EVENT_DEVICE_READY, function(event) {
-      new ModalDialog({
-        title: 'Device Ready',
-        titleL10n: 'device-ready-title',
-        bodyText: 'Device is ready to be managed.',
-        bodyTextL10n: 'device-ready-body'
-      });
+      // Just make sure the modal dialog is closed.
+      ModalDialog.closeAll();
     });
 
     document.addEventListener(DriverManager.EVENT_NO_DEVICE_FOUND, function(event) {
-      new ModalDialog({
-        title: 'No Device',
-        titleL10n: 'no-device-title',
-        bodyText: 'No device is found.',
-        bodyTextL10n: 'no-device-body'
-      });
+      // Just make sure the modal dialog is closed.
+      ModalDialog.closeAll();
     });
 
     document.addEventListener(DriverManager.EVENT_DEVICE_CHANGED, function(event) {

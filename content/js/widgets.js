@@ -258,6 +258,12 @@ function ModalDialog(options) {
   this.initailize(options);
 }
 
+ModalDialog.closeAll = function() {
+  var evt = document.createEvent('Event');
+  evt.initEvent('ModalDialog:show', true, true);
+  document.dispatchEvent(evt);
+};
+
 ModalDialog.prototype = {
   initailize: function(options) {
     this.options = extend({
@@ -313,7 +319,6 @@ ModalDialog.prototype = {
         bodyContainer.dataset.l10nId = this.options.bodyTextL10n;
       }
     }
-
 
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
