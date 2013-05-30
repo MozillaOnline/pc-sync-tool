@@ -47,18 +47,12 @@ var FFOSAssistant = (function() {
         usedInBytes: 0,
         freeInBytes: 0
       };
+      var dataJSON = JSON.parse(message.data);
+      deviceInfo.usedInBytes = dataJSON[4].usedSpace;
+      deviceInfo.freeInBytes = dataJSON[4].freeSpace;
+      sdcardInfo.usedInBytes = dataJSON[3].usedSpace;
+      sdcardInfo.freeInBytes = dataJSON[3].freeSpace;
 
-      message.data.forEach(function(item) {
-        var usedInBytes = item.data[0];
-        var freeInBytes = item.data[1];
-        if (item.type === 'apps') {
-          deviceInfo.usedInBytes = usedInBytes;
-          deviceInfo.freeInBytes = freeInBytes;
-        } else {
-          sdcardInfo.usedInBytes += usedInBytes;
-          sdcardInfo.freeInBytes = freeInBytes;
-        }
-      });
 
       fillStorageSummaryInfo('device-storage-summary', deviceInfo);
       fillStorageSummaryInfo('sdcard-storage-summary', sdcardInfo);
