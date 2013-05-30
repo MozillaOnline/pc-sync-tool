@@ -33,9 +33,15 @@ var ContactList = (function() {
     html += '    <div class="bookmark"></div>';
     html += '    <div> <img src=' + DEFAULT_AVATAR + ' class="avatar-small"/></div>';
     html += '      <div class="contact-info">';
-    html += '        <div class="name">' + contact.name.join(' ') + '</div>';
+    html += '        <div class="name">';
+
+    if (contact.name) {
+      html += contact.name.join(' ');
+    }
+
+    html += '</div>';
     // Only show the first phone number
-    if (contact.tel.length > 0) {
+    if (contact.tel && contact.tel.length > 0) {
       html += '        <div class="tel">' + contact.tel[0].value +  '</div>';
     }
     html += '      </div>';
