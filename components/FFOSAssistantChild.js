@@ -366,7 +366,8 @@ FFOSAssistant.prototype = {
                       case 'FN':
                         let nameArray = propArray[1].split(' ');
                         if (nameArray.length > 1) {
-                          contact.name = [nameArray[0] + nameArray[1]];
+                          contact.name.push(nameArray[1]);
+                          contact.name.push(nameArray[0]);
                           contact.givenName = [nameArray[1]];
                           contact.familyName = [nameArray[0]];
                         } else {
