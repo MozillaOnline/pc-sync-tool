@@ -281,6 +281,9 @@ var ContactList = (function() {
       $expr('#contact-list-container input[data-checked=false]').length === 0;
     $id('remove-contacts').dataset.disabled =
       $expr('#contact-list-container input[data-checked=true]').length === 0;
+    //todo add css style for export-contact dataset.disabled = true
+    $id('export-contacts').dataset.disabled =
+      $expr('#contact-list-container input[data-checked=true]').length === 0;
   }
 
   /**
@@ -380,32 +383,36 @@ var ContactList = (function() {
     });
 
     $id('export-contacts').addEventListener('click', function onclick_exportContacts(event) {
+      // Do nothing if the button is disabled.
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+
       var content = '';
-      groupedList.getGroupedData().forEach(function(group) {
-        group.dataList.forEach(function(contact) {
-          var vcard = 'BEGIN:VCARD';
-          vcard += '\nVERSION:3.0';
-          vcard += '\nN:' + contact.familyName + ' ' + contact.givenName + ';;;;';
-          vcard += '\nFN:' + contact.familyName + ' ' + contact.givenName;
-          if (contact.org != '') {
-            vcard += '\nORG:' + contact.org;
-          }
-          contact.tel.forEach(function(t) {
-            vcard += '\nTEL;TYPE=' + t.type + ':' + t.value;
-          });
-          contact.email.forEach(function(e) {
-            vcard += '\nEMAIL;TYPE=' + e.type + ':' + e.value;
-          });
-          contact.adr.forEach(function(adr) {
-            vcard += '\nADR;TYPE=' + adr.type + ':;;' + adr.streetAddress + ';'
-                                                     + adr.locality + ';'
-                                                     + adr.region + ';'
-                                                     + adr.postalCode + ';'
-                                                     + adr.countryName;
-          });
-          vcard += '\nEND:VCARD';
-          content += vcard + '\n';
+      $expr('#contact-list-container div.selected').forEach(function(item) {
+        var contact = JSON.parse(item.dataset.contact);
+        var vcard = 'BEGIN:VCARD';
+        vcard += '\nVERSION:3.0';
+        vcard += '\nN:' + contact.familyName + ' ' + contact.givenName + ';;;;';
+        vcard += '\nFN:' + contact.familyName + ' ' + contact.givenName;
+        if (contact.org != '') {
+          vcard += '\nORG:' + contact.org;
+        }
+        contact.tel.forEach(function(t) {
+          vcard += '\nTEL;TYPE=' + t.type + ':' + t.value;
         });
+        contact.email.forEach(function(e) {
+          vcard += '\nEMAIL;TYPE=' + e.type + ':' + e.value;
+        });
+        contact.adr.forEach(function(adr) {
+          vcard += '\nADR;TYPE=' + adr.type + ':;;' + adr.streetAddress + ';'
+                                                    + adr.locality + ';'
+                                                    + adr.region + ';'
+                                                    + adr.postalCode + ';'
+                                                    + adr.countryName;
+        });
+        vcard += '\nEND:VCARD';
+        content += vcard + '\n';
       });
 
       navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
