@@ -125,6 +125,7 @@ var FFOSAssistant = (function() {
         window.clearTimeout(timeout);
         showConnectView();
         socket = null;
+        ViewManager.reset();
       } ,
       onMsmListening: function onMsmListening(message) {
         MessageList.onMessage(message);

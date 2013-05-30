@@ -11,13 +11,29 @@ var ViewManager = (function () {
     }
   }
 
+  function reset() {
+      $expr('#container .item').forEach(function reset_func(elem) {
+      var viewId = elem.dataset.linkedView;
+      if (!viewId) {
+        return;
+      }
+
+      var linkedView = $id(viewId);
+      if (!linkedView) {
+        return;
+      }
+
+      linkedView.dataset.shown = false;
+    });
+  }
+
   function showView(viewId) {
     var viewElem = $id(viewId);
     if (!viewElem) {
       return;
     }
 
-    var tabId = viewElem.getAttribute('data-linked-tab');
+    var tabId = viewElem.dataset.linkedTab;
     if (!tabId) {
       return;
     }
@@ -44,8 +60,8 @@ var ViewManager = (function () {
     });
     viewElem.hidden = false;
 
-    if (!viewElem.shown) {
-      viewElem.shown = true;
+    if (viewElem.dataset.shown != "true") {
+      viewElem.dataset.shown = true;
       callEvent('firstshow', viewId);
     }
   }
@@ -104,7 +120,7 @@ var ViewManager = (function () {
 
   function init() {
     $expr('#container .item').forEach(function add_click_func(elem) {
-      var viewId = elem.getAttribute('data-linked-view');
+      var viewId = elem.dataset.linkedView;
       if (!viewId) {
         return;
       }
@@ -115,8 +131,7 @@ var ViewManager = (function () {
       }
 
       // Link content view with tab
-      linkedView.setAttribute('data-linked-tab', elem.id);
-
+      linkedView.dataset.linkedTab = elem.id;
       elem.addEventListener('click', function(event) {
         showView(this.getAttribute('data-linked-view'));
       });
@@ -130,6 +145,7 @@ var ViewManager = (function () {
 
   return {
     // Show the view by the given id, and hide all other sibling views
+    reset: reset,
     showView: showView,
     setTitle: setTitle,
     // Show the card view by given id, and hide all other sibling views
