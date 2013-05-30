@@ -10,25 +10,17 @@ var ContactList = (function() {
   function toggleFavorite(item) {
     var favorite = item.classList.toggle('favorite');
     var contact = getContact(item.dataset.contactId);
-    if (!contact.category) {
-      contact.category = [];
-    }
+    contact.category = [];
 
     if (favorite) {
       contact.category.push('favorite');
-    } else {
-      contact.category = contact.category.filter(function(cat) {
-        return cat != 'favorite';
-      });
     }
 
     // Update contact
-    CMD.Contacts.updateContacts([contact], function onresponse_updatecontact(message) {
-      // Update failed
-      if (!message.data || message.data.length == 0) {
+    CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {
+      if (message.result) {
         item.classList.toggle('favorite');
       }
-      // TODO double check if the category is updated.
     }, function onerror_updateContact() {
       alert('Error occurs when updating contact.');
     });
