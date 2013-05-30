@@ -311,8 +311,8 @@
               <div class="music-list-box">
                 <div class="music-ops-box">
                   <div id="select-all-musics" class="music-op">
-                    <input id="select-all" type="checkbox">
-                    <label for="select-all" data-l10n-id="selectall">全选</label>
+                    <input id="select-all-musics-checkbox" type="checkbox">
+                    <label for="select-all-musics" data-l10n-id="selectall">全选</label>
                   </div>
                   <div id="remove-musics" data-disabled="true" class="music-op">
                     <label data-l10n-id="delete">删除</label>
@@ -327,18 +327,34 @@
                     <label data-l10n-id="refresh">刷新</label>
                   </div>
                 </div>
-                <!-- music list -->
+                <div id="music-header">
+                <div class="music-names" data-l10n-id="songs"> <label>歌曲</label></div>
+                <div class="music-singer" data-l10n-id="singer"> <label>演唱</label></div>
+                <div class="music-album" data-l10n-id="album"> <label>专辑</label></div>
+                <div class="music-timespan" data-l10n-id="timespan"> <label>时长</label></div>
+                <div class="music-type"> <label>类型</label></div>
+                <div class="music-size"> <label>大小</label></div>
+                </div>
+                <!-- Music list -->
                 <div id="music-list-container">
-                  <!-- div class="music-index">P</div>
+                  <!--<div class="music-list-item">
+                    <div><input type="checkbox"></input></div>
+                    <div class="music-names item">诺雅芳周</div>
+                    <div class="music-singer item">五月天</div>
+                    <div class="music-album item">第二人生</div>
+                    <div class="music-timespan item">5:15</div>
+                    <div class="music-type item">mp3</div>
+                    <div class="music-size item">13.14MB</div>
+                  </div>
                   <div class="music-list-item">
-                    <input type="checkbox"></input>
-                    <div class="bookmark"></div>
-                    <div class="avatar-small"></div>
-                    <div class="music-info">
-                      <div class="name">Pin Zhang</div>
-                      <div class="tel">10086</div>
-                    </div>
-                  </div -->
+                    <div><input type="checkbox"></input></div>
+                    <div class="music-names">诺雅芳周</div>
+                    <div class="music-singer">五月天</div>
+                    <div class="music-album">第二人生</div>
+                    <div class="music-timespan">5:15</div>
+                    <div class="music-type">mp3</div>
+                    <div class="music-size">13.14MB</div>
+                  </div> -->
                 </div>
               </div>
             </div>

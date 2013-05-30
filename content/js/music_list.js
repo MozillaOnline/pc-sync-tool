@@ -6,38 +6,59 @@ var MusicList = (function() {
   function getListContainer() {
     return $id('music-list-container');
   }
+
+  function retriveName(str) {
+    var index = str.lastIndexOf('/');
+    if (index < 0) {
+      return 'Unkown';
+    }
+    str = str.substr(index + 1, str.length);
+
+    index = str.lastIndexOf('.');
+    if (index < 0) {
+      return str;
+    }
+    return str.substr(0, index);
+  }
   
+  //function retriveTimeSpan() {}
+  function retriveTYpe(type) {
+    var index = type.lastIndexOf('/');
+    if (index < 0) {
+      return type;
+    }
+    return type.substr(index + 1, type.length);
+  }
+
+  function retriveSize(size) {
+    return Math.round(100 * size/1024/1024) / 100;
+  }
   function createMusicListItem(music) {
     var html = '';
-    html += '<div>';
-    html += '  <input type="checkbox" data-checked="false"></input>';
-    html += '    <div class="bookmark"></div>';
-    html += '    <div class="avatar-small" data-noavatar="true"></div>';
-    html += '      <div class="music-info">';
-    html += '        <div class="name">' + music.name + '</div>';
+    html += '<div>  <input type="checkbox" data-checked="false"></input> </div>';
+    html += '<div class="music-names item">' +  retriveName(music.name) + '</div>';
+    html += '<div class="music-singer item">' + music.metadate.artist + '</div>';
+    html += '<div class="music-album item">' + music.metadate.album + '</div>';
+    html += '<div class="music-timespan item">' + '5:05' + '</div>';
+    html += '<div class="music-type item">' + retriveTYpe(music.type) +  '</div>';
+    html += '<div class="music-size item">' + retriveSize(music.size) + ' MB' +  '</div>';
     
-      html += '        <div class="type">' + music.type +  '</div>';
-      html += '        <div class="size">' + music.size +  '</div>';
-      html += '        <div class="date">' + music.date +  '</div>';
-
-    html += '      </div>';
-    html += '    </div>';
-
     var elem = document.createElement('div');
     elem.classList.add('music-list-item');
-    if (music.category && music.category.indexOf('favorite') > -1) {
-      elem.classList.add('favorite');
-    }
     elem.innerHTML = html;
 
-    elem.dataset.music = JSON.stringify(music);
+    //elem.dataset.music = JSON.stringify(music);
     //elem.dataset.contactId = music.id;
     //elem.id = 'music-' + music.id;
-    elem.dataset.avatar = '';
+    //elem.dataset.avatar = '';
 
-    elem.onclick = function onclick_music_list(event) {
+    elem.onclick = function onclick_messages_list(event) {
       var target = event.target;
+      if (target instanceof HTMLInputElement) {
+        selectMusicItem(elem, target.checked);
+      }
     };
+    //navigator.mozL10n.translate(elem);
 
     return elem;
   }
@@ -57,31 +78,12 @@ var MusicList = (function() {
   function initList(musics) {
     var container = getListContainer();
     container.innerHTML = '';
-
-    groupedList = new GroupedList({
-      dataList: musics,
-      dataIndexer: function getMusicIndex(music) {
-        // TODO
-        // - index family name for Chinese name
-        // - filter the special chars
-        var firstChar = music.name.charAt(0).toUpperCase();
-        var pinyin = makePy(firstChar);
-
-        // Sometimes no pinyin found, like: 红
-        if (pinyin.length == 0) {
-          return '#';
-        }
-
-        return pinyin[0].toUpperCase();
-      },
-      renderFunc: createMusicListItem,
-      container: container,
-      ondatachange: checkIfMusicListEmpty
+    musics.forEach(function(music) {
+      //console.log('djod');
+    var listItem = createMusicListItem(music);
+    container.appendChild(listItem);
     });
-
-    groupedList.render();
-
-    checkIfMusicListEmpty();
+    //checkIfMusicListEmpty();
   }
 
   function selectAllMusics(select) {
@@ -89,7 +91,7 @@ var MusicList = (function() {
       selectMusicItem(item, select);
     });
 
-    $id('select-all').checked = select;
+    $id('select-all-musics-checkbox').checked = select;
   }
 
   function selectMusicItem(item, select) {
@@ -104,9 +106,9 @@ var MusicList = (function() {
       checkbox.dataset.checked = !!select;
     });
 
-    $id('select-all').checked =
+    $id('select-all-musics-checkbox').checked =
       $expr('#music-list-container input[data-checked=false]').length === 0;
-    $id('remove-contacts').dataset.disabled =
+    $id('remove-musics').dataset.disabled =
       $expr('#music-list-container input[data-checked=true]').length === 0;
   }
 
@@ -162,99 +164,29 @@ var MusicList = (function() {
   }
   
   window.addEventListener('load', function wnd_onload(event) {
-    $id('select-all').addEventListener('change', function sall_onclick(event) {
+    $id('select-all-musics-checkbox').addEventListener('change', function sall_onclick(event) {
       selectAllMusics(this.checked);
     });
 
     $id('remove-musics').addEventListener('click', function onclick_removeMusic(event) {
-      // Do nothing if the button is disabled.
-      if (this.dataset.disabled == 'true') {
-        return;
-      }
-
-      var ids = [];
-      $expr('#music-list-container div.selected').forEach(function(item) {
-        ids.push(item.dataset.contactId);
-      });
-      
-      if (window.confirm(_('delete-musics-confirm', {n: ids.length}))) {
-        if ($id('select-all').checked) {
-          ContactList.clearAllMusics();
-        } else {
-          ids.forEach(function(item) {
-            ContactList.removeMusic(item);
-          });
-        }
-      }
+      alert('remove musics');
     });
-
 
     $id('refresh-musics').addEventListener('click', function onclick_refreshMusics(event) {
       FFOSAssistant.getAndShowAllMusics();
     });
 
     $id('import-musics').addEventListener('click', function onclick_importMusics(event) {
-      navigator.mozFFOSAssistant.readFromDisk(function (state, musicList){
-        if(state) {
-          var jsonMusicList = JSON.parse(musicList);
-          jsonContactList.forEach(function(music) {
-              CMD.Contacts.addContact(JSON.stringify(music), function onresponse_addcontact(message) {
-              var contactsAdded = [];
-              if (!message.result) {
-                contactsAdded.push(JSON.parse(message.data));
-              }
-              ContactList.addContacts(contactsAdded);
-              }, function onerror_addcontact(message) {
-              alert('Error occurs when adding contacts: ' + JSON.stringify(message));
-            });
-          });
-        }
-      });
+      alert('import musics');
     });
 
-    $id('export-contacts').addEventListener('click', function onclick_exportContacts(event) {
-      var content = '';
-      groupedList.getGroupedData().forEach(function(group) {
-        group.dataList.forEach(function(contact) {
-          var vcard = 'BEGIN:VCARD';
-          vcard += '\nVERSION:3.0';
-          vcard += '\nN:' + contact.familyName + ' ' + contact.givenName + ';;;;';
-          vcard += '\nFN:' + contact.familyName + ' ' + contact.givenName;
-          if (contact.org != '') {
-            vcard += '\nORG:' + contact.org;
-          }
-          contact.tel.forEach(function(t) {
-            vcard += '\nTEL;TYPE=' + t.type + ':' + t.value;
-          });
-          contact.email.forEach(function(e) {
-            vcard += '\nEMAIL;TYPE=' + e.type + ':' + e.value;
-          });
-          contact.adr.forEach(function(adr) {
-            vcard += '\nADR;TYPE=' + adr.type + ':;;' + adr.streetAddress + ';'
-                                                     + adr.locality + ';'
-                                                     + adr.region + ';'
-                                                     + adr.postalCode + ';'
-                                                     + adr.countryName;
-          });
-          vcard += '\nEND:VCARD';
-          content += vcard + '\n';
-        });
-      });
-
-      navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
-        if (status) {
-          alert('Contacts have been save to disk.');
-        }
-      }, {
-        title: 'Choose where to save',
-        name: 'contacts.vcf',
-        extension: 'vcf'
-      });
+    $id('export-musics').addEventListener('click', function onclick_exportMusics(event) {
+      alert('export musics');
     });
   });
 
   return {
-    init:              initList,
+    init:            initList,
     getMusic:        getMusic,
     selectAllMusics: selectAllMusics,
     removeMusic: removeMusic

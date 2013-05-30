@@ -57,200 +57,114 @@
   background-image: url("images/refresh.png");
 }
 
-#add-new-music {
-  background-image: url("images/add.png");
-}
-
 #music-list-container {
   padding-left: 1rem;
   max-height: 60rem;
   overflow: auto;
 }
 
-.data-index {
-  border-bottom: .2rem solid #FFA600;
-  padding-left: 1rem;
-  color: #FF9A00;
-  padding: 1rem;
+#music-header{
+  padding: 0 0 0 1rem;
+  height: 3rem;
+  background-color: #FFC280;
+}
+
+#music-header div {
+  font-size: 1.4rem;
+}
+
+#music-header .music-names {
+  float:left;
+  padding: 0.5rem 0 0  2.5rem;
+  width:15rem;
+}
+
+#music-header .music-singer {
+  float:left;
+  padding: 0.5rem 0 0  2rem;
+  width:10rem;
+}
+
+#music-header .music-album {
+  float:left;
+  padding: 0.5rem 0 0  2rem;
+  width:15rem;
+}
+
+#music-header .music-timespan {
+  float:left;
+  padding: 0.5rem 0 0  2rem;
+  width:5rem;
+}
+
+#music-header .music-type {
+  float:left;
+  padding: 0.5rem 0 0  2rem;
+  width:5rem;
+}
+
+#music-header .music-size {
+  float:left;
+  padding: 0.5rem 0 0  2rem;
+  width:5rem;
+}
+
+.item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.music-list-item .music-names {
+  float:left;
+  margin: .5rem 0 0  .5rem;
+  width:17rem;
+}
+
+.music-list-item .music-singer {
+  float:left;
+  padding: 0.5rem 0 0 0;
+  width:12rem;
+}
+
+.music-list-item .music-album {
+  float:left;
+  padding: 0.5rem 0 0 0;
+  width:17rem;
+}
+
+.music-list-item .music-timespan {
+  float:left;
+  padding: 0.5rem 0 0 0;
+  width:7rem;
+}
+
+.music-list-item .music-type {
+  float:left;
+  padding: 0.5rem 0 0 0;
+  width:7rem;
+}
+
+.music-list-item .music-size {
+  float:left;
+  padding: 0.5rem 0 0 0;
+  width:7rem;
 }
 
 .music-list-item {
-  margin-top: .5rem;
-}
-
-.music-list-item:active {
-  background-color: #EEE;
-}
-
-.music-list-item[data-focused=true] {
-  background-color: #EEE;
+  height: 2.5rem;
 }
 
 .music-list-item > div {
-  overflow: hidden;
-  cursor: pointer;
-  padding: .5rem 0 .5rem 1rem;
+  float:left;
 }
+
 
 .music-list-item > div > * {
+  width: -moz-max-content;
+}
+
+.music-list-item input[type="checkbox"] {
   float: left;
+  margin: .8rem 0 0 .5rem;
 }
-
-.music-list-item input[type=checkbox] {
-  margin-top: 1rem;
-}
-
-.music-list-item .bookmark {
-  width: 2rem;
-  height: 3.3rem;
-  text-align: center;
-  background-image: url("images/bookmark.png");
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-
-#music-list-container div.favorite .bookmark {
-  background-image: url("images/bookmarked.png");
-}
-
-.music-list-item .avatar-small {
-  width: 3.2rem;
-  height: 3.2rem;
-}
-
-.music-list-item .profilePic {
-  width: 9rem;
-}
-
-.music-list-item .avatar-small[data-noavatar=true] {
-  background: url("images/noavatar.png") no-repeat scroll center center  transparent;
-}
-
-.music-list-item .music-info {
-  font-size: 1.1rem;
-  padding-left: 1rem;
-}
-
-.music-list-item .music-info .tel {
-  color: #999;
-}
-
-/********* music form ********/
-#music-form .avatar {
-  width: 8rem;
-  height: 8rem;
-  float: left;
-  margin: .8rem .5rem;
-  background-color: #EEE;
-}
-
-.item-body-exp {
-  overflow: hidden;
-}
-
-#music-form li {
-  padding-right: 3rem;
-}
-
-#music-form div {
-  position: relative;
-}
-
-#music-form ul {
-  padding-bottom: 1rem;
-}
-
-#music-form .action-delete {
-  position: absolute;
-  height: 2.2rem;
-  width: 2.2rem;
-  background: url(images/delete.png) no-repeat;
-  left: 100%;
-  top: 50%;
-  margin: -1rem 0 0 1rem;
-}
-
-/* Fieldset */
-fieldset {
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-  border-radius: 0.3rem;
-  border: 0.1rem solid rgba(0,0,0,.2);
-  font: 1.4rem/1em "MozTT", Sans-serif;
-  margin: 0 0 .5rem;
-}
-
-fieldset + fieldset {
-  margin-top: 1.5rem;
-}
-
-fieldset select {
-  width: 6rem;
-}
-
-fieldset legend {
-  -moz-box-sizing: border-box;
-  position: relative;
-  float: left;
-  width: 9.5rem;
-  height: 4rem;
-  padding: 0 0.5rem 0 1.8rem;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  color: #333;
-  line-height: 4rem;
-  text-transform: uppercase;
-}
-
-fieldset legend.action {
-  position: relative;
-}
-
-fieldset section {
-  border-left: 0.1rem solid #DDDDDD;
-  border-radius: 0 0.3rem 0.3rem 0;
-  display: block;
-  overflow: hidden;
-}
-
-fieldset section p {
-  border-bottom: 0.1rem solid #DDDDDD;
-  margin: 0;
-}
-
-fieldset section input[type="text"],
-fieldset section input[type="password"],
-fieldset section input[type="email"],
-fieldset section input[type="tel"],
-fieldset section input[type="search"],
-fieldset section input[type="number"],
-fieldset section textarea {
-  background: none repeat scroll 0 0 transparent;
-  border: medium none;
-  border-radius: 0 0 0 0;
-  font-weight: 600;
-  height: 4rem;
-}
-
-form p input:valid, form p input:valid:focus {
-  padding-right: 3.5rem;
-}
-
-button.add-new-button {
-  position: relative;
-  border: 0.1rem solid #9F9F9F;
-  background: none repeat scroll 0 0 #E8F2FF;
-  width: 100%;
-  padding: .5rem 2rem;
-  text-align: left;
-  margin: -1rem 0 .5rem;
-  border-radius: 0 0 .3rem .3rem;
-  vertical-align: middle;
-}
-
-.empty-list #cancel-edit-music {
-  display: none;
-}
-

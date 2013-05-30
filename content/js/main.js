@@ -296,7 +296,8 @@ var FFOSAssistant = (function() {
     },
 
     getAndShowAllContacts: getAndShowAllContacts,
-    getAndShowAllSMSs: getAndShowAllSMSs
+    getAndShowAllSMSs: getAndShowAllSMSs,
+    getAndShowAllMusics : getAndShowAllMusics
   };
 })();
 
