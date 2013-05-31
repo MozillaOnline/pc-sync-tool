@@ -97,7 +97,7 @@ ContactField.prototype = {
       html += '        <select name="type">';
       this.options.typeList.forEach(function(type) {
         var selected = (initValue && initValue.type &&
-                        type.toLowerCase() === initValue.type.toLowerCase()) ? true : false;
+                        type.toLowerCase() === initValue.type[0].toLowerCase()) ? true : false;
         html += '        <option value="' + type +
                 '" data-l10n-id="' + type + '"' + (selected ? ' selected' : '') + '>';
         html += _(type);

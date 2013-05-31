@@ -199,7 +199,9 @@ GroupedList.prototype = {
     var groupElem = this._getGroupElem(group.index);
     if (groupElem) {
       // TODO sort data elements
-      groupElem.appendChild(this.options.renderFunc(dataObj));
+      var elem = this.options.renderFunc(dataObj);
+      elem.dataset.dataIdentity = this.options.dataIdentifier(dataObj);
+      groupElem.appendChild(elem);
       return;
     }
 
