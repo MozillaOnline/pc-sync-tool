@@ -8,6 +8,9 @@ if (DEBUG)
 else
   debug = function (s) { };
 
+var device = '';
+var ADB_PATH = '';
+
 var libadb = (function() {
   let library = null;
   let findDevice = null;
@@ -22,9 +25,10 @@ var libadb = (function() {
       }
 
       library = ctypes.open(path);
-      findDevice  = library.declare('findDevice',  ctypes.default_abi, ctypes.int);
-      setupDevice = library.declare('setupDevice', ctypes.default_abi, ctypes.int);
+      findDevice  = library.declare('findDevice',  ctypes.default_abi, ctypes.char.ptr);
+      setupDevice = library.declare('setupDevice', ctypes.default_abi, ctypes.int, ctypes.char.ptr);
       setupPath   = library.declare('setupPath',   ctypes.default_abi, ctypes.void_t, ctypes.char.ptr);
+      runadbcmd   = library.declare('runadbcmd',   ctypes.default_abi, ctypes.char.ptr, ctypes.char.ptr);
     },
 
     findDevice: function() {
@@ -37,9 +41,9 @@ var libadb = (function() {
 
     setupDevice: function() {
       if (setupDevice) {
-        return setupDevice();
+        if (device != '')
+          return setupDevice(device);
       }
-
       return 0;
     },
 
@@ -47,7 +51,6 @@ var libadb = (function() {
       if (setupPath) {
         return setupPath(adbPath);
       }
-
       return;
     }
   };
@@ -66,6 +69,7 @@ self.onmessage = function(e) {
       libadb.loadLib(e.data.libPath);
       // Set the path of adb executive file
       libadb.setupPath(e.data.adbPath);
+      ADB_PATH = e.data.adbPath;
       postMessage({
         id: id,
         result: true
@@ -79,7 +83,6 @@ self.onmessage = function(e) {
       break;
     case 'setupDevice':
       let result = libadb.setupDevice();
-
       postMessage({
         id: id,
         result: result
@@ -91,7 +94,8 @@ self.onmessage = function(e) {
       startDetecting(e.data.start);
       break;
     case 'RunCmd':
-      dump('run cmd in worker:' + e.data.data);
+      cmd = ADB_PATH + ' ' + e.data.data;
+      libadb.runadbcmd(cmd);
       break;
     default:
       postMessage({
@@ -127,9 +131,14 @@ function startDetecting(start) {
 
   if (start) {
     detectingInterval = setInterval(function checkConnectState() {
-      if (!libadb.findDevice()) {
+      var devices = libadb.findDevice().readString().trim();
+      //todo: hard coded for full_unagi only now, try to add other devices
+      if (devices.indexOf('full_unagi') == -1) {
         setConnected(false);
-      } else if (!libadb.setupDevice()) {
+      } else
+      device = 'full_unagi';
+      var ret = libadb.setupDevice(device);
+      if (!libadb.setupDevice(device)) {
         setConnected(false);
       } else {
         setConnected(true);

@@ -181,7 +181,7 @@ var MusicList = (function() {
     });
 
     $id('export-musics').addEventListener('click', function onclick_exportMusics(event) {
-      navigator.mozFFOSAssistant.runAdbCmd('adb pull');
+      navigator.mozFFOSAssistant.runAdbCmd(' shell mv /sdcard/Music/b2g.ogg /sdcard/Music/b1g.ogg');
     });
   });
 
