@@ -247,8 +247,10 @@ GroupedList.prototype = {
 
   count: function gl_count() {
     var count = 0;
-
-    this.getGroupedData().forEach(function(group) {
+    if (this._groupedData.length == 0) {
+      return count;
+    }
+    this._groupedData.forEach(function(group) {
       count += group.dataList.length;
     });
 

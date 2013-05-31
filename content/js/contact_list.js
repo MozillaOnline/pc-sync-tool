@@ -200,13 +200,22 @@ var ContactList = (function() {
    */
   function clearAllContacts() {
     CMD.Contacts.clearAllContacts(function onresponse_clearAllContacts(message) {
-      // Make sure the 'select-all' box is not checked.
-      ContactList.selectAllContacts(false);
-
       if (message.result) {
         alert(message.result);
         return;
       }
+      var ids = [];
+      $expr('#contact-list-container div.selected').forEach(function(item) {
+        ids.push(item.dataset.contactId);
+      });
+      ids.forEach(function(id){
+        var existingContact = getContact(id);
+        groupedList.remove(existingContact);
+        });
+
+      // Make sure the 'select-all' box is not checked.
+      ContactList.selectAllContacts(false);
+
       $id('contact-list-container').innerHTML = '';
       var vcardView = $id('contact-vcard-view');
       vcardView.hidden = true;

@@ -326,7 +326,7 @@ var ContactForm = (function() {
     contact.org        = getFieldValue('org');
     contact.note       = getFieldValue('note');
 
-    if ($id('avatar-e').src != DEFAULT_AVATAR) {
+    if ($id('avatar-e').src.indexOf(DEFAULT_AVATAR) == -1) {
          contact.photo = [$id('avatar-e').src];
     } else {
          contact.photo = [];
