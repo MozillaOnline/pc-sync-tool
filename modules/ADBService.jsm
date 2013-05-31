@@ -117,6 +117,14 @@ let messageReceiver = {
         // Not implemented
         this._sendMessage('ADBService:disconnect:Return', false, null, msg);
         break;
+      case 'ADBService:RunCmd':
+        controlMessage({
+          cmd: 'RunCmd',
+          data: msg.data,
+        }, function Result_RunCmd() {
+          dump('Rum Command Success');
+        });
+        break;
     }
   },
 
@@ -142,7 +150,7 @@ let messageReceiver = {
   },
 };
 
-const messages = ['ADBService:connect', 'ADBService:connected'];
+const messages = ['ADBService:connect', 'ADBService:connected','ADBService:RunCmd'];
 messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });

@@ -43,6 +43,8 @@ interface nsIFFOSAssistant : nsISupports
    */
   boolean readFromDisk(in jsval callback);
 
+  void runAdbCmd(in DOMString cmd);
+
   /**
    * To make the page debuggable by using Firebug, we should not use any privileged
    * interfaces, instead, we open such an interface to support the communication

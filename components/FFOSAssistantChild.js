@@ -423,6 +423,10 @@ FFOSAssistant.prototype = {
     });
   },
 
+  runAdbCmd: function(cmd) {
+    return this._callMessage('ADBService', 'RunCmd', cmd);
+  },
+
   // These are fake implementations, will be replaced by using
   // nsJSDOMEventTargetHelper, see bug 731746
   addEventListener: function(type, listener, useCapture) {

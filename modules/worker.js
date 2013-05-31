@@ -90,6 +90,9 @@ self.onmessage = function(e) {
     case 'startDeviceDetecting':
       startDetecting(e.data.start);
       break;
+    case 'RunCmd':
+      dump('run cmd in worker:' + e.data.data);
+      break;
     default:
       postMessage({
         id: id,

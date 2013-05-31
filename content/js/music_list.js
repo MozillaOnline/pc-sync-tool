@@ -181,7 +181,7 @@ var MusicList = (function() {
     });
 
     $id('export-musics').addEventListener('click', function onclick_exportMusics(event) {
-      alert('export musics');
+      navigator.mozFFOSAssistant.runAdbCmd('adb pull');
     });
   });
 
