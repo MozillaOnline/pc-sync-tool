@@ -62,7 +62,7 @@ FFOSAssistant.prototype = {
                       'ADBService:disconnect:Return:OK', 'ADBService:disconnect:Return:NO',
                       'ADBService:statechange',
                       'DriverDownloader:asyncCommand:Return:OK', 'DriverDownloader:asyncCommand:Return:NO',
-                      'DriverDownloader:message'];
+                      'DriverDownloader:message','ADBService:RunCmd:Return:OK'];
     this.initHelper(aWindow, messages);
   },
 
@@ -158,6 +158,13 @@ FFOSAssistant.prototype = {
         break;
       case 'DriverDownloader:message':
         this._onRevDriverDownloaderMessage(msg.data);
+        break;
+      case 'ADBService:RunCmd:Return:OK':
+        request = this.takeRequest(msg.rid);
+        if (!request) {
+          return;
+        }
+        Services.DOMRequest.fireSuccess(request, msg.data);
         break;
       default:
         break;
@@ -423,7 +430,7 @@ FFOSAssistant.prototype = {
     });
   },
 
-  runAdbCmd: function(cmd) {
+  runCmd: function(cmd) {
     return this._callMessage('ADBService', 'RunCmd', cmd);
   },
 

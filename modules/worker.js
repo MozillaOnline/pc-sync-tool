@@ -24,66 +24,79 @@ var libadb = (function() {
         return;
       }
       library = ctypes.open(path);
-      runCmd   = library.declare('runCmd', ctypes.default_abi, ctypes.char.ptr, ctypes.char.ptr);
+      runCmd = library.declare('runCmd', ctypes.default_abi, ctypes.char.ptr, ctypes.char.ptr);
     },
 
     findDevice: function() {
-		if(runCmd != null){
-			if(ADB_PATH != ''){
-				return runCmd(ADB_PATH+' devices');
-			}
-		}
-		return null;
+      if(runCmd != null){
+        if(ADB_PATH != ''){
+	  return runCmd(ADB_PATH +' devices');
+        }
+      }
+      return null;
     },
 
     setupDevice: function() {
       if(runCmd != null){
-			if(ADB_PATH != ''){
-				if(device != '')
-					return runCmd(ADB_PATH + ' -s ' + device + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
-				else
-					return runCmd(ADB_PATH  + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
-			}
-		}
-		return null;
+        if(ADB_PATH != ''){
+          if(device != '')
+            return runCmd(ADB_PATH + ' -s ' + device + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
+          else
+            return runCmd(ADB_PATH  + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
+        }
+      }
+      return null;
     },
     
     pullFile: function(sfilepath,dfilepath) {
       if(runCmd != null){
-			if(ADB_PATH != ''){
-				if(device != '')
-					return runCmd(ADB_PATH + ' -s ' + device + ' pull ' + sfilepath + '  ' + dfilepath);
-				else
-					return runCmd(ADB_PATH  + ' pull ' + sfilepath + '  ' + dfilepath);
-			}
-		}
-		return null;
+        if(ADB_PATH != ''){
+          if(device != '')
+            return runCmd(ADB_PATH + ' -s ' + device + ' pull ' + sfilepath + '  ' + dfilepath);
+          else
+            return runCmd(ADB_PATH  + ' pull ' + sfilepath + '  ' + dfilepath);
+        }
+      }
+      dump('return null');
+      return null;
     },
-    
-    pushFile: function() {
+
+    pushFile: function(sfilepath,dfilepath) {
       if(runCmd != null){
-			if(ADB_PATH != ''){
-				if(device != '')
-					return runCmd(ADB_PATH + ' -s ' + device + ' push ' + sfilepath + '  ' + dfilepath);
-				else
-					return runCmd(ADB_PATH  + ' push ' + sfilepath + '  ' + dfilepath);
-			}
-		}
-		return NULL;
+        if(ADB_PATH != ''){
+          if(device != '')
+            return runCmd(ADB_PATH + ' -s ' + device + ' push ' + sfilepath + '  ' + dfilepath);
+          else
+            return runCmd(ADB_PATH  + ' push ' + sfilepath + '  ' + dfilepath);
+        }
+      }
+      return NULL;
     },
     
     listAdbService: function() {
       if(runCmd != NULL){
-		  var pinfo = runCmd('cmd.exe /c netstat -ano | findstr 5037');
-		  var plisten = pinfo.indexOf("LISTENING");
-		  if(plisten > 0 ){
-			  var pid = plisten.substring("LISTENING","\r\n");
-			  return runCmd('cmd.exe /c Tasklist | findstr ' + pid);
-		  }
-		return null;
-		}
-		}
-    };
+        var pinfo = runCmd('cmd.exe /c netstat -ano | findstr 5037');
+        var plisten = pinfo.indexOf("LISTENING");
+        if(plisten > 0 ){
+	  var pid = plisten.substring("LISTENING","\r\n");
+	  return runCmd('cmd.exe /c Tasklist | findstr ' + pid);
+        }
+        return null;
+      }
+    },
+
+    runLocalCmd: function (cmd) {
+      var commands = cmd.split(' ');
+      if (commands[0] == 'adb') {
+        if (commands[1] == 'push') {
+          return this.pushFile(commands[2], commands[3]).readString().trim();
+        }
+        if (commands[1] == 'pull') {
+          return this.pullFile(commands[2], commands[3]).readString().trim();
+        }
+      }
+    }
+  };
 })();
 
 let connected = false;
@@ -92,7 +105,6 @@ self.onmessage = function(e) {
   debug('Receive message: ' + e.data.cmd);
   let id = e.data.id;
   let cmd = e.data.cmd;
-
   switch (cmd) {
     case 'loadlib':
       // Load adb service library
@@ -128,7 +140,10 @@ self.onmessage = function(e) {
       break;
     case 'RunCmd':
       cmd = e.data.data;
-      libadb.runadbcmd(cmd);
+      postMessage({
+        id: id,
+        result: libadb.runLocalCmd(cmd)
+      });
       break;
     default:
       postMessage({
@@ -164,7 +179,6 @@ function startDetecting(start) {
 
   if (start) {
     detectingInterval = setInterval(function checkConnectState() {
-		dump("xds 1111111111111111111111");
       var devices = libadb.findDevice().readString().trim();
       //todo: hard coded for full_unagi only now, try to add other devices
       if (devices.indexOf('full_unagi') == -1) {

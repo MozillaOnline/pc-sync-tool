@@ -118,11 +118,12 @@ let messageReceiver = {
         this._sendMessage('ADBService:disconnect:Return', false, null, msg);
         break;
       case 'ADBService:RunCmd':
+        self = this;
         controlMessage({
           cmd: 'RunCmd',
-          data: msg.data,
-        }, function Result_RunCmd() {
-          dump('Rum Command Success');
+          data: msg.data
+        }, function Result_RunCmd(data) {
+          self._sendMessage('ADBService:RunCmd:Return', true, data.result, msg);
         });
         break;
     }
@@ -147,7 +148,7 @@ let messageReceiver = {
       rid: msg.rid,
       mid: msg.mid
     });
-  },
+  }
 };
 
 const messages = ['ADBService:connect', 'ADBService:connected','ADBService:RunCmd'];
