@@ -28,6 +28,11 @@ interface nsIFFOSAssistant : nsISupports
    */
   attribute nsIDOMEventListener ondriverdownloadermessage;
 
+  /*
+   * select directory for exporting pictures, musics and videos
+   */
+  boolean selectDirectory(in jsval callback, in jsval options);
+
   /**
    * Save content to disk
    * options:

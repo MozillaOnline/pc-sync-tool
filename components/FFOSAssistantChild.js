@@ -255,6 +255,25 @@ FFOSAssistant.prototype = {
     }
   },
 
+  selectDirectory: function (callback, options) {
+    var filePicker = Cc["@mozilla.org/filepicker;1"]
+                       .createInstance(Ci.nsIFilePicker);
+    let title = options && options.title ? options.title : null;
+    filePicker.init(this._window, title, Ci.nsIFilePicker.modeGetFolder);
+    callback = (typeof callback === 'function') ? callback : function() {};
+    filePicker.open(function onPickComplete(returnCode) {
+      switch (returnCode) {
+        case Ci.nsIFilePicker.returnOK:
+          callback(true,filePicker.fileURL.path);
+          break;
+      case Ci.nsIFilePicker.returnCancel:
+        default:
+          callback(false);
+          break;
+      }
+    });
+  },
+
   saveToDisk: function(content, callback, options) {
     var filePicker = Cc["@mozilla.org/filepicker;1"]
                        .createInstance(Ci.nsIFilePicker);
