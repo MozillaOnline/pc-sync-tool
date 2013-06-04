@@ -22,12 +22,20 @@ var MusicList = (function() {
   }
   
   //function retriveTimeSpan() {}
-  function retriveTYpe(type) {
+  function retriveType(type) {
     var index = type.lastIndexOf('/');
     if (index < 0) {
       return type;
     }
     return type.substr(index + 1, type.length);
+  }
+
+  function retriveExtension(str) {
+    var index = str.lastIndexOf('.');
+    if (index < 0) {
+      return '';
+    }
+    return str.substr(index + 1, str.length);
   }
 
   function retriveSize(size) {
@@ -40,14 +48,16 @@ var MusicList = (function() {
     html += '<div class="music-singer item">' + music.metadate.artist + '</div>';
     html += '<div class="music-album item">' + music.metadate.album + '</div>';
     html += '<div class="music-timespan item">' + '5:05' + '</div>';
-    html += '<div class="music-type item">' + retriveTYpe(music.type) +  '</div>';
+    html += '<div class="music-type item">' + retriveExtension(music.name) +  '</div>';
     html += '<div class="music-size item">' + retriveSize(music.size) + ' MB' +  '</div>';
     
     var elem = document.createElement('div');
     elem.classList.add('music-list-item');
     elem.innerHTML = html;
 
-    //elem.dataset.music = JSON.stringify(music);
+    elem.dataset.music = JSON.stringify(music);
+    elem.dataset.name = retriveName(music.name);
+    elem.dataset.type = retriveExtension(music.name);
     //elem.dataset.contactId = music.id;
     //elem.id = 'music-' + music.id;
     //elem.dataset.avatar = '';
@@ -181,7 +191,35 @@ var MusicList = (function() {
     });
 
     $id('export-musics').addEventListener('click', function onclick_exportMusics(event) {
-      navigator.mozFFOSAssistant.runAdbCmd(' shell mv /sdcard/Music/b2g.ogg /sdcard/Music/b1g.ogg');
+      var musics = [];
+      $expr('#music-list-container div.selected').forEach(function(item) {
+        var e = {};
+        e.music = JSON.parse(item.dataset.music);
+        e.name = item.dataset.name + '.' + item.dataset.type;
+        musics.push(e);
+      });
+      navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
+        if (status) {
+          setTimeout(function() {
+            var length = musics.length;
+            var index = 0;
+            function traverseList() {
+              if (index == length) {
+                return;
+              }
+              var cmd = 'adb pull ' + musics[index].music.name + ' ' + dir + '/' + musics[index].name;
+              var req = navigator.mozFFOSAssistant.runCmd(cmd);
+              req.onsuccess = function(e) {
+                index++;
+                setTimeout(traverseList,0);
+              }
+            }
+            traverseList();
+          } , 0);
+        }
+      }, {
+        title: 'Choose where to save'
+      });
     });
   });
 
