@@ -35,16 +35,14 @@
       FFOS 手机助手
       <label id="view-title"></label>
       <div id="lang-settings">
-        <label class="language-code-button current" data-language-code="en-US" data-l10n-id="en-US"></label>
-        <label class="language-code-button" data-language-code="zh-CN" data-l10n-id="zh-CN"></label>
+        <label class="language-code-button" data-language-code="en-US">English</label>
+        <img src='style/images/lang-sep.png'/>
+        <label class="language-code-button" data-language-code="zh-CN">中文</label>
       </div>
     </div>
     <div id="container-body" class="table">
       <div>
         <div class="sidebar">
-          <div class="login-area">
-            <a href="#" data-l10n-id="signin">登录</a> | <a href="#" data-l10n-id="signup">注册</a>
-          </div>
           <div id="connect-list" class="list radio-list">
             <div id="connect-tab"
                  class="item"
@@ -56,46 +54,46 @@
           <div id="mgmt-list" class="list radio-list" hidden>
             <div class="header">ZET Unagi</div>
             <div id="summary-tab"
-                 class="item summary selected"
+                 class=" summary-tab-selected item summary selected"
                  data-linked-view="summary-view"
                  data-l10n-id="summary">基本信息</div>
             <div id="contact-tab"
-                 class="item contact"
+                 class="contact-tab item contact"
                  data-linked-view="contact-view"
                  data-l10n-id="contacts">联系人</div>
             <div id="sms-tab"
-                 class="item sms"
+                 class="sms-tab item sms"
                  data-linked-view="sms-view"
                  data-l10n-id="sms">短信</div>
-            <div id="apps-tab"
-                 class="item apps"
-                 data-linked-view="apps-view"
-                 data-l10n-id="apps">应用程序</div>
+            <div id="videos-tab"
+                 class="videos-tab item videos"
+                 data-linked-view="videos-view"
+                 data-l10n-id="videos">视频</div>
             <div id="music-tab"
-                 class="item music"
+                 class="music-tab item music"
                  data-linked-view="music-view"
                  data-l10n-id="music">音乐</div>
             <div id="gallery-tab"
-                 class="item gallery"
+                 class="gallery-tab item gallery"
                  data-linked-view="gallery-view"
                  data-l10n-id="gallery">相册图片</div>
-            <div id="videos-tab"
-                 class="item videos"
-                 data-linked-view="videos-view"
-                 data-l10n-id="videos">视频</div>
+            <div id="apps-tab"
+                 class="apps-tab item apps"
+                 data-linked-view="apps-view"
+                 data-l10n-id="apps">应用程序</div>
           </div>
-          <div class="list">
+          <div class="list list2">
             <div class="header" data-l10n-id="resources">资源推荐</div>
             <div id="marketplace-tab"
-                 class="item marketplace"
+                 class="marketplace-tab item marketplace"
                  data-linked-view="marketplace-view"
                  data-l10n-id="marketplace">火狐官方应用市场</div>
             <div id="themes-tab"
-                 class="item theme"
+                 class="themes-tab item theme"
                  data-linked-view="theme-view"
                  data-l10n-id="themes">免费手机壁纸</div>
             <div id="ringtone-tab"
-                 class="item ringtone"
+                 class="ringtone-tab item ringtone"
                  data-linked-view="ringtone-view"
                  data-l10n-id="ringtone">手机铃声专区</div>
           </div>
@@ -156,7 +154,7 @@
                   <div id="remove-contacts" data-disabled="true" class="contact-op">
                     <label data-l10n-id="delete">删除</label>
                   </div>
-                  <div id="export-contacts" class="contact-op">
+                  <div id="export-contacts" data-disabled="true" class="contact-op">
                     <label data-l10n-id="export">导出</label>
                   </div>
                   <div id="import-contacts" class="contact-op">
@@ -311,8 +309,8 @@
               <div class="music-list-box">
                 <div class="music-ops-box">
                   <div id="select-all-musics" class="music-op">
-                    <input id="select-all" type="checkbox">
-                    <label for="select-all" data-l10n-id="selectall">全选</label>
+                    <input id="select-all-musics-checkbox" type="checkbox">
+                    <label for="select-all-musics" data-l10n-id="selectall">全选</label>
                   </div>
                   <div id="remove-musics" data-disabled="true" class="music-op">
                     <label data-l10n-id="delete">删除</label>
@@ -327,18 +325,34 @@
                     <label data-l10n-id="refresh">刷新</label>
                   </div>
                 </div>
-                <!-- music list -->
+                <div id="music-header">
+                <div class="music-names" data-l10n-id="songs"> <label>歌曲</label></div>
+                <div class="music-singer" data-l10n-id="singer"> <label>演唱</label></div>
+                <div class="music-album" data-l10n-id="album"> <label>专辑</label></div>
+                <div class="music-timespan" data-l10n-id="timespan"> <label>时长</label></div>
+                <div class="music-type"> <label>类型</label></div>
+                <div class="music-size"> <label>大小</label></div>
+                </div>
+                <!-- Music list -->
                 <div id="music-list-container">
-                  <!-- div class="music-index">P</div>
+                  <!--<div class="music-list-item">
+                    <div><input type="checkbox"></input></div>
+                    <div class="music-names item">诺雅芳周</div>
+                    <div class="music-singer item">五月天</div>
+                    <div class="music-album item">第二人生</div>
+                    <div class="music-timespan item">5:15</div>
+                    <div class="music-type item">mp3</div>
+                    <div class="music-size item">13.14MB</div>
+                  </div>
                   <div class="music-list-item">
-                    <input type="checkbox"></input>
-                    <div class="bookmark"></div>
-                    <div class="avatar-small"></div>
-                    <div class="music-info">
-                      <div class="name">Pin Zhang</div>
-                      <div class="tel">10086</div>
-                    </div>
-                  </div -->
+                    <div><input type="checkbox"></input></div>
+                    <div class="music-names">诺雅芳周</div>
+                    <div class="music-singer">五月天</div>
+                    <div class="music-album">第二人生</div>
+                    <div class="music-timespan">5:15</div>
+                    <div class="music-type">mp3</div>
+                    <div class="music-size">13.14MB</div>
+                  </div> -->
                 </div>
               </div>
             </div>
