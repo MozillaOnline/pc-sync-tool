@@ -174,13 +174,15 @@ function startDetecting(start) {
   if (start) {
     detectingInterval = setInterval(function checkConnectState() {
       var devices = libadb.findDevice().readString().trim();
-      //todo: hard coded for full_unagi only now, try to add other devices
+      // TODO: hard coded for full_unagi only now, try to add other devices
       if (devices.indexOf('full_unagi') == -1) {
         setConnected(false);
-      } else
-      device = 'full_unagi';
-      var ret = libadb.setupDevice(device).readString().trim();
+        return;
+      } else {
+        device = 'full_unagi';
+      }
 
+      var ret = libadb.setupDevice(device).readString().trim();
       if ((ret.indexOf("error") > 0) || (ret.indexOf("failed") > 0)) {
         setConnected(false);
       } else {
