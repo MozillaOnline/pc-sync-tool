@@ -67,6 +67,10 @@
   overflow: auto;
 }
 
+.empty-contacts {
+  margin: 10rem 8rem 0 12rem;
+}
+
 .data-index {
   border-bottom: .2rem solid #FFA600;
   padding-left: 1rem;

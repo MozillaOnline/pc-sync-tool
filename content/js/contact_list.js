@@ -201,7 +201,9 @@ var ContactList = (function() {
 
   function showEmptyContacts(container) {
     var img = document.createElement('img');
-    //img.src = 
+    img.src = 'style/images/empty-contacts.png';
+    img.classList.add('empty-contacts');
+    container.appendChild(img);
     //var html = '<img src="style/images/empty-contacts.png" class="empty-contacts">';
     //container += html;
   }
