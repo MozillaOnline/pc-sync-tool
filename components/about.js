@@ -14,8 +14,7 @@ AboutNTab.prototype = {
   QueryInterface: XPCOMUtils.generateQI([Ci.nsIAboutModule]),
 
   getURIFlags: function(aURI) {
-    return (Ci.nsIAboutModule.URI_SAFE_FOR_UNTRUSTED_CONTENT |
-            Ci.nsIAboutModule.ALLOW_SCRIPT);
+    return Ci.nsIAboutModule.ALLOW_SCRIPT;
   },
 
   newChannel: function(aURI) {
