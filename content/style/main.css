@@ -86,32 +86,25 @@ input[type="url"], textarea {
 #container {
   width: 96rem;
   margin: 0 auto;
-  border: .2rem solid #FFCC95;
+  border: .1rem solid #C0C0C0;
   border-radius: 1rem;
   overflow: hidden;
   background-color: #FFF;
 }
 
-.login-area {
-  text-align: center;
-  height: 8rem;
-  line-height: 8rem;
-  background-color: #F9F9F9;
-}
-
 .title-bar {
-  font-size: 2rem;
-  line-height: 2rem;
+  font-size: 1.5rem;
+  line-height: 1rem;
   color: #FFF;
-  background-color: #FFC280;
+  background-color: #E86000;
   padding: 1rem;
 }
 
 #lang-settings {
   float: right;
-  font-size: 1.5rem;
-  line-height: 2rem;
+  font-size: 1.2rem;
   -moz-user-select: none;
+  margin-top: -0.4rem;
 }
 
 #lang-settings label {
@@ -121,8 +114,7 @@ input[type="url"], textarea {
 
 #lang-settings label.current {
   cursor: default;
-  color: #999;
-  display: none;
+  color: black;
 }
 
 #lang-settings .selected {
@@ -152,17 +144,23 @@ input[type="url"], textarea {
   width: 23rem;
   height: 100%;
   border-right: solid .2rem #FFD6AB;
-  background-color: #FFF8F2;
+  background-color: #F4F4F4;
   vertical-align: top;
 }
 
 .sidebar .list {
+  margin-top: 4rem;
+}
+
+.sidebar .list2 {
+  margin-top: 2rem;
 }
 
 .sidebar .list .header {
   padding: .5rem 1rem;
-  font-size: 1.8rem;
-  border-left: 1rem solid #FF9A1E;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-left: 0.5rem solid #E86000;
 }
 
 .sidebar .list .item {
@@ -178,8 +176,9 @@ input[type="url"], textarea {
 }
 
 .sidebar .list .selected {
-  background-color: #FFF;
+  background-color: #DEF3F8;
   margin-right: -0.2rem;
+  color: #05CEF4;
 }
 
 #connect-list .item {
@@ -189,44 +188,84 @@ input[type="url"], textarea {
   padding: 0.5rem 1rem;
 }
 
-#summary-tab {
+.summary-tab {
   background-image: url("images/phone.png");
 }
 
-#contact-tab {
+.summary-tab-selected {
+  background-image: url("images/phone-selected.png");
+}
+
+.contact-tab {
   background-image: url("images/contact.png");
 }
 
-#sms-tab {
+.contact-tab-selected {
+  background-image: url("images/contact-selected.png");
+}
+
+.sms-tab {
   background-image: url("images/sms.png");
 }
 
-#apps-tab {
+.sms-tab-selected {
+  background-image: url("images/sms-selected.png");
+}
+
+.apps-tab {
   background-image: url("images/app.png");
 }
 
-#music-tab {
+.apps-tab-selected {
+  background-image: url("images/app-selected.png");
+}
+
+.music-tab {
   background-image: url("images/music.png");
 }
 
-#gallery-tab {
+.music-tab-selected {
+  background-image: url("images/music-selected.png");
+}
+
+.gallery-tab {
   background-image: url("images/camera.png");
 }
 
-#videos-tab {
+.gallery-tab-selected {
+  background-image: url("images/camera-selected.png");
+}
+
+.videos-tab {
   background-image: url("images/video.png");
 }
 
-#marketplace-tab {
-  background-image: url("images/app.png");
+.videos-tab-selected {
+  background-image: url("images/video-selected.png");
 }
 
-#themes-tab {
+.marketplace-tab {
+  background-image: url("images/marketplace.png");
+}
+
+.marketplace-tab-selected {
+  background-image: url("images/marketplace-selected.png");
+}
+
+.themes-tab {
   background-image: url("images/theme.png");
 }
 
-#ringtone-tab {
+.themes-tab-selected {
+  background-image: url("images/theme-selected.png");
+}
+
+.ringtone-tab {
   background-image: url("images/ringtone.png");
+}
+
+.ringtone-tab-selected {
+  background-image: url("images/ringtone-selected.png");
 }
 
 /******** content *********/

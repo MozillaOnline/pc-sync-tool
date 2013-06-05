@@ -50,10 +50,13 @@ var ViewManager = (function () {
     // unselect selected item
     $expr('#container .selected').forEach(function unselect(elem) {
       elem.classList.remove('selected');
+      elem.classList.remove(elem.id + '-selected');
+      elem.classList.add(elem.id);
     });
 
     tabElem.parentNode.hidden = false;
     tabElem.classList.add('selected');
+    tabElem.classList.add(tabId + '-selected');
 
     $expr('#container .content .view').forEach(function hideView(view) {
       view.hidden = true;
