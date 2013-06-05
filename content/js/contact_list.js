@@ -168,6 +168,10 @@ var ContactList = (function() {
   function initList(contacts) {
     var container = getListContainer();
     container.innerHTML = '';
+    if (contacts.length == 0 ) {
+      showEmptyContacts(container);
+      return;
+    }
 
     groupedList = new GroupedList({
       dataList: contacts,
@@ -195,6 +199,12 @@ var ContactList = (function() {
     checkIfContactListEmpty();
   }
 
+  function showEmptyContacts(container) {
+    var img = document.createElement('img');
+    //img.src = 
+    //var html = '<img src="style/images/empty-contacts.png" class="empty-contacts">';
+    //container += html;
+  }
   /**
    * Clear all contacts
    */
