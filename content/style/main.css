@@ -156,7 +156,7 @@ input[type="url"], textarea {
 
 /****** sidebar *******/
 .sidebar {
-  width: 23rem;
+  width: 18rem;
   height: 100%;
   border-right: solid .2rem #FFD6AB;
   background-color: #F4F4F4;
@@ -302,11 +302,27 @@ input[type="url"], textarea {
   color: #7D7D7D;
 }
 
+/******** views ******/
+
+#views {
+  background-color: red;
+  height: 100%;
+}
+
 /******** summary view ******/
 #device-image {
   float: left;
   width: 50%;
   height: 47rem;
+}
+
+.content-table {
+  display: inline-table;
+  width: 100%;
+}
+
+.content-head {
+  display: table-row;
 }
 
 #device-image .device-name {
