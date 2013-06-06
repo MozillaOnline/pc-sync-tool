@@ -68,8 +68,45 @@
 }
 
 .empty-contacts {
-  margin: 10rem 8rem 0 12rem;
+  background: url('images/empty-contacts.png') no-repeat scroll 0 0 transparent;
+  height: 16rem;
+  margin: 10rem 13rem 2rem;
 }
+
+.empty-contacts-prompt {
+  text-align: center;
+}
+
+.quick-add_view {
+  background: url('images/logo.png') no-repeat scroll 0 0 transparent;
+  height: 12rem;
+  margin: 2rem 7.5rem;
+}
+
+#quick-add-contact-header {
+  padding-left: 1rem;
+  padding-bottom: 2rem;
+}
+
+#contact-quick-add-form > div {
+  height: 3rem;
+}
+
+#contact-quick-add-form >div > label {
+  padding-left: 1rem;
+}
+
+#contact-quick-add-form input[type="edit"] {
+  width: 15rem;
+  float: right;
+  margin-right: 4rem;
+}
+
+#quick-save-contact {
+  margin: 0 0 0 7.8rem;
+  float: left;
+}
+
 
 .data-index {
   border-bottom: .2rem solid #FFA600;

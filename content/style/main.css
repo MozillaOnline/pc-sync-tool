@@ -68,9 +68,9 @@ input[type="url"], textarea {
 
 .button {
   cursor: pointer;
-  border-radius: .5rem;
+  border-radius: .2rem;
   border: .1rem solid #A9A9A9;
-  padding: .5rem 2rem;
+  padding: .1rem 3rem;
   text-align: center;
   text-decoration: none;
   margin: 1rem 0;
@@ -80,8 +80,8 @@ input[type="url"], textarea {
 .button:hover,
 .active-button {
   color: #FFF;
-  background: -moz-linear-gradient(center top , #2D9B00, #2D9B00) repeat scroll 0 0 transparent;
-  border: .1rem solid #3A8B07;
+  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
+  border: .1rem solid #00AACF;
 }
 
 #container {

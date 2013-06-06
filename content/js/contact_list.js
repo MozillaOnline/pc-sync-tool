@@ -170,6 +170,7 @@ var ContactList = (function() {
     container.innerHTML = '';
     if (contacts.length == 0 ) {
       showEmptyContacts(container);
+      ViewManager.showCardView('contact-quick-add-view');
       return;
     }
 
@@ -200,12 +201,15 @@ var ContactList = (function() {
   }
 
   function showEmptyContacts(container) {
-    var img = document.createElement('img');
-    img.src = 'style/images/empty-contacts.png';
-    img.classList.add('empty-contacts');
-    container.appendChild(img);
-    //var html = '<img src="style/images/empty-contacts.png" class="empty-contacts">';
-    //container += html;
+    var div = document.createElement('div');
+    div.classList.add('empty-contacts');
+    container.appendChild(div);
+    div = document.createElement('div');
+    html = '<label data-l10n-id="empty-contacts"> </label>';
+    div.innerHTML = html;
+    div.classList.add('empty-contacts-prompt');
+    navigator.mozL10n.translate(div)
+    container.appendChild(div);
   }
   /**
    * Clear all contacts
