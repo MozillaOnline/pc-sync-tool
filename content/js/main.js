@@ -38,6 +38,24 @@ var FFOSAssistant = (function() {
     $expr('.storage-number', elem)[0].textContent =
       formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
     $expr('.storage-graph .used', elem)[0].style.width = usedInP;
+    if(elemId =='sdcard-storage-summary' ){
+      var subInP = Math.floor(info.picture / info.usedInBytes * 100);
+      if(subInP == 0)
+	subInP = 1;
+      $expr('.storage-used', elem)[0].style.width = subInP + '%';
+      subInP = Math.floor(info.music / info.usedInBytes * 100);
+      if(subInP == 0)
+	subInP = 1;
+      $expr('.storage-used', elem)[1].style.width = subInP + '%';
+      subInP = Math.floor(info.video / info.usedInBytes * 100);
+      if(subInP == 0)
+	subInP = 1;
+      $expr('.storage-used', elem)[2].style.width = subInP + '%';
+      subInP = Math.floor((info.usedInBytes - info.music - info.picture - info.video) / info.usedInBytes * 100);
+      if(subInP == 0)
+	subInP = 1;
+      $expr('.storage-used', elem)[3].style.width =  subInP + '%';
+    }
   }
 
   function getAndShowSummaryInfo() {
@@ -45,13 +63,19 @@ var FFOSAssistant = (function() {
       var deviceInfo = {};
       var sdcardInfo = {
         usedInBytes: 0,
-        freeInBytes: 0
+        freeInBytes: 0,
+	picture: 0,
+	music: 0,
+	video:0
       };
       var dataJSON = JSON.parse(message.data);
       deviceInfo.usedInBytes = dataJSON[4].usedSpace;
       deviceInfo.freeInBytes = dataJSON[4].freeSpace;
       sdcardInfo.usedInBytes = dataJSON[3].usedSpace;
       sdcardInfo.freeInBytes = dataJSON[3].freeSpace;
+      sdcardInfo.picture = dataJSON[0].usedSpace;
+      sdcardInfo.music = dataJSON[1].usedSpace;
+      sdcardInfo.video = dataJSON[2].usedSpace;
 
 
       fillStorageSummaryInfo('device-storage-summary', deviceInfo);

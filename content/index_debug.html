@@ -106,18 +106,20 @@
             </div>
 
             <section id="user-guide">
-              <p data-l10n-id="nodevice-found-msg">您的手机尚未链接到电脑，请通过USB数据线或者wiki链接</p>
-              <p><a href="http://mozilla.com.cn/" target="_blank" data-l10n-id="usb-problem">已链接USB数据线，无法识别手机？</a></p>
+              <div><a data-l10n-id="nodevice-found-msg">您的手机尚未连接到电脑，请通过USB数据线连接</a></div>
+              <p><a href="http://mozilla.com.cn/" target="_blank" data-l10n-id="usb-problem">已连接USB数据线，无法识别手机？</a></p>
             </section>
           </div>
           <section id="summary-view" class="view" hidden>
             <h1 data-l10n-id="summary" class="title">基本信息</h1>
             <div id="device-image">
               <div class="device-name">ZTE Unagi</div>
+              <div class="device-picture"></div>
+              <div class="device-connect"></div>
             </div>
             <div id="summary-infos">
               <div id="device-storage-summary">
-                <div class="storage-detail">
+                <div class="storage-totle">
                   <div class="storage-name" data-l10n-id="handset">手机</div>
                   <div class="storage-number"></div>
                 </div>
@@ -126,19 +128,37 @@
                 </div>
               </div>
               <div id="sdcard-storage-summary">
-                <div class="storage-detail">
+                <div class="storage-totle">
                   <div class="storage-name" data-l10n-id="sdcard">SD卡</div>
                   <div class="storage-number"></div>
                 </div>
                 <div class="storage-graph">
                   <div class="used"></div>
                 </div>
-              </div>
-              <div id="summary-ops">
-               <div id="backup-button" class="button active-button" data-l10n-id="backup"></div>
-                <div id="restore-button" class="button" data-l10n-id="restore"></div>
-                <div class="button clear-fix" data-l10n-id="sdcard-mgmt"></div>
-                <div class="button clear-fix" data-l10n-id="bind-device"></div>
+                <div class="storage-detail">
+                  <div class="storage-name" data-l10n-id="sdcard-music">音乐</div>
+                  <div class="storage-detailgraph">
+                    <div class="storage-used"></div>
+                  </div>
+                </div>
+                <div class="storage-detail">
+                  <div class="storage-name" data-l10n-id="sdcard-picture">图片</div>
+                  <div class="storage-detailgraph">
+                    <div class="storage-used"></div>
+                  </div>
+                </div>
+                <div class="storage-detail">
+                  <div class="storage-name" data-l10n-id="sdcard-video">视频</div>
+                  <div class="storage-detailgraph">
+                    <div class="storage-used"></div>
+                  </div>
+                </div>
+                <div class="storage-detail">
+                  <div class="storage-name" data-l10n-id="sdcard-other">其它</div>
+                  <div class="storage-detailgraph">
+                    <div class="storage-used"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>

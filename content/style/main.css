@@ -9,6 +9,7 @@ html {
 
 body {
   font-size: 1.4rem;
+  color: #8B8B8B;
   padding-top: 1rem;
   overflow-y: scroll;
 }
@@ -122,22 +123,36 @@ input[type="url"], textarea {
 }
 
 #welcome-msg {
-  background-color: #FFF8F2;
   padding: 1rem;
 }
 
 #welcome-msg h3 {
   font-size: 2.8rem;
+  color: #7D7D7D;
+  padding: 0rem 1rem;
+}
+
+#welcome-msg p {
+  padding: 1rem;
 }
 
 #user-guide {
-  height: 35rem;
-  background: url("images/landing.png") no-repeat .5rem 8rem transparent;
+  height: 40rem;
+  background: url("images/landing.png") no-repeat  center  10rem transparent;
 }
 
 #user-guide p {
   padding: 1rem 3rem;
+  text-align: center;
 }
+
+#user-guide div {
+  padding: 1rem 3rem;
+  text-align: center;
+  font-size: 2rem;
+}
+
+
 
 /****** sidebar *******/
 .sidebar {
@@ -274,7 +289,7 @@ input[type="url"], textarea {
 }
 
 .content .view {
-  min-height: 50rem;
+  min-height: 55rem;
 }
 
 .content .view .view-body {
@@ -282,8 +297,9 @@ input[type="url"], textarea {
 }
 
 .content .view h1.title {
-  padding: 1rem;
-  background-color: #FFF8F2;
+  padding: 1rem 2rem;
+  font-size: 2.8rem;
+  color: #7D7D7D;
 }
 
 /******** summary view ******/
@@ -291,36 +307,65 @@ input[type="url"], textarea {
   float: left;
   width: 50%;
   height: 47rem;
-  background: url("images/device.png") no-repeat center center transparent;
 }
 
 #device-image .device-name {
-  line-height: 2rem;
-  font-size: 1.2rem;
+  line-height: 3rem;
+  font-size: 1.5rem;
   text-align: center;
-  margin: 3.5rem auto;
-  width: 14rem;
+  margin: 0.5rem auto;
+  width: 18rem;
   background-color: #AAA;
   border-radius: .5rem;
   color: #FFF;
   font-weight: bold;
 }
 
+#device-image .device-picture {
+  width: 100%;
+  height: 70%;
+  background: url("images/device.png") no-repeat center center transparent;
+}
+
+#device-image .device-connect {
+  margin-top: 0rem;
+  width: 100%;
+  height: 30%;
+  background-position: top;
+  background: url("images/usb.png") no-repeat center top transparent;
+}
+
+
 #summary-infos {
   float: left;
-  width: 23rem;
+  width: 28rem;
   margin: 7rem 0 0;
 }
 
-#summary-infos > div {
+#summary-infos > div:first-child{
   margin-top: 1rem;
+  padding: 1rem 2rem;
+  height: auto;
 }
 
-#summary-infos .storage-detail > div:first-child {
+#summary-infos > div:last-child{
+  margin-top: 1rem;
+  padding: 1rem 2rem;
+  height: 20rem;
+}
+
+
+#summary-infos .storage-totle{
+  height: 2.5rem;
+}
+
+#summary-infos .storage-totle > div:first-child {
   float: left;
+  font-size: 1.8rem;
+  color: #090909;
 }
 
-#summary-infos .storage-detail > div:last-child {
+#summary-infos .storage-totle > div:last-child {
   float: right;
 }
 
@@ -336,7 +381,37 @@ input[type="url"], textarea {
   height: 100%;
   float: left;
   border-radius: .5rem;
-  background-color: #FEA000;
+  background-color: #00C9F7;
+  transition-property: width;
+  transition-duration: 1s;
+}
+
+#summary-infos .storage-detail {
+  font-size: 1.6rem;
+  color: #090909;
+  height: 4rem;
+}
+
+#summary-infos .storage-detail > div:first-child {
+  font-size: 1.6rem;
+  color: #868686;
+  float: left;
+  margin-top: 1rem;
+}
+
+#summary-infos .storage-detail  > div:last-child  {
+  width: 15rem;
+  float: left;
+  height: 0.5rem;
+  margin-top: 2rem;
+  margin-left: .5rem;
+}
+
+#summary-infos .storage-detailgraph .storage-used {
+  width: 0;
+  height: 0.5rem;
+  border-radius: .5rem;
+  background-color: #7FC80E;
   transition-property: width;
   transition-duration: 1s;
 }
