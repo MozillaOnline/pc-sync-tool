@@ -20,6 +20,8 @@
   <script type="text/javascript" src="js/3rd/pinyin.js"></script>
   <script type="text/javascript" src="js/cmd.js"></script>
   <script type="text/javascript" src="js/connectPool.js"></script>
+  <script type="text/javascript" src="js/contact_list.js"></script>
+  <script type="text/javascript" src="js/form.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
   <script type="text/javascript" src="js/view.js"></script>
   <script type="text/javascript" src="js/telnet.js"></script>
@@ -97,10 +99,10 @@
         <div class="content">
           <section id="summary-view" class="view" hidden>
             <div class="content-table">
-              <div class="content-head">
+              <div class="content-row">
                 <h1 data-l10n-id="summary" class="title">基本信息</h1>
               </div>
-              <div class="content-head">
+              <div class="content-row">
                 <div id="device-image">
                   <div class="device-name">ZTE Unagi</div>
                 </div>
@@ -133,11 +135,63 @@
               </div>
             </div>
           </section>
-          
-          <section>
-            
+          <section id="contact-view" class="view" hidden="true">
+            <div class="table">
+              <div>
+                <div>
+                  <div class="table">
+                    <div>
+                      <div>
+                        <h1 class="title" data-l10n-id="contacts">联系人</h1>
+                      </div>
+                    </div>
+                    <div>  
+                      <div>
+                        <div class="contact-ops-box">
+                          <div id="select-all-contacts" class="contact-op">
+                            <input id="select-all" type="checkbox">
+                            <label for="select-all" data-l10n-id="selectall" class="selectAll">全选</label>
+                          </div>
+                          <div id="remove-contacts" data-disabled="true" class="contact-op">
+                            <label data-l10n-id="delete">删除</label>
+                          </div>
+                          <div id="export-contacts" data-disabled="true" class="contact-op">
+                            <label data-l10n-id="export">导出</label>
+                          </div>
+                          <div id="import-contacts" class="contact-op">
+                            <label data-l10n-id="import">导入</label>
+                          </div>
+                          <div id="refresh-contacts" class="contact-op">
+                            <label data-l10n-id="refresh">刷新</label>
+                          </div>
+                          <div id="add-new-contact" class="contact-op">
+                            <label data-l10n-id="new">新建</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div>
+                        <div id="contact-list-container"> 
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <section id="contact-quick-add-view" class="card-view" hidden="true">
+                    <div class="quick-add_view"></div>
+                    <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
+                    <form id="contact-quick-add-form" action="#" onsubmit="return false;">
+                      <div><label data-l10n-id="contact-quick-add-name"></label><input type="edit"></input></div>
+                      <div><label data-l10n-id="contact-quick-add-mobile"></label><input type="edit"></input></div>
+                      <div><a id="quick-save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a></div>
+                    </form>
+                  </section>  
+                </div>
+              </div>
+            </div>
           </section>
-          
         </div>
       </div>
     </div>

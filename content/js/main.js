@@ -158,6 +158,7 @@ var FFOSAssistant = (function() {
   }
 
   function init() {
+    /*
     $id('avatar-e').addEventListener('click', function (e) {
       $id('image').click();
     });
@@ -202,7 +203,7 @@ var FFOSAssistant = (function() {
         });
       };
     });
-
+*/
     $id('lang-settings').addEventListener('click', function onclick_langsetting(event) {
       if (!event.target.classList.contains('language-code-button')) {
         return;

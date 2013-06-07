@@ -20,6 +20,10 @@ ul, ol, dl, dt, dd {
   padding: 0;
 }
 
+input[type="checkbox"] {
+  display: none;
+}
+
 input[type="text"],
 input[type="number"],
 input[type="password"],
@@ -321,8 +325,16 @@ input[type="url"], textarea {
   width: 100%;
 }
 
-.content-head {
+.content-row {
   display: table-row;
+}
+
+.content-cell {
+  display: table-cell;
+}
+
+.content-column {
+  display: table-column;  
 }
 
 #device-image .device-name {

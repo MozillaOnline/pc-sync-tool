@@ -167,7 +167,7 @@ var ContactList = (function() {
 
   function initList(contacts) {
     var container = getListContainer();
-    container.innerHTML = '';
+    //container.innerHTML = '';
     if (contacts.length == 0 ) {
       showEmptyContacts(container);
       ViewManager.showCardView('contact-quick-add-view');
@@ -352,9 +352,10 @@ var ContactList = (function() {
   }
 
   window.addEventListener('load', function wnd_onload(event) {
+    /*
     $id('select-all').addEventListener('change', function sall_onclick(event) {
       selectAllContacts(this.checked);
-    });
+    }); 
 
     $id('remove-contacts').addEventListener('click', function onclick_removeContact(event) {
       // Do nothing if the button is disabled.
@@ -447,7 +448,7 @@ var ContactList = (function() {
         name: 'contacts.vcf',
         extension: 'vcf'
       });
-    });
+    });*/
   });
 
   return {

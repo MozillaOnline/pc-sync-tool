@@ -364,12 +364,13 @@ var ContactForm = (function() {
 
   window.addEventListener('load', function onload(event) {
     window.removeEventListener('load', onload);
+    /*
     $id('save-contact').addEventListener('click', function onclick_saveContact(evt) {
       saveContact();
     });
     $id('cancel-edit-contact').addEventListener('click', function onclick_cancel(evt) {
       ViewManager.showCardView('contact-vcard-view');
-    });
+    });*/
   });
 
   return {
