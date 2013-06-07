@@ -62,12 +62,11 @@ function startDriverManager() {
     return;
   }
 
-  debug("Run process.");
   var managerFile = utils.getChromeFileURI(MANAGER_EXE).file;
   process = Cc['@mozilla.org/process/util;1']
               .createInstance(Ci.nsIProcess);
   process.init(managerFile);
-  var args = [];
+  var args = ['install'];
   process.runAsync(args, args.length, processObserver);
 }
 
