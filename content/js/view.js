@@ -27,10 +27,17 @@ var ViewManager = (function () {
     });
   }
 
-  function showView(viewId) {
+  function showContent(viewId) {
     var viewElem = $id(viewId);
     if (!viewElem) {
       return;
+    }
+
+    if (viewId == "summary-view" || viewId == "connect-view") {
+        //$id('views').classList.add('hidden-views');
+      $id('views').style.display = 'none';
+    } else {
+      $id('views').style.display = '';
     }
 
     var tabId = viewElem.dataset.linkedTab;
@@ -72,7 +79,7 @@ var ViewManager = (function () {
   /**
    * A card view is view shown inside a normal view
    */
-  function showCardView(cardViewId) {
+  function showViews(cardViewId) {
     var cardView = $id(cardViewId);
     if (!cardView) {
       return;
@@ -136,7 +143,7 @@ var ViewManager = (function () {
       // Link content view with tab
       linkedView.dataset.linkedTab = elem.id;
       elem.addEventListener('click', function(event) {
-        showView(this.getAttribute('data-linked-view'));
+        showContent(this.dataset.linkedView);
       });
     });
   }
@@ -149,10 +156,10 @@ var ViewManager = (function () {
   return {
     // Show the view by the given id, and hide all other sibling views
     reset: reset,
-    showView: showView,
+    showContent: showContent,
     setTitle: setTitle,
     // Show the card view by given id, and hide all other sibling views
-    showCardView: showCardView,
+    showViews: showViews,
     addViewEventListener: addViewEventListener
   };
 })();

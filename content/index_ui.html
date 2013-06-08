@@ -97,6 +97,17 @@
           </div>
         </div>
         <div class="content">
+          <div id="connect-view" class="view">
+            <div id="welcome-msg">
+              <h3 data-l10n-id="pls_connect_device">请连接手机</h3>
+              <p data-l10n-id="ffos-description"></p>
+            </div>
+
+            <section id="user-guide">
+              <p data-l10n-id="nodevice-found-msg">您的手机尚未链接到电脑，请通过USB数据线或者wiki链接</p>
+              <p><a href="http://mozilla.com.cn/" target="_blank" data-l10n-id="usb-problem">已链接USB数据线，无法识别手机？</a></p>
+            </section>
+          </div>
           <section id="summary-view" class="view" hidden>
             <div class="content-table">
               <div class="content-row">
@@ -136,62 +147,83 @@
             </div>
           </section>
           <section id="contact-view" class="view" hidden="true">
-            <div class="table">
-              <div>
-                <div>
-                  <div class="table">
-                    <div>
-                      <div>
-                        <h1 class="title" data-l10n-id="contacts">联系人</h1>
-                      </div>
+            <h1 class="title" data-l10n-id="contacts">联系人</h1>
+            <div class="contact-ops-box">
+              <div class="contact-op">
+                <input id="select-all-contacts" class="selectAllCheckbox" type="checkbox">
+                <label for="select-all-contacts" data-l10n-id="selectall" class="selectAll" checked="false">全选</label>
+              </div>
+              <div id="remove-contacts" data-disabled="true" class="contact-op">
+                <label data-l10n-id="delete">删除</label>
+              </div>
+              <div id="export-contacts" data-disabled="true" class="contact-op">
+                <label data-l10n-id="export">导出</label>
+              </div>
+              <div id="import-contacts" class="contact-op">
+                <label data-l10n-id="import">导入</label>
+              </div>
+              <div id="refresh-contacts" class="contact-op">
+                <label data-l10n-id="refresh">刷新</label>
+              </div>
+              <div id="add-new-contact" class="contact-op">
+                <label data-l10n-id="new">新建</label>
+              </div>
+            </div>
+            <div id="contact-list-container">
+              <div id="id-grouped-data-A">
+                <div class="data-index">A</div>
+                <div class="contact-list-item">
+                  <!--div>
+                    <input id="test" class="checkbox" type="checkbox">
+                    <label class="selectAll" for="test">
+                    </label>
+                    <div class="bookmark"></div>
+                    <div class="avatar-default"></div>
+                    <div class="contact-info">
+                      <div class="name">b B</div>
                     </div>
-                    <div>  
-                      <div>
-                        <div class="contact-ops-box">
-                          <div id="select-all-contacts" class="contact-op">
-                            <input id="select-all" type="checkbox">
-                            <label for="select-all" data-l10n-id="selectall" class="selectAll">全选</label>
-                          </div>
-                          <div id="remove-contacts" data-disabled="true" class="contact-op">
-                            <label data-l10n-id="delete">删除</label>
-                          </div>
-                          <div id="export-contacts" data-disabled="true" class="contact-op">
-                            <label data-l10n-id="export">导出</label>
-                          </div>
-                          <div id="import-contacts" class="contact-op">
-                            <label data-l10n-id="import">导入</label>
-                          </div>
-                          <div id="refresh-contacts" class="contact-op">
-                            <label data-l10n-id="refresh">刷新</label>
-                          </div>
-                          <div id="add-new-contact" class="contact-op">
-                            <label data-l10n-id="new">新建</label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <div>
-                        <div id="contact-list-container"> 
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <section id="contact-quick-add-view" class="card-view" hidden="true">
-                    <div class="quick-add_view"></div>
-                    <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
-                    <form id="contact-quick-add-form" action="#" onsubmit="return false;">
-                      <div><label data-l10n-id="contact-quick-add-name"></label><input type="edit"></input></div>
-                      <div><label data-l10n-id="contact-quick-add-mobile"></label><input type="edit"></input></div>
-                      <div><a id="quick-save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a></div>
-                    </form>
-                  </section>  
+                  </div -->
                 </div>
               </div>
             </div>
           </section>
+        </div>
+        <div id="views" class="views hidden-views">
+          <div>
+            <section id="contact-quick-add-view" class="card-view" hidden="true">
+              <div class="quick-add_view"></div>
+              <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
+              <form id="contact-quick-add-form" action="#" onsubmit="return false;">
+                <div><label data-l10n-id="contact-quick-add-name"></label><input type="edit"></input></div>
+                <div><label data-l10n-id="contact-quick-add-mobile"></label><input type="edit"></input></div>
+                <div><a id="quick-save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a></div>
+              </form>
+            </section>
+            <section id="contact-edit-view" class="card-view contact-form" hidden="true">
+              <div id="add-contact-header" class="vcard-header" data-l10n-id="add-contact-header"></div>
+              <div id="edit-contact-header" class="vcard-header" data-l10n-id="edit-contact-header">
+                编辑联系人信息
+              </div>
+              <form id="contact-form" action="#" onsubmit="return false;">
+                <input id="contact-form-id" name="id" type="hidden" value="" />
+                <section>
+                  <div class="avatar">
+                    <img id="avatar-e" class="headpic" src="" />
+                    <input id="image" type="file" accept="image/*" hidden/>
+                  </div>
+                  <div class="item-body-exp">
+                    <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
+                    <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
+                  </div>
+                  <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
+                </section>
+                <!-- Contact field containter -->
+                <ul></ul>
+                <a id="save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a>
+                <a id="cancel-edit-contact" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
+              </form>
+            </section>
+          </div>
         </div>
       </div>
     </div>

@@ -10,11 +10,11 @@ var FFOSAssistant = (function() {
   // var wsurl = "ws://localhost:8888/ws";
 
   function showConnectView() {
-    ViewManager.showView('connect-view');
+    ViewManager.showContent('connect-view');
   }
 
   function showSummaryView() {
-    ViewManager.showView('summary-view');
+    ViewManager.showContent('summary-view');
   }
 
   /**
@@ -90,7 +90,7 @@ var FFOSAssistant = (function() {
    */
   function showContactView() {
     // Switch view to manage view
-    ViewManager.showView('contact-view');
+    ViewManager.showContent('contact-view');
   }
 
   function getAndShowAllContacts() {

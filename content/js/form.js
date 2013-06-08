@@ -184,7 +184,7 @@ var ContactForm = (function() {
    * If the given contact is null, then adding contact is performed.
    */
   function editContact(contact) {
-    ViewManager.showCardView('contact-edit-view');
+    ViewManager.showViews('contact-edit-view');
 
     // Mark form as adding new contact
     $id('contact-edit-view').dataset.addContact = !contact;
@@ -364,13 +364,12 @@ var ContactForm = (function() {
 
   window.addEventListener('load', function onload(event) {
     window.removeEventListener('load', onload);
-    /*
     $id('save-contact').addEventListener('click', function onclick_saveContact(evt) {
       saveContact();
     });
     $id('cancel-edit-contact').addEventListener('click', function onclick_cancel(evt) {
-      ViewManager.showCardView('contact-vcard-view');
-    });*/
+      ViewManager.showViews('contact-vcard-view');
+    });
   });
 
   return {

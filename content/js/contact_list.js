@@ -29,9 +29,11 @@ var ContactList = (function() {
   function createContactListItem(contact) {
     var html = '';
     html += '<div>';
-    html += '  <input type="checkbox" data-checked="false"></input>';
+    html += '  <input id="checkbox-' + contact.id + '"';
+    html += '  class="checkbox" type="checkbox"></input>'
+    html += '  <label class="selectAll" for="checkbox-' + contact.id + '"></label>';
     html += '    <div class="bookmark"></div>';
-    html += '    <div> <img src=' + DEFAULT_AVATAR + ' class="avatar-small"/></div>';
+    html += '    <div class="avatar-default"></div>';
     html += '      <div class="contact-info">';
     html += '        <div class="name">';
 
@@ -66,7 +68,7 @@ var ContactList = (function() {
       } else if(target.classList.contains('bookmark')) {
         toggleFavorite(elem);
       } else {
-        showVcardInView(getContact(this.dataset.contactId));
+        //showVcardInView(getContact(this.dataset.contactId));
       }
     };
 
@@ -141,10 +143,7 @@ var ContactList = (function() {
   function checkIfContactListEmpty() {
     var isEmpty = groupedList.count() == 0;
     if (isEmpty) {
-      ContactForm.editContact();
-      $id('contact-view').classList.add('empty-list');
-    } else {
-      $id('contact-view').classList.remove('empty-list');
+      showEmptyContacts();
     }
   }
 
@@ -167,12 +166,15 @@ var ContactList = (function() {
 
   function initList(contacts) {
     var container = getListContainer();
-    //container.innerHTML = '';
+    container.innerHTML = '';
+    /*
     if (contacts.length == 0 ) {
       showEmptyContacts(container);
-      ViewManager.showCardView('contact-quick-add-view');
+      ViewManager.showViews('contact-quick-add-view');
       return;
-    }
+    } */
+
+    ViewManager.showViews('contact-quick-add-view');
 
     groupedList = new GroupedList({
       dataList: contacts,
@@ -200,16 +202,17 @@ var ContactList = (function() {
     checkIfContactListEmpty();
   }
 
-  function showEmptyContacts(container) {
+  function showEmptyContacts() {
+    getListContainer().innerHTML = '';
     var div = document.createElement('div');
     div.classList.add('empty-contacts');
-    container.appendChild(div);
+    getListContainer().appendChild(div);
     div = document.createElement('div');
     html = '<label data-l10n-id="empty-contacts"> </label>';
     div.innerHTML = html;
     div.classList.add('empty-contacts-prompt');
     navigator.mozL10n.translate(div)
-    container.appendChild(div);
+    getListContainer().appendChild(div);
   }
   /**
    * Clear all contacts
@@ -232,9 +235,8 @@ var ContactList = (function() {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
 
-      $id('contact-list-container').innerHTML = '';
-      var vcardView = $id('contact-vcard-view');
-      vcardView.hidden = true;
+      //showEmptyContacts();
+      ViewManager.showViews('contact-quick-add-view');
     }, function onerror_clearAllContacts(message) {
       alert('Error occurs when removing contacts!');
     });
@@ -247,8 +249,8 @@ var ContactList = (function() {
     CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
-      var keepVcardView = true;
-      var vcardView = $id('contact-vcard-view');
+      //var keepVcardView = true;
+      //var vcardView = $id('contact-vcard-view');
       if (message.result) {
         return;
       }
@@ -262,10 +264,10 @@ var ContactList = (function() {
       // Remove contact from grouped list
       groupedList.remove(getContact(id));
 
-      if (vcardView.dataset.contactId == id) {
-        keepVcardView = false;
-      }
-      
+      //if (vcardView.dataset.contactId == id) {
+      //  keepVcardView = false;
+      //}
+      /*
       if (!keepVcardView) {
         // Pick a contact to show
         var availableContacts = $expr('#contact-list-container .contact-list-item');
@@ -274,7 +276,7 @@ var ContactList = (function() {
         } else {
           showVcardInView(JSON.parse(availableContacts[0].dataset.contact));
         }
-      }
+      }*/
     }, function onerror_removeContact(message) {
       alert('Error occurs when removing contacts!');
     });
@@ -285,7 +287,7 @@ var ContactList = (function() {
       selectContactItem(item, select);
     });
 
-    $id('select-all').checked = select;
+    $id('select-all-contacts').checked = select;
   }
 
   function selectContactItem(item, select) {
@@ -300,7 +302,7 @@ var ContactList = (function() {
       checkbox.dataset.checked = !!select;
     });
 
-    $id('select-all').checked =
+    $id('select-all-contacts').checked =
       $expr('#contact-list-container input[data-checked=false]').length === 0;
     $id('remove-contacts').dataset.disabled =
       $expr('#contact-list-container input[data-checked=true]').length === 0;
@@ -317,9 +319,11 @@ var ContactList = (function() {
       if (!contact.id) {
         return;
       }
+      if (groupedList.count() == 0) {
+        getListContainer().innerHTML = '';
+      }
       groupedList.add(contact);
-
-      showVcardInView(contact);
+      //showVcardInView(contact);
     });
   }
 
@@ -336,7 +340,7 @@ var ContactList = (function() {
       groupedList.remove(existingContact);
       groupedList.add(contact);
 
-      showVcardInView(contact);
+      //showVcardInView(contact);
     });
   }
 
@@ -352,8 +356,7 @@ var ContactList = (function() {
   }
 
   window.addEventListener('load', function wnd_onload(event) {
-    /*
-    $id('select-all').addEventListener('change', function sall_onclick(event) {
+    $id('select-all-contacts').addEventListener('click', function selectAll_onclick(event) {
       selectAllContacts(this.checked);
     }); 
 
@@ -369,12 +372,13 @@ var ContactList = (function() {
       });
       
       if (window.confirm(_('delete-contacts-confirm', {n: ids.length}))) {
-        if ($id('select-all').checked) {
+        if ($id('select-all-contacts').checked) {
           ContactList.clearAllContacts();
         } else {
           ids.forEach(function(item) {
             ContactList.removeContact(item);
           });
+          ViewManager.showViews('contact-quick-add-view');
         }
       }
     });
@@ -448,7 +452,7 @@ var ContactList = (function() {
         name: 'contacts.vcf',
         extension: 'vcf'
       });
-    });*/
+    });
   });
 
   return {
