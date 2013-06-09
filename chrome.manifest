@@ -29,7 +29,7 @@ resource ffosassistant-dmhome       components/binary/mac/driver_manager      os
 resource ffosassistant-dmhome       components/binary/win/driver_manager      os=WINNT
 
 # Driver Manager
-resource ffosassistant-drivermanager components/binary/win/driver_manager/USBMonitor_d.exe os=WINNT
+resource ffosassistant-drivermanager components/binary/win/driver_manager/USBMonitor.exe os=WINNT
 resource ffosassistant-drivermanager components/binary/linux/drivermanager    os=linux
 resource ffosassistant-drivermanager components/binary/mac/drivermanager      os=Darwin
 
