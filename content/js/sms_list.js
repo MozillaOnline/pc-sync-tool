@@ -180,16 +180,6 @@ var SmsList = (function() {
     container.innerHTML = '';
     
     ViewManager.showViews('sms-show-view');
-    /*
-    groupedList = new GroupedList({
-      dataList: sms,
-      dataIndexer: getSmsIndex,
-      renderFunc: createGroupList,
-      container: container,
-      ondatachange: checkIfSmsListEmpty
-    });
-    groupedList.render();
-    updateAvatar();*/
     
     groupedList = new DataPool({
       dataList: sms,
@@ -253,32 +243,12 @@ var SmsList = (function() {
   }
 
   function getSmsIndex(sms) {
+    //return sms.threadId;
     if(sms.delivery == 'sent'){
-      if (sms.receiver.length > 11) {
-        return sms.receiver.substr(sms.receiver.length - 11, sms.receiver.length);
-      } else {
-        return sms.receiver;
-      }
+      return sms.receiver;
     }else{
-      if (sms.sender.length > 11) {
-        return sms.sender.substr(sms.sender.length - 11, sms.sender.length);
-      } else {
-        return sms.sender;
-      }
+      return sms.sender;
     }
-/*    if(sms.receiver) {
-      if (sms.receiver.length > 11) {
-        return sms.receiver.substr(sms.receiver.length - 11, sms.receiver.length);
-      } else {
-        return sms.receiver;
-      }
-    } else {
-      if (sms.sender.length > 11) {
-        return sms.sender.substr(sms.sender.length - 11, sms.sender.length);
-      } else {
-        return sms.sender;
-      }
-    }*/
   }
 
   /**
