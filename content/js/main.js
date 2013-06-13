@@ -110,10 +110,10 @@ var FFOSAssistant = (function() {
   function getAndShowAllSMSs() {
     CMD.SMS.getAllMessages(function onresponse_getAllMessages(messages) {
       // Make sure the 'select-all' box is not checked.  
-      MessageList.selectAllMessages(false); 
+      SmsList.selectAllSms(false); 
       var dataJSON = JSON.parse(messages.data);
       //console.log(messages.data);
-      MessageList.init(dataJSON);
+      SmsList.init(dataJSON);
     }, function onerror_getAllMessages(messages) {
       log('Error occurs when fetching all messages' + messages.message);  
     });
@@ -152,7 +152,7 @@ var FFOSAssistant = (function() {
         ViewManager.reset();
       } ,
       onMsmListening: function onMsmListening(message) {
-        MessageList.onMessage(message);
+        SmsList.onMessage(message);
       }
     });
   }

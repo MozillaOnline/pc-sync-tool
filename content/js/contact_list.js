@@ -30,7 +30,7 @@ var ContactList = (function() {
     var html = '';
     html += '<div>';
     html += '  <input id="checkbox-' + contact.id + '"';
-    html += '  class="checkbox" type="checkbox"></input>'
+    html += '  class="checkbox" type="checkbox"></input>';
     html += '  <label class="selectAll" for="checkbox-' + contact.id + '"></label>';
     html += '    <div class="bookmark"></div>';
     html += '    <div class="avatar-default"></div>';

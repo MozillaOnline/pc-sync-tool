@@ -1,21 +1,20 @@
-/*** contact ***/
+/*** sms ***/
 #sms-view {
+  width: 100%;
 }
 
-.message-list-box {
+.sms-list-box {
   float: left;
   width: 60%;
 }
 
-.message-ops-box {
+.sms-ops-box {
   overflow: hidden;
-  padding: 0 0 0 1rem;
-  background-color: #F9F9F9;
   height: 3rem;
   line-height: 3rem;
 }
 
-.message-ops-box .message-op {
+.sms-ops-box .sms-op {
   background-position: 0 center;
   background-repeat: no-repeat;
   float: left;
@@ -23,49 +22,145 @@
   cursor: pointer;
 }
 
-.message-ops-box .message-op label {
+input.selectAllCheckbox[type="checkbox"]:checked + label.selectAll {
+  background-image: url("images/checkbox-checked.png");
+  background-repeat: no-repeat;
+  padding-left: 2.3rem;
+}
+
+input.selectAllCheckbox[type="checkbox"] + label.selectAll {
+  background-image: url("images/checkbox.png");
+  background-repeat: no-repeat;
+  padding-left: 2.3rem;
+}
+
+.sms-ops-box .sms-op label {
   cursor: pointer;
   -moz-user-select: none;
 }
 
-#select-all {
-  padding-left: 0;
+#remove-sms {
+  background-image: url("images/remove-default.png");
 }
-
-#remove-messages {
-  background-image: url("images/remove.png");
-}
-
-#remove-messages[data-disabled=true] {
+#remove-sms[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
   cursor: default;
 }
-
-#remove-messages[data-disabled=true] > label {
+#remove-sms[data-disabled=true] > label {
   cursor: default;
 }
-
-#export-messages {
-  background-image: url("images/export.png");
+#remove-sms[data-disabled=false]:hover {
+  background-image: url("images/remove-highlighted.png");
+}
+#remove-sms[data-disabled=false]:active {
+  background-image: url("images/remove-selected.png");
+}
+#remove-sms[data-disabled=false]:visited {
+  background-image: url("images/remove-default.png");
 }
 
-#import-messages {
-  background-image: url("images/import.png");
+#export-sms[data-disabled=true] {
+  background-image: url("images/export-disabled.png");
+}
+#export-sms[data-disabled=false] {
+  background-image: url("images/export-default.png");
+}
+#export-sms[data-disabled=false]:hover {
+  background-image: url("images/export-highlighted.png");
+}
+#export-sms[data-disabled=false]:active {
+  background-image: url("images/export-selected.png");
+}
+#export-sms[data-disabled=false]:visited {
+  background-image: url("images/export-default.png");
 }
 
-#refresh-messages {
-  background-image: url("images/refresh.png");
+#import-sms {
+  background-image: url("images/import-default.png");
+}
+#import-sms:hover {
+  background-image: url("images/import-highlighted.png");
+}
+#import-sms:active {
+  background-image: url("images/import-selected.png");
+}
+#import-sms:visited {
+  background-image: url("images/import-default.png");
 }
 
-#add-new-message {
-  background-image: url("images/add.png");
+#refresh-sms {
+  background-image: url("images/refresh-default.png");
+}
+#refresh-sms:hover {
+  background-image: url("images/refresh-highlighted.png");
+}
+#refresh-sms:active {
+  background-image: url("images/refresh-selected.png");
+}
+#refresh-sms:visited {
+  background-image: url("images/refresh-default.png");
 }
 
-#message-list-container {
+#add-new-sms {
+  background-image: url("images/add-default.png");
+}
+#add-new-sms:hover {
+  background-image: url("images/add-highlighted.png");
+}
+#add-new-sms:active {
+  background-image: url("images/add-selected.png");
+}
+#add-new-sms:visited {
+  background-image: url("images/add-default.png");
+}
+
+#sms-list-container {
   padding-left: 1rem;
   max-height: 60rem;
   overflow: auto;
 }
+
+.empty-sms {
+  background: url('images/empty-sms.png') no-repeat scroll 0 0 transparent;
+  height: 16rem;
+  margin: 10rem 15rem 2rem;
+}
+
+.empty-sms-prompt {
+  text-align: center;
+}
+
+.quick-add_view {
+  background: url('images/logo.png') no-repeat scroll 0 0 transparent;
+  height: 12rem;
+  margin: 2rem 7.5rem;
+  display: -moz-inline-grid;
+}
+
+#quick-add-sms-header {
+  padding-left: 1rem;
+  padding-bottom: 2rem;
+}
+
+#sms-quick-add-form > div {
+  height: 3rem;
+}
+
+#sms-quick-add-form >div > label {
+  padding-left: 1rem;
+}
+
+#sms-quick-add-form input[type="edit"] {
+  width: 15rem;
+  float: right;
+  margin-right: 4rem;
+}
+
+#quick-save-sms {
+  margin: 0 0 0 10.6rem;
+  float: left;
+}
+
 
 .data-index {
   border-bottom: .2rem solid #FFA600;
@@ -74,33 +169,71 @@
   padding: 1rem;
 }
 
-.message-list-item {
+.sms-list-item {
   margin-top: .5rem;
 }
 
-.message-list-item:active {
+.sms-list-item:active {
   background-color: #EEE;
 }
 
-.message-list-item[data-focused=true] {
+.sms-list-item[data-focused=true] {
   background-color: #EEE;
 }
 
-.message-list-item > div {
+.sms-list-item > div {
   overflow: hidden;
   cursor: pointer;
   padding: .5rem 0 .5rem 1rem;
 }
 
-.message-list-item > div > * {
+.sms-list-item > div > * {
   float: left;
 }
 
-.message-list-item input[type=checkbox] {
-  margin-top: 1rem;
+.sms-list-item >div input.checkbox[type="checkbox"] + label.selectAll {
+  background-image: url("images/checkbox.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  height: 3.3rem;
+  width: 2rem;
 }
 
-.message-list-item .readflag {
+.sms-list-item >div input.checkbox[type="checkbox"]:checked + label.selectAll {
+  background-image: url("images/checkbox-checked.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  height: 3.3rem;
+  width: 2rem;
+}
+
+.sms-list-item .avatar-default {
+  background-image: url("images/avatar.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.sms-list-item .avatar-small {
+  width: 3.2rem;
+  height: 3.2rem;
+}
+
+.sms-list-item .profilePic {
+  width: 9rem;
+}
+
+.sms-list-item .avatar-small[data-noavatar=true] {
+  background: url("images/noavatar.png") no-repeat scroll center center  transparent;
+}
+
+.sms-list-item .sms-info {
+  font-size: 1.1rem;
+  padding-left: 1rem;
+}
+
+.sms-list-item .readflag {
   width: 2rem;
   height: 3.3rem;
   text-align: center;
@@ -108,70 +241,47 @@
   background-position: center center;
 }
 
-#message-list-container div.unread .readflag {
+#sms-list-container div.unread .readflag {
   background-image: url("images/unread.png");
 }
 
-.message-list-item .avatar-small {
-  width: 3.2rem;
-  height: 3.2rem;
-}
-
-
-.message-list-item .avatar-small[data-noavatar=true] {
-  background: url("images/noavatar.png") no-repeat scroll center center  transparent;
-}
-
-.message-list-item .message-info {
-  font-size: 1.1rem;
-  padding-left: 1rem;
-}
-
-
-/**** message sender box styles ****/
-#message-sender-box {
+/**** vcard box styles ****/
+#sms-vcard-box {
   -moz-box-sizing: border-box;
   padding: 1rem;
   overflow: hidden;
 }
 
-#message-sender-box .edit {
+#sms-vcard-box .edit {
   width: 4rem;
 }
 
-#message-sender-box .msm-header {
+#sms-vcard-box .vcard-header {
   color: #CCC;
   text-align: center;
   padding-bottom: 1rem;
   font-size: 2.4rem;
   font-weight: bold;
-  display: inherit;
 }
-
-#message-text, #message-content {
-  height: 200px;
-  font: 1.1rem "MozTT",Sans-serif;
-}
-
 
 #vcard-basic-info-box {
   height: 7rem;
   padding-bottom: 2rem;
 }
 
-#contact-edit-view[data-add-contact=false] #add-contact-header{
+#sms-edit-view[data-add-sms=false] #add-sms-header{
   display: none;
 }
 
-#contact-edit-view[data-add-contact=false] #edit-contact-header{
+#sms-edit-view[data-add-sms=false] #edit-sms-header{
   display: inherit;
 }
 
-#contact-edit-view[data-add-contact=true] #add-contact-header{
+#sms-edit-view[data-add-sms=true] #add-sms-header{
   display: inherit;
 }
 
-#contact-edit-view[data-add-contact=true] #edit-contact-header{
+#sms-edit-view[data-add-sms=true] #edit-sms-header{
   display: none;
 }
 
@@ -210,15 +320,12 @@
   color: #FF9A00;
 }
 
-.vcard-info-bar .contact-way-name {
+.vcard-info-bar .sms-way-name {
   width: 7rem;
 }
 
-/********* contact form ********/
-#message-form {
-  font: 1.1rem;
-}
-#message-form .avatar {
+/********* sms form ********/
+#sms-form .avatar {
   width: 8rem;
   height: 8rem;
   float: left;
@@ -230,19 +337,19 @@
   overflow: hidden;
 }
 
-#message-form li {
+#sms-form li {
   padding-right: 3rem;
 }
 
-#message-form div {
+#sms-form div {
   position: relative;
 }
 
-#message-form ul {
+#sms-form ul {
   padding-bottom: 1rem;
 }
 
-#message-form .action-delete {
+#sms-form .action-delete {
   position: absolute;
   height: 2.2rem;
   width: 2.2rem;
@@ -332,7 +439,7 @@ button.add-new-button {
   vertical-align: middle;
 }
 
-.empty-list #cancel-edit-contact {
+.empty-list #cancel-edit-sms {
   display: none;
 }
 
