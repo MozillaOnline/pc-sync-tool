@@ -29,9 +29,11 @@ var ContactList = (function() {
   function createContactListItem(contact) {
     var html = '';
     html += '<div>';
-    html += '  <input id="checkbox-' + contact.id + '"';
-    html += '  class="checkbox" type="checkbox"></input>';
-    html += '  <label class="selectAll" for="checkbox-' + contact.id + '"></label>';
+    //html += '  <input id="checkbox-' + contact.id + '"';
+    //html += '  class="checkbox" type="checkbox"></input>';
+    //html += '  <label class="selectAll" for="checkbox-' + contact.id + '"></label>';
+    //html += '  <input class="checkbox" type="checkbox"></input>';
+    html += '  <label class="unchecked"></label>';
     html += '    <div class="bookmark"></div>';
     html += '    <div class="avatar-default"></div>';
     html += '      <div class="contact-info">';
@@ -63,12 +65,12 @@ var ContactList = (function() {
 
     elem.onclick = function onclick_contact_list(event) {
       var target = event.target;
-      if (target instanceof HTMLInputElement) {
-        selectContactItem(elem, target.checked);
+      if (target instanceof HTMLLabelElement) {
+        selectContactItem(elem, !target.dataset.checked);
       } else if(target.classList.contains('bookmark')) {
         toggleFavorite(elem);
       } else {
-        //showVcardInView(getContact(this.dataset.contactId));
+        selectContactItem(elem, true);
       }
     };
 

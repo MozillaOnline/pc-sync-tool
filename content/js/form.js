@@ -325,13 +325,13 @@ var ContactForm = (function() {
     contact.email      = getFieldValue('email');
     contact.org        = getFieldValue('org');
     contact.note       = getFieldValue('note');
-
+/*
     if ($id('avatar-e').src.indexOf(DEFAULT_AVATAR) == -1) {
          contact.photo = [$id('avatar-e').src];
     } else {
          contact.photo = [];
     }
-
+*/
     if (contact.givenName.length == 0 || contact.familyName.length == 0) {
       alert('Please input the givenName and familyName!');
       return;
