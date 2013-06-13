@@ -133,7 +133,7 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
 .quick-add_view {
   background: url('images/logo.png') no-repeat scroll 0 0 transparent;
   height: 12rem;
-  margin: 2rem 7.5rem;
+  margin: 2rem 6rem;
   display: -moz-inline-grid;
 }
 
@@ -151,13 +151,13 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
 }
 
 #contact-quick-add-form input[type="edit"] {
-  width: 15rem;
+  width: 12rem;
   float: right;
   margin-right: 4rem;
 }
 
 #quick-save-contact {
-  margin: 0 0 0 10.6rem;
+  margin: 0 0 0 8rem;
   float: left;
 }
 
@@ -284,6 +284,7 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
 
 #contact-edit-view[data-add-contact=true] #add-contact-header{
   display: inherit;
+  text-align: center;
 }
 
 #contact-edit-view[data-add-contact=true] #edit-contact-header{
@@ -338,6 +339,15 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
   background-color: #EEE;
 }
 
+.avatar-edit {
+  background-image: url("images/avatar-add.png");
+  background-repeat: no-repeat;
+  background-position: 0 .5rem;
+  height: 8rem;
+  width: 8rem;
+  float: left;
+}
+
 .item-body-exp {
   overflow: hidden;
 }
@@ -361,7 +371,7 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
   background: url(images/delete.png) no-repeat;
   left: 100%;
   top: 50%;
-  margin: -1rem 0 0 1rem;
+  margin: -1rem 0 0 .5rem;
 }
 
 /* Fieldset */
@@ -373,6 +383,7 @@ fieldset {
   border: 0.1rem solid rgba(0,0,0,.2);
   font: 1.4rem/1em "MozTT", Sans-serif;
   margin: 0 0 .5rem;
+  background-color: white;
 }
 
 fieldset + fieldset {
@@ -425,7 +436,7 @@ fieldset section textarea {
   border: medium none;
   border-radius: 0 0 0 0;
   font-weight: 600;
-  height: 4rem;
+  height: 2rem;
 }
 
 form p input:valid, form p input:valid:focus {
@@ -444,7 +455,6 @@ button.add-new-button {
   vertical-align: middle;
 }
 
-.empty-list #cancel-edit-contact {
-  display: none;
+.saveAndCancel {
+  height: 3rem;
 }
-

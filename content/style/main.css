@@ -42,7 +42,7 @@ input[type="url"], textarea {
   overflow: hidden;
   padding: 0 0.8rem;
   resize: none;
-  height: 4rem;
+  height: 3rem;
   margin: .5rem 0;
 }
 
@@ -86,6 +86,14 @@ input[type="url"], textarea {
   color: #FFF;
   background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
   border: .1rem solid #00AACF;
+}
+
+.button-cancel {
+  border: 0.1rem solid;
+  border-radius: 0.2rem 0.2rem 0.2rem 0.2rem;
+  color: gray;
+  padding: 0.1rem 3rem;
+  text-decoration: none;
 }
 
 #container {
@@ -309,8 +317,9 @@ input[type="url"], textarea {
 /******** views ******/
 #views {
   height: 100%;
-  width: 30%;
+  width: 28%;
   background-color: #F4F4F4;
+  padding: 0 1.5rem 0 1rem;
 }
 
 /******** summary view ******/

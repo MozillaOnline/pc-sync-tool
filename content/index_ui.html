@@ -189,20 +189,7 @@
               </div>
             </div>
             <div id="contact-list-container">
-              <div id="id-grouped-data-A">
-                <div class="data-index">A</div>
-                <div class="contact-list-item">
-                  <!--div>
-                    <input id="test" class="checkbox" type="checkbox">
-                    <label class="selectAll" for="test">
-                    </label>
-                    <div class="bookmark"></div>
-                    <div class="avatar-default"></div>
-                    <div class="contact-info">
-                      <div class="name">b B</div>
-                    </div>
-                  </div -->
-                </div>
+              <div class="contact-list-item">
               </div>
             </div>
           </section>
@@ -251,9 +238,9 @@
               <form id="contact-form" action="#" onsubmit="return false;">
                 <input id="contact-form-id" name="id" type="hidden" value="" />
                 <section>
-                  <div class="avatar">
-                    <img id="avatar-e" class="headpic" src="" />
-                    <input id="image" type="file" accept="image/*" hidden/>
+                  <div>
+                    <input id="avatar-add" type="file" accept="image/*" hidden/>                      
+                    <label class="avatar-edit" for="avatar-add"></label>
                   </div>
                   <div class="item-body-exp">
                     <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
@@ -263,8 +250,10 @@
                 </section>
                 <!-- Contact field containter -->
                 <ul></ul>
+                <div class="saveAndCancel">
                 <a id="save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a>
-                <a id="cancel-edit-contact" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
+                <a id="cancel-edit-contact" class="button-cancel" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
+                </div>
               </form>
             </section>
           </div>
