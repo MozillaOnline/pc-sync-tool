@@ -178,7 +178,7 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
 }
 
 .contact-list-item[data-focused=true] {
-  background-color: #EEE;
+  background-color: #DEF3F8;
 }
 
 .contact-list-item > div {
@@ -217,10 +217,6 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
 
 .contact-list-item >div  > label.checked {
   background-image: url("images/checkbox-checked.png");
-  background-position: center center;
-  background-repeat: no-repeat;
-  height: 3.3rem;
-  width: 2rem;
 }
 
 .contact-list-item .bookmark {

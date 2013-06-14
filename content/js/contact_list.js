@@ -62,15 +62,16 @@ var ContactList = (function() {
     elem.dataset.contactId = contact.id;
     elem.id = 'contact-' + contact.id;
     elem.dataset.avatar = '';
+    elem.dataset.checked = false;
 
     elem.onclick = function onclick_contact_list(event) {
       var target = event.target;
       if (target instanceof HTMLLabelElement) {
-        selectContactItem(elem, !target.dataset.checked);
+        toggleContactItem(elem);
       } else if(target.classList.contains('bookmark')) {
         toggleFavorite(elem);
       } else {
-        selectContactItem(elem, true);
+        contactItemClicked(elem);
       }
     };
 
@@ -289,28 +290,75 @@ var ContactList = (function() {
       selectContactItem(item, select);
     });
 
-    $id('select-all-contacts').checked = select;
+    //$id('select-all-contacts').checked = select;
+    opStateChanged();
   }
 
-  function selectContactItem(item, select) {
-    if (select) {
-      item.classList.add('selected');
-    } else {
-      item.classList.remove('selected');
-    }
-
-    $expr('input[type=checkbox]', item).forEach(function(checkbox) {
-      checkbox.checked = select;
-      checkbox.dataset.checked = !!select;
+  function contactItemClicked(elem) {
+    $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(e) {
+      if (e != elem) {
+        e.dataset.checked = false;
+        e.dataset.focused = false;
+        var item = $expr('label.unchecked', e)[0];
+        if (item) {
+          item.classList.remove('checked');
+        }
+      }
     });
 
+    item = $expr('label.unchecked', elem)[0];
+    if (item) {
+      item.classList.add('checked');
+    }
+    elem.dataset.checked = true;
+    elem.dataset.focused = true;
+    if ($expr('#contact-list-container .contact-list-item').length === 1) {
+      $id('select-all-contacts').checked = true;
+    } else {
+      $id('select-all-contacts').checked = false;
+    }
+    $id('remove-contacts').dataset.disabled = false;
+    $id('export-contacts').dataset.disabled = false;
+  }
+
+  function selectContactItem(elem, selected) {
+    var item = $expr('label.unchecked', elem)[0];
+    if (item) {
+      if (selected) {
+        item.classList.add('checked');
+        elem.dataset.checked = true;
+        elem.dataset.focused = true;
+      } else {
+        item.classList.remove('checked');
+        elem.dataset.checked = false;
+        elem.dataset.focused = false;
+      }
+    }
+  }
+
+  function toggleContactItem(elem) {
+    var item = $expr('label.unchecked', elem)[0];
+    if (item) {
+      item.classList.toggle('checked');
+    }
+    if (item.classList.contains('checked')) {
+      elem.dataset.checked = true;
+      elem.dataset.focused = true;
+    } else {
+      elem.dataset.checked = false;
+      elem.dataset.focused = false;
+    }
+    opStateChanged();
+  }
+
+  function opStateChanged() {
     $id('select-all-contacts').checked =
-      $expr('#contact-list-container input[data-checked=false]').length === 0;
+      $expr('#contact-list-container .contact-list-item').length ===
+        $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
     $id('remove-contacts').dataset.disabled =
-      $expr('#contact-list-container input[data-checked=true]').length === 0;
-    //todo add css style for export-contact dataset.disabled = true
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
     $id('export-contacts').dataset.disabled =
-      $expr('#contact-list-container input[data-checked=true]').length === 0;
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
   }
 
   /**

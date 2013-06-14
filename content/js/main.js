@@ -99,9 +99,9 @@ var FFOSAssistant = (function() {
       ContactList.selectAllContacts(false);
       var dataJSON = JSON.parse(message.data);
       ContactList.init(dataJSON);
-      if (dataJSON.length > 0) {
-        ContactList.showContactInfo(dataJSON[0]);
-      }
+      //if (dataJSON.length > 0) {
+      //  ContactList.showContactInfo(dataJSON[0]);
+      //}
     }, function onerror_getAllContacts(message) {
       log('Error occurs when fetching all contacts.');
     });
