@@ -319,6 +319,7 @@ var ContactList = (function() {
     }
     $id('remove-contacts').dataset.disabled = false;
     $id('export-contacts').dataset.disabled = false;
+    ViewManager.showViews('show-contact-view');
   }
 
   function selectContactItem(elem, selected) {

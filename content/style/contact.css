@@ -173,6 +173,10 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
   margin-top: .5rem;
 }
 
+.contact-list-item:hover {
+  background-color: #F4F4F4;
+}
+
 .contact-list-item:active {
   background-color: #EEE;
 }
@@ -473,4 +477,44 @@ button.add-new-button {
 
 .saveAndCancel {
   height: 3rem;
+}
+
+#views h1.title {
+  text-align: center;
+  padding: 1rem;
+}
+
+.show-contact-header {
+  height: 9rem;
+}
+
+.avatar-show {
+  float: left;
+  width: 8rem;
+  height: 8rem;
+  background-image: url("images/avatar-add.png");
+  background-position: center 0;
+  background-repeat: no-repeat;
+}
+
+.contact-head {
+  float: left;
+  height: 9rem;
+}
+
+.contact-content .header {
+  margin: 2rem 0;
+  color: black;
+}
+
+.contact-edit{
+  color: #CCC;
+  text-align: center;
+  padding-bottom: 1rem;
+  font-size: 2.4rem;
+  font-weight: bold;
+}
+.contact-item label {
+  margin: 0 2rem;
+  color: black;
 }
