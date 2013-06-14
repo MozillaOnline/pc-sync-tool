@@ -70,6 +70,8 @@ var ViewManager = (function () {
     });
     viewElem.hidden = false;
 
+    _showViews(viewId + '-sub');
+
     if (viewElem.dataset.shown != "true") {
       viewElem.dataset.shown = true;
       callEvent('firstshow', viewId);
@@ -77,20 +79,33 @@ var ViewManager = (function () {
   }
 
   /**
-   * A card view is view shown inside a normal view
+   * show sub-views related to content
    */
-  function showViews(cardViewId) {
-    var cardView = $id(cardViewId);
-    if (!cardView) {
+  function _showViews(viewId) {
+    var subView = $id(viewId);
+    if (!subView) {
       return;
     }
 
-    // Get parent view
-    var parentNode = cardView.parentNode;
-
     // Hide all other sibling card views
+    $expr('#views .sub-view').forEach(function(cv) {
+      if (cv.id == viewId) {
+        cv.hidden = false;
+      } else {
+        cv.hidden = true;
+      }
+    });
+  }
+
+  function showViews(viewId) {
+    var subView = $id(viewId);
+    if (!subView) {
+       return;
+    }
+
+    var parentNode = subView.parentNode;
     $expr('.card-view', parentNode).forEach(function(cv) {
-      if (cv.id == cardViewId) {
+      if (cv.id == viewId) {
         cv.hidden = false;
       } else {
         cv.hidden = true;

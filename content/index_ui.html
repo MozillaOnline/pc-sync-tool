@@ -221,46 +221,50 @@
         </div>
         <div id="views" class="views hidden-views">
           <div>
-            <section id="contact-quick-add-view" class="card-view" hidden="true">
-              <div class="quick-add_view"></div>
-              <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
-              <form id="contact-quick-add-form" action="#" onsubmit="return false;">
-                <div><label data-l10n-id="contact-quick-add-name"></label><input type="edit"></input></div>
-                <div><label data-l10n-id="contact-quick-add-mobile"></label><input type="edit"></input></div>
-                <div><a id="quick-save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a></div>
-              </form>
-            </section>
-            <section id="contact-edit-view" class="card-view contact-form" hidden="true">
-              <div id="add-contact-header" class="vcard-header" data-l10n-id="add-contact-header"></div>
-              <div id="edit-contact-header" class="vcard-header" data-l10n-id="edit-contact-header">
-                编辑联系人信息
-              </div>
-              <form id="contact-form" action="#" onsubmit="return false;">
-                <input id="contact-form-id" name="id" type="hidden" value="" />
-                <section>
-                  <div>
-                    <input id="avatar-add" type="file" accept="image/*" hidden/>                      
-                    <label class="avatar-edit" for="avatar-add"></label>
-                  </div>
-                  <div class="item-body-exp">
-                    <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
-                    <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
-                  </div>
-                  <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
-                </section>
-                <!-- Contact field containter -->
-                <ul></ul>
-                <div class="saveAndCancel">
-                <a id="save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a>
-                <a id="cancel-edit-contact" class="button-cancel" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
+            <section id="contact-view-sub" class="sub-view">
+              <section id="contact-quick-add-view" class="card-view">
+                <div class="quick-add_view"></div>
+                <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
+                <form id="contact-quick-add-form" action="#" onsubmit="return false;">
+                  <div><label data-l10n-id="contact-quick-add-name"></label><input type="edit"></input></div>
+                  <div><label data-l10n-id="contact-quick-add-mobile"></label><input type="edit"></input></div>
+                  <div><a id="quick-save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a></div>
+                </form>
+              </section>
+              <section id="contact-edit-view" class="card-view contact-form" hidden="true">
+                <div id="add-contact-header" class="vcard-header" data-l10n-id="add-contact-header"></div>
+                <div id="edit-contact-header" class="vcard-header" data-l10n-id="edit-contact-header">
+                  编辑联系人信息
                 </div>
-              </form>
+                <form id="contact-form" action="#" onsubmit="return false;">
+                  <input id="contact-form-id" name="id" type="hidden" value="" />
+                  <section>
+                    <div>
+                      <input id="avatar-add" type="file" accept="image/*" hidden/>
+                      <label class="avatar-edit" for="avatar-add"></label>
+                    </div>
+                    <div class="item-body-exp">
+                      <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
+                      <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
+                    </div>
+                    <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
+                  </section>
+                  <!-- Contact field containter -->
+                  <ul></ul>
+                  <div class="saveAndCancel">
+                  <a id="save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a>
+                  <a id="cancel-edit-contact" class="button-cancel" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
+                  </div>
+                </form>
+              </section>
             </section>
           </div>
           <div>
-            <section id="sms-show-view" class="card-view" hidden="true">
-            </section>
-            <section id="sms-send-view" class="card-view sms-form" hidden="true">
+            <section id="sms-view-sub" class="sub-view">
+              <section id="sms-show-view" class="card-view" hidden="true">
+              </section>
+              <section id="sms-send-view" class="card-view sms-form" hidden="true">
+              </section>
             </section>
           </div>
         </div>
