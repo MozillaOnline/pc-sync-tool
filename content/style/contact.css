@@ -518,3 +518,31 @@ button.add-new-button {
   margin: 0 2rem;
   color: black;
 }
+
+.show-contacts-container {
+  max-height: 60rem;
+  overflow: auto;
+}
+
+.show-contacts-container .contact-item {
+  height: 4rem;
+  width: 20rem;
+  overflow: hidden;
+  margin-top: .5rem;
+}
+
+.multi-avatar-show {
+  float: left;
+  width: 3rem;
+  height: 3rem;
+  background-image: url("images/avatar.png");
+  background-position: center 0;
+  background-repeat: no-repeat;
+}
+
+.contact-item >div >div {
+  margin-left: 1rem;
+  float: left;
+  width: 15rem;
+  overflow-x: hihidden;
+}
