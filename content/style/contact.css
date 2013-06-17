@@ -18,25 +18,32 @@
   background-position: 0 center;
   background-repeat: no-repeat;
   float: left;
-  padding: 0 1.3rem 0 2rem;
+  padding-left: 2rem;
+  margin-right: 1.3rem;
   cursor: pointer;
-}
-
-input.selectAllCheckbox[type="checkbox"]:checked + label.selectAll {
-  background-image: url("images/checkbox-checked.png");
-  background-repeat: no-repeat;
-  padding-left: 2.3rem;
-}
-
-input.selectAllCheckbox[type="checkbox"] + label.selectAll {
-  background-image: url("images/checkbox.png");
-  background-repeat: no-repeat;
-  padding-left: 2.3rem;
 }
 
 .contact-ops-box .contact-op label {
   cursor: pointer;
   -moz-user-select: none;
+}
+
+#selectAll-contacts {
+  background-image: url("images/checkbox.png");
+  margin-left: 2rem;
+  padding-left: 2.2rem;
+}
+#selectAll-contacts[data-checked=true] {
+  background-image: url("images/checkbox-checked.png");
+}
+#selectAll-contacts[data-disabled=true] {
+  color: #CCCCCC;
+}
+#selectAll-contacts[data-disabled=false]:hover {
+  color: #00CAF2;
+}
+#selectAll-contacts[data-disabled=false]:active {
+  color: #018CAB;
 }
 
 #remove-contacts {
@@ -45,34 +52,31 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
 #remove-contacts[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
   cursor: default;
-}
-#remove-contacts[data-disabled=true] > label {
-  cursor: default;
+  color: #CCCCCC;
 }
 #remove-contacts[data-disabled=false]:hover {
   background-image: url("images/remove-highlighted.png");
+  color: #00CAF2;
 }
 #remove-contacts[data-disabled=false]:active {
   background-image: url("images/remove-selected.png");
-}
-#remove-contacts[data-disabled=false]:visited {
-  background-image: url("images/remove-default.png");
+  color: #018CAB;
 }
 
 #export-contacts[data-disabled=true] {
   background-image: url("images/export-disabled.png");
+  color: #CCCCCC;
 }
 #export-contacts[data-disabled=false] {
   background-image: url("images/export-default.png");
 }
 #export-contacts[data-disabled=false]:hover {
   background-image: url("images/export-highlighted.png");
+  color: #00CAF2;
 }
 #export-contacts[data-disabled=false]:active {
   background-image: url("images/export-selected.png");
-}
-#export-contacts[data-disabled=false]:visited {
-  background-image: url("images/export-default.png");
+  color: #018CAB;
 }
 
 #import-contacts {
@@ -80,12 +84,11 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
 }
 #import-contacts:hover {
   background-image: url("images/import-highlighted.png");
+  color: #00CAF2;
 }
 #import-contacts:active {
   background-image: url("images/import-selected.png");
-}
-#import-contacts:visited {
-  background-image: url("images/import-default.png");
+  color: #018CAB;
 }
 
 #refresh-contacts {
@@ -93,12 +96,11 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
 }
 #refresh-contacts:hover {
   background-image: url("images/refresh-highlighted.png");
+  color: #00CAF2;
 }
 #refresh-contacts:active {
   background-image: url("images/refresh-selected.png");
-}
-#refresh-contacts:visited {
-  background-image: url("images/refresh-default.png");
+  color: #018CAB;
 }
 
 #add-new-contact {
@@ -106,12 +108,11 @@ input.selectAllCheckbox[type="checkbox"] + label.selectAll {
 }
 #add-new-contact:hover {
   background-image: url("images/add-highlighted.png");
+  color: #00CAF2;
 }
 #add-new-contact:active {
   background-image: url("images/add-selected.png");
-}
-#add-new-contact:visited {
-  background-image: url("images/add-default.png");
+  color: #018CAB;
 }
 
 #contact-list-container {

@@ -146,7 +146,10 @@ var ContactList = (function() {
   function checkIfContactListEmpty() {
     var isEmpty = groupedList.count() == 0;
     if (isEmpty) {
+      $id('selectAll-contacts').dataset.disabled = true;
       showEmptyContacts();
+    } else {
+      $id('selectAll-contacts').dataset.disabled = false;
     }
   }
 
@@ -313,13 +316,14 @@ var ContactList = (function() {
     elem.dataset.checked = true;
     elem.dataset.focused = true;
     if ($expr('#contact-list-container .contact-list-item').length === 1) {
-      $id('select-all-contacts').checked = true;
+      $id('selectAll-contacts').dataset.checked = true;
     } else {
-      $id('select-all-contacts').checked = false;
+      $id('selectAll-contacts').dataset.checked = false;
     }
     $id('remove-contacts').dataset.disabled = false;
     $id('export-contacts').dataset.disabled = false;
-    ViewManager.showViews('show-contact-view');
+    //ViewManager.showViews('show-contact-view');
+    ViewManager.showViews('show-multi-contacts');
   }
 
   function selectContactItem(elem, selected) {
@@ -353,7 +357,7 @@ var ContactList = (function() {
   }
 
   function opStateChanged() {
-    $id('select-all-contacts').checked =
+    $id('selectAll-contacts').dataset.checked =
       $expr('#contact-list-container .contact-list-item').length ===
         $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
     $id('remove-contacts').dataset.disabled =
@@ -407,8 +411,17 @@ var ContactList = (function() {
   }
 
   window.addEventListener('load', function wnd_onload(event) {
-    $id('select-all-contacts').addEventListener('click', function selectAll_onclick(event) {
-      selectAllContacts(this.checked);
+    $id('selectAll-contacts').addEventListener('click', function selectAll_onclick(event) {
+      if (this.dataset.disabled == "true") {
+        return;
+      }
+      if (this.dataset.checked == "false") {
+        selectAllContacts(true);
+        this.dataset.checked = true;
+      } else {
+        selectAllContacts(false);
+        this.dataset.checked = false;
+      }
     }); 
 
     $id('remove-contacts').addEventListener('click', function onclick_removeContact(event) {
@@ -423,7 +436,7 @@ var ContactList = (function() {
       });
       
       if (window.confirm(_('delete-contacts-confirm', {n: ids.length}))) {
-        if ($id('select-all-contacts').checked) {
+        if ($id('selectAll-contacts').dataset.checked) {
           ContactList.clearAllContacts();
         } else {
           ids.forEach(function(item) {

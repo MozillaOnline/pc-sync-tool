@@ -168,9 +168,8 @@
           <section id="contact-view" class="view" hidden="true">
             <h1 class="title" data-l10n-id="contacts">联系人</h1>
             <div class="contact-ops-box">
-              <div class="contact-op">
-                <input id="select-all-contacts" class="selectAllCheckbox" type="checkbox">
-                <label for="select-all-contacts" data-l10n-id="selectall" class="selectAll" checked="false">全选</label>
+              <div id="selectAll-contacts" data-disabled="false" data-checked="false" class="contact-op">
+                <label data-l10n-id="selectall">全选</label>
               </div>
               <div id="remove-contacts" data-disabled="true" class="contact-op">
                 <label data-l10n-id="delete">删除</label>
@@ -282,7 +281,7 @@
                 <div class="contact-item">
                   <div class="multi-avatar-show"></div>
                   <div>
-                    <div>Calvin</div>
+                    <div class="">Calvin</div>
                     <div>13584163541</div>
                   </div>
                 </div>
