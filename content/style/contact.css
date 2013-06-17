@@ -122,9 +122,9 @@
 }
 
 .empty-contacts {
-  background: url('images/empty-contacts.png') no-repeat scroll 0 0 transparent;
+  background: url('images/empty-contacts.png') no-repeat scroll center center transparent;
   height: 16rem;
-  margin: 10rem 15rem 2rem;
+  margin: 10rem 0 2rem;
 }
 
 .empty-contacts-prompt {
@@ -138,13 +138,19 @@
   display: -moz-inline-grid;
 }
 
+#mobile, #fullName {
+  float: right;
+  width: 15.5rem;
+  margin: -0.5rem 1rem;
+}
+
 #quick-add-contact-header {
   padding-left: 1rem;
   padding-bottom: 2rem;
 }
 
 #contact-quick-add-form > div {
-  height: 3rem;
+  height: 4rem;
 }
 
 #contact-quick-add-form >div > label {

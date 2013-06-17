@@ -312,7 +312,7 @@ var ContactForm = (function() {
         anniversary: null,
         sex: 'male',
         genderIdentity: null
-      }
+      };
     }
 
     // Read modified fields
@@ -362,6 +362,61 @@ var ContactForm = (function() {
     }
   }
 
+  function quickSaveContact() {
+    var fullName = $id('fullName').value.trim();
+    var mobile = $id('mobile').value.trim();
+    if (fullName == '') {
+      alert('Please input full name');
+    }
+    if (mobile == '') {
+      alert('Please input cell phone number');
+    }
+    contact = {
+      id: null,
+      photo: [],
+      name: [],
+      honorificPrefix: [],
+      givenName: [],
+      familyName: [],
+      additionalName: [],
+      honorificSuffix: [],
+      nickname: [],
+      email: [],
+      url: [],
+      category: [],
+      adr: [],
+      tel: [],
+      org: [],
+      jobTitle: [],
+      bday: null,
+      note: [],
+      impp: [],
+      anniversary: null,
+      sex: 'male',
+      genderIdentity: null
+    };
+    var index = fullName.lastIndexOf(' ');
+    if (index != -1) {
+      contact.familyName = [fullName.substr(index + 1, fullName.length)];
+      contact.givenName = [fullName.substr(0, index)];
+      contact.name = contact.givenName.concat(contact.familyName);
+    } else {
+      contact.familyName = [ ];
+      contact.givenName = [fullName];
+      contact.name = contact.givenName;
+    }
+    contact.tel = [{"type":"Mobile","value":mobile,"carrier":""}];
+    CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
+      var contactsAdded = [];
+      if (!message.result) {
+        contactsAdded.push(JSON.parse(message.data));
+      }
+      ContactList.addContacts(contactsAdded);
+    }, function onerror_addcontact(message) {
+      alert('Error occurs when quick adding contact: ' + JSON.stringify(message));
+    });
+  }
+
   window.addEventListener('load', function onload(event) {
     window.removeEventListener('load', onload);
     $id('save-contact').addEventListener('click', function onclick_saveContact(evt) {
@@ -370,6 +425,9 @@ var ContactForm = (function() {
     $id('cancel-edit-contact').addEventListener('click', function onclick_cancel(evt) {
       ViewManager.showViews('contact-vcard-view');
     });
+    $id('quick-save-contact').addEventListener('click', function onclick_quickSaveContact(evt) {
+      quickSaveContact();
+    });
   });
 
   return {
@@ -377,4 +435,3 @@ var ContactForm = (function() {
     editContact: editContact
   };
 })();
-
