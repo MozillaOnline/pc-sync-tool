@@ -230,7 +230,7 @@ var ContactList = (function() {
         return;
       }
       var ids = [];
-      $expr('#contact-list-container div.selected').forEach(function(item) {
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
         ids.push(item.dataset.contactId);
       });
       ids.forEach(function(id){
@@ -293,7 +293,6 @@ var ContactList = (function() {
       selectContactItem(item, select);
     });
 
-    //$id('select-all-contacts').checked = select;
     opStateChanged();
   }
 
@@ -357,9 +356,15 @@ var ContactList = (function() {
   }
 
   function opStateChanged() {
-    $id('selectAll-contacts').dataset.checked =
-      $expr('#contact-list-container .contact-list-item').length ===
-        $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+    if ($expr('#contact-list-container .contact-list-item').length == 0) {
+      $id('selectAll-contacts').dataset.checked = false;
+      $id('selectAll-contacts').dataset.disabled = true;
+    } else {
+      $id('selectAll-contacts').dataset.checked =
+        $expr('#contact-list-container .contact-list-item').length ===
+          $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+      $id('selectAll-contacts').dataset.disabled = false;
+    }
     $id('remove-contacts').dataset.disabled =
       $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
     $id('export-contacts').dataset.disabled =
@@ -417,10 +422,8 @@ var ContactList = (function() {
       }
       if (this.dataset.checked == "false") {
         selectAllContacts(true);
-        this.dataset.checked = true;
       } else {
         selectAllContacts(false);
-        this.dataset.checked = false;
       }
     }); 
 
@@ -431,7 +434,7 @@ var ContactList = (function() {
       }
 
       var ids = [];
-      $expr('#contact-list-container div.selected').forEach(function(item) {
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
         ids.push(item.dataset.contactId);
       });
       
@@ -481,7 +484,7 @@ var ContactList = (function() {
       }
 
       var content = '';
-      $expr('#contact-list-container div.selected').forEach(function(item) {
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
         var contact = JSON.parse(item.dataset.contact);
         var vcard = 'BEGIN:VCARD';
         vcard += '\nVERSION:3.0';
