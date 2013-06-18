@@ -496,13 +496,17 @@ button.add-new-button {
   height: 9rem;
 }
 
-.avatar-show {
-  float: left;
-  width: 8rem;
-  height: 8rem;
+.avatar-show-default {
   background-image: url("images/avatar-add.png");
   background-position: center 0;
   background-repeat: no-repeat;
+}
+
+.avatar-show {
+  float: left;
+  width: 7rem;
+  height: 7rem;
+  margin: 0 0.5rem 0 1rem;
 }
 
 .contact-head {
@@ -510,8 +514,19 @@ button.add-new-button {
   height: 9rem;
 }
 
+#show-contact-full-name {
+  height: 2rem;
+  margin-left: 1rem;
+  color: black;
+}
+
+#show-contact-company {
+  height: 2rem;
+  margin: 0 0 -0.5rem 1rem;
+}
+
 .contact-content .header {
-  margin: 2rem 0;
+  margin: 2rem 0 1rem 1rem;
   color: black;
 }
 
@@ -523,7 +538,7 @@ button.add-new-button {
   font-weight: bold;
 }
 .contact-item label {
-  margin: 0 2rem;
+  margin: 0 2rem 0 1rem;
   color: black;
 }
 

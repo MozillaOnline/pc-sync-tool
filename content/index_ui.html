@@ -263,21 +263,20 @@
                 </form>
               </section>
               <section id="show-contact-view" class="card-view" hidden="true">
-                <h1 class="title" data-l10n-id="add-contact-header"></h1>
+                <h1 class="title" data-l10n-id="show-contact-header"></h1>
                 <div class="show-contact-header">
-                  <div class="avatar-show"></div>
+                  <img id="show-avatar" class="avatar-show avatar-show-default"></img>
                   <div class="contact-head">
-                    <div>Calvin</div>
-                    <div>Mozilla Ltd. Company</div>
-                    <div class="button active-button" data-l10n-id="edit-contact-header">
+                    <div id="show-contact-full-name"></div>
+                    <div id="show-contact-company"></div>
+                    <div id="edit-contact" class="button active-button" data-l10n-id="edit-contact">
                     </div>
                   </div>
                 </div>
                 <div class="contact-content">
-                  <div class="header">联系信息</div>
-                  <div class="contact-item">工作电话  <label>13584521451</label></div>
-                  <div class="contact-item">工作电话  <label>13584521451</label></div>
-                  <div class="contact-item">工作邮箱  <label>wdeng@mozilla.com</label></div>
+                  <div class="header" data-l10n-id="show-contact-content">联系信息</div>
+                  <div id="show-contact-content">
+                  </div>
                 </div>
               </section>
               <section id="show-multi-contacts" class="card-view" hidden="true">

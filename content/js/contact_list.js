@@ -161,6 +161,7 @@ var ContactList = (function() {
             var item = $id('contact-' + contact.id);
             var img = item.getElementsByTagName('img')[0];
             img.src = result.data;
+            item.dataset.avatar = result.data;
             if (img.classList.contains('avatar-default')) {
               img.classList.remove('avatar-default');
             }
@@ -325,8 +326,10 @@ var ContactList = (function() {
     }
     $id('remove-contacts').dataset.disabled = false;
     $id('export-contacts').dataset.disabled = false;
+
+    showContactInfo(JSON.parse(elem.dataset.contact));
     //ViewManager.showViews('show-contact-view');
-    ViewManager.showViews('show-multi-contacts');
+    //ViewManager.showViews('show-multi-contacts');
   }
 
   function selectContactItem(elem, selected) {
@@ -373,6 +376,80 @@ var ContactList = (function() {
       $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
     $id('export-contacts').dataset.disabled =
       $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+  }
+
+  function showContactInfo(contact) {
+    $id('show-contact-full-name').innerHTML = contact.name.join(' ');
+    $id('show-contact-company').innerHTML = contact.org.join(' ');
+    var container = $id('show-contact-content');
+    container.innerHTML = '';
+    contact.tel.forEach(function(item) {
+      var div = document.createElement('div');
+      switch (item.type[0]) {
+        case 'Mobile':
+          div.innerHTML = '<label data-l10n-id="Mobile"></label><label>' + item.value + '</label>';
+          break;
+        case 'home':
+          div.innerHTML = '<label data-l10n-id="Home"></label><label>' + item.value + '</label>';
+          break;
+        case 'work':
+          div.innerHTML = '<label data-l10n-id="Work"></label><label>' + item.value + '</label>';
+          break;
+        case 'personal':
+          div.innerHTML = '<label data-l10n-id="Personal"></label><label>' + item.value + '</label>';
+          break;
+        case 'faxHome':
+          div.innerHTML = '<label data-l10n-id="FaxHome"></label><label>' + item.value + '</label>';
+          break;
+        case 'faxOffice':
+          div.innerHTML = '<label data-l10n-id="FaxOffice"></label><label>' + item.value + '</label>';
+          break;
+        case 'faxOther':
+          div.innerHTML = '<label data-l10n-id="FaxOther"></label><label>' + item.value + '</label>';
+          break;
+        case 'another':
+          div.innerHTML = '<label data-l10n-id="Other"></label><label>' + item.value + '</label>';
+          break;
+        default:
+          div.innerHTML = '<label>' + item.type[0] + '</label><label>' + item.value + '</label>';
+          break;
+      }
+      div.classList.add('contact-item');
+      navigator.mozL10n.translate(div);
+      container.appendChild(div);
+      });
+    contact.email.forEach(function(item) {
+      var div = document.createElement('div');
+      switch (item.type[0]) {
+        case 'Personal':
+          div.innerHTML = '<label data-l10n-id="Personal"></label><label>' + item.value + '</label>';
+          break;
+        case 'Work':
+          div.innerHTML = '<label data-l10n-id="Work"></label><label>' + item.value + '</label>';
+          break;
+        case 'Home':
+          div.innerHTML = '<label data-l10n-id="Home"></label><label>' + item.value + '</label>';
+          break;
+        default:
+          div.innerHTML = '<label>' + item.type[0] + '</label><label>' + item.value + '</label>';
+          break;
+      }
+      div.classList.add('contact-item');
+      navigator.mozL10n.translate(div);
+      container.appendChild(div);
+      });
+    $id('edit-contact').addEventListener ('click', function edit_contact() {
+      ContactForm.editContact(contact);
+      });
+    ViewManager.showViews('show-contact-view');
+    var item = $id('contact-' + contact.id);
+    if (item.dataset.avatar) {
+      $id('show-avatar').src = item.dataset.avatar;
+      $id('show-avatar').classList.remove('avatar-show-default');
+    } else {
+      $id('show-avatar').src = '';
+      $id('show-avatar').classList.add('avatar-show-default');
+    }
   }
 
   /**
