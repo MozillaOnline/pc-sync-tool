@@ -243,12 +243,15 @@
   background-image: url("images/bookmarked.png");
 }
 
+.contact-list-item .avatar {
+  width: 3.5rem;
+  height: 3.5rem;  
+}
+
 .contact-list-item .avatar-default {
   background-image: url("images/avatar.png");
   background-repeat: no-repeat;
   background-position: center;
-  width: 3.5rem;
-  height: 3.5rem;
 }
 
 .contact-list-item .avatar-small {
@@ -312,6 +315,8 @@
 #contact-edit-view[data-add-contact=true] #add-contact-header{
   display: inherit;
   text-align: center;
+  font-size: 2rem;
+  margin: 1rem 0;
 }
 
 #contact-edit-view[data-add-contact=true] #edit-contact-header{
@@ -358,21 +363,17 @@
 }
 
 /********* contact form ********/
-#contact-form .avatar {
-  width: 8rem;
-  height: 8rem;
+#contact-form .avatar-add-edit {
+  height: 7rem;
+  width: 7rem;
   float: left;
-  margin: .8rem .5rem;
-  background-color: #EEE;
+  margin-right: 0.5rem;
 }
 
-.avatar-edit {
+#contact-form .avatar-add-edit-default {
   background-image: url("images/avatar-add.png");
   background-repeat: no-repeat;
   background-position: 0 .5rem;
-  height: 8rem;
-  width: 8rem;
-  float: left;
 }
 
 .item-body-exp {

@@ -35,7 +35,7 @@ var ContactList = (function() {
     //html += '  <input class="checkbox" type="checkbox"></input>';
     html += '  <label class="unchecked"></label>';
     html += '    <div class="bookmark"></div>';
-    html += '    <div class="avatar-default"></div>';
+    html += '    <img class="avatar avatar-default"></img>';
     html += '      <div class="contact-info">';
     html += '        <div class="name">';
 
@@ -159,7 +159,11 @@ var ContactList = (function() {
         CMD.Contacts.getContactProfilePic(contact.id, function(result) {
           if (result.data != '') {
             var item = $id('contact-' + contact.id);
-            item.getElementsByTagName('img')[0].src = result.data;
+            var img = item.getElementsByTagName('img')[0];
+            img.src = result.data;
+            if (img.classList.contains('avatar-default')) {
+              img.classList.remove('avatar-default');
+            }
           }
         }, function(e) {
           alert('get contact avatar error:' + e);

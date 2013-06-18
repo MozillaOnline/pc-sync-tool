@@ -194,7 +194,7 @@ var ContactForm = (function() {
     fields = [];
 
     $id('contact-form-id').value = contact ? contact.id : '';
-    //$id('avatar-e').src = contact ? contact.photo[0] : DEFAULT_AVATAR;
+    $id('avatar-add-edit').src = contact ? contact.photo[0] : '';
     $id('givenName').value       = contact && contact.givenName ? contact.givenName.join(' ') : '';
     $id('familyName').value      = contact && contact.familyName ? contact.familyName.join(' ') : '';
     $id('org').value             = contact && contact.org ? contact.org.join(' ') : '';
@@ -325,13 +325,13 @@ var ContactForm = (function() {
     contact.email      = getFieldValue('email');
     contact.org        = getFieldValue('org');
     contact.note       = getFieldValue('note');
-/*
-    if ($id('avatar-e').src.indexOf(DEFAULT_AVATAR) == -1) {
-         contact.photo = [$id('avatar-e').src];
-    } else {
+
+    if ($id('avatar-add-edit').classList.contains('avatar-add-edit-default')) {
          contact.photo = [];
+    } else {
+         contact.photo = [$id('avatar-add-edit').src];
     }
-*/
+
     if (contact.givenName.length == 0 || contact.familyName.length == 0) {
       alert('Please input the givenName and familyName!');
       return;
@@ -427,6 +427,50 @@ var ContactForm = (function() {
     });
     $id('quick-save-contact').addEventListener('click', function onclick_quickSaveContact(evt) {
       quickSaveContact();
+    });
+    $id('avatar-add-edit').addEventListener('click', function (e) {
+      $id('avatar-input').click();
+    });
+    $id('avatar-input').addEventListener('change', function() {
+      var MAX_WIDTH = 320;
+      var MAX_HEIGHT = 320;
+      var pic = $id('avatar-add-edit');
+
+      var offscreenImage = new Image();
+      var url = URL.createObjectURL(this.files[0]);
+      offscreenImage.src = url;
+      offscreenImage.onerror = function () {
+        URL.revokeObjectURL(url);
+        alert('error');
+      };
+      offscreenImage.onload = function () {
+        URL.revokeObjectURL(url);
+
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        canvas.width = MAX_WIDTH;
+        canvas.height = MAX_HEIGHT;
+        var scalex = canvas.width / offscreenImage.width;
+        var scaley = canvas.height / offscreenImage.height;
+
+        var scale = Math.max(scalex, scaley);
+
+        var w = Math.round(MAX_WIDTH / scale);
+        var h = Math.round(MAX_HEIGHT / scale);
+        var x = Math.round((offscreenImage.width - w) / 2);
+        var y = Math.round((offscreenImage.height - h) / 2);
+
+        context.drawImage(offscreenImage, x, y, w, h,
+                      0, 0, MAX_WIDTH, MAX_HEIGHT);
+        canvas.toBlob(function (blob) {
+          var fr = new FileReader();
+          fr.readAsDataURL(blob);
+          fr.onload = function (e) {
+            pic.src = e.target.result;
+            pic.classList.remove('avatar-add-edit-default');
+          };
+        });
+      };
     });
   });
 
