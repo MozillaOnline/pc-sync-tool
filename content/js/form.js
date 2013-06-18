@@ -194,7 +194,18 @@ var ContactForm = (function() {
     fields = [];
 
     $id('contact-form-id').value = contact ? contact.id : '';
-    $id('avatar-add-edit').src = contact ? contact.photo[0] : '';
+    if (contact) {
+      if ($id('contact-' + contact.id).dataset.avatar) {
+        $id('avatar-add-edit').src = $id('contact-' + contact.id).dataset.avatar;
+        $id('avatar-add-edit').classList.remove('avatar-add-edit-default');
+      } else {
+        $id('avatar-add-edit').src = '';
+        $id('avatar-add-edit').classList.add('avatar-add-edit-default');
+      }
+    } else {
+      $id('avatar-add-edit').src = '';
+      $id('avatar-add-edit').classList.add('avatar-add-edit-default');
+    }
     $id('givenName').value       = contact && contact.givenName ? contact.givenName.join(' ') : '';
     $id('familyName').value      = contact && contact.familyName ? contact.familyName.join(' ') : '';
     $id('org').value             = contact && contact.org ? contact.org.join(' ') : '';

@@ -156,20 +156,24 @@ var ContactList = (function() {
   function updateAvatar() {
     groupedList.getGroupedData().forEach(function(group) {
       group.dataList.forEach( function (contact) {
-        CMD.Contacts.getContactProfilePic(contact.id, function(result) {
-          if (result.data != '') {
-            var item = $id('contact-' + contact.id);
-            var img = item.getElementsByTagName('img')[0];
-            img.src = result.data;
-            item.dataset.avatar = result.data;
-            if (img.classList.contains('avatar-default')) {
-              img.classList.remove('avatar-default');
-            }
-          }
-        }, function(e) {
-          alert('get contact avatar error:' + e);
-        });
+        updateContactAvatar(contact);
       });
+    });
+  }
+
+  function updateContactAvatar(contact) {
+    CMD.Contacts.getContactProfilePic(contact.id, function(result) {
+      if (result.data != '') {
+        var item = $id('contact-' + contact.id);
+        var img = item.getElementsByTagName('img')[0];
+        img.src = result.data;
+        item.dataset.avatar = result.data;
+        if (img.classList.contains('avatar-default')) {
+          img.classList.remove('avatar-default');
+        }
+      }
+    }, function(e) {
+      alert('get contact avatar error:' + e);
     });
   }
 
@@ -476,12 +480,10 @@ var ContactList = (function() {
       if (!contact.id) {
         return;
       }
-
       var existingContact = getContact(contact.id);
       groupedList.remove(existingContact);
       groupedList.add(contact);
-
-      //showVcardInView(contact);
+      updateContactAvatar(contact);
     });
   }
 

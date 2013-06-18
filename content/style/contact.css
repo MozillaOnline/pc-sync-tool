@@ -308,17 +308,6 @@
   display: none;
 }
 
-#contact-edit-view[data-add-contact=false] #edit-contact-header{
-  display: inherit;
-}
-
-#contact-edit-view[data-add-contact=true] #add-contact-header{
-  display: inherit;
-  text-align: center;
-  font-size: 2rem;
-  margin: 1rem 0;
-}
-
 #contact-edit-view[data-add-contact=true] #edit-contact-header{
   display: none;
 }
