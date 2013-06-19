@@ -579,6 +579,7 @@ SendSMSDialog.prototype = {
     evt.targetElement = this._modalElement;
     document.dispatchEvent(evt);
   },
+  close: function() {
     this._mask.parentNode.removeChild(this._mask);
     this._modalElement.parentNode.removeChild(this._modalElement);
     this._mask = null;
