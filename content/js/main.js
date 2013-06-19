@@ -106,15 +106,19 @@ var FFOSAssistant = (function() {
       log('Error occurs when fetching all contacts.');
     });
   }
+  function getAndShowAllSMSThreads() {
+    updateSMSThreads();
+    SmsList.startListening();
+  }
   
-  function getAndShowAllSMSs() {
-    CMD.SMS.getAllMessages(function onresponse_getAllMessages(messages) {
+  function updateSMSThreads() {
+    CMD.SMS.getThreads(function onresponse_getThreads(messages) {
       // Make sure the 'select-all' box is not checked.  
       SmsList.selectAllSms(false); 
       var dataJSON = JSON.parse(messages.data);
       //console.log(messages.data);
       SmsList.init(dataJSON);
-    }, function onerror_getAllMessages(messages) {
+    }, function onerror_getThreads(messages) {
       log('Error occurs when fetching all messages' + messages.message);  
     });
   }
@@ -232,7 +236,7 @@ var FFOSAssistant = (function() {
     // Register view event callbacks
     ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
     ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);
-    ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSs);
+    ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSThreads);
     ViewManager.addViewEventListener('music-view', 'firstshow', getAndShowAllMusics);
   }
 
@@ -316,8 +320,9 @@ var FFOSAssistant = (function() {
     },
 
     getAndShowAllContacts: getAndShowAllContacts,
-    getAndShowAllSMSs: getAndShowAllSMSs,
-    getAndShowAllMusics : getAndShowAllMusics
+    getAndShowAllSMSThreads: getAndShowAllSMSThreads,
+    getAndShowAllMusics : getAndShowAllMusics,
+    updateSMSThreads: updateSMSThreads
   };
 })();
 

@@ -204,10 +204,10 @@ var CMD = (function() {
        *   [id1, id2]
        */
       deleteMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.deleteMessageById),
-
       listenMessage:  createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.listenMessage),
-
-      markReadMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.markReadMessageById)
+      markReadMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.markReadMessageById),
+      getThreads:  createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.getThreads),
+      getThreadMessagesById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.getThreadMessagesById)
     }
   };
 })();

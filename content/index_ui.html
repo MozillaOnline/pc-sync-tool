@@ -200,16 +200,16 @@
                 <label for="select-all-sms" data-l10n-id="selectall" class="selectAll" checked="false">全选</label>
               </div>
               <div id="remove-sms" data-disabled="true" class="sms-op">
-                <label data-l10n-id="delete">删除</label>
+                <label data-l10n-id="delete-sms">删除</label>
               </div>
               <div id="export-sms" data-disabled="true" class="sms-op">
-                <label data-l10n-id="export">导出</label>
+                <label data-l10n-id="export-sms">导出</label>
               </div>
               <div id="refresh-sms" class="sms-op">
-                <label data-l10n-id="refresh">刷新</label>
+                <label data-l10n-id="refresh-sms">刷新</label>
               </div>
               <div id="add-new-sms" class="sms-op">
-                <label data-l10n-id="new">发短信</label>
+                <label data-l10n-id="send-sms">发短信</label>
               </div>
             </div>
             <div id="sms-list-container">
@@ -286,6 +286,43 @@
                       <div class="">Calvin</div>
                       <div>13584163541</div>
                     </div>
+                  </div>
+                </div>
+              </section>
+            </section>
+            <section id="sms-view-sub" class="sub-view" hidden="true">
+              <section id="sms-send-view" class="card-view sms-send-form">
+                <div class="sms-send-view"></div>
+                <div id="sms-send-view-header" data-l10n-id="sms-send-view-header">给好友发个短信吧</div>
+                <form id="sms-send-view-form" action="#" onsubmit="return false;">
+                  <div id="sms-send-button" class="button active-button" href="javascript: void(0);" data-l10n-id="send">发短信</div>
+                </form>
+              </section>
+              <section id="sms-select-view" class="card-view sms-form" hidden="true">
+                <div class="sms-select-view-header">
+                  <span class="threads-count" id="select-threads-count"></span>
+                </div>
+                <div class="w-message-batch-conversations-list-ctn">
+                  <ul class="w-ui-smartlist-body-ctn" id="w-ui-smartlist-body-ctn">
+                  </ul>
+                  <div class="w-ui-smartlist-scroll-ctn">
+                    <div class="w-ui-smartlist-scroll-substitution" style="height: 0px;"></div>
+                  </div>
+                </div>
+              </section>
+              <section id="sms-thread-view" class="card-view sms-form" hidden="true">
+                <div class="sms-thread-header" id="sms-thread-header">
+                </div>
+                <div class="w-message-threads-ctn">
+                  <ul class="w-message-threads-list-ctn", id="w-message-threads-list-ctn">
+                  </ul>
+                </div>
+                <div class="sender-ctn">
+                  <textarea class="input-content" autofocus="true" placeholder="填写您的新信息..." style="height: 20px; min-height: 20px;" disabled="">
+                  </textarea>
+                  <div class="count-ctn">
+                    <div class="count-down text-thirdly" style="display: none;">0 字</div>
+                    <button class="button-send primary" disabled="">发短信</button>
                   </div>
                 </div>
               </section>

@@ -87,6 +87,7 @@ GroupedList.prototype = {
   },
 
   _addToGroup: function gl_addToGroup(dataObj) {
+    var self = this;
     var index = this.options.dataIndexer(dataObj);
     index = !index ? self.DEFAULT_INDEX : index;
 
@@ -107,6 +108,7 @@ GroupedList.prototype = {
    * Remove data object, and return the contained group
    */
   _removeFromGroup: function gl_removeFromGroup(dataObj) {
+    var self = this;
     var index = this.options.dataIndexer(dataObj);
     index = !index ? self.DEFAULT_INDEX : index;
 
@@ -114,8 +116,6 @@ GroupedList.prototype = {
     if (!group) {
       return null;
     }
-
-    var self = this;
     var newDataList = removeFromArray(function(obj) {
       return self.options.dataIdentifier(obj) ===
                self.options.dataIdentifier(dataObj);
@@ -172,8 +172,10 @@ GroupedList.prototype = {
     // Render data list
     group.dataList.forEach(function(dataObj) {
       var dataElem = self.options.renderFunc(dataObj);
-      dataElem.dataset.dataIdentity = self.options.dataIdentifier(dataObj);
-      groupElem.appendChild(dataElem);
+      if(dataElem){
+        dataElem.dataset.dataIdentity = self.options.dataIdentifier(dataObj);
+        groupElem.appendChild(dataElem);
+      }
     });
 
     return groupElem;
@@ -184,7 +186,10 @@ GroupedList.prototype = {
   },
 
   _getGroupElem: function gl_getGroupElem(index) {
-    return $id(this._getGroupElemId(index));
+    if(index == this.DEFAULT_INDEX)
+      return $id('sms-list-container');
+    else
+      return $id(this._getGroupElemId(index));
   },
 
   render: function gl_render() {
@@ -231,7 +236,7 @@ GroupedList.prototype = {
     } else {
       for (var i = 0; i < groupElem.childNodes.length; i++) {
         var child = groupElem.childNodes[i];
-        if (child.dataset.dataIdentity === this.options.dataIdentifier(dataObj)) {
+        if (child.dataset.threadIndex === this.options.dataIdentifier(dataObj)) {
           child.parentNode.removeChild(child);
           break;
         }
@@ -328,7 +333,7 @@ ModalDialog.prototype = {
     this._adjustModalPosition();
 
     if (this.options.cancelable) {
-      this._makeDialogCancelable(); 
+      this._makeDialogCancelable();
     }
 
     // Translate l10n value
@@ -410,6 +415,199 @@ ModalDialog.prototype = {
     window.removeEventListener('resize', this._onWindowResize)
 
     this.options.onclose();
+  }
+};
+
+function SendSMSDialog(options) {
+  this.initailize(options);
+}
+
+SendSMSDialog.closeAll = function() {
+  var evt = document.createEvent('Event');
+  evt.initEvent('SendSMSDialog:show', true, true);
+  document.dispatchEvent(evt);
+};
+
+SendSMSDialog.prototype = {
+  initailize: function(options) {
+    this.options = extend({
+      receiverEdit: null,
+      bodyEdit:null,
+      sendButton:true,
+      cancelButton: true,
+      onclose: emptyFunction
+    }, options);
+
+    this._modalElement = null;
+    this._mask = null;
+    this._build();
+  },
+
+  _build: function() {
+    this._mask = document.createElement('div');
+    this._mask.className = 'modal-mask';
+    document.body.appendChild(this._mask);
+
+    // TODO using template
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    this._modalElement.innerHTML = '<div class="w-ui-window draggable">'
+	+ '<header class="w-ui-window-header drag-handel">'
+	+ '<div class="w-ui-window-header-title">发送信息</div>'
+	+ '<div class="w-ui-window-header-x" style=""></div>'
+	+ '</header>'
+	+ '<div class="w-ui-window-body">'
+	+ '<div class="w-message-sender-window">'
+	+ '<div class="header">'
+	+ '<label class="cf" for="address">收信人：</label>'
+	+ '<div class="address">'
+	+ '<input id="address" type="text" class="input-contact searchbox">'
+	+ '</div>'
+	+ '<button class="w-icon-btn button-add-contact">'
+	+ '<span class="icon add-grey"></span>'
+	+ '添加联系人'
+	+ '</button>'
+	+ '</div>'
+	+ '<div class="body">'
+	+ '<label class="cf" for="content">发送内容：</label>'
+	+ '<textarea id="content" class="input-content" autofocus="true"></textarea>'
+	+ '</div>'
+	+ '<div class="monitor text-secondary">'
+	+ '<span class="content-count">已输入 0 字，</span>'
+	+ '<span class="contacts-count">发送给 0 位联系人。</span>'
+	+ '</div>'
+	+ '</div>'
+	+ '</div>'
+	+ '<footer class="w-ui-window-footer" style="">'
+	+ '<div class="w-ui-window-footer-monitor"></div>'
+	+ '<div class="w-ui-window-footer-button-ctn">'
+	+ '<button class="button-send primary">发送</button>'
+	+ '<button class="button-cancel primary">取消</button>'
+	+ '</div>'
+	+ '</footer>'
+        + '</div>';
+
+/*    var titleElem = $expr('.modal-title', this._modalElement)[0];
+    if (this.options.titleL10n) {
+      titleElem.dataset.l10nId = this.options.titleL10n;
+    }
+
+    var bodyContainer = $expr('.modal-body', this._modalElement)[0];
+    if (this.options.bodyElement) {
+      bodyContainer.appendChild(this.options.bodyElement);
+    } else {
+      bodyContainer.textContent = this.options.bodyText;
+      if (this.options.bodyTextL10n) {
+        bodyContainer.dataset.l10nId = this.options.bodyTextL10n;
+      }
+    }*/
+
+    document.body.appendChild(this._modalElement);
+    this._adjustModalPosition();
+
+    if (this.options.cancelable) {
+      this._makeDialogCancelable();
+    }
+
+    // Translate l10n value
+    navigator.mozL10n.translate(this._modalElement);
+
+    // Only one modal dialog is shown at a time.
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      // Show a popup dialog at a time.
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+
+      self.close();
+    }
+    document.addEventListener('ModalDialog:show', this._onModalDialogShown);
+
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('ModalDialog:show');
+
+    // Tweak modal dialog position when resizing.
+    this._onWindowResize = function(event) {
+      self._adjustModalPosition();
+    };
+    window.addEventListener('resize', this._onWindowResize);
+  },
+
+  _makeDialogCancelable: function() {
+   var closeBtn = $expr('.w-ui-window-header-x', this._modalElement)[0];
+   closeBtn.hidden = false;
+   closeBtn.addEventListener('click', this.close.bind(this));
+
+   var okBtn = $expr('.button-send', this._modalElement)[0];
+   okBtn.hidden = false;
+   okBtn.addEventListener('click', this.send.bind(this));
+
+   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+   cancelBtn.hidden = false;
+   cancelBtn.addEventListener('click', this.close.bind(this));
+   var self = this;
+   okBtn.addEventListener('keydown', function(event) {
+     if (event.keyCode == 27) {
+       self.close();
+     }
+   });
+
+   // Make sure we can close the dialog by hitting ENTER or ESC
+   okBtn.focus();
+
+   // Close modal dialog when mousedown on the realestate outside.
+/*   this._modalElement.addEventListener('mousedown', this.close.bind(this));
+   var container = $expr('.modal-container', this._modalElement)[0];
+   container.addEventListener('mousedown', function(event) {
+     event.stopPropagation();
+   }, true); */
+  },
+
+  _adjustModalPosition: function() {
+/*    var container = $expr('.modal-container', this._modalElement)[0];
+    var documentHeight = document.documentElement.clientHeight;
+    var containerHeight = container.clientHeight;
+    container.style.top = (documentHeight > containerHeight ?
+      (documentHeight - containerHeight) / 2 : 0) + 'px';*/
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  },
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+
+    document.removeEventListener('ModalDialog:show', this._onModalDialogShown);
+    window.removeEventListener('resize', this._onWindowResize)
+
+    this.options.onclose();
+  },
+  send: function() {
+    var number = $id('address').value.split(',');
+    var message = $id('content').value;
+    var self=this;
+    CMD.SMS.sendMessages(JSON.stringify({number:number, message: message}),
+      function onSuccess_sendSms(event) {
+        if(!event.result) {
+          self._mask.parentNode.removeChild(self._mask);
+          self._modalElement.parentNode.removeChild(self._modalElement);
+          self._mask = null;
+          self._modalElement = null;
+          document.removeEventListener('ModalDialog:show', self._onModalDialogShown);
+          window.removeEventListener('resize', self._onWindowResize)
+          self.options.onclose();
+          FFOSAssistant.updateSMSThreads();
+        }
+      }, function onError_sendSms(e) {
+        alert(e);
+      });
   }
 };
 
