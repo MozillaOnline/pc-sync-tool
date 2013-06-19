@@ -531,22 +531,32 @@ button.add-new-button {
   color: black;
 }
 
-.show-contacts-container {
+#show-contacts-container {
   max-height: 60rem;
   overflow: auto;
 }
 
-.show-contacts-container .contact-item {
+.show-multi-contact-content {
+  float: left;
+}
+
+.show-multi-contact-content div {
+  margin-left: 1rem;
+  width: 14rem;
+  height: 2rem;
+  overflow: hidden;
+}
+.show-contacts-item {
   height: 4rem;
   width: 20rem;
   overflow: hidden;
-  margin-top: .5rem;
+  margin: .5rem 0 .5rem 1rem;
 }
 
 .multi-avatar-show {
   float: left;
-  width: 3rem;
-  height: 3rem;
+  width: 4rem;
+  height: 4rem;
   background-image: url("images/avatar.png");
   background-position: center 0;
   background-repeat: no-repeat;
@@ -556,5 +566,6 @@ button.add-new-button {
   margin-left: 1rem;
   float: left;
   width: 15rem;
-  overflow-x: hihidden;
+  height: 2rem;
+  overflow: hihidden;
 }

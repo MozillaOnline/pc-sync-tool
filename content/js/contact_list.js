@@ -332,8 +332,6 @@ var ContactList = (function() {
     $id('export-contacts').dataset.disabled = false;
 
     showContactInfo(JSON.parse(elem.dataset.contact));
-    //ViewManager.showViews('show-contact-view');
-    //ViewManager.showViews('show-multi-contacts');
   }
 
   function selectContactItem(elem, selected) {
@@ -364,6 +362,12 @@ var ContactList = (function() {
       elem.dataset.focused = false;
     }
     opStateChanged();
+    if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 1) {
+      showContactInfo(JSON.parse(elem.dataset.contact));
+    }
+    if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length > 1) {
+      showMultiContactInfo();
+    }
   }
 
   function opStateChanged() {
@@ -421,7 +425,7 @@ var ContactList = (function() {
       div.classList.add('contact-item');
       navigator.mozL10n.translate(div);
       container.appendChild(div);
-      });
+    });
     contact.email.forEach(function(item) {
       var div = document.createElement('div');
       switch (item.type[0]) {
@@ -441,10 +445,10 @@ var ContactList = (function() {
       div.classList.add('contact-item');
       navigator.mozL10n.translate(div);
       container.appendChild(div);
-      });
+    });
     $id('edit-contact').addEventListener ('click', function edit_contact() {
       ContactForm.editContact(contact);
-      });
+    });
     ViewManager.showViews('show-contact-view');
     var item = $id('contact-' + contact.id);
     if (item.dataset.avatar) {
@@ -456,6 +460,30 @@ var ContactList = (function() {
     }
   }
 
+  function showMultiContactInfo() {
+    var selectedContacts = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
+    var container = $id('show-contacts-container');
+    container.innerHTML = '';
+    var header = _('contacts-selected', {n:selectedContacts.length});
+    $id('show-contacts-header').innerHTML = header;
+    selectedContacts.forEach(function(item) {
+      var contact = JSON.parse(item.dataset.contact);
+      var div = document.createElement('div');
+      var html = '<img class="multi-avatar-show"></img>';
+      html += '<div class="show-multi-contact-content">';
+      html += '  <div>';
+      html += contact.name.join(' ');
+      html += '  </div>';
+      html += '  <div>';
+      html += contact.tel[0].value;
+      html += '  </div>';
+      html += '</div>';
+      div.innerHTML = html;
+      div.classList.add('show-contacts-item');
+      container.appendChild(div);
+    });
+    ViewManager.showViews('show-multi-contacts');
+  }
   /**
    * Add contact lists.
    */
