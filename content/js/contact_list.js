@@ -395,31 +395,31 @@ var ContactList = (function() {
       var div = document.createElement('div');
       switch (item.type[0]) {
         case 'Mobile':
-          div.innerHTML = '<label data-l10n-id="Mobile"></label><label>' + item.value + '</label>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="Mobile"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
-        case 'home':
-          div.innerHTML = '<label data-l10n-id="Home"></label><label>' + item.value + '</label>';
+        case 'Home':
+          div.innerHTML = '<div class="title"><label data-l10n-id="Home"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
-        case 'work':
-          div.innerHTML = '<label data-l10n-id="Work"></label><label>' + item.value + '</label>';
+        case 'Work':
+          div.innerHTML = '<div class="title"><label data-l10n-id="Work"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
-        case 'personal':
-          div.innerHTML = '<label data-l10n-id="Personal"></label><label>' + item.value + '</label>';
+        case 'Personal':
+          div.innerHTML = '<div class="title"><label data-l10n-id="Personal"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
-        case 'faxHome':
-          div.innerHTML = '<label data-l10n-id="FaxHome"></label><label>' + item.value + '</label>';
+        case 'FaxHome':
+          div.innerHTML = '<div class="title"><label data-l10n-id="FaxHome"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
-        case 'faxOffice':
-          div.innerHTML = '<label data-l10n-id="FaxOffice"></label><label>' + item.value + '</label>';
+        case 'FaxOffice':
+          div.innerHTML = '<div class="title"><label data-l10n-id="FaxOffice"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
-        case 'faxOther':
-          div.innerHTML = '<label data-l10n-id="FaxOther"></label><label>' + item.value + '</label>';
+        case 'FaxOther':
+          div.innerHTML = '<div class="title"><label data-l10n-id="FaxOther"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
-        case 'another':
-          div.innerHTML = '<label data-l10n-id="Other"></label><label>' + item.value + '</label>';
+        case 'Another':
+          div.innerHTML = '<div class="title"><label data-l10n-id="Other"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         default:
-          div.innerHTML = '<label>' + item.type[0] + '</label><label>' + item.value + '</label>';
+          div.innerHTML = '<div class="title"><label>' + item.type[0] + '</label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
       }
       div.classList.add('contact-item');
@@ -430,16 +430,16 @@ var ContactList = (function() {
       var div = document.createElement('div');
       switch (item.type[0]) {
         case 'Personal':
-          div.innerHTML = '<label data-l10n-id="Personal"></label><label>' + item.value + '</label>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="Personal"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         case 'Work':
-          div.innerHTML = '<label data-l10n-id="Work"></label><label>' + item.value + '</label>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="Work"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         case 'Home':
-          div.innerHTML = '<label data-l10n-id="Home"></label><label>' + item.value + '</label>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="Home"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         default:
-          div.innerHTML = '<label>' + item.type[0] + '</label><label>' + item.value + '</label>';
+          div.innerHTML = '<div class="title"><label>' + item.type[0] + '</label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
       }
       div.classList.add('contact-item');
@@ -469,13 +469,24 @@ var ContactList = (function() {
     selectedContacts.forEach(function(item) {
       var contact = JSON.parse(item.dataset.contact);
       var div = document.createElement('div');
-      var html = '<img class="multi-avatar-show"></img>';
+      var html = '';
+      if (item.dataset.avatar) {
+        html = '<img class="multi-avatar-show" src= ';
+        html += item.dataset.avatar;
+        html += '></img>';
+      } else {
+        html = '<img class="multi-avatar-show multi-avatar-show-default"></img>';
+      }
       html += '<div class="show-multi-contact-content">';
-      html += '  <div>';
+      html += '  <div class="name">';
       html += contact.name.join(' ');
       html += '  </div>';
-      html += '  <div>';
-      html += contact.tel[0].value;
+      html += '  <div class="tel">';
+      if (contact.tel.length > 0) {
+        html += contact.tel[0].value;
+      } else {
+        html += '';
+      }
       html += '  </div>';
       html += '</div>';
       div.innerHTML = html;
@@ -533,8 +544,15 @@ var ContactList = (function() {
       }
       if (this.dataset.checked == "false") {
         selectAllContacts(true);
+        if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 1) {
+          showContactInfo(JSON.parse(elem.dataset.contact));
+        }
+        if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length > 1) {
+          showMultiContactInfo();
+        }
       } else {
         selectAllContacts(false);
+        ViewManager.showViews('contact-quick-add-view');
       }
     }); 
 

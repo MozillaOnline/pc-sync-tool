@@ -132,29 +132,32 @@
 }
 
 .quick-add_view {
-  background: url('images/logo.png') no-repeat scroll 0 0 transparent;
-  height: 12rem;
-  margin: 2rem 6rem;
-  display: -moz-inline-grid;
+  background: url('images/logo.png') no-repeat scroll center center transparent;
+  height: 20rem;
+  width: 100%;
 }
 
 #mobile, #fullName {
+  box-shadow: 0 -1px 1px 0 #CCCCCC;
   float: right;
-  width: 15.5rem;
-  margin: -0.5rem 1rem;
+  width: 17.5rem;
+  height: 2.5rem;
 }
 
 #quick-add-contact-header {
   padding-left: 1rem;
   padding-bottom: 2rem;
+  font-size: 1.8rem;
 }
 
 #contact-quick-add-form > div {
-  height: 4rem;
+  height: 3rem;
+  margin-bottom: 1rem;
 }
 
-#contact-quick-add-form >div > label {
-  padding-left: 1rem;
+#contact-quick-add-form >div >div {
+  float: left;
+  margin: 0.6rem 0 0 1rem;
 }
 
 #contact-quick-add-form input[type="edit"] {
@@ -164,8 +167,10 @@
 }
 
 #quick-save-contact {
-  margin: 0 0 0 8rem;
+  margin: 0.6rem 0 0 7.5rem;
   float: left;
+  height: 2.2rem;
+  width: 5rem;
 }
 
 
@@ -246,25 +251,13 @@
 .contact-list-item .avatar {
   width: 3.5rem;
   height: 3.5rem;  
+  border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;
 }
 
 .contact-list-item .avatar-default {
   background-image: url("images/avatar.png");
   background-repeat: no-repeat;
   background-position: center;
-}
-
-.contact-list-item .avatar-small {
-  width: 3.2rem;
-  height: 3.2rem;
-}
-
-.contact-list-item .profilePic {
-  width: 9rem;
-}
-
-.contact-list-item .avatar-small[data-noavatar=true] {
-  background: url("images/noavatar.png") no-repeat scroll center center  transparent;
 }
 
 .contact-list-item .contact-info {
@@ -352,6 +345,12 @@
 }
 
 /********* contact form ********/
+#contact-form {
+  max-height: 60rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 #contact-form .avatar-add-edit {
   height: 7rem;
   width: 7rem;
@@ -478,7 +477,8 @@ button.add-new-button {
 
 #views h1.title {
   text-align: center;
-  padding: 1rem;
+  padding: 4rem 0;
+  font-size: 2.1rem;
 }
 
 .show-contact-header {
@@ -486,7 +486,7 @@ button.add-new-button {
 }
 
 .avatar-show-default {
-  background-image: url("images/avatar-add.png");
+  background-image: url("images/avatar-show.png");
   background-position: center 0;
   background-repeat: no-repeat;
 }
@@ -496,6 +496,7 @@ button.add-new-button {
   width: 7rem;
   height: 7rem;
   margin: 0 0.5rem 0 1rem;
+  border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;
 }
 
 .contact-head {
@@ -506,7 +507,7 @@ button.add-new-button {
 #show-contact-full-name {
   height: 2rem;
   margin-left: 1rem;
-  color: black;
+  color: #333333;
 }
 
 #show-contact-company {
@@ -514,9 +515,14 @@ button.add-new-button {
   margin: 0 0 -0.5rem 1rem;
 }
 
+#edit-contact {
+  margin-left: 1rem;
+}
+
 .contact-content .header {
   margin: 2rem 0 1rem 1rem;
-  color: black;
+  font-size: 1.8rem;
+  color: #515151;
 }
 
 .contact-edit{
@@ -526,46 +532,67 @@ button.add-new-button {
   font-size: 2.4rem;
   font-weight: bold;
 }
-.contact-item label {
-  margin: 0 2rem 0 1rem;
-  color: black;
-}
 
 #show-contacts-container {
   max-height: 60rem;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .show-multi-contact-content {
   float: left;
 }
 
-.show-multi-contact-content div {
+.show-multi-contact-content .name {
   margin-left: 1rem;
-  width: 14rem;
+  width: 18rem;
+  height: 2rem;
+  overflow: hidden;
+  color: #333333;
+}
+
+.show-multi-contact-content .tel {
+  margin-left: 1rem;
+  width: 18rem;
   height: 2rem;
   overflow: hidden;
 }
+
 .show-contacts-item {
   height: 4rem;
-  width: 20rem;
+  width: 23rem;
   overflow: hidden;
   margin: .5rem 0 .5rem 1rem;
+}
+
+.multi-avatar-show-default {
+  background-image: url("images/avatar.png");
+  background-position: center 0;
+  background-repeat: no-repeat;
 }
 
 .multi-avatar-show {
   float: left;
   width: 4rem;
   height: 4rem;
-  background-image: url("images/avatar.png");
-  background-position: center 0;
-  background-repeat: no-repeat;
+  border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;
 }
 
-.contact-item >div >div {
-  margin-left: 1rem;
-  float: left;
-  width: 15rem;
+.contact-item {
   height: 2rem;
-  overflow: hihidden;
+  width: 100%;
+}
+
+.contact-item .title {
+  float: left;
+  width: 8rem;
+  margin-left: 1rem;
+  overflow: hidden;
+}
+
+.contact-item .value {
+  float: left;
+  color: #424242;
+  width: 12rem;
+  overflow: hidden;
 }

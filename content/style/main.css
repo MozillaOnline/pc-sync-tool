@@ -319,7 +319,7 @@ input[type="url"], textarea {
   height: 100%;
   width: 28%;
   background-color: #FAFAFA;
-  padding: 0 1.5rem 0 1rem;
+  padding: 0 1rem;
   vertical-align: top;
 }
 
