@@ -431,10 +431,6 @@ SendSMSDialog.closeAll = function() {
 SendSMSDialog.prototype = {
   initailize: function(options) {
     this.options = extend({
-      receiverEdit: null,
-      bodyEdit:null,
-      sendButton:true,
-      cancelButton: true,
       onclose: emptyFunction
     }, options);
 
@@ -487,27 +483,18 @@ SendSMSDialog.prototype = {
 	+ '</footer>'
         + '</div>';
 
-/*    var titleElem = $expr('.modal-title', this._modalElement)[0];
-    if (this.options.titleL10n) {
-      titleElem.dataset.l10nId = this.options.titleL10n;
+    var titleElem = $expr('.input-contact', this._modalElement)[0];
+    if (this.options.number) {
+      titleElem.value = this.options.number;
     }
 
-    var bodyContainer = $expr('.modal-body', this._modalElement)[0];
-    if (this.options.bodyElement) {
-      bodyContainer.appendChild(this.options.bodyElement);
-    } else {
+    var bodyContainer = $expr('.input-content', this._modalElement)[0];
+    if (this.options.bodyText) {
       bodyContainer.textContent = this.options.bodyText;
-      if (this.options.bodyTextL10n) {
-        bodyContainer.dataset.l10nId = this.options.bodyTextL10n;
-      }
-    }*/
-
+    }
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
-
-    if (this.options.cancelable) {
-      this._makeDialogCancelable();
-    }
+    this._makeDialogCancelable();
 
     // Translate l10n value
     navigator.mozL10n.translate(this._modalElement);

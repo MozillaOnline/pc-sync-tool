@@ -526,24 +526,24 @@
 }
 .w-ui-smartlist-body-ctn .item-checker-wrap{
 	display:block;
-	-webkit-box-align:center
+	-moz-box-align:center
 }
 .sms-thread-header{
 	margin: auto;
-	width:75%;
+	width:100%;
 	-moz-box-align:center;
-	-moz-box-pack:center
+	-moz-box-pack:center;
+        overflow: hidden;
 }
 
 .w-message-thread .date-ctn{
-	margin:30px auto;
-	width:75%;
+	margin:15px auto;
+	width:100%;
 	-moz-box-align:center;
 	-moz-box-pack:center
 }
 .w-message-thread .date-ctn date{
 	text-shadow:0 1px 0 #fff;
-	margin:0 10px
 }
 .w-message-thread .date-ctn hr{
 	box-shadow:0 1px 0 #fff;
@@ -559,21 +559,6 @@
 	cursor:pointer
 }
 
-.w-message-thread .date-ctn{
-	margin:30px auto;
-	width:75%;
-	-webkit-box-align:center;
-	-webkit-box-pack:center
-}
-.w-message-thread .date-ctn date{
-	text-shadow:0 1px 0 #fff;
-	margin:0 10px
-}
-.w-message-thread .date-ctn hr{
-	box-shadow:0 1px 0 #fff;
-	height:0;
-	-webkit-box-flex:1
-}
 .w-message-thread .button-previous,.w-message-thread .button-next{
 	padding:9px 0;
 	text-align:center;
@@ -584,24 +569,26 @@
 }
 
 .w-message-item-ctn li{
-	padding:0 20px 23px
+	padding: 0 10px 20px;
 }
 .w-message-item-ctn li .content-wrap{
-	background-image:-webkit-gradient(linear,left top,left bottom,color-stop(0,#fbfbfb),color-stop(1,#f8f8f8));
+	background-image:-moz-gradient(linear,left top,left bottom,color-stop(0,#fbfbfb),color-stop(1,#f8f8f8));
 	border:#cacaca 1px solid;
 	border-radius:5px;
 	box-shadow:0 1px 0 white inset,0 0 5px rgba(0,0,0,0.1);
 	box-sizing:border-box;
 	display:inline-block;
-	max-width:190px;
+	max-width:136px;
 	min-width:58px;
+        min-height: 20px;
 	padding:7px 13px;
 	position:relative;
-	text-shadow:0 1px 0 #fff
+	text-shadow:0 1px 0 #fff;
+        background-color: #E0F9FF;
 }
 .w-message-item-ctn li .content-wrap .content{
 	word-break:break-all;
-	-webkit-hyphens:auto
+	-moz-hyphens:auto
 }
 .w-message-item-ctn li .content-wrap .content em{
 	background-color:#f1ea00;
@@ -611,10 +598,10 @@
 	padding:2px 2px 2px 3px;
 	margin:-2px -2px -2px -3px;
 	opacity:.8;
-	-webkit-animation-name:magnifier;
-	-webkit-animation-duration:0.2s;
-	-webkit-animation-iteration-count:1;
-	-webkit-animation-timing-function:linear
+	-moz-animation-name:magnifier;
+	-moz-animation-duration:0.2s;
+	-moz-animation-iteration-count:1;
+	-moz-animation-timing-function:linear
 }
 .w-message-item-ctn li .content-wrap .button-toggle{
 	display:inline-block
@@ -629,14 +616,14 @@
 	width:15px
 }
 .w-message-item-ctn li .content-wrap .arrow .side{
-	background-color:#f8f8f8;
+	background-color:#E0F9FF;
 	border-left:1px #cacaca solid;
 	height:20px;
 	left:0;
 	position:absolute;
 	top:3px;
 	width:20px;
-	-webkit-transform:rotate(45deg)
+	-moz-transform:rotate(45deg)
 }
 .w-message-item-ctn li .content-wrap .actions{
 	bottom:-20px;
@@ -656,31 +643,40 @@
 	width:16px
 }
 .w-message-item-ctn li .content-wrap .actions button.button-delete{
-	background-position:0 -9257px
+	background: url("images/sms-delete.png");
+        background-size: cover
 }
-.w-message-item-ctn li .content-wrap .actions button.button-delete:enabled:hover{
-	background-position:0 -9209px
+.w-message-item-ctn li .content-wrap .actions button.button-delete:hover{
+	background: url("images/sms-delete-hover.png");
+        background-size: cover
 }
-.w-message-item-ctn li .content-wrap .actions button.button-delete:enabled:active{
-	background-position:0 -9241px
+.w-message-item-ctn li .content-wrap .actions button.button-delete:active{
+	background: url("images/sms-delete-active.png");
+        background-size: cover
 }
 .w-message-item-ctn li .content-wrap .actions button.button-reply{
-	background-position:0 -9796px
+        background: url("images/sms-reply.png");
+        background-size: cover
 }
-.w-message-item-ctn li .content-wrap .actions button.button-reply:enabled:hover{
-	background-position:0 -9780px
+.w-message-item-ctn li .content-wrap .actions button.button-reply:hover{
+        background: url("images/sms-reply-hover.png");
+        background-size: cover
 }
-.w-message-item-ctn li .content-wrap .actions button.button-reply:enabled:active{
-	background-position:0 -9828px
+.w-message-item-ctn li .content-wrap .actions button.button-reply:active{
+        background: url("images/sms-reply-active.png");
+        background-size: cover
 }
 .w-message-item-ctn li .content-wrap .actions button.button-copy{
-	background-position:0 -9892px
+	background: url("images/sms-copy.png");
+        background-size: cover
 }
-.w-message-item-ctn li .content-wrap .actions button.button-copy:enabled:hover{
-	background-position:0 -9812px
+.w-message-item-ctn li .content-wrap .actions button.button-copy:hover{
+	background: url("images/sms-copy-hover.png");
+        background-size: cover
 }
-.w-message-item-ctn li .content-wrap .actions button.button-copy:enabled:active{
-	background-position:0 -9876px
+.w-message-item-ctn li .content-wrap .actions button.button-copy:active{
+	background: url("images/sms-copy-active.png");
+        background-size: cover
 }
 .w-message-item-ctn li .content-wrap:hover .actions{
 	display:inline-block
@@ -709,10 +705,11 @@
 	direction:rtl
 }
 .w-message-item-ctn li.from-me .content-wrap{
-	background-image:-webkit-gradient(linear,left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
+	background-image:-moz-gradient(linear,left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
 	border-color:#84c93f;
 	direction:ltr;
-	text-shadow:0 1px 0 rgba(255,255,255,0.6)
+	text-shadow:0 1px 0 rgba(255,255,255,0.6);
+        background-color: #97E647;
 }
 .w-message-item-ctn li.from-me .content-wrap .actions{
 	direction:rtl
@@ -742,4 +739,55 @@
   font-size: 1.6rem;
   width: 85%;
   height: 3.5rem;
+}
+.w-message-threads-ctn{
+  height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-top: 5px;
+}
+.w-message-quick-sender{
+	background-color:#f9f9f9;
+	padding:10px
+}
+.w-message-quick-sender .selector-ctn{
+	margin-bottom:5px;
+	-moz-box-align:center
+}
+.w-message-quick-sender .sender-ctn{
+	min-height:26px;
+	-moz-box-align:end
+}
+.w-message-quick-sender .sender-ctn .input-content{
+	display:block;
+	line-height:19px;
+	margin-right:10px;
+	min-height:20px;
+	-moz-box-flex:1;
+        overflow-x: hidden;
+        overflow-y: auto;
+}
+.w-message-quick-sender .sender-ctn .count-ctn{
+	min-width:78px
+}
+.w-message-quick-sender .sender-ctn .count-ctn .button-send{
+    width:100%;
+    -moz-box-align: center;
+    background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
+    border: 1px solid #999999;
+    border-radius: 3px 3px 3px 3px;
+    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.2) inset;
+    color: white;
+    cursor: default;
+    display: inline-block;
+    height: 26px;
+    letter-spacing: normal;
+    text-align: center;
+    vertical-align: middle;
+    word-spacing: normal;
+}
+.w-message-quick-sender .sender-ctn .count-ctn .count-down{
+	display:block;
+	margin-bottom:3px;
+	width:100%
 }
