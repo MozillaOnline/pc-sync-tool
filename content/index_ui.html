@@ -195,9 +195,8 @@
           <section id="sms-view" class="view" hidden="true">
             <h1 class="title" data-l10n-id="sms">短信</h1>
             <div class="sms-ops-box">
-              <div class="sms-op">
-                <input id="select-all-sms" class="selectAllCheckbox" type="checkbox">
-                <label for="select-all-sms" data-l10n-id="selectall" class="selectAll" checked="false">全选</label>
+              <div id="selectAll-sms" class="sms-op" data-checked="false" data-disabled="true">
+                <label data-l10n-id="selectall">全选</label>
               </div>
               <div id="remove-sms" data-disabled="true" class="sms-op">
                 <label data-l10n-id="delete-sms">删除</label>
@@ -205,10 +204,10 @@
               <div id="export-sms" data-disabled="true" class="sms-op">
                 <label data-l10n-id="export-sms">导出</label>
               </div>
-              <div id="refresh-sms" class="sms-op">
+              <div id="refresh-sms" data-disabled="false" class="sms-op">
                 <label data-l10n-id="refresh-sms">刷新</label>
               </div>
-              <div id="add-new-sms" class="sms-op">
+              <div id="add-new-sms" data-disabled="false"  class="sms-op">
                 <label data-l10n-id="send-sms">发短信</label>
               </div>
             </div>

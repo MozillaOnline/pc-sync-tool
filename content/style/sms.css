@@ -8,23 +8,66 @@
   width: 60%;
 }
 
-.sms-ops-box {
-  overflow: hidden;
-  height: 3rem;
-  line-height: 3rem;
+#selectAll-sms {
+  background-image: url("images/checkbox.png");
+  margin-left: 2rem;
+  padding-left: 2.2rem;
+}
+#selectAll-sms[data-checked=true] {
+  background-image: url("images/checkbox-checked.png");
+}
+#selectAll-sms[data-disabled=true] {
+  color: #CCCCCC;
+}
+#selectAll-sms[data-disabled=false]:hover {
+  color: #00CAF2;
+}
+#selectAll-sms[data-disabled=false]:active {
+  color: #018CAB;
+}
+
+#remove-sms[data-disabled=false]:hover {
+  color: #00CAF2;
+}
+#remove-sms[data-disabled=false]:active {
+  color: #018CAB;
+}
+
+#export-sms[data-disabled=false]:hover {
+  color: #00CAF2;
+}
+#export-sms[data-disabled=false]:active {
+  color: #018CAB;
+}
+
+#refresh-sms[data-disabled=false]:hover {
+  color: #00CAF2;
+}
+#refresh-sms[data-disabled=false]:active {
+  color: #018CAB;
+}
+
+
+#add-new-sms[data-disabled=false]:hover {
+  color: #00CAF2;
+}
+#add-new-sms[data-disabled=false]:active {
+  color: #018CAB;
 }
 
 .sms-ops-box .sms-op {
-  background-position: 0 center;
-  background-repeat: no-repeat;
-  float: left;
-  padding: 0 1.3rem 0 2rem;
-  cursor: pointer;
+    background-position: 0 center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    float: left;
+    margin-right: 1.3rem;
+    padding-left: 2rem;
 }
 
-.sms-ops-box .sms-op label {
-  cursor: pointer;
-  -moz-user-select: none;
+.sms-ops-box {
+    height: 3rem;
+    line-height: 3rem;
+    overflow: hidden;
 }
 
 #remove-sms {
@@ -123,9 +166,14 @@
   margin-top: .5rem;
 }
 
+.sms-list-item:hover {
+  background-color: #F4F4F4;
+}
+
 .sms-list-item:active {
   background-color: #EEE;
 }
+
 
 .sms-list-item[data-focused=true] {
   background-color: #DEF3F8;
@@ -786,6 +834,19 @@
     vertical-align: middle;
     word-spacing: normal;
 }
+
+
+.w-message-quick-sender .sender-ctn .count-ctn .button-send:hover {
+  background-color: #00CAF2;
+}
+.w-message-quick-sender .sender-ctn .count-ctn .button-send:active {
+  background-color: #018CAB;
+}
+.w-message-quick-sender .sender-ctn .count-ctn .button-send:visited {
+  background-color: #00CAF2;
+}
+
+
 .w-message-quick-sender .sender-ctn .count-ctn .count-down{
 	display:block;
 	margin-bottom:3px;

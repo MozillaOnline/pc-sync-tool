@@ -38,8 +38,10 @@ var SmsList = (function() {
   function checkIfSmsListEmpty() {
     var isEmpty = groupedList.count() == 0;
     if (isEmpty) {
+      $id('selectAll-contacts').dataset.disabled = true;
       showEmptySmsThreads();
     } else {
+      $id('selectAll-contacts').dataset.disabled = false;
       showSmsThreads();
     }
   }
@@ -403,10 +405,11 @@ var SmsList = (function() {
     }
     elem.dataset.checked = true;
     elem.dataset.focused = true;
+    
     if ($expr('#sms-list-container .sms-list-item').length === 1) {
-      $id('select-all-sms').checked = true;
+      $id('selectAll-sms').dataset.checked = true;
     } else {
-      $id('select-all-sms').checked = false;
+      $id('selectAll-sms').dataset.checked = false;
     }
     $id('remove-sms').dataset.disabled = false;
     $id('export-sms').dataset.disabled = false;
@@ -429,21 +432,27 @@ var SmsList = (function() {
   }
 
   function opStateChanged() {
-    $id('select-all-sms').checked =
-    $expr('#sms-list-container .sms-list-item').length === $expr('#sms-list-container .sms-list-item[data-checked="true"]').length;
-    $id('remove-sms').dataset.disabled =
-    $expr('#sms-list-container .sms-list-item[data-checked="true"]').length === 0;
-    $id('export-sms').dataset.disabled =
-    $expr('#sms-list-container .sms-list-item[data-checked="true"]').length === 0;
-
-    var item = $expr('#sms-list-container .sms-list-item[data-checked="true"]');
-    if (item.length == 1) {
-      showThreadView(item);
-    } else if (item.length > 1) {
-      showSelectView(item);
-    } else {
+    var threadlistLength = 0;
+    if ($expr('#sms-list-container .sms-list-item').length == 0) {
+      $id('selectAll-sms').dataset.checked = false;
+      $id('selectAll-sms').dataset.disabled = true;
       ViewManager.showViews('sms-send-view');
+    } else {
+      var item = $expr('#sms-list-container .sms-list-item[data-checked="true"]');
+      threadlistLength =item.length;
+      $id('selectAll-sms').dataset.checked =
+        $expr('#sms-list-container .sms-list-item').length === threadlistLength;
+      $id('selectAll-sms').dataset.disabled = false;
+      if (item.length == 1) {
+        showThreadView(item);
+      } else{
+        showSelectView(item);
+      } 
     }
+    $id('remove-sms').dataset.disabled =
+      threadlistLength === 0;
+    $id('export-sms').dataset.disabled =
+      threadlistLength === 0;
   }
 
   function selectSmsItem(elem, selected) {
@@ -543,8 +552,15 @@ var SmsList = (function() {
   window.addEventListener('load', function wnd_onload(event) {
     //window.setTimeout(startListening, 1000);
     //startListening();
-    $id('select-all-sms').addEventListener('change', function sall_onclick(event) {
-      selectAllSms(this.checked);
+    $id('selectAll-sms').addEventListener('click', function sall_onclick(event) {
+      if (this.dataset.disabled == "true") {
+        return;
+      }
+      if (this.dataset.checked == "false") {
+        selectAllSms(true);
+      } else {
+        selectAllSms(false);
+      }
     });
 
     $id('remove-sms').addEventListener('click', function onclick_removeContact(event) {
@@ -561,9 +577,10 @@ var SmsList = (function() {
       if (window.confirm(_('delete-sms-confirm', {
         n: ids.length
       }))) {
-        ids.forEach(function(item) {
-          SmsList.removeSms(item);
-        });
+          ids.forEach(function(item) {
+            SmsList.removeSms(item);
+          });
+          ViewManager.showViews('contact-quick-add-view');
       }
 
       ViewManager.showViews('sms-send-view');
