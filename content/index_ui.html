@@ -30,18 +30,18 @@
 </head>
 <body hidden="true">
   <div id="container">
-    <div class="title-bar" data-l10n-id="ffos-assistant">
-      FFOS 手机助手
-      <label id="view-title"></label>
+    <div class="title-bar">
+      <div class="assistant" data-l10n-id="ffos-assistant">FFOS 手机助手</div>
+      <div id="device-unconnected" class="device-state" data-l10n-id="device-unconnected">-- 未连接 ...</div>
+      <div id="device-connected" class="device-state hiddenElement" data-l10n-id="device-connected">已连接</div>
       <div id="lang-settings">
         <label class="language-code-button" data-language-code="en-US">English</label>
-        <img src='style/images/lang-sep.png'/>
         <label class="language-code-button" data-language-code="zh-CN">中文</label>
       </div>
     </div>
     <div id="container-body" class="table">
       <div>
-        <div class="sidebar">
+        <div class="sidebar table-cell">
           <div id="connect-list" class="list radio-list">
             <div id="connect-tab"
                  class="item"
@@ -97,8 +97,8 @@
                  data-l10n-id="ringtone">手机铃声专区</div>
           </div>
         </div>
-        <div class="content">
-          <div id="connect-view" class="view">
+        <div class="content table-cell">
+          <section id="connect-view" class="view">
             <div id="welcome-msg">
               <h3 data-l10n-id="pls_connect_device">请连接手机</h3>
               <p data-l10n-id="ffos-description"></p>
@@ -108,7 +108,7 @@
               <div><a data-l10n-id="nodevice-found-msg">您的手机尚未连接到电脑，请通过USB数据线连接</a></div>
               <p><a href="http://mozilla.com.cn/" target="_blank" data-l10n-id="usb-problem">已连接USB数据线，无法识别手机？</a></p>
             </section>
-          </div>
+          </section>
           <section id="summary-view" class="view" hidden>
             <div class="content-table">
               <div class="content-row">
@@ -116,7 +116,6 @@
               </div>
               <div class="content-row">
                 <div id="device-image">
-                  <div class="device-name">ZTE Unagi</div>
               <div class="device-picture"></div>
               <div class="device-connect"></div>
             </div>
@@ -195,7 +194,7 @@
           <section id="sms-view" class="view" hidden="true">
             <h1 class="title" data-l10n-id="sms">短信</h1>
             <div class="sms-ops-box">
-              <div id="selectAll-sms" class="sms-op" data-checked="false" data-disabled="true">
+              <div id="selectAll-sms" data-disabled="false" class="sms-op" data-checked="false" data-disabled="true">
                 <label data-l10n-id="selectall">全选</label>
               </div>
               <div id="remove-sms" data-disabled="true" class="sms-op">
@@ -211,16 +210,16 @@
                 <label data-l10n-id="send-sms">发短信</label>
               </div>
             </div>
-            <div id="sms-list-container">
-                <div class="sms-list-item">
+            <div id="threads-list-container">
+                <div class="threads-list-item">
                 </div>
             </div>
           </section>
         </div>
-        <div id="views" class="views hidden-views">
+        <div id="views" class="views table-cell hidden-views">
           <div>
             <section id="contact-view-sub" class="sub-view">
-              <section id="contact-quick-add-view" class="card-view">
+              <section id="contact-quick-add-view" class="card-view" hidden="true">
                 <div class="quick-add_view"></div>
                 <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
                 <form id="contact-quick-add-form" action="#" onsubmit="return false;">
@@ -236,7 +235,7 @@
                    </div>
                     <input id="mobile" class="quick-input" type="tel" value="" data-l10n-id="mobile"></input>
                   </div>
-                  <div><a id="quick-save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a></div>
+                  <div><a id="quick-save-contact" class="button" href="javascript: void(0);" data-l10n-id="save">保存</a></div>
                 </form>
               </section>
               <section id="contact-edit-view" class="card-view contact-form" hidden="true">
@@ -258,7 +257,7 @@
                   <!-- Contact field containter -->
                   <ul></ul>
                   <div class="saveAndCancel">
-                  <a id="save-contact" class="button active-button" href="javascript: void(0);" data-l10n-id="save">保存</a>
+                  <a id="save-contact" class="button" href="javascript: void(0);" data-l10n-id="save">保存</a>
                   <a id="cancel-edit-contact" class="button-cancel" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
                   </div>
                 </form>
@@ -270,7 +269,7 @@
                   <div class="contact-head">
                     <div id="show-contact-full-name"></div>
                     <div id="show-contact-company"></div>
-                    <div id="edit-contact" class="button active-button" data-l10n-id="edit-contact">
+                    <div id="edit-contact" class="button" data-l10n-id="edit-contact">
                     </div>
                   </div>
                 </div>
@@ -291,27 +290,18 @@
                 <div class="sms-send-view"></div>
                 <div id="sms-send-view-header" data-l10n-id="sms-send-view-header">给好友发个短信吧</div>
                 <form id="sms-send-view-form" action="#" onsubmit="return false;">
-                  <div id="sms-send-button" class="button active-button" href="javascript: void(0);" data-l10n-id="send">发短信</div>
+                  <div id="sms-send-button" class="button" href="javascript: void(0);" data-l10n-id="send">发短信</div>
                 </form>
               </section>
               <section id="sms-select-view" class="card-view sms-form" hidden="true">
-                <div class="sms-select-view-header">
-                  <span class="threads-count" id="select-threads-count"></span>
-                </div>
-                <div class="w-message-batch-conversations-list-ctn">
-                  <ul class="w-ui-smartlist-body-ctn" id="w-ui-smartlist-body-ctn">
-                  </ul>
-                  <div class="w-ui-smartlist-scroll-ctn">
-                    <div class="w-ui-smartlist-scroll-substitution" style="height: 0px;"></div>
-                  </div>
+                <h1 id="select-threads-count" class="title"></h1>
+                <div id="show-sms-container">
                 </div>
               </section>
               <section id="sms-thread-view" class="card-view sms-form" hidden="true">
                 <div class="sms-thread-header" id="sms-thread-header">
                 </div>
-                <div class="w-message-threads-ctn">
-                  <ul class="w-message-threads-list-ctn", id="w-message-threads-list-ctn">
-                  </ul>
+                <div id='message-list-container' class="w-message-threads-ctn">
                 </div>
                 <div class="w-message-quick-sender">
                   <div class="sender-ctn">

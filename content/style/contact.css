@@ -138,7 +138,6 @@
 }
 
 #mobile, #fullName {
-  box-shadow: 0 -1px 1px 0 #CCCCCC;
   float: right;
   width: 17.5rem;
   height: 2.5rem;
@@ -171,14 +170,16 @@
   float: left;
   height: 2.2rem;
   width: 5rem;
+  padding-top: 0.3rem;
 }
 
 
 .data-index {
-  border-bottom: .2rem solid #FFA600;
+  border-bottom: .1rem solid #E86000;
   padding-left: 1rem;
-  color: #FF9A00;
+  color: #E86000;
   padding: 1rem;
+  width: 90%;
 }
 
 .contact-list-item {
@@ -263,6 +264,11 @@
 .contact-list-item .contact-info {
   font-size: 1.1rem;
   padding-left: 1rem;
+}
+
+.contact-list-item .contact-info .name {
+  color: #333333;
+  font-size: 1.5rem;
 }
 
 .contact-list-item .contact-info .tel {
@@ -519,6 +525,10 @@ button.add-new-button {
   margin-left: 1rem;
 }
 
+#edit-contact: hover {
+  background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
+}
+
 .contact-content .header {
   margin: 2rem 0 1rem 1rem;
   font-size: 1.8rem;
@@ -549,6 +559,7 @@ button.add-new-button {
   height: 2rem;
   overflow: hidden;
   color: #333333;
+  font-size: 1.5rem;
 }
 
 .show-multi-contact-content .tel {
@@ -585,7 +596,7 @@ button.add-new-button {
 
 .contact-item .title {
   float: left;
-  width: 8rem;
+  width: 9rem;
   margin-left: 1rem;
   overflow: hidden;
 }

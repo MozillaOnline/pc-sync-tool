@@ -38,6 +38,7 @@ GroupedList.prototype = {
     this.options = extend({
       dataList: null,
       dataIndexer: null,
+      disableDataIndexer: false,
       indexSorter: this._dictSorter,
       dataIdentifier: this._identifyById,
       indexRender: this._renderIndex,
@@ -164,10 +165,9 @@ GroupedList.prototype = {
   _renderGroup: function gl_renderGroup(group) {
     var groupElem = document.createElement('div');
     groupElem.id = this._getGroupElemId(group.index);
-
-    // Render index element
-    groupElem.appendChild(this.options.indexRender(group.index));
-
+    if(this.options.disableDataIndexer == false){
+      groupElem.appendChild(this.options.indexRender(group.index));
+    }
     var self = this;
     // Render data list
     group.dataList.forEach(function(dataObj) {
@@ -186,9 +186,6 @@ GroupedList.prototype = {
   },
 
   _getGroupElem: function gl_getGroupElem(index) {
-    if(index == this.DEFAULT_INDEX)
-      return $id('sms-list-container');
-    else
       return $id(this._getGroupElemId(index));
   },
 
@@ -205,8 +202,10 @@ GroupedList.prototype = {
     if (groupElem) {
       // TODO sort data elements
       var elem = this.options.renderFunc(dataObj);
-      elem.dataset.dataIdentity = this.options.dataIdentifier(dataObj);
-      groupElem.appendChild(elem);
+      if(elem){
+        elem.dataset.dataIdentity = this.options.dataIdentifier(dataObj);
+        groupElem.appendChild(elem);
+      }
       return;
     }
 
@@ -236,7 +235,7 @@ GroupedList.prototype = {
     } else {
       for (var i = 0; i < groupElem.childNodes.length; i++) {
         var child = groupElem.childNodes[i];
-        if (child.dataset.threadIndex === this.options.dataIdentifier(dataObj)) {
+        if (child.dataset.dataIdentity == this.options.dataIdentifier(dataObj)) {
           child.parentNode.removeChild(child);
           break;
         }
@@ -591,7 +590,6 @@ SendSMSDialog.prototype = {
           document.removeEventListener('ModalDialog:show', self._onModalDialogShown);
           window.removeEventListener('resize', self._onWindowResize)
           self.options.onclose();
-          FFOSAssistant.updateSMSThreads();
         }
       }, function onError_sendSms(e) {
         alert(e);

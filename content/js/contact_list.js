@@ -362,6 +362,9 @@ var ContactList = (function() {
       elem.dataset.focused = false;
     }
     opStateChanged();
+    if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 0) {
+      ViewManager.showViews('contact-quick-add-view');
+    }
     if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 1) {
       showContactInfo(JSON.parse(elem.dataset.contact));
     }
@@ -395,16 +398,16 @@ var ContactList = (function() {
       var div = document.createElement('div');
       switch (item.type[0]) {
         case 'Mobile':
-          div.innerHTML = '<div class="title"><label data-l10n-id="Mobile"></label></div><div class="value"><label>' + item.value + '</label></div>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="MobileTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         case 'Home':
-          div.innerHTML = '<div class="title"><label data-l10n-id="Home"></label></div><div class="value"><label>' + item.value + '</label></div>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="HomeTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         case 'Work':
-          div.innerHTML = '<div class="title"><label data-l10n-id="Work"></label></div><div class="value"><label>' + item.value + '</label></div>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="WorkTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         case 'Personal':
-          div.innerHTML = '<div class="title"><label data-l10n-id="Personal"></label></div><div class="value"><label>' + item.value + '</label></div>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="PersonalTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         case 'FaxHome':
           div.innerHTML = '<div class="title"><label data-l10n-id="FaxHome"></label></div><div class="value"><label>' + item.value + '</label></div>';
@@ -423,20 +426,21 @@ var ContactList = (function() {
           break;
       }
       div.classList.add('contact-item');
-      navigator.mozL10n.translate(div);
+      //navigator.mozL10n.translate(div);
       container.appendChild(div);
+      navigator.mozL10n.translate(div);
     });
     contact.email.forEach(function(item) {
       var div = document.createElement('div');
       switch (item.type[0]) {
         case 'Personal':
-          div.innerHTML = '<div class="title"><label data-l10n-id="Personal"></label></div><div class="value"><label>' + item.value + '</label></div>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="PersonalEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         case 'Work':
-          div.innerHTML = '<div class="title"><label data-l10n-id="Work"></label></div><div class="value"><label>' + item.value + '</label></div>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="WorkEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         case 'Home':
-          div.innerHTML = '<div class="title"><label data-l10n-id="Home"></label></div><div class="value"><label>' + item.value + '</label></div>';
+          div.innerHTML = '<div class="title"><label data-l10n-id="HomeEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
           break;
         default:
           div.innerHTML = '<div class="title"><label>' + item.type[0] + '</label></div><div class="value"><label>' + item.value + '</label></div>';
@@ -568,7 +572,7 @@ var ContactList = (function() {
       });
       
       if (window.confirm(_('delete-contacts-confirm', {n: ids.length}))) {
-        if ($id('selectAll-contacts').dataset.checked) {
+        if ($id('selectAll-contacts').dataset.checked == "true") {
           ContactList.clearAllContacts();
         } else {
           ids.forEach(function(item) {

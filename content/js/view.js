@@ -34,10 +34,9 @@ var ViewManager = (function () {
     }
 
     if (viewId == "summary-view" || viewId == "connect-view") {
-        //$id('views').classList.add('hidden-views');
-      $id('views').style.display = 'none';
+      $id('views').classList.add('hidden-views');
     } else {
-      $id('views').style.display = '';
+      $id('views').classList.remove('hidden-views');
     }
 
     var tabId = viewElem.dataset.linkedTab;

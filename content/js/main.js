@@ -10,10 +10,15 @@ var FFOSAssistant = (function() {
   // var wsurl = "ws://localhost:8888/ws";
 
   function showConnectView() {
+    $id('device-connected').classList.add('hiddenElement');
+    $id('device-unconnected').classList.remove('hiddenElement');
+    $id('views').classList.add('hidden-views');
     ViewManager.showContent('connect-view');
   }
 
   function showSummaryView() {
+    $id('device-connected').classList.remove('hiddenElement');
+    $id('device-unconnected').classList.add('hiddenElement');
     ViewManager.showContent('summary-view');
   }
 

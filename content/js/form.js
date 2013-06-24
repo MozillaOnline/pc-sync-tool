@@ -344,7 +344,7 @@ var ContactForm = (function() {
     }
 
     if (contact.givenName.length == 0 || contact.familyName.length == 0) {
-      alert('Please input the givenName and familyName!');
+      alert(navigator.mozL10n.get('EmptyForm'));
       return;
     }
 
@@ -434,7 +434,7 @@ var ContactForm = (function() {
       saveContact();
     });
     $id('cancel-edit-contact').addEventListener('click', function onclick_cancel(evt) {
-      ViewManager.showViews('contact-vcard-view');
+      ViewManager.showViews('show-contact-view');
     });
     $id('quick-save-contact').addEventListener('click', function onclick_quickSaveContact(evt) {
       quickSaveContact();

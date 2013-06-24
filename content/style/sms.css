@@ -145,7 +145,7 @@
   background-image: url("images/add-default.png");
 }
 
-#sms-list-container {
+#threads-list-container {
   padding-left: 1rem;
   max-height: 60rem;
   overflow: auto;
@@ -162,34 +162,34 @@
   font-size: 2rem;
 }
 
-.sms-list-item {
+.threads-list-item {
   margin-top: .5rem;
 }
 
-.sms-list-item:hover {
+.threads-list-item:hover {
   background-color: #F4F4F4;
 }
 
-.sms-list-item:active {
+.threads-list-item:active {
   background-color: #EEE;
 }
 
 
-.sms-list-item[data-focused=true] {
+.threads-list-item[data-focused=true] {
   background-color: #DEF3F8;
 }
 
-.sms-list-item > div {
+.threads-list-item > div {
   overflow: hidden;
   cursor: pointer;
   padding: .5rem 0 .5rem 1rem;
 }
 
-.sms-list-item > div > * {
+.threads-list-item > div > * {
   float: left;
 }
 
-.sms-list-item >div input.checkbox[type="checkbox"] + label.selectAll {
+.threads-list-item >div input.checkbox[type="checkbox"] + label.selectAll {
   background-image: url("images/checkbox.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -197,7 +197,7 @@
   width: 2rem;
 }
 
-.sms-list-item >div input.checkbox[type="checkbox"]:checked + label.selectAll {
+.threads-list-item >div input.checkbox[type="checkbox"]:checked + label.selectAll {
   background-image: url("images/checkbox-checked.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -205,7 +205,7 @@
   width: 2rem;
 }
 
-.sms-list-item >div > label.unchecked {
+.threads-list-item >div > label.unchecked {
   background-image: url("images/checkbox.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -213,11 +213,11 @@
   width: 2rem;
 }
 
-.sms-list-item >div  > label.checked {
+.threads-list-item >div  > label.checked {
   background-image: url("images/checkbox-checked.png");
 }
 
-.sms-list-item .bookmark {
+.threads-list-item .bookmark {
   width: 3rem;
   height: 3.3rem;
   text-align: center;
@@ -226,11 +226,11 @@
   background-position: center center;
 }
 
-#sms-list-container div.favorite .bookmark {
+#threads-list-container div.favorite .bookmark {
   background-image: url("images/bookmarked.png");
 }
 
-.sms-list-item .avatar-default {
+.threads-list-item .avatar-default {
   background-image: url("images/avatar.png");
   background-repeat: no-repeat;
   background-position: center;
@@ -238,26 +238,26 @@
   height: 3.5rem;
 }
 
-.sms-list-item .avatar-small {
+.threads-list-item .avatar-small {
   width: 3.2rem;
   height: 3.2rem;
 }
 
-.sms-list-item .profilePic {
+.threads-list-item .profilePic {
   width: 9rem;
 }
 
-.sms-list-item .avatar-small[data-noavatar=true] {
+.threads-list-item .avatar-small[data-noavatar=true] {
   background: url("images/avatar.png") no-repeat scroll center center  transparent;
 }
 
-.sms-list-item .sms-info {
+.threads-list-item .sms-info {
   font-size: 1.1rem;
   padding-left: 1rem;
   float: left;
   width: 80%;
 }
-.sms-list-item .readflag {
+.threads-list-item .readflag {
   width: 2rem;
   height: 3.3rem;
   text-align: center;
@@ -265,21 +265,19 @@
   background-position: center center;
 }
 
-#sms-list-container div.unread .readflag {
+#threads-list-container div.unread .readflag {
   background-image: url("images/unread.png");
 }
-.sms-list-item .contact-info .tel {
-  color: #999;
-}
 
-.sms-list-item .odd {
+
+.threads-list-item .odd {
   background-color: #EEEEEE;
 }
 
 .sms-send-view {
-  background: url('images/logo.png') no-repeat scroll center bottom transparent;
-  height: 24rem;
-  margin: 4rem 6rem;
+  background: url('images/smslogo.png') no-repeat scroll center bottom transparent;
+  height: 20rem;
+  margin: 1rem 6rem;
   display: -moz-inline-grid;
 }
 #sms-send-view-header {
@@ -402,10 +400,10 @@
         float: right
 }
 .w-message-sender-window .header .w-icon-btn{
-  background: -moz-linear-gradient(center top , #f3f3f3, #e9e9e9) repeat scroll 0 0 transparent;
+  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
   border-color:#2c8e00;
   box-shadow:inset 0 1px 0 0 rgba(255,255,255,0.2);
-  color:rgba(0,0,0,0.9);
+  color: white;
   text-shadow:0 - 1px 0 rgba(0,0,0,0.2);
   border: 1px #999999 solid;
   border-radius: 3px;
@@ -423,6 +421,9 @@
   word-spacing: normal;
   display: inline-block;
   margin-left: 4px
+}
+.w-message-sender-window .header .w-icon-btn:hover{
+  background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
 .w-message-sender-window .header .w-icon-btn .icon{
   background: url("images/sms-select-contact.png");
@@ -461,14 +462,15 @@
 .w-message-sender-window .body .input-content{
 	height:100px;
 	width:395px;
-        float: right
+        float: right;
+        overflow-y: auto;
 }
 .w-message-sender-window .monitor{
 	margin-left:85px
 }
 
 .w-ui-window-footer-button-ctn .button-send{
-  background: -moz-linear-gradient(center top , #63c100, #46a100) repeat scroll 0 0 transparent;
+  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
   border-color:#2c8e00;
   box-shadow:inset 0 1px 0 0 rgba(255,255,255,0.2);
   color:white;
@@ -488,6 +490,10 @@
   letter-spacing: normal;
   word-spacing: normal;
   display: inline-block
+}
+
+.w-ui-window-footer-button-ctn .button-send:hover{
+  background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
 
 ::selection{
@@ -520,12 +526,7 @@
 }
 
 
-.w-message-batch-conversations-list-ctn{
-	background:#fff;
-	border:1px #e5e5e5 solid;
-	-moz-box-flex:1;
-        height: 48rem;
-}
+
 .w-message-conversation-list-item .input,.w-message-conversation-list-item .date{
 	display:none
 }
@@ -535,47 +536,7 @@
   width: 48px;
   margin-left:5px
 }
-.w-ui-smartlist-body-ctn{
-	overflow:hidden;
-	-moz-box-flex:1
-}
 
-.w-ui-smartlist-body-ctn.odd>li:nth-child(odd):not(.highlight):not(:hover){
-	background-color:#f5f5f5
-}
-.w-ui-smartlist-body-ctn.odd>li:nth-child(even):not(.highlight):not(:hover){
-	background-color:transparent
-}
-.w-ui-smartlist-body-ctn>li{
-  border-top:1px #f3f3f3 solid;
-  overflow: hidden
-}
-.w-ui-smartlist-body-ctn>li:first-child{
-	border-top-color:transparent
-}
-.w-ui-smartlist-body-ctn>li:nth-child(odd):not(.highlight):not(:hover){
-	background-color:transparent
-}
-.w-ui-smartlist-body-ctn>li:nth-child(even):not(.highlight):not(:hover){
-	background-color:#f5f5f5
-}
-.w-ui-smartlist-body-ctn>li.highlight{
-	background-color:#e2fac0;
-	color:#3c7800
-}
-.w-ui-smartlist-body-ctn>li.highlight .text-secondary{
-	color:#3c7800
-}
-.w-ui-smartlist-body-ctn>li.highlight+.highlight{
-	border-color:#d6ecb6
-}
-.w-ui-smartlist-body-ctn>li:hover,.w-ui-smartlist-body-ctn>li.highlight:hover{
-	background-color:rgba(226,250,192,0.5)
-}
-.w-ui-smartlist-body-ctn .item-checker-wrap{
-	display:block;
-	-moz-box-align:center
-}
 .sms-thread-header{
 	margin: auto;
 	width:100%;
@@ -702,15 +663,15 @@
 	background: url("images/sms-delete-active.png");
         background-size: cover
 }
-.w-message-item-ctn li .content-wrap .actions button.button-reply{
+.w-message-item-ctn li .content-wrap .actions button.button-forward{
         background: url("images/sms-reply.png");
         background-size: cover
 }
-.w-message-item-ctn li .content-wrap .actions button.button-reply:hover{
+.w-message-item-ctn li .content-wrap .actions button.button-forward:hover{
         background: url("images/sms-reply-hover.png");
         background-size: cover
 }
-.w-message-item-ctn li .content-wrap .actions button.button-reply:active{
+.w-message-item-ctn li .content-wrap .actions button.button-forward:active{
         background: url("images/sms-reply-active.png");
         background-size: cover
 }
@@ -783,10 +744,11 @@
 }
 
 .sms-select-view-header{
-  text-align: left;
-  font-size: 1.6rem;
-  width: 85%;
+  width: 100%;
   height: 3.5rem;
+  font-size: 2.1rem;
+  padding: 4rem 0;
+  text-align: center;
 }
 .w-message-threads-ctn{
   height: 400px;
@@ -837,7 +799,7 @@
 
 
 .w-message-quick-sender .sender-ctn .count-ctn .button-send:hover {
-  background-color: #00CAF2;
+  background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
 .w-message-quick-sender .sender-ctn .count-ctn .button-send:active {
   background-color: #018CAB;
@@ -851,4 +813,27 @@
 	display:block;
 	margin-bottom:3px;
 	width:100%
+}
+
+.show-sms-item {
+    height: 4rem;
+    margin: 0.5rem 0 0.5rem 1rem;
+    overflow: hidden;
+    width: 23rem;
+}
+
+
+.show-multi-sms-content .number {
+    color: #333333;
+    height: 2rem;
+    margin-left: 1rem;
+    overflow: hidden;
+    width: 18rem;
+}
+
+.show-multi-sms-content .body {
+    height: 2rem;
+    margin-left: 1rem;
+    overflow: hidden;
+    width: 18rem;
 }
