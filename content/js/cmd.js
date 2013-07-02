@@ -86,7 +86,8 @@ var CMD = (function() {
        */
       removeContact:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.removeContactById),
 
-      clearAllContacts:  createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.clearAllContacts)
+      clearAllContacts:  createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.clearAllContacts),
+      getContactByPhoneNumber:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactByPhoneNumber)
     },
 
     /***** Picture commands ******/

@@ -394,64 +394,79 @@ var ContactList = (function() {
     $id('show-contact-company').innerHTML = contact.org.join(' ');
     var container = $id('show-contact-content');
     container.innerHTML = '';
-    contact.tel.forEach(function(item) {
-      var div = document.createElement('div');
-      switch (item.type[0]) {
-        case 'Mobile':
-          div.innerHTML = '<div class="title"><label data-l10n-id="MobileTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        case 'Home':
-          div.innerHTML = '<div class="title"><label data-l10n-id="HomeTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        case 'Work':
-          div.innerHTML = '<div class="title"><label data-l10n-id="WorkTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        case 'Personal':
-          div.innerHTML = '<div class="title"><label data-l10n-id="PersonalTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        case 'FaxHome':
-          div.innerHTML = '<div class="title"><label data-l10n-id="FaxHome"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        case 'FaxOffice':
-          div.innerHTML = '<div class="title"><label data-l10n-id="FaxOffice"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        case 'FaxOther':
-          div.innerHTML = '<div class="title"><label data-l10n-id="FaxOther"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        case 'Another':
-          div.innerHTML = '<div class="title"><label data-l10n-id="Other"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        default:
-          div.innerHTML = '<div class="title"><label>' + item.type[0] + '</label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-      }
-      div.classList.add('contact-item');
-      //navigator.mozL10n.translate(div);
-      container.appendChild(div);
-      navigator.mozL10n.translate(div);
-    });
-    contact.email.forEach(function(item) {
-      var div = document.createElement('div');
-      switch (item.type[0]) {
-        case 'Personal':
-          div.innerHTML = '<div class="title"><label data-l10n-id="PersonalEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        case 'Work':
-          div.innerHTML = '<div class="title"><label data-l10n-id="WorkEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        case 'Home':
-          div.innerHTML = '<div class="title"><label data-l10n-id="HomeEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-        default:
-          div.innerHTML = '<div class="title"><label>' + item.type[0] + '</label></div><div class="value"><label>' + item.value + '</label></div>';
-          break;
-      }
-      div.classList.add('contact-item');
-      navigator.mozL10n.translate(div);
-      container.appendChild(div);
-    });
+    if (contact.tel && contact.tel.length > 0) {
+      contact.tel.forEach(function(item) {
+        var div = document.createElement('div');
+        switch (item.type[0]) {
+          case 'Mobile':
+            div.innerHTML = '<div class="title"><label data-l10n-id="MobileTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          case 'Home':
+            div.innerHTML = '<div class="title"><label data-l10n-id="HomeTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          case 'Work':
+            div.innerHTML = '<div class="title"><label data-l10n-id="WorkTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          case 'Personal':
+            div.innerHTML = '<div class="title"><label data-l10n-id="PersonalTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          case 'FaxHome':
+            div.innerHTML = '<div class="title"><label data-l10n-id="FaxHome"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          case 'FaxOffice':
+            div.innerHTML = '<div class="title"><label data-l10n-id="FaxOffice"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          case 'FaxOther':
+            div.innerHTML = '<div class="title"><label data-l10n-id="FaxOther"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          case 'Another':
+            div.innerHTML = '<div class="title"><label data-l10n-id="Other"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          default:
+            div.innerHTML = '<div class="title"><label>' + item.type[0] + '</label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+        }
+        div.classList.add('contact-item');
+        //navigator.mozL10n.translate(div);
+        container.appendChild(div);
+        navigator.mozL10n.translate(div);
+      });
+    }
+    if (contact.email && contact.email.length > 0) {
+      contact.email.forEach(function(item) {
+        var div = document.createElement('div');
+        switch (item.type[0]) {
+          case 'Personal':
+            div.innerHTML = '<div class="title"><label data-l10n-id="PersonalEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          case 'Work':
+            div.innerHTML = '<div class="title"><label data-l10n-id="WorkEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          case 'Home':
+            div.innerHTML = '<div class="title"><label data-l10n-id="HomeEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+          default:
+            div.innerHTML = '<div class="title"><label>' + item.type[0] + '</label></div><div class="value"><label>' + item.value + '</label></div>';
+            break;
+        }
+        div.classList.add('contact-item');
+        navigator.mozL10n.translate(div);
+        container.appendChild(div);
+      });
+    }
     $id('edit-contact').addEventListener ('click', function edit_contact() {
       ContactForm.editContact(contact);
+    });
+    $id('sms-send-incontact').addEventListener ('click', function sms_send_incontact() {
+      var num = "";
+      if (contact.tel && contact.tel.length > 0) {
+        num += contact.tel[0].value;
+        num += ';';
+      }
+      new SendSMSDialog({
+        number: num,
+        bodyText: null
+      });
     });
     ViewManager.showViews('show-contact-view');
     var item = $id('contact-' + contact.id);
@@ -465,6 +480,7 @@ var ContactList = (function() {
   }
 
   function showMultiContactInfo() {
+    var num = "";
     var selectedContacts = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
     var container = $id('show-contacts-container');
     container.innerHTML = '';
@@ -496,6 +512,16 @@ var ContactList = (function() {
       div.innerHTML = html;
       div.classList.add('show-contacts-item');
       container.appendChild(div);
+      if (contact.tel && contact.tel.length > 0) {
+        num += contact.tel[0].value;
+        num += ';';
+      }
+    });
+    $id('sms-send-inmulticontact').addEventListener ('click', function sms_send_incontact() {
+      new SendSMSDialog({
+        number: num,
+        bodyText: null
+      });
     });
     ViewManager.showViews('show-multi-contacts');
   }
@@ -657,6 +683,7 @@ var ContactList = (function() {
 
   return {
     init:              initList,
+    createContactListItem: createContactListItem,
     clearAllContacts:  clearAllContacts,
     removeContact:     removeContact,
     updateContacts:    updateContacts,

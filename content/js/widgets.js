@@ -508,10 +508,10 @@ SendSMSDialog.prototype = {
 
       self.close();
     }
-    document.addEventListener('ModalDialog:show', this._onModalDialogShown);
+    document.addEventListener('SendSMSDialog:show', this._onModalDialogShown);
 
     // Make sure other modal dialog has a chance to close itself.
-    this._fireEvent('ModalDialog:show');
+    this._fireEvent('SendSMSDialog:show');
 
     // Tweak modal dialog position when resizing.
     this._onWindowResize = function(event) {
@@ -528,10 +528,6 @@ SendSMSDialog.prototype = {
    var okBtn = $expr('.button-send', this._modalElement)[0];
    okBtn.hidden = false;
    okBtn.addEventListener('click', this.send.bind(this));
-
-   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-   cancelBtn.hidden = false;
-   cancelBtn.addEventListener('click', this.close.bind(this));
    var self = this;
    okBtn.addEventListener('keydown', function(event) {
      if (event.keyCode == 27) {
@@ -539,6 +535,24 @@ SendSMSDialog.prototype = {
      }
    });
 
+   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+   cancelBtn.hidden = false;
+   cancelBtn.addEventListener('click', this.close.bind(this));
+
+   var self = this;
+   var selectBtn = $expr('.button-add-contact', this._modalElement)[0];
+   selectBtn.hidden = false;
+   selectBtn.addEventListener('click', function(event) {
+    CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
+      var dataJSON = JSON.parse(message.data);
+      new SelectContactsDialog({
+        contactList: dataJSON,
+        onok: self._selectContacts
+      });
+    }, function onerror_getAllContacts(message) {
+      log('Error occurs when fetching all contacts.');
+    });
+   });
    // Make sure we can close the dialog by hitting ENTER or ESC
    okBtn.focus();
 
@@ -558,6 +572,26 @@ SendSMSDialog.prototype = {
       (documentHeight - containerHeight) / 2 : 0) + 'px';*/
   },
 
+  _selectContacts: function(data) {
+    var titleElem = $expr('.input-contact', this._modalElement)[0];
+    if((titleElem.value.length > 0) && (titleElem.value[titleElem.value.length-1] != ";")){
+      titleElem.value += ';';
+      //titleElem.value = titleElem.value.replace(/[ ]/g,"")
+    }
+    for( var i=0;i<data.length;i++){
+      var contact = JSON.parse(data[i]);
+      var sendStr = contact.name + "(" + contact.tel[0].value + ");";
+      var searchStr = contact.tel[0].value+";";
+      if(titleElem.value.indexOf(searchStr) >= 0){
+        titleElem.value = titleElem.value.replace(searchStr, sendStr);
+      }else{
+        if(titleElem.value.indexOf("("+contact.tel[0].value+")") < 0 ){
+          titleElem.value += sendStr;
+        }
+      }
+    }
+  },
+
   _fireEvent: function(name, data) {
     var evt = document.createEvent('Event');
     evt.initEvent(name, true, true);
@@ -565,29 +599,38 @@ SendSMSDialog.prototype = {
     evt.targetElement = this._modalElement;
     document.dispatchEvent(evt);
   },
+
   close: function() {
     this._mask.parentNode.removeChild(this._mask);
     this._modalElement.parentNode.removeChild(this._modalElement);
     this._mask = null;
     this._modalElement = null;
-
-    document.removeEventListener('ModalDialog:show', this._onModalDialogShown);
+    document.removeEventListener('SendSMSDialog:show', this._onModalDialogShown);
     window.removeEventListener('resize', this._onWindowResize)
-
     this.options.onclose();
   },
   send: function() {
-    var number = $id('address').value.split(',');
+    var number = $id('address').value.split(';');
     var message = $id('content').value;
+    var sender = [];
     var self=this;
-    CMD.SMS.sendMessages(JSON.stringify({number:number, message: message}),
+    number.forEach(function(item) {
+      var start = item.indexOf("(");
+      var end = item.indexOf(")");
+      if(start >= 0 &&  end > 0){
+        sender.push(item.slice(start+1,end));
+      }else if(item != ""){
+        sender.push(item);
+      }
+    });
+    CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message}),
       function onSuccess_sendSms(event) {
         if(!event.result) {
           self._mask.parentNode.removeChild(self._mask);
           self._modalElement.parentNode.removeChild(self._modalElement);
           self._mask = null;
           self._modalElement = null;
-          document.removeEventListener('ModalDialog:show', self._onModalDialogShown);
+          document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
           window.removeEventListener('resize', self._onWindowResize)
           self.options.onclose();
         }
@@ -597,3 +640,126 @@ SendSMSDialog.prototype = {
   }
 };
 
+function SelectContactsDialog(options) {
+  this.initailize(options);
+}
+
+SelectContactsDialog.prototype = {
+  initailize: function(options) {
+    this.options = extend({
+      contactList: null,
+      onok: emptyFunction
+    }, options);
+    this._modalElement = null;
+    this._mask = null;
+    this._build();
+  },
+
+  _build: function() {
+    this._mask = document.createElement('div');
+    this._mask.className = 'modal-mask';
+    document.body.appendChild(this._mask);
+    // TODO using template
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    var html = '<div class="w-ui-window">'
+	+ '<header class="w-ui-window-header">'
+	+ '<div class="w-ui-window-header-title">添加联系人</div>'
+	+ '<div class="w-ui-window-header-x" style=""></div>'
+	+ '</header>'
+	+ '<div class="w-ui-window-body">'
+	+ '<div class="w-message-contact-selector-body">'
+	+ '<div class="list-ctn">'
+	+ '<div class="w-ui-smartlist" id="w-ui-smartlist-container">'
+        + '</div>'
+        + '</div>'
+	+ '</div>'
+	+ '<footer class="w-ui-window-footer" style="">'
+	+ '<div class="w-ui-window-footer-monitor">'
+	+ '<div>'
+	+ '<span class="text-secondary count">已选择 0 人 </span>'
+	+ '</div>'
+	+ '</div>'
+	+ '<div class="w-ui-window-footer-button-ctn">'
+	+ '<button class="button-send primary">确定</button>'
+	+ '<button class="button-cancel">取消</button>'
+	+ '</div>'
+	+ '</footer>'
+	+ '</div>'
+	+ '</div>';
+    this._modalElement.innerHTML = html;
+    document.body.appendChild(this._modalElement);
+    var closeBtn = $expr('.w-ui-window-header-x', this._modalElement)[0];
+    closeBtn.hidden = false;
+    closeBtn.addEventListener('click', this.close.bind(this));
+
+    var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+    cancelBtn.hidden = false;
+    cancelBtn.addEventListener('click', this.close.bind(this));
+
+    var okBtn = $expr('.button-send', this._modalElement)[0];
+    okBtn.hidden = false;
+    okBtn.addEventListener('click', this.select.bind(this));
+    var self = this;
+    okBtn.addEventListener('keydown', function(event) {
+      if (event.keyCode == 27) {
+        self.close();
+      }
+    });
+    // Translate l10n value
+    navigator.mozL10n.translate(this._modalElement);
+    // Only one modal dialog is shown at a time.
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      // Show a popup dialog at a time.
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+      self.close();
+    }
+    document.addEventListener('SelectContactsDialog:show', this._onModalDialogShown);
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('SelectContactsDialog:show');
+    
+    var contactSmallListContainer = $id('w-ui-smartlist-container');
+    contactSmallListContainer.innerHTML = '';
+    contactSmallList = new GroupedList({
+      dataList: this.options.contactList,
+      dataIndexer: function getContactIndex(contact) {
+        var firstChar = contact.name[0].charAt(0).toUpperCase();
+        var pinyin = makePy(firstChar);
+        if (pinyin.length == 0) {
+          return '#';
+        }
+        return pinyin[0].toUpperCase();
+      },
+      renderFunc: ContactList.createContactListItem,
+      container: contactSmallListContainer,
+    });
+    contactSmallList.render();
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  },
+  
+  close: function() {
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+    document.removeEventListener('SelectContactsDialog:show', this._onModalDialogShown);
+  },
+  select: function() {
+    var ids = [];
+    $expr('#w-ui-smartlist-container .contact-list-item[data-checked="true"]').forEach(function(item) {
+      ids.push(item.dataset.contact);
+    });
+    this.options.onok(ids);
+    this.close();
+  }
+};

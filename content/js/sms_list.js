@@ -34,7 +34,67 @@ var SmsList = (function() {
       container: threadListContainer
     });
     threadList.render();
+    updateAvatar();
     showThreadList();
+  }
+
+  function updateAvatar() {
+    if(threadList){
+      threadList.getGroupedData().forEach(function(thread) {
+        thread.dataList.forEach( function (item) {
+          updateThreadAvatar(item);
+        });
+      });
+    }
+  }
+
+  function updateThreadAvatar(item) {
+    var threadInfo = item;
+    CMD.Contacts.getContactByPhoneNumber(item.participants, function(result) {
+      if (result.data != '') {
+        var contactData = JSON.parse(result.data);
+        var threadItem = $id('id-threads-data-' + threadInfo.id);
+        var name = threadItem.getElementsByTagName('div')[3];
+        name.childNodes[0].nodeValue = contactData.name;
+        var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
+        if(selectViewName != null){
+          selectViewName.childNodes[0].nodeValue = contactData.name;
+        }
+        var messageViewName = $id('sms-thread-header-name-' + threadInfo.id);
+        if(messageViewName != null){
+          messageViewName.childNodes[0].nodeValue = contactData.name;
+        }
+        CMD.Contacts.getContactProfilePic(contactData.id, function(result2) {
+          if (result2.data != '') {
+            var threadItem = $id('id-threads-data-' + threadInfo.id);
+            var img = threadItem.getElementsByTagName('img')[0];
+            img.src = result2.data;
+            threadItem.dataset.avatar = result2.data;
+            if (img.classList.contains('avatar-default')) {
+              img.classList.remove('avatar-default');
+            }
+            var selectViewimg = $id('show-multi-sms-content-img-' + threadInfo.id);
+            if(selectViewimg != null){
+              selectViewimg.src = result2.data;
+              if (selectViewimg.classList.contains('avatar-default')) {
+                selectViewimg.classList.remove('avatar-default');
+              }
+            }
+            var messageViewimg = $id('sms-thread-header-img-' + threadInfo.id);
+            if(messageViewimg != null){
+              messageViewimg.src = result2.data;
+              if (messageViewimg.classList.contains('avatar-default')) {
+                messageViewimg.classList.remove('avatar-default');
+              }
+            }
+          }
+        }, function(e) {
+          alert('get contact avatar error:' + e);
+        });
+      }
+    }, function(e) {
+      alert('get contact avatar error:' + e);
+    });
   }
 
   function showThreadList() {
@@ -61,7 +121,7 @@ var SmsList = (function() {
     html += '<div>';
     html += '  <label class="unchecked"></label>';
     html += '      <div class="readflag"></div>';
-    html += '      <div class="avatar-small" data-noavatar="true"></div>';
+    html += '      <img class="avatar avatar-default">';
     html += '      <div class="sms-info">';
     html += '        <div class="name">' + threadData.participants;
     if (threadData.unreadCount > 0) {
@@ -125,10 +185,21 @@ var SmsList = (function() {
       var SmsThreadsData = threadList.getGroupedData();
       SmsThreadsData = SmsThreadsData[0].dataList;
       if ((Number(index) > -1) && (Number(index) < SmsThreadsData.length)) {
-        html = '<img class="multi-avatar-show multi-avatar-show-default"></img>';
+        var threadItem = $id('id-threads-data-' + SmsThreadsData[index].id);
+        var threadname = threadItem.getElementsByTagName('div')[3];
+        var threadimg = threadItem.getElementsByTagName('img')[0];
+        html = '<img class="multi-avatar-show multi-avatar-show-default" src="';
+        html += threadimg.src;
+        html += '" id="';
+        html += 'show-multi-sms-content-img-';
+        html += SmsThreadsData[index].id
+        html += '"></img>';
         html += '<div class="show-multi-sms-content">';
-        html += '  <div class="number">';
-        html += SmsThreadsData[index].participants;
+        html += '  <div class="number" id="';
+        html += 'show-multi-sms-content-number-';
+        html += SmsThreadsData[index].id
+        html += '">';
+        html += threadname.childNodes[0].nodeValue;//SmsThreadsData[index].participants;
         if (SmsThreadsData[index].unreadCount > 0) {
           html += ' (' + SmsThreadsData[index].unreadCount + ' 条未读) ';
         }
@@ -158,11 +229,21 @@ var SmsList = (function() {
     sp[0].innerHTML = '';
     threadGroup.classList.remove('unread');
 
+    var threadItem = $id('id-threads-data-' + SmsThreadsData[index].id);
+    var threadname = threadItem.getElementsByTagName('div')[3];
+    var threadimg = threadItem.getElementsByTagName('img')[0];
     var header = $id('sms-thread-header');
     var html = '';
-    html += '<img src="style/images/avatar.png" style="padding-top: 20px; float: left;">';
-    html += '<span style="float: left; padding-top: 28px; padding-left: 10px;">';
-    html += SmsThreadsData[index].participants;
+    html += '<img style="height:5.5rem; width:5.5rem; padding-top: 20px; float: left;" src="';
+    html += threadimg.src;
+    html += '" id="sms-thread-header-img-';
+    html += SmsThreadsData[index].id
+    html += '">';
+    html += '<span style="float: left; padding-top: 28px; padding-left: 10px;" id="';
+    html += 'sms-thread-header-name-';
+    html += SmsThreadsData[index].id
+    html += '">';
+    html += threadname.childNodes[0].nodeValue;//SmsThreadsData[index].participants;
     html += '</span>';
     header.innerHTML = html;
     CMD.SMS.getThreadMessagesById(JSON.stringify(SmsThreadsData[index].id), function onresponse_getThreadMessagesById(messages) {
@@ -197,15 +278,38 @@ var SmsList = (function() {
           });
         });
       }
-      var copyBtns = $expr('.button-copy', messageListContainer);
-      for (var j = 0; j < copyBtns.length; j++) {
-        copyBtns[j].hidden = false;
-        copyBtns[j].addEventListener('click', function onclick_copySms(event) {});
+      var resendBtns = $expr('.button-resend', messageListContainer);
+      for (var j = 0; j < resendBtns.length; j++) {
+        resendBtns[j].hidden = false;
+        resendBtns[j].addEventListener('click', function onclick_resendSms(event) {
+          var This = this;
+          var smsId = This.id.split("sms-resend-");
+          var num;
+          if(MessageListData[0].delivery == "received"){
+            num = MessageListData[0].sender;
+          }else{
+            num = MessageListData[0].receiver;
+          }
+          CMD.SMS.deleteMessageById(smsId[1], function onSuccess(event) {
+            removeMessage(smsId[1]);
+            CMD.SMS.sendMessage(JSON.stringify({
+              number: num,
+              message: This.value
+            }), function onSuccess_sendSms(sms) {
+              if (!sms.result) {
+              }
+            }, function onError_sendSms(e) {
+              alert(e);
+            });
+          }, function onError(e) {
+            alert('Error occured when removing messae' + e);
+          });
+        });
       }
       var deleteBtns = $expr('.button-delete', messageListContainer);
       for (var j = 0; j < deleteBtns.length; j++) {
         deleteBtns[j].hidden = false;
-        deleteBtns[j].addEventListener('click', function onclick_copySms(event) {
+        deleteBtns[j].addEventListener('click', function onclick_deleteSms(event) {
           var This = this;
           CMD.SMS.deleteMessageById(This.value, function onSuccess(event) {
             removeMessage(This.value);
@@ -265,7 +369,9 @@ var SmsList = (function() {
     html += '<ul class="w-message-item-ctn">';
     if (MessageData.delivery == "received") {
       html += '<li ';
-    } else {
+    } else if(MessageData.delivery == "error"){
+      html += '<li class="from-me-error" ';
+    }else {
       html += '<li class="from-me" ';
     }
     html += 'id="sms-id-' + MessageData.id + '">';
@@ -277,12 +383,17 @@ var SmsList = (function() {
     html += '<div class="side"></div>';
     html += '</div>';
     html += '<div class="actions">';
-    html += '<button class="button-forward" title="转发" ';
-    html += 'id="sms-reply-' + MessageData.id + '" ';
+    html += '<button class="button-resend" title="重发" ';
+    html += 'id="sms-resend-' + MessageData.id + '" ';
+    if(MessageData.delivery == "error"){
+      html += 'style="display:inline-block" ';
+    }else{
+      html += 'style="display:none" ';
+    }
     html += 'value="' + MessageData.body + '">';
     html += '</button>';
-    html += '<button class="button-copy" title="复制" ';
-    html += 'id="sms-copy-' + MessageData.id + '" ';
+    html += '<button class="button-forward" title="转发" ';
+    html += 'id="sms-reply-' + MessageData.id + '" ';
     html += 'value="' + MessageData.body + '">';
     html += '</button>';
     html += '<button class="button-delete" title="删除" ';
@@ -339,7 +450,7 @@ var SmsList = (function() {
       $id('selectAll-sms').dataset.checked = false;
     }
     $id('remove-sms').dataset.disabled = false;
-    //$id('export-sms').dataset.disabled = false;
+    $id('export-sms').dataset.disabled = false;
     opStateChanged();
   }
 
@@ -381,8 +492,8 @@ var SmsList = (function() {
     }
     $id('remove-sms').dataset.disabled =
     threadlistLength === 0;
-    //$id('export-sms').dataset.disabled =
-    //threadlistLength === 0;
+    $id('export-sms').dataset.disabled =
+    threadlistLength === 0;
   }
 
   function selectSmsItem(elem, selected) {
@@ -446,16 +557,19 @@ var SmsList = (function() {
         threadListContainer.innerHTML = '';
       }
       var tempparticipants;
+      var unreadCount;
       if (sms.delivery == "received") {
         tempparticipants = sms.sender;
+        unreadCount = 1;
       } else {
         tempparticipants = sms.receiver;
+        unreadCount = 0;
       }
       var tempthreadListData = {
         'id': sms.threadId,
         'body': sms.body,
         'timestamp': sms.timestamp,
-        'unreadCount': 1,
+        'unreadCount': unreadCount,
         'participants': tempparticipants,
         'lastMessageType': sms.type
       };
@@ -488,6 +602,43 @@ var SmsList = (function() {
       log('Error occurs when fetching all messages' + messages.message);
     });
   }
+  
+  function exportThreads(ids) {
+    var content = '';
+    var threadnum = 0;
+    ids.forEach(function(item) {
+      var groupedData = threadList.getGroupedData();
+      var threadId = groupedData[0].dataList[item.threadIndex].id;
+      CMD.SMS.getThreadMessagesById(JSON.stringify(threadId), function onresponse_getThreadMessagesById(messages) {
+        var result = [];
+        var Sms = JSON.parse(messages.data);
+        threadnum++;
+        for (var i = 0; i < Sms.length; i++) {
+          content += Sms[i].type + ',';
+          content += Sms[i].delivery + ',';
+          content += Sms[i].sender + ',';
+          content += Sms[i].receiver + ',';
+          content += Sms[i].body + ',';
+          content += Sms[i].timestamp + ',';
+          content += Sms[i].read + '\n';
+        }
+        if(threadnum == ids.length){
+          navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
+            if (status) {
+              alert('Sms have been save to disk.');
+            }
+          }, {
+            title: 'Choose where to save',
+            name: 'sms.vcf',
+            extension: 'vcf'
+          });
+        }
+      }, function onerror_getThreadMessagesById(messages) {
+        log('Error occurs when fetching all messages' + messages.message);
+      });
+    });
+  }
+  
 
   function removeMessage(messageId) {
     var messageListData = messageList.getGroupedData();
@@ -587,30 +738,19 @@ var SmsList = (function() {
     });
 
     $id('export-sms').addEventListener('click', function onclick_exportContacts(event) {
-/*   var content = '';
-      threadList.getGroupedData().forEach(function(group) {
-        group.dataList.forEach(function(sms) {
-          content += 'sms,' + sms.delivery + ',';
-          if (sms.sender) {
-            content += sms.sender;
-          }
-          content += ',';
-          if (sms.receiver) {
-            content += sms.receiver;
-          }
-          content += ',' + sms.body + ',' + sms.timestamp + ',' + sms.read + '\n';
-        });
-      });
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
 
-      navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
-        if (status) {
-          alert('Sms have been save to disk.');
-        }
-      }, {
-        title: 'Choose where to save',
-        name: 'msm.vcf',
-        extension: 'vcf'
-      });*/
+      var ids = [];
+      $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(item) {
+        ids.push(item.dataset);
+      });
+      if (window.confirm(_('export-sms-confirm', {
+        n: ids.length
+      }))) {
+        SmsList.exportThreads(ids);
+      }
     });
 
     $id('sms-send-inthread').addEventListener('click', function onclick_quickreply(event) {
@@ -625,7 +765,7 @@ var SmsList = (function() {
             num = MessageListData[0].receiver;
           }
           var body = $id('sender-ctn-input');
-          CMD.SMS.sendMessages(JSON.stringify({
+          CMD.SMS.sendMessage(JSON.stringify({
             number: num,
             message: body.value
           }), function onSuccess_sendSms(sms) {
@@ -646,6 +786,7 @@ var SmsList = (function() {
   return {
     init: initSmsPage,
     removeThreads: removeThreads,
+    exportThreads: exportThreads,
     onMessage: onMessage,
     selectAllSms: selectAllSms,
     startListening: startListening,
