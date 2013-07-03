@@ -206,13 +206,13 @@ GroupedList.prototype = {
         elem.dataset.dataIdentity = this.options.dataIdentifier(dataObj);
         groupElem.appendChild(elem);
       }
+      this.options.ondatachange();
       return;
     }
 
     // If group is newly created, then render the whole group
     groupElem = this._renderGroup(group);
     var position = this._getGroupPosition(group.index);
-
     if (position == this._groupedData.length - 1) {
       this.options.container.appendChild(groupElem);
     } else {
@@ -220,7 +220,6 @@ GroupedList.prototype = {
       this.options.container.insertBefore(groupElem,
         this._getGroupElem(groupAfter.index));
     }
-
     this.options.ondatachange();
   },
 
@@ -448,36 +447,35 @@ SendSMSDialog.prototype = {
     this._modalElement.className = 'modal-dialog';
     this._modalElement.innerHTML = '<div class="w-ui-window draggable">'
 	+ '<header class="w-ui-window-header drag-handel">'
-	+ '<div class="w-ui-window-header-title">发送信息</div>'
+	+ '<div class="w-ui-window-header-title" data-l10n-id="w-send-sms"></div>'
 	+ '<div class="w-ui-window-header-x" style=""></div>'
 	+ '</header>'
 	+ '<div class="w-ui-window-body">'
 	+ '<div class="w-message-sender-window">'
 	+ '<div class="header">'
-	+ '<label class="cf" for="address">收信人：</label>'
+	+ '<label data-l10n-id="w-send-address" class="cf" for="address"></label>'
 	+ '<div class="address">'
 	+ '<input id="address" type="text" class="input-contact searchbox">'
 	+ '</div>'
-	+ '<button class="w-icon-btn button-add-contact">'
+	+ '<button data-l10n-id="w-add-contact" class="w-icon-btn button-add-contact">'
 	+ '<span class="icon add-grey"></span>'
-	+ '添加联系人'
 	+ '</button>'
 	+ '</div>'
 	+ '<div class="body">'
-	+ '<label class="cf" for="content">发送内容：</label>'
+	+ '<label data-l10n-id="w-send-content" class="cf" for="content"></label>'
 	+ '<textarea id="content" class="input-content" autofocus="true"></textarea>'
 	+ '</div>'
 	+ '<div class="monitor text-secondary">'
-	+ '<span class="content-count">已输入 0 字，</span>'
-	+ '<span class="contacts-count">发送给 0 位联系人。</span>'
+	+ '<span id="text-count" class="content-count"></span>'
+	+ '<span id="sender-count" class="contacts-count"></span>'
 	+ '</div>'
 	+ '</div>'
 	+ '</div>'
 	+ '<footer class="w-ui-window-footer" style="">'
 	+ '<div class="w-ui-window-footer-monitor"></div>'
 	+ '<div class="w-ui-window-footer-button-ctn">'
-	+ '<button class="button-send primary">发送</button>'
-	+ '<button class="button-cancel primary">取消</button>'
+	+ '<button data-l10n-id="w-send-button" class="button-send primary"></button>'
+	+ '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
 	+ '</div>'
 	+ '</footer>'
         + '</div>';
@@ -495,6 +493,15 @@ SendSMSDialog.prototype = {
     this._adjustModalPosition();
     this._makeDialogCancelable();
 
+    var header = _('text-sms-count', {
+      n: 0
+    });
+    $id('text-count').innerHTML = header;
+    header = _('send-sms-count', {
+      n: 0
+    });
+    $id('sender-count').innerHTML = header;
+   
     // Translate l10n value
     navigator.mozL10n.translate(this._modalElement);
 
@@ -553,6 +560,27 @@ SendSMSDialog.prototype = {
       log('Error occurs when fetching all contacts.');
     });
    });
+
+   $id('content').addEventListener('keyup', function onclick_addNewSms(event) {
+      var header = _('text-sms-count', {
+        n: this.value.length
+      });
+      $id('text-count').innerHTML = header;
+    });
+
+   $id('address').addEventListener('keydown', function onclick_addNewSms(event) {
+      var senders = this.value.split(';');
+      var senderNum = senders.length;
+      for(var i=0;i<senders.length;i++){
+        if(senders[i] == ""){
+          senderNum--;
+        }
+      }
+      var header = _('send-sms-count', {
+        n: senderNum
+      });
+      $id('sender-count').innerHTML = header;
+    });
    // Make sure we can close the dialog by hitting ENTER or ESC
    okBtn.focus();
 
@@ -590,6 +618,17 @@ SendSMSDialog.prototype = {
         }
       }
     }
+    var senders = titleElem.value.split(';');
+    var senderNum = senders.length;
+    for(var i=0;i<senders.length;i++){
+      if(senders[i] == ""){
+        senderNum--;
+      }
+    }
+    var header = _('send-sms-count', {
+      n: senderNum
+    });
+    $id('sender-count').innerHTML = header;
   },
 
   _fireEvent: function(name, data) {
@@ -662,9 +701,9 @@ SelectContactsDialog.prototype = {
     // TODO using template
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    var html = '<div class="w-ui-window">'
+    var html = '<div class="w-ui-window-contact">'
 	+ '<header class="w-ui-window-header">'
-	+ '<div class="w-ui-window-header-title">添加联系人</div>'
+	+ '<div data-l10n-id="w-add-contact" class="w-ui-window-header-title"></div>'
 	+ '<div class="w-ui-window-header-x" style=""></div>'
 	+ '</header>'
 	+ '<div class="w-ui-window-body">'
@@ -677,12 +716,12 @@ SelectContactsDialog.prototype = {
 	+ '<footer class="w-ui-window-footer" style="">'
 	+ '<div class="w-ui-window-footer-monitor">'
 	+ '<div>'
-	+ '<span class="text-secondary count">已选择 0 人 </span>'
+	+ '<span id="select-contact-count" class="text-secondary count"></span>'
 	+ '</div>'
 	+ '</div>'
 	+ '<div class="w-ui-window-footer-button-ctn">'
-	+ '<button class="button-send primary">确定</button>'
-	+ '<button class="button-cancel">取消</button>'
+	+ '<button data-l10n-id="OK" class="button-send primary"></button>'
+	+ '<button data-l10n-id="cancel" class="button-cancel"></button>'
 	+ '</div>'
 	+ '</footer>'
 	+ '</div>'
@@ -733,10 +772,100 @@ SelectContactsDialog.prototype = {
         }
         return pinyin[0].toUpperCase();
       },
-      renderFunc: ContactList.createContactListItem,
+      renderFunc: this._createContactListItem,
       container: contactSmallListContainer,
     });
     contactSmallList.render();
+    contactSmallList.getGroupedData().forEach(function(group) {
+      group.dataList.forEach( function (contact) {
+        CMD.Contacts.getContactProfilePic(contact.id, function(result) {
+          if (result.data != '') {
+            var item = $id('contact-' + contact.id);
+            if(item != null){
+              var img = item.getElementsByTagName('img')[0];
+              img.src = result.data;
+              item.dataset.avatar = result.data;
+              if (img.classList.contains('avatar-default')) {
+                img.classList.remove('avatar-default');
+              }
+            }
+          }
+        }, function(e) {
+          alert('get contactSmallList getContactProfilePic error:' + e);
+        });
+      });
+    });
+    var itemNum = $expr('#w-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+    var header = _('contacts-selected', {
+      n: itemNum
+    });
+    $id('select-contact-count').innerHTML = header;
+  },
+
+  _createContactListItem: function(contact) {
+    var html = '';
+    html += '<div>';
+    html += '  <label class="unchecked"></label>';
+    html += '    <img class="avatar avatar-default"></img>';
+    html += '      <div class="contact-info">';
+    html += '        <div class="name">';
+    if (contact.name) {
+      html += contact.name.join(' ');
+    }
+    html += '</div>';
+    if (contact.tel && contact.tel.length > 0) {
+      html += '        <div class="tel">' + contact.tel[0].value +  '</div>';
+    }
+    html += '      </div>';
+    html += '    </div>';
+    var elem = document.createElement('div');
+    elem.classList.add('contact-list-item');
+    if (contact.category && contact.category.indexOf('favorite') > -1) {
+      elem.classList.add('favorite');
+    }
+    elem.innerHTML = html;
+    elem.dataset.contact = JSON.stringify(contact);
+    elem.dataset.contactId = contact.id;
+    elem.id = 'contact-' + contact.id;
+    elem.dataset.avatar = '';
+    elem.dataset.checked = false;
+    elem.onclick = function onclick_contact_list(event) {
+      var target = event.target;
+      var itemNum;
+      var header;
+      if (target instanceof HTMLLabelElement) {
+        var item = $expr('label.unchecked', elem)[0];
+        if (item) {
+          item.classList.toggle('checked');
+        }
+        if (item.classList.contains('checked')) {
+          elem.dataset.checked = true;
+          elem.dataset.focused = true;
+        } else {
+          elem.dataset.checked = false;
+          elem.dataset.focused = false;
+        }
+        itemNum = $expr('#w-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+        header = _('contacts-selected', {
+          n: itemNum
+        });
+        $id('select-contact-count').innerHTML = header;
+      } else {
+        item = $expr('label.unchecked', elem)[0];
+        if (item) {
+          item.classList.add('checked');
+        }
+        elem.dataset.checked = true;
+        elem.dataset.focused = true;
+        itemNum = $expr('#w-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+        header = _('contacts-selected', {
+          n: itemNum
+        });
+        $id('select-contact-count').innerHTML = header;
+      }
+    };
+
+    return elem;
   },
 
   _fireEvent: function(name, data) {

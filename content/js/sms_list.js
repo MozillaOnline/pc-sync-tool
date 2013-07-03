@@ -89,11 +89,11 @@ var SmsList = (function() {
             }
           }
         }, function(e) {
-          alert('get contact avatar error:' + e);
+          alert('get getContactProfilePic error:' + e);
         });
       }
     }, function(e) {
-      alert('get contact avatar error:' + e);
+      alert('get getContactByPhoneNumber error:' + e);
     });
   }
 
@@ -127,7 +127,7 @@ var SmsList = (function() {
     if (threadData.unreadCount > 0) {
       html += '<span> ('
       html += threadData.unreadCount;
-      html += ' <span id="sms-unread" data-l10n-id="sms-unread">条未读</span> )</span>';
+      html += ' <span id="sms-unread" data-l10n-id="sms-unread"></span> )</span>';
     }
     var dt = new Date(threadData.timestamp);
     var year = dt.getFullYear();
@@ -138,7 +138,7 @@ var SmsList = (function() {
     var curMonth = today.getMonth() + 1;
     var curDate = today.getDate();
     if (curYear == year && curMonth == month && curDate == date) {
-      html += '<span style="float: right;"> ' + '今天' + ' </span>';
+      html += '<span style="float: right;" data-l10n-id="today"></span>';
     } else {
       html += '<span style="float: right;"> ' + year + '-' + month + '-' + date + ' </span>';
     }
@@ -201,7 +201,10 @@ var SmsList = (function() {
         html += '">';
         html += threadname.childNodes[0].nodeValue;//SmsThreadsData[index].participants;
         if (SmsThreadsData[index].unreadCount > 0) {
-          html += ' (' + SmsThreadsData[index].unreadCount + ' 条未读) ';
+          var header = _('sms-unread-count', {
+            n: SmsThreadsData[index].unreadCount
+          });
+          html += header;
         }
         html += '  </div>';
         html += '  <div class="body">';
@@ -235,7 +238,11 @@ var SmsList = (function() {
     var header = $id('sms-thread-header');
     var html = '';
     html += '<img style="height:5.5rem; width:5.5rem; padding-top: 20px; float: left;" src="';
-    html += threadimg.src;
+    if(threadimg.src != ""){
+      html += threadimg.src;
+    }else{
+      html += 'style/images/avatar.png';
+    }
     html += '" id="sms-thread-header-img-';
     html += SmsThreadsData[index].id
     html += '">';
@@ -264,7 +271,12 @@ var SmsList = (function() {
         },
         disableDataIndexer: true,
         renderFunc: createGroupMessageList,
-        container: messageListContainer
+        container: messageListContainer,
+        ondatachange: function() {
+          if(messageListContainer != null){
+            messageListContainer.scrollTop=messageListContainer.scrollTopMax;
+          }
+        }
       });
       messageList.render();
       var forwardBtns = $expr('.button-forward', messageListContainer);
@@ -352,14 +364,14 @@ var SmsList = (function() {
       var olddt = new Date(MessageData.nearDate);
       if (olddt.getFullYear() != year || (olddt.getMonth() + 1) != month || olddt.getDate() != date) {
         if (curYear == year && curMonth == month && curDate == date) {
-          html += '今天';
+          html += _('today');
         } else {
           html += year + '-' + month + '-' + date;
         }
       }
     } else {
       if (curYear == year && curMonth == month && curDate == date) {
-        html += '今天';
+        html += _('today');;
       } else {
         html += year + '-' + month + '-' + date;
       }
@@ -383,15 +395,12 @@ var SmsList = (function() {
     html += '<div class="side"></div>';
     html += '</div>';
     html += '<div class="actions">';
-    html += '<button class="button-resend" title="重发" ';
-    html += 'id="sms-resend-' + MessageData.id + '" ';
     if(MessageData.delivery == "error"){
-      html += 'style="display:inline-block" ';
-    }else{
-      html += 'style="display:none" ';
+      html += '<button class="button-resend" title="重发" ';
+      html += 'id="sms-resend-' + MessageData.id + '" ';
+      html += 'value="' + MessageData.body + '">';
+      html += '</button>';
     }
-    html += 'value="' + MessageData.body + '">';
-    html += '</button>';
     html += '<button class="button-forward" title="转发" ';
     html += 'id="sms-reply-' + MessageData.id + '" ';
     html += 'value="' + MessageData.body + '">';
@@ -727,9 +736,12 @@ var SmsList = (function() {
     });
     $id('sender-ctn-input').addEventListener('keydown', function onclick_addNewSms(event) {
       var This = this;
-      This.style.height = '30px'
       var height = This.scrollHeight + 2;
-      This.style.height = height + 'px';
+      var subListHeight = 380 + 30 - height;
+      if(subListHeight > 200){
+        This.style.height = height + 'px';
+        messageListContainer.style.height = subListHeight + 'px';
+      }
     });
 
     $id('refresh-sms').addEventListener('click', function onclick_refreshContacts(event) {

@@ -683,7 +683,6 @@ var ContactList = (function() {
 
   return {
     init:              initList,
-    createContactListItem: createContactListItem,
     clearAllContacts:  clearAllContacts,
     removeContact:     removeContact,
     updateContacts:    updateContacts,

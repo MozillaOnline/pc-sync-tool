@@ -313,17 +313,35 @@
   position:absolute;
   top:0;
   -moz-transition:opacity .15s linear;
-  top:100px;
+  top:200px;
   left:300px
 }
+
+.w-ui-window-contact{
+  background:#fff;
+  border:1px #aaaaaa solid;
+  border-radius:5px;
+  box-shadow:0 2px 20px rgba(0,0,0,0.5);
+  cursor:default;
+  left:0;
+  min-height:140px;
+  min-width:360px;
+  position:absolute;
+  top:0;
+  -moz-transition:opacity .15s linear;
+  top:100px;
+  left:380px
+}
+
 
 .w-ui-window-header{
 	background:-moz-linear-gradient(left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
 	border-radius:5px 5px 0 0;
-	border-bottom:1px #d6d6d6 solid;
-	box-shadow:0 1px 0 #fff inset;
+	border-bottom:1px #E86000 solid;
+	box-shadow:0 1px 0 #E86000 inset;
 	padding:7px 8px 7px 10px;
-        overflow: hidden
+        overflow: hidden;
+        background-color: #E86000;
 }
 .w-ui-window-header-title{
         float: left
@@ -337,10 +355,10 @@
         background: url("images/sms-cancel.png");
 }
 .w-ui-window-header-x:hover{
-	background-position:0 -6118px
+	background: url("images/sms-cancel-hover.png");
 }
 .w-ui-window-header-x:active{
-	background-position:0 -6178px
+	background: url("images/sms-cancel-active.png");
 }
 .w-ui-window-body{
 	min-height:2em;
@@ -463,7 +481,7 @@
 }
 .w-message-sender-window .body .input-content{
 	height:100px;
-	width:395px;
+	width:405px;
         float: right;
         overflow-y: auto;
 }
@@ -787,14 +805,14 @@
   text-align: center;
 }
 .w-message-threads-ctn{
-  height: 400px;
+  height: 380px;
   overflow-x: hidden;
   overflow-y: auto;
   padding-top: 5px;
 }
 .w-message-quick-sender{
 	background-color:#f9f9f9;
-	padding:10px
+	padding:10px;
 }
 .w-message-quick-sender .selector-ctn{
 	margin-bottom:5px;
@@ -876,11 +894,9 @@
 
 .w-message-contact-selector .filter-ctn{
 	margin-right:5px;
-	-webkit-box-flex:1
 }
 .w-message-contact-selector .filter-ctn button{
 	display:block;
-	-webkit-box-flex:1
 }
 .w-message-contact-selector .suggestion-ctn input[type="text"]{
 	height:24px;
@@ -891,16 +907,13 @@
 	width:100%
 }
 .w-message-contact-selector-body .selector-ctrl{
-	background-image:-webkit-gradient(linear,left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
+	background-image:-moz-gradient(linear,left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
 	border:1px #cacaca solid;
 	border-bottom:none;
 	margin-top:10px;
 	padding-right:10px;
-	-webkit-box-align:center
 }
-.w-message-contact-selector-body .selector-ctrl .selector-ctn{
-	-webkit-box-flex:1
-}
+
 .w-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary){
 	background:transparent;
 	border-color:transparent;
@@ -951,7 +964,6 @@
 .w-message-contact-selector-list-item{
 	height:24px;
 	padding:3px;
-	-webkit-box-align:center
 }
 .w-message-contact-selector-list-item .avatar{
 	height:24px;
@@ -964,7 +976,6 @@
 }
 .w-message-contact-selector-list-item .title{
 	margin:0 5px 0 10px;
-	-webkit-box-flex:1;
         float: left
 }
 .w-message-contact-selector-list-item .phone-number{
@@ -975,7 +986,6 @@
 .w-message-contact-selector-list-item .state{
 	margin-right:10px;
 	width:45px;
-	-webkit-box-align:center;
         float: right
 }
 .w-message-contact-selector-list-item .state .tip,.w-message-contact-selector-list-item .state .check{
@@ -1034,66 +1044,6 @@
 .w-ui-loading-small.white{
 	background-color:transparent
 }
-.w-ui-loading-small.white .anima .rotor{
-	background-color:#fff;
-	-webkit-animation-name:f_fadeG_black
-}
-.w-ui-loading-small .anima{
-	height:24px;
-	width:24px;
-	-webkit-transform:scale(0.6)
-}
-.w-ui-loading-small .anima .rotor{
-	background-color:#fff;
-	border-radius:4px;
-	position:absolute;
-	width:4.5px;
-	height:4.5px;
-	-webkit-animation-direction:linear;
-	-webkit-animation-duration:.88s;
-	-webkit-animation-iteration-count:infinite;
-	-webkit-animation-name:f_fadeG
-}
-.w-ui-loading-small .anima .rotor1{
-	left:0;
-	top:10px;
-	-webkit-animation-delay:.33s
-}
-.w-ui-loading-small .anima .rotor2{
-	left:3px;
-	top:3px;
-	-webkit-animation-delay:.44s
-}
-.w-ui-loading-small .anima .rotor3{
-	left:10px;
-	top:0;
-	-webkit-animation-delay:.55s
-}
-.w-ui-loading-small .anima .rotor4{
-	right:3px;
-	top:3px;
-	-webkit-animation-delay:.66s
-}
-.w-ui-loading-small .anima .rotor5{
-	right:0;
-	top:10px;
-	-webkit-animation-delay:.77s
-}
-.w-ui-loading-small .anima .rotor6{
-	bottom:3px;
-	right:3px;
-	-webkit-animation-delay:.88s
-}
-.w-ui-loading-small .anima .rotor7{
-	bottom:0;
-	left:10px;
-	-webkit-animation-delay:.99s
-}
-.w-ui-loading-small .anima .rotor8{
-	bottom:3px;
-	left:3px;
-	-webkit-animation-delay:1.1s
-}
 
 .w-ui-smartlist-body-ctn.odd>li:nth-child(odd):not(.highlight):not(:hover){
 	background-color:#f5f5f5
@@ -1128,7 +1078,6 @@
 }
 .w-ui-smartlist-body-ctn .item-checker-wrap{
 	display:block;
-	-webkit-box-align:center
 }
 
 #w-ui-smartlist-container {
@@ -1139,7 +1088,7 @@
 
 #threads-list-container
 {
-    max-height: 40rem;
+    max-height: 46rem;
     overflow: auto;
     padding-left: 1rem;
 }
