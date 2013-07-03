@@ -42,6 +42,8 @@ var DriverManager = (function() {
   }
 
   function onDeviceChanged(msg) {
+    window.clearTimout(failToInstallTimeout);
+
     fireEvent(DriverManager.EVENT_DEVICE_CHANGED, {
       eventType: msg.data.eventType,
       deviceInstanceId: msg.data.deviceInstanceId
@@ -50,19 +52,30 @@ var DriverManager = (function() {
     checkDriverStatus();
   }
 
+  var failToInstallTimeout = null;
+
   function onDriverInstalled(msg) {
     // `driverInstalled` means the driver installer running completes, however it
     // does not mean the driver for the plugged device is installed, so it's not
     // a reliable event for ensuring driver-failed-to-be-installed, we need to try
     // to connect to the device and double check `adbConnected`.
     //
-    // We don't need to fire device-ready-event here, we will receive an device-change
-    // event if driver is installed successfully.
+    // We don't need to fire device-ready-event here, we will might receive a
+    // device-change event if driver is installed successfully.
     if (msg.data.errorName && !navigator.mozFFOSAssistant.adbConnected) {
       fireEvent(DriverManager.EVENT_DRIVER_FAIL_INSTALLED, {
         errorMessage: msg.data.errorMessage,
         errorCode: msg.data.errorCode
       });
+    } else {
+      // Sometimes we can't receive a device-change event, we need to set a timeout
+      // to fire fail-to-install event
+      failToInstallTimeout = window.setTimeout(function() {
+        fireEvent(DriverManager.EVENT_DRIVER_FAIL_INSTALLED, {
+          errorMessage: 'no device-storage changed event is received.',
+          errorCode: 0
+        }); 
+      }, 5000);      
     }
   }
 
