@@ -716,7 +716,7 @@ SendSMSToSingle.prototype = {
 	+ '<div class="header" id="select-contact-tel-header">'
 	+ '<label data-l10n-id="w-send-address" class="cf" for="address"></label>'
 	+ '<button class="w-ui-button w-ui-menubutton" id="select-contact-tel-button">'
-	+ '<div class="label wc" id="selected-contact-tel">111111</div>'
+	+ '<div class="label wc" id="selected-contact-tel"></div>'
 	+ '<div class="arrow-ctn hbox">'
 	+ '<div class="arrow"></div>'
 	+ '</div>'
@@ -776,19 +776,35 @@ SendSMSToSingle.prototype = {
       var div = document.createElement('div');
       var html = '';
       html += '<menu class="w-ui-menu">';
-      html += '<li>';
-      html += '<label class="wc">';
-      html += '<input type="radio" name="383" value="15116943768">';
-      html += '<span>15116943768</span>';
-      html += '</label>';
-      html += '</li>';
-      html += '<li>';
-      html += '<label class="wc">';
-      html += '<input type="radio" name="383" value="13801366783">';
-      html += '<span>13801366783</span>';
-      html += '</label>';
-      html += '</li>';
+      if (self.options.number && self.options.number.length > 0) {
+        for(var i=0;i<self.options.number.length;i++){
+          html += '<li>';
+          html += '<label class="wc">';
+          html += '<input type="radio" name="" value="';
+          html += self.options.number[i].value;
+          html += '">';
+          html += '<span style="float: left; margin-top: 1px;">'
+          html += self.options.number[i].value;
+          html += '</span>';
+          html += '</label>';
+          html += '</li>';
+        }
+      }
       html += '</menu>';
+      div.onclick = function onclick_sms_list(event) {
+        var target = event.target;
+        if(target.textContent!=''){
+          var titleElem = $expr('.label', self._modalElement)[0];
+          if(titleElem != null){
+            titleElem.innerHTML = target.textContent;
+          }
+          titleElem = $id('select-contact-tel-header');
+          var child = titleElem.childNodes[2];
+          if(child){
+            child.parentNode.removeChild(child);
+          }
+        }
+      };
       div.innerHTML = html;
       titleElem.appendChild(div);
     });

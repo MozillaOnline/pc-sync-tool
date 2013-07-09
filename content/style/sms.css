@@ -400,7 +400,7 @@
 	line-height:25px;
 	margin-right:5px;
 	text-align:right;
-	width:80px;
+	min-width:80px;
         float: left
 }
 .w-message-sender-window .header .address{
@@ -601,7 +601,7 @@
 	padding: 0 10px 20px;
 }
 .w-message-item-ctn li .content-wrap{
-	background-image:-moz-gradient(linear,left top,left bottom,color-stop(0,#fbfbfb),color-stop(1,#f8f8f8));
+	background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,#fbfbfb),color-stop(1,#f8f8f8));
 	border:#cacaca 1px solid;
 	border-radius:5px;
 	box-shadow:0 1px 0 white inset,0 0 5px rgba(0,0,0,0.1);
@@ -734,7 +734,7 @@
 	direction:rtl
 }
 .w-message-item-ctn li.from-me .content-wrap{
-	background-image:-moz-gradient(linear,left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
+	background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
 	border-color:#84c93f;
 	direction:ltr;
 	text-shadow:0 1px 0 rgba(255,255,255,0.6);
@@ -767,7 +767,7 @@
 	direction:rtl
 }
 .w-message-item-ctn li.from-me-error .content-wrap{
-	background-image:-moz-gradient(linear,left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
+	background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
 	border-color:#E86000;
 	direction:ltr;
 	text-shadow:0 1px 0 rgba(255,255,255,0.6);
@@ -907,7 +907,7 @@
 	width:100%
 }
 .w-message-contact-selector-body .selector-ctrl{
-	background-image:-moz-gradient(linear,left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
+	background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
 	border:1px #cacaca solid;
 	border-bottom:none;
 	margin-top:10px;
@@ -1147,13 +1147,6 @@
 .w-ui-button.w-ui-menubutton.toggle .label+.arrow-ctn{
 	margin-left:0px
 }
-.wc{
-	display:block;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	white-space:nowrap;
-	word-wrap:break-word
-}
 
 .w-ui-menu{
 	background:#fff;
@@ -1164,19 +1157,16 @@
 	padding:5px 0;
 	position:absolute;
 	-moz-transition:opacity .15s linear;
-        width: 15rem;
+        margin-left: 85px;
 }
 .w-ui-menu li{
-	height:22px;
+	height:30px;
 	line-height:22px;
 	padding:0 15px 0 5px
 }
 .w-ui-menu li:hover:not([disabled]){
-	background:-webkit-gradient(linear,left top,left bottom,from(#5bb70d),to(#4eaa00));
+	background:-moz-linear-gradient(center top , #5bb70d, #4eaa00) repeat scroll 0 0 transparent;
 	color:#fff
-}
-.w-ui-menu li:hover:not([disabled]) input[type="checkbox"]:enabled:checked,.w-ui-menu li:hover:not([disabled]) input[type="checkbox"]:enabled:checked:hover,.w-ui-menu li:hover:not([disabled]) input[type="radio"]:enabled:checked,.w-ui-menu li:hover:not([disabled]) input[type="radio"]:enabled:checked:hover{
-	background-position:0 -9475px
 }
 .w-ui-menu li[disabled]{
 	opacity:0.4
@@ -1184,54 +1174,23 @@
 .w-ui-menu li.disabled:hover{
 	background:#fff
 }
-.w-ui-menu li label,.w-ui-menu li div.normal,.w-ui-menu li div.group,.w-ui-menu li div.link{
-	display:block;
-	-webkit-box-flex:1
-}
+
 .w-ui-menu li label{
-	max-width:500px;
-	min-width:80px
+  display:block;
+  max-width:150px;
+  min-width:80px;
 }
-.w-ui-menu li div.normal,.w-ui-menu li div.link{
-	padding-left:21px
-}
-.w-ui-menu li div.link{
-	color:#000;
-	cursor:default
-}
-.w-ui-menu li div.link:hover{
-	color:#fff;
-	text-decoration:none
-}
-.w-ui-menu li div.group{
-	padding-left:3px
-}
-.w-ui-menu li.hr{
-	background-color:#d6d6d6;
-	border:none;
-	height:1px;
-	margin:5px 0;
-	padding:0
-}
-.w-ui-menu li.hr:hover{
-	background:none;
-	background-color:#d6d6d6
-}
-.w-ui-menu li.hr+.hr{
-	display:none
-}
-.w-ui-menu input[type="checkbox"],.w-ui-menu input[type="radio"]{
+.w-ui-menu input[type="radio"]{
 	background:none;
 	background-color:transparent;
 	border:none;
 	height:16px;
-	margin:-2px 5px 0 0;
-	width:16px
+	margin:7px 5px 0 0;
+	width:16px;
+        float: left;
+        display: none;
 }
-.w-ui-menu input[type="checkbox"]:enabled:hover,.w-ui-menu input[type="radio"]:enabled:hover{
+.w-ui-menu input[type="radio"]:enabled:hover{
 	background:none;
 	border:none
-}
-.w-ui-menu input[type="checkbox"]:enabled:checked,.w-ui-menu input[type="checkbox"]:enabled:checked:hover,.w-ui-menu input[type="radio"]:enabled:checked,.w-ui-menu input[type="radio"]:enabled:checked:hover{
-	background-position:0 -9161px
 }
