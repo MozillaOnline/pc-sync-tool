@@ -343,7 +343,7 @@ var ContactForm = (function() {
          contact.photo = [$id('avatar-add-edit').src];
     }
 
-    if (contact.givenName.length == 0 || contact.familyName.length == 0) {
+    if (contact.givenName.length == 0) {
       alert(navigator.mozL10n.get('EmptyForm'));
       return;
     }
@@ -432,6 +432,7 @@ var ContactForm = (function() {
     window.removeEventListener('load', onload);
     $id('save-contact').addEventListener('click', function onclick_saveContact(evt) {
       saveContact();
+      ViewManager.showViews('show-contact-view');
     });
     $id('cancel-edit-contact').addEventListener('click', function onclick_cancel(evt) {
       ViewManager.showViews('show-contact-view');

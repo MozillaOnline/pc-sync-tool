@@ -679,6 +679,195 @@ SendSMSDialog.prototype = {
   }
 };
 
+function SendSMSToSingle(options) {
+  this.initailize(options);
+}
+
+SendSMSToSingle.closeAll = function() {
+  var evt = document.createEvent('Event');
+  evt.initEvent('SendSMSToSingle:show', true, true);
+  document.dispatchEvent(evt);
+};
+
+SendSMSToSingle.prototype = {
+  initailize: function(options) {
+    this.options = extend({
+      onclose: emptyFunction
+    }, options);
+    this._modalElement = null;
+    this._mask = null;
+    this._build();
+  },
+
+  _build: function() {
+    this._mask = document.createElement('div');
+    this._mask.className = 'modal-mask';
+    document.body.appendChild(this._mask);
+    // TODO using template
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    this._modalElement.innerHTML = '<div class="w-ui-window draggable">'
+	+ '<header class="w-ui-window-header drag-handel">'
+	+ '<div class="w-ui-window-header-title" data-l10n-id="w-send-sms"></div>'
+	+ '<div class="w-ui-window-header-x" style=""></div>'
+	+ '</header>'
+	+ '<div class="w-ui-window-body">'
+	+ '<div class="w-message-sender-window">'
+	+ '<div class="header" id="select-contact-tel-header">'
+	+ '<label data-l10n-id="w-send-address" class="cf" for="address"></label>'
+	+ '<button class="w-ui-button w-ui-menubutton" id="select-contact-tel-button">'
+	+ '<div class="label wc" id="selected-contact-tel">111111</div>'
+	+ '<div class="arrow-ctn hbox">'
+	+ '<div class="arrow"></div>'
+	+ '</div>'
+	+ '</button>'
+	+ '</div>'
+	+ '<div class="body">'
+	+ '<label data-l10n-id="w-send-content" class="cf" for="content"></label>'
+	+ '<textarea id="content" class="input-content" autofocus="true"></textarea>'
+	+ '</div>'
+	+ '<div class="monitor text-secondary">'
+	+ '<span id="text-count" class="content-count"></span>'
+	+ '<span id="sender-count" class="contacts-count"></span>'
+	+ '</div>'
+	+ '</div>'
+	+ '</div>'
+	+ '<footer class="w-ui-window-footer" style="">'
+	+ '<div class="w-ui-window-footer-monitor"></div>'
+	+ '<div class="w-ui-window-footer-button-ctn">'
+	+ '<button data-l10n-id="w-send-button" class="button-send primary"></button>'
+	+ '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
+	+ '</div>'
+	+ '</footer>'
+        + '</div>';
+
+    var titleElem = $expr('.label', this._modalElement)[0];
+    if (this.options.number && this.options.number.length > 0) {
+      titleElem.innerHTML = this.options.number[0].value;
+    }
+    document.body.appendChild(this._modalElement);
+    this._makeDialogCancelable();
+    var header = _('only-text-sms-count', {
+      n: 0
+    });
+    $id('text-count').innerHTML = header;
+   
+    // Translate l10n value
+    navigator.mozL10n.translate(this._modalElement);
+
+    // Only one modal dialog is shown at a time.
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      // Show a popup dialog at a time.
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+
+      self.close();
+    }
+    document.addEventListener('SendSMSToSingle:show', this._onModalDialogShown);
+
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('SendSMSToSingle:show');
+    window.addEventListener('resize', this._onWindowResize);
+    
+    $id('select-contact-tel-button').addEventListener('click', function onclick_selectContactTel(event) {
+      var titleElem = $id('select-contact-tel-header');
+      var div = document.createElement('div');
+      var html = '';
+      html += '<menu class="w-ui-menu">';
+      html += '<li>';
+      html += '<label class="wc">';
+      html += '<input type="radio" name="383" value="15116943768">';
+      html += '<span>15116943768</span>';
+      html += '</label>';
+      html += '</li>';
+      html += '<li>';
+      html += '<label class="wc">';
+      html += '<input type="radio" name="383" value="13801366783">';
+      html += '<span>13801366783</span>';
+      html += '</label>';
+      html += '</li>';
+      html += '</menu>';
+      div.innerHTML = html;
+      titleElem.appendChild(div);
+    });
+  },
+
+  _makeDialogCancelable: function() {
+   var closeBtn = $expr('.w-ui-window-header-x', this._modalElement)[0];
+   closeBtn.hidden = false;
+   closeBtn.addEventListener('click', this.close.bind(this));
+   var okBtn = $expr('.button-send', this._modalElement)[0];
+   okBtn.hidden = false;
+   okBtn.addEventListener('click', this.send.bind(this));
+   var self = this;
+   okBtn.addEventListener('keydown', function(event) {
+     if (event.keyCode == 27) {
+       self.close();
+     }
+   });
+   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+   cancelBtn.hidden = false;
+   cancelBtn.addEventListener('click', this.close.bind(this));
+
+   $id('content').addEventListener('keyup', function onclick_addNewSms(event) {
+      var header = _('only-text-sms-count', {
+        n: this.value.length
+      });
+      $id('text-count').innerHTML = header;
+    });
+   okBtn.focus();
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  },
+
+  close: function() {
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+    document.removeEventListener('SendSMSToSingle:show', this._onModalDialogShown);
+    window.removeEventListener('resize', this._onWindowResize)
+    this.options.onclose();
+  },
+  send: function() {
+    var number = $id('address').value.split(';');
+    var message = $id('content').value;
+    var sender = [];
+    var self=this;
+    number.forEach(function(item) {
+      var start = item.indexOf("(");
+      var end = item.indexOf(")");
+      if(start >= 0 &&  end > 0){
+        sender.push(item.slice(start+1,end));
+      }else if(item != ""){
+        sender.push(item);
+      }
+    });
+    CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message}),
+      function onSuccess_sendSms(event) {
+        if(!event.result) {
+          self._mask.parentNode.removeChild(self._mask);
+          self._modalElement.parentNode.removeChild(self._modalElement);
+          self._mask = null;
+          self._modalElement = null;
+          document.removeEventListener('SendSMSToSingle:show', self._onModalDialogShown);
+          window.removeEventListener('resize', self._onWindowResize)
+          self.options.onclose();
+        }
+      }, function onError_sendSms(e) {
+        alert(e);
+      });
+  }
+};
+
 function SelectContactsDialog(options) {
   this.initailize(options);
 }

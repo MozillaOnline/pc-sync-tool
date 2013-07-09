@@ -78,16 +78,14 @@ var libadb = (function() {
             let result = runCmd(commands.join(' ')).readString().trim();
             return result;
           }
-          break;
+          return null;
         }
         case 'listAdbService':
         {
           return this.listAdbService();
-          break;
         }
         default:
           return 'not supported';
-          break;
       }
     }
   };

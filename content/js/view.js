@@ -32,47 +32,79 @@ var ViewManager = (function () {
     if (!viewElem) {
       return;
     }
-
-    if (viewId == "summary-view" || viewId == "connect-view") {
-      $id('views').classList.add('hidden-views');
-    } else {
-      $id('views').classList.remove('hidden-views');
+    var viewOldId = null;
+    var contentView = $expr('#container .item');
+    for(var i=0;i<contentView.length;i++){
+      var oldId = contentView[i].dataset.linkedView;
+      if (!oldId) {
+        continue;
+      }
+      var linkedView = $id(oldId);
+      if (!linkedView) {
+        continue;
+      }
+      if(linkedView.dataset.shown == "true"){
+        viewOldId = oldId;
+        break;
+      }else{
+        continue;
+      }
     }
-
-    var tabId = viewElem.dataset.linkedTab;
-    if (!tabId) {
-      return;
+    var isChangeView = false;
+    if(viewOldId != null){
+      if(viewOldId == viewId){
+        return;
+      }
+      if(viewOldId == "contact-view"){
+        var sub = $id('contact-edit-view');
+        if(sub.hidden == false){
+          if (window.confirm(_('save-contacts-confirm'))) {
+            //$id(viewOldId).dataset.shown = false;
+            //isChangeView = true;
+          }
+        }else{
+          $id(viewOldId).dataset.shown = false;
+          isChangeView = true;
+        }
+      }else{
+        $id(viewOldId).dataset.shown = false;
+        isChangeView = true;
+      }
+    }else{
+      isChangeView = true;
     }
-
-    var tabElem = $id(tabId);
-
-    // Hide other radio list
-    if (tabElem.parentNode.classList.contains('radio-list')) {
-      $expr('#container .radio-list').forEach(function hideList(list) {
-        list.hidden = true;
-      });
-    }
-
-    // unselect selected item
-    $expr('#container .selected').forEach(function unselect(elem) {
-      elem.classList.remove('selected');
-      elem.classList.remove(elem.id + '-selected');
-      elem.classList.add(elem.id);
-    });
-
-    tabElem.parentNode.hidden = false;
-    tabElem.classList.add('selected');
-    tabElem.classList.add(tabId + '-selected');
-
-    $expr('#container .content .view').forEach(function hideView(view) {
-      view.hidden = true;
-    });
-    viewElem.hidden = false;
-
-    _showViews(viewId + '-sub');
-
-    if (viewElem.dataset.shown != "true") {
+    if (isChangeView == true) {
       viewElem.dataset.shown = true;
+      if (viewId == "summary-view" || viewId == "connect-view") {
+        $id('views').classList.add('hidden-views');
+      } else {
+        $id('views').classList.remove('hidden-views');
+      }
+      var tabId = viewElem.dataset.linkedTab;
+      if (!tabId) {
+        return;
+      }
+      var tabElem = $id(tabId);
+      // Hide other radio list
+      if (tabElem.parentNode.classList.contains('radio-list')) {
+        $expr('#container .radio-list').forEach(function hideList(list) {
+          list.hidden = true;
+        });
+      }
+      // unselect selected item
+      $expr('#container .selected').forEach(function unselect(elem) {
+        elem.classList.remove('selected');
+        elem.classList.remove(elem.id + '-selected');
+        elem.classList.add(elem.id);
+      });
+      tabElem.parentNode.hidden = false;
+      tabElem.classList.add('selected');
+      tabElem.classList.add(tabId + '-selected');
+      $expr('#container .content .view').forEach(function hideView(view) {
+        view.hidden = true;
+      });
+      viewElem.hidden = false;
+      _showViews(viewId + '-sub');
       callEvent('firstshow', viewId);
     }
   }

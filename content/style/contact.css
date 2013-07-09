@@ -10,7 +10,7 @@
 
 .contact-ops-box {
   overflow: hidden;
-  height: 3rem;
+  height: 6rem;
   line-height: 3rem;
 }
 
@@ -117,7 +117,7 @@
 
 #contact-list-container {
   padding-left: 1rem;
-  max-height: 60rem;
+  max-height: 46rem;
   overflow: auto;
 }
 
@@ -352,9 +352,6 @@
 
 /********* contact form ********/
 #contact-form {
-  max-height: 60rem;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 #contact-form .avatar-add-edit {
@@ -384,6 +381,9 @@
 
 #contact-form ul {
   padding-bottom: 1rem;
+  max-height: 27rem;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 #contact-form .action-delete {
@@ -479,6 +479,8 @@ button.add-new-button {
 
 .saveAndCancel {
   height: 3rem;
+  padding-left: 25px;
+  padding-top: 10px;
 }
 
 #views h1.title {
@@ -606,4 +608,19 @@ button.add-new-button {
   color: #424242;
   width: 12rem;
   overflow: hidden;
+}
+
+.contact-ops-box .search-input {
+    display: block;
+    line-height: 25px;
+    width: 400px;
+    padding-left: 20px;
+    padding-top: 25px;
+}
+
+.contact-ops-box .search-input .input-content {
+    display: block;
+    line-height: 25px;
+    margin-right: 10px;
+    width: 350px;
 }

@@ -734,7 +734,7 @@ var SmsList = (function() {
         bodyText: null
       });
     });
-    $id('sender-ctn-input').addEventListener('keydown', function onclick_addNewSms(event) {
+    $id('sender-ctn-input').addEventListener('keyup', function onclick_addNewSms(event) {
       var This = this;
       var height = This.scrollHeight + 2;
       var subListHeight = 380 + 30 - height;
