@@ -27,7 +27,7 @@ var ViewManager = (function () {
     });
   }
 
-  function showContent(viewId) {
+  function showContent(viewId, showData) {
     var viewElem = $id(viewId);
     if (!viewElem) {
       return;
@@ -105,7 +105,14 @@ var ViewManager = (function () {
       });
       viewElem.hidden = false;
       _showViews(viewId + '-sub');
-      callEvent('firstshow', viewId);
+      var event;
+      if (viewElem.dataset.firstshown != "true") {
+        viewElem.dataset.firstshown = true;
+        event = 'firstshow';
+      }else{
+        event = 'othershow';
+      }
+      callEvent(event, viewId,showData);
     }
   }
 
@@ -162,7 +169,7 @@ var ViewManager = (function () {
     callbacks[viewId][name].push(callback);
   }
 
-  function callEvent(name, viewId) {
+  function callEvent(name, viewId,viewData) {
     console.log('Call event ' + name + ' on ' + viewId);
 
     if (!callbacks[viewId] || !callbacks[viewId][name]) {
@@ -170,7 +177,7 @@ var ViewManager = (function () {
     }
 
     callbacks[viewId][name].forEach(function(callback) {
-      callback();
+      callback(viewData);
     });
   }
 

@@ -3,6 +3,8 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var ContactList = (function() {
+  var groupedList = null;
+  
   function getListContainer() {
     return $id('contact-list-container');
   }
@@ -74,7 +76,41 @@ var ContactList = (function() {
         contactItemClicked(elem);
       }
     };
-
+    var searchContent = $id('search-contact-input');
+    if((searchContent)&&(searchContent.value.length>0)){
+      var searchInfo = [];
+      var searchable = ['givenName', 'familyName', 'org'];
+      searchable.forEach(function(field) {
+        if (contact[field] && contact[field][0]) {
+          var value = String(contact[field][0]).trim();
+          if (value.length > 0) {
+            searchInfo.push(value);
+          }
+        }
+      });
+      if (contact.tel && contact.tel.length) {
+        for (var i = contact.tel.length - 1; i >= 0; i--) {
+          var current = contact.tel[i];
+          searchInfo.push(current.value);
+        }
+      }
+      if (contact.email && contact.email.length) {
+        for (var i = contact.email.length - 1; i >= 0; i--) {
+          var current = contact.email[i];
+          searchInfo.push(current.value);
+        }
+      }
+      var escapedValue = Text_escapeHTML(searchInfo.join(' '), true);
+      //定义要搜索的字符
+      var search=searchContent.value;
+      if((escapedValue.length>0)&&(escapedValue.indexOf(search) >= 0)){
+        elem.style.display = 'block';
+      }else{
+        elem.style.display = 'none';
+      }
+    }else{
+      elem.style.display = 'block';
+    }
     return elem;
   }
 
@@ -151,6 +187,21 @@ var ContactList = (function() {
     } else {
       $id('selectAll-contacts').dataset.disabled = false;
     }
+    var searchContent = $id('search-contact-input');
+    if((searchContent)&&(searchContent.value.length>0)){
+      var allContactData = groupedList.getGroupedData();
+      allContactData.forEach(function(group) {
+        var groupIndexItem = $id('id-grouped-data-' + group.index);
+        if(groupIndexItem){
+          var child = groupIndexItem.childNodes[0];
+          if(searchContent.value.length>0){
+            child.style.display = 'none';
+          }else{
+            child.style.display = 'block';
+          }
+        }
+      });
+    }
   }
 
   function updateAvatar() {
@@ -179,20 +230,40 @@ var ContactList = (function() {
     });
   }
 
-  var groupedList = null;
-  var allContactData = null;
-  function initList(contacts) {
+  function initList(contacts,viewData) {
     var container = getListContainer();
     container.innerHTML = '';
+    var searchContent = $id('search-contact-input');
+    if((searchContent)&&(searchContent.value.length>0)){
+      searchContent.value = '';
+    }
     /*
     if (contacts.length == 0 ) {
       showEmptyContacts(container);
       ViewManager.showViews('contact-quick-add-view');
       return;
     } */
-
-    ViewManager.showViews('contact-quick-add-view');
-
+    var quickName = $id('fullName');
+    var quickNumber = $id('mobile');
+    if(viewData){
+      if(viewData.type == 'add'){
+        ViewManager.showViews('contact-quick-add-view');
+        if(quickName){
+          quickName.value = '';
+        }
+        if(quickNumber){
+          quickNumber.value = viewData.number;
+        }
+      }
+    }else{
+      ViewManager.showViews('contact-quick-add-view');
+      if(quickName){
+        quickName.value = '';
+      }
+      if(quickNumber){
+        quickNumber.value = '';
+      }
+    }
     groupedList = new GroupedList({
       dataList: contacts,
       dataIndexer: function getContactIndex(contact) {
@@ -217,7 +288,6 @@ var ContactList = (function() {
     groupedList.render();
     updateAvatar();
     checkIfContactListEmpty();
-    allContactData = contacts;
   }
 
   function showEmptyContacts() {
@@ -600,62 +670,55 @@ var ContactList = (function() {
   
     $id('search-contact-input').addEventListener('keyup', function onclick_searchContact(event) {
       var self = this;
-      if(self.value.length>0){
-        if(allContactData != null){
-          groupedList.getGroupedData().forEach(function(group) {
-            group.dataList.forEach( function (contact) {
-              groupedList.remove(contact);
-            });
-          });
-          allContactData.forEach(function(contact) {
-              var searchInfo = [];
-              var searchable = ['givenName', 'familyName', 'org'];
-              searchable.forEach(function(field) {
-                if (contact[field] && contact[field][0]) {
-                  var value = String(contact[field][0]).trim();
-                  if (value.length > 0) {
-                    searchInfo.push(value);
-                  }
-                }
-              });
-              if (contact.tel && contact.tel.length) {
-                for (var i = contact.tel.length - 1; i >= 0; i--) {
-                  var current = contact.tel[i];
-                  searchInfo.push(current.value);
-                }
-              }
-              if (contact.email && contact.email.length) {
-                for (var i = contact.email.length - 1; i >= 0; i--) {
-                  var current = contact.email[i];
-                  searchInfo.push(current.value);
-                }
-              }
-              var escapedValue = Text_escapeHTML(searchInfo.join(' '), true);
-              //定义要搜索的字符
-              var search=self.value;
-              if((escapedValue.length>0)&&(escapedValue.indexOf(search) >= 0)){
-                if (groupedList.count() == 0) {
-                  getListContainer().innerHTML = '';
-                }
-                groupedList.add(contact);
-              }
-          });
+      var allContactData = groupedList.getGroupedData();
+      allContactData.forEach(function(group) {
+        var groupIndexItem = $id('id-grouped-data-' + group.index);
+        if(groupIndexItem){
+          var child = groupIndexItem.childNodes[0];
+          if(self.value.length>0){
+            child.style.display = 'none';
+          }else{
+            child.style.display = 'block';
+          }
         }
-      }else{
-        if(allContactData != null){
-          groupedList.getGroupedData().forEach(function(group) {
-            group.dataList.forEach( function (contact) {
-              groupedList.remove(contact);
+        group.dataList.forEach( function (contact) {
+          var contactItem = $id('contact-' + contact.id);
+          if((contactItem)&&(self.value.length>0)){
+            var searchInfo = [];
+            var searchable = ['givenName', 'familyName', 'org'];
+            searchable.forEach(function(field) {
+              if (contact[field] && contact[field][0]) {
+                var value = String(contact[field][0]).trim();
+                if (value.length > 0) {
+                  searchInfo.push(value);
+                }
+              }
             });
-          });
-          allContactData.forEach(function(contact) {
-            if (groupedList.count() == 0) {
-              getListContainer().innerHTML = '';
+            if (contact.tel && contact.tel.length) {
+              for (var i = contact.tel.length - 1; i >= 0; i--) {
+                var current = contact.tel[i];
+                searchInfo.push(current.value);
+              }
             }
-            groupedList.add(contact);
-          });
-        }
-      }
+            if (contact.email && contact.email.length) {
+              for (var i = contact.email.length - 1; i >= 0; i--) {
+                var current = contact.email[i];
+                searchInfo.push(current.value);
+              }
+            }
+            var escapedValue = Text_escapeHTML(searchInfo.join(' '), true);
+            //定义要搜索的字符
+            var search=self.value;
+            if((escapedValue.length>0)&&(escapedValue.indexOf(search) >= 0)){
+              contactItem.style.display = 'block';
+            }else{
+              contactItem.style.display = 'none';
+            }
+          }else{
+            contactItem.style.display = 'block';
+          }
+        });
+      });
     });
 
     $id('remove-contacts').addEventListener('click', function onclick_removeContact(event) {

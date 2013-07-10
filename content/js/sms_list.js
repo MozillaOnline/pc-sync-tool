@@ -56,6 +56,7 @@ var SmsList = (function() {
         var threadItem = $id('id-threads-data-' + threadInfo.id);
         var name = threadItem.getElementsByTagName('div')[3];
         name.childNodes[0].nodeValue = contactData.name;
+        name.childNodes[0].type = 'contact';
         var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
         if(selectViewName != null){
           selectViewName.childNodes[0].nodeValue = contactData.name;
@@ -63,6 +64,14 @@ var SmsList = (function() {
         var messageViewName = $id('sms-thread-header-name-' + threadInfo.id);
         if(messageViewName != null){
           messageViewName.childNodes[0].nodeValue = contactData.name;
+          var titleElem = $id('add-to-contact-' + threadInfo.id);
+          if(titleElem){
+            titleElem.style.display = 'none';
+            /*var child = titleElem.childNodes[2];
+            if(child){
+              child.parentNode.removeChild(child);
+            }*/
+          }
         }
         CMD.Contacts.getContactProfilePic(contactData.id, function(result2) {
           if (result2.data != '') {
@@ -244,15 +253,34 @@ var SmsList = (function() {
       html += 'style/images/avatar.png';
     }
     html += '" id="sms-thread-header-img-';
-    html += SmsThreadsData[index].id
+    html += SmsThreadsData[index].id;
     html += '">';
-    html += '<span style="float: left; padding-top: 28px; padding-left: 10px;" id="';
+    html += '<span style="float: left; margin-top: 22px; margin-left: 10px;" id="';
     html += 'sms-thread-header-name-';
-    html += SmsThreadsData[index].id
+    html += SmsThreadsData[index].id;
     html += '">';
     html += threadname.childNodes[0].nodeValue;//SmsThreadsData[index].participants;
     html += '</span>';
+    html += '<div id="add-to-contact-';
+    html += SmsThreadsData[index].id;
+    html += '" class="button" data-l10n-id="add-to-contacts-from-sms" style="margin-left: 65px; height: 21px; margin-top: 50px; width: 106px;">添加到联系人</div>';
     header.innerHTML = html;
+    var addtoContactButton = $id('add-to-contact-'+SmsThreadsData[index].id);
+    if(addtoContactButton){
+      if(threadname.childNodes[0].type != 'contact'){
+        addtoContactButton.style.display = 'block';
+        addtoContactButton.addEventListener('click', function onclick_addto(event) {
+            var addContactData = {
+              type: 'add',
+              number: threadname.childNodes[0].nodeValue
+            }
+            ViewManager.showContent('contact-view',addContactData);
+        });
+      }else{
+        addtoContactButton.style.display = 'none';
+      }
+    }
+
     CMD.SMS.getThreadMessagesById(JSON.stringify(SmsThreadsData[index].id), function onresponse_getThreadMessagesById(messages) {
       var MessageListData = JSON.parse(messages.data);
       for (var i = 0; i < MessageListData.length; i++) {
