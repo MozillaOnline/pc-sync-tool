@@ -543,7 +543,7 @@ var ContactList = (function() {
       $id('show-avatar').src = item.dataset.avatar;
       $id('show-avatar').classList.remove('avatar-show-default');
     } else {
-      $id('show-avatar').src = '';
+      $id('show-avatar').removeAttribute('src');
       $id('show-avatar').classList.add('avatar-show-default');
     }
   }
