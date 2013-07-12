@@ -63,7 +63,7 @@ FFOSAssistant.prototype = {
                       'ADBService:statechange',
                       'DriverDownloader:asyncCommand:Return:OK', 'DriverDownloader:asyncCommand:Return:NO',
                       'DriverDownloader:message','ADBService:RunCmd:Return:OK'];
-    this.initHelper(aWindow, messages);
+    this.initDOMRequestHelper(aWindow, messages);
   },
 
   // Called from DOMRequestIpcHelper
