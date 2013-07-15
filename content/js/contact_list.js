@@ -185,6 +185,7 @@ var ContactList = (function() {
       $id('selectAll-contacts').dataset.disabled = true;
       showEmptyContacts();
     } else {
+      hideEmptyContacts();
       $id('selectAll-contacts').dataset.disabled = false;
     }
     var searchContent = $id('search-contact-input');
@@ -290,7 +291,13 @@ var ContactList = (function() {
     checkIfContactListEmpty();
   }
 
+  function hideEmptyContacts() {
+    $id('empty-contact-container').style.display = 'none';
+  }
+
   function showEmptyContacts() {
+    $id('empty-contact-container').style.display = 'block';
+    /*
     getListContainer().innerHTML = '';
     var div = document.createElement('div');
     div.classList.add('empty-contacts');
@@ -301,6 +308,7 @@ var ContactList = (function() {
     div.classList.add('empty-contacts-prompt');
     navigator.mozL10n.translate(div)
     getListContainer().appendChild(div);
+    */
   }
   /**
    * Clear all contacts
@@ -618,6 +626,7 @@ var ContactList = (function() {
       if (!contact.id) {
         return;
       }
+      $id('selectAll-contacts').dataset.checked = false;
       var existingContact = getContact(contact.id);
       groupedList.remove(existingContact);
       groupedList.add(contact);
