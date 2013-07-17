@@ -762,11 +762,136 @@ var ContactList = (function() {
     });
 
     $id('import-contacts').addEventListener('click', function onclick_importContacts(event) {
-      navigator.mozFFOSAssistant.readFromDisk(function (state, contactList){
+      //navigator.mozFFOSAssistant.readFromDisk({title:'*.vcf', filter:'*.vcf'},function (state, data){
+      navigator.mozFFOSAssistant.readFromDisk(function (state, data){
         if(state) {
-          var jsonContactList = JSON.parse(contactList);
-          jsonContactList.forEach(function(contact) {
-              CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
+          var items = vCard.initialize(data);
+          items.forEach(function(item) {
+            var contact = {"name":[],"honorificPrefix":[],"givenName":[],"additionalName":[],
+                           "familyName":[],"honorificSuffix":[],"nickname":[],"email":[],"photo":[],
+                           "category":[],"adr":[],"tel":[],"org":[""],"jobTitle":[],"bday":null,"note":[],
+                           "impp":null,"url":null,"anniversary":null,"sex":null,"genderIdentity":null};
+            if (item.prodid) {
+              //contacts exported from Apple
+              if (item.prodid.indexOf('Apple') != -1) {
+                if (item.fn != '') {
+                  var fullName = item.fn;
+                  var index = fullName.indexOf(' ');
+                  if (index > 0) {
+                    contact.familyName = fullName.substr(index + 1, fullName.length);
+                    contact.givenName = fullName.substr(0, index);
+                    contact.name = [fullName];
+                  }else {
+                    contact.name = [fullName];
+                  }
+                }
+                if (item.org != '') {
+                  contact.org = item.org.split(';');
+                }
+                if (item.email) {
+                  for (var e in item.email) {
+                    if (e.indexOf('type=home') != -1) {
+                      item.email[e].forEach(function(email) {
+                        contact.email.push({'type':['home'], 'value':email});
+                      });
+                    }
+                    if (e.indexOf('type=work') != -1) {
+                      item.email[e].forEach(function(email) {
+                        contact.email.push({'type':['work'], 'value':email});
+                      });
+                    }
+                    if (e.indexOf('type=home') == -1 && e.indexOf('type=work') == -1) {
+                      item.email[e].forEach(function(email) {
+                        contact.email.push({'type':['other'], 'value':email});
+                      });
+                    }
+                  }
+                }
+                if (item.tel) {
+                  for (var e in item.tel) {
+                    if (e.indexOf('type=voice') != -1) {
+                      if (e.indexOf('type=cell') != -1 && e.indexOf('type=iphone') == -1) {
+                        item.tel[e].forEach(function(t) {
+                          contact.tel.push({'type':['mobile'], 'value':t});
+                        });
+                      }
+                      if (e.indexOf('type=cell') != -1 && e.indexOf('type=iphone') != -1) {
+                        item.tel[e].forEach(function(t) {
+                          contact.tel.push({'type':['personal'], 'value':t});
+                        });
+                      }
+                      if (e.indexOf('type=home') != -1) {
+                        item.tel[e].forEach(function(t) {
+                          contact.tel.push({'type':['home'], 'value':t});
+                        });
+                      }
+                      if (e.indexOf('type=work') != -1) {
+                        item.tel[e].forEach(function(t) {
+                          contact.tel.push({'type':['work'], 'value':t});
+                        });
+                      }
+                      if (e.indexOf('type=other') != -1) {
+                        item.tel[e].forEach(function(t) {
+                          contact.tel.push({'type':['another'], 'value':t});
+                        });
+                      }
+                    }
+                    if (e.indexOf('type=main') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['personal'], 'value':t.replace(/-/g,'')});
+                      });
+                    }
+                    if (e.indexOf('type=fax') != -1) {
+                      if (e.indexOf('type=home') != -1) {
+                        item.tel[e].forEach(function(t) {
+                          contact.tel.push({'type':['faxHome'], 'value':t});
+                        });
+                      }
+                      if (e.indexOf('type=work') != -1) {
+                        item.tel[e].forEach(function(t) {
+                          contact.tel.push({'type':['faxOffice'], 'value':t});
+                        });
+                      }
+                      if (e.indexOf('type=other') != -1) {
+                        item.tel[e].forEach(function(t) {
+                          contact.tel.push({'type':['faxOther'], 'value':t});
+                        });
+                      }
+                    }
+                  }
+                  if (item.adr) {
+                    for (var e in item.adr) {
+                      if (e.indexOf('type=home') != -1) {
+                        item.adr[e].forEach(function(adr) {
+                          var length = adr.length;
+                          var address = adr[length-5].replace('\\n','');
+                          contact.adr.push({"type":["Home"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                        });
+                      }
+                      if (e.indexOf('type=work') != -1) {
+                        item.adr[e].forEach(function(adr) {
+                          var length = adr.length;
+                          var address = adr[length-5].replace('\\n','');
+                          contact.adr.push({"type":["Work"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                        });
+                      }
+                      if (e.indexOf('type=home') == -1 && e.indexOf('type=work') == -1) {
+                        var type = /type=(.+);?/;
+                        if (type.test(e)) {
+                          var results = e.match(type);
+                          item.adr[e].forEach(function(adr) {
+                            var length = adr.length;
+                            var address = adr[length-5].replace('\\n','');
+                            contact.adr.push({"type":[results[1]],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                          });
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
               var contactsAdded = [];
               if (!message.result) {
                 contactsAdded.push(JSON.parse(message.data));
