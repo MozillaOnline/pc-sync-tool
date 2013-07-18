@@ -22,6 +22,7 @@ vCard = {
       simple: /^(prodid|version|fn|title|org)\:(.+)$/i,
       complex: /^([^\:\;]+);([^\:]+)\:(.+)$/,
       key: /item\d{1,2}\./,
+      key2: /(\;charset=.+)\:/i,
       properties: /((type=)?(.+);?)+/
     }
 
@@ -41,6 +42,10 @@ vCard = {
         list.push(fields);
         bParsing = false;
         continue;
+      }
+      if (regexps['key2'].test(line)) {
+        results = line.match(regexps['key2']);
+        line = line.replace(results[1], '');
       }
       if(regexps['simple'].test(line))
       {

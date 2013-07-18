@@ -890,6 +890,87 @@ var ContactList = (function() {
                   }
                 }
               }
+            } else {
+              if (item.fn != '') {
+                var fullName = item.fn;
+                var index = fullName.indexOf(' ');
+                if (index > 0) {
+                  contact.familyName = fullName.substr(index + 1, fullName.length);
+                  contact.givenName = fullName.substr(0, index);
+                  contact.name = [fullName];
+                }else {
+                  contact.name = [fullName];
+                }
+              }
+              if (item.org != '') {
+                contact.org = item.org.split(';');
+              }
+              if (item.email) {
+                for (var e in item.email) {
+                  if (e.indexOf('type=cell') != -1) {
+                    item.email[e].forEach(function(email) {
+                      contact.email.push({'type':['personal'], 'value':email});
+                    });
+                  }
+                  if (e.indexOf('type=home') != -1) {
+                    item.email[e].forEach(function(email) {
+                      contact.email.push({'type':['home'], 'value':email});
+                    });
+                  }
+                  if (e.indexOf('type=work') != -1) {
+                    item.email[e].forEach(function(email) {
+                      contact.email.push({'type':['work'], 'value':email});
+                    });
+                  }
+                }
+              }
+              if (item.tel) {
+                for (var e in item.tel) {
+                  if (e.indexOf('type=cell') != -1) {
+                    item.tel[e].forEach(function(t) {
+                      contact.tel.push({'type':['mobile'], 'value':t});
+                    });
+                  }
+                  if (e.indexOf('type=home') != -1) {
+                    item.tel[e].forEach(function(t) {
+                      contact.tel.push({'type':['home'], 'value':t});
+                    });
+                  }
+                  if (e.indexOf('type=pref') != -1) {
+                    item.tel[e].forEach(function(t) {
+                      contact.tel.push({'type':['personal'], 'value':t});
+                    });
+                  }
+                  if (e.indexOf('type=voice') != -1) {
+                    item.tel[e].forEach(function(t) {
+                      contact.tel.push({'type':['personal'], 'value':t});
+                    });
+                  }
+                  if (e.indexOf('type=work') != -1) {
+                    item.tel[e].forEach(function(t) {
+                      contact.tel.push({'type':['work'], 'value':t});
+                    });
+                  }
+                }
+              }
+              if (item.adr) {
+                for (var e in item.adr) {
+                  if (e.indexOf('type=home') != -1) {
+                    item.adr[e].forEach(function(adr) {
+                      var length = adr.length;
+                      var address = adr[length-5].replace('\\n','');
+                      contact.adr.push({"type":["Home"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                    });
+                  }
+                  if (e.indexOf('type=work') != -1) {
+                    item.adr[e].forEach(function(adr) {
+                      var length = adr.length;
+                      var address = adr[length-5].replace('\\n','');
+                      contact.adr.push({"type":["Work"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                    });
+                  }
+                }
+              }
             }
             CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
               var contactsAdded = [];
