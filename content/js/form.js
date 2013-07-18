@@ -240,7 +240,7 @@ var ContactForm = (function() {
         l10nId: 'zipcode',
         type: 'number'
       }, {
-        name: 'region',
+        name: 'locality',
         l10nId: 'city',
         type: 'text'
       }, {
