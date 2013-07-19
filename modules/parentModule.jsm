@@ -5,17 +5,21 @@
 'use strict';
 
 let DEBUG = 0;
-if (DEBUG)
-  debug = function (s) { dump("-*- ParentModule: " + s + "\n"); };
+if (DEBUG) debug = function(s) {
+  dump("-*- ParentModule: " + s + "\n");
+};
 else
-  debug = function (s) { };
+debug = function(s) {};
 
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu,
+  results: Cr
+} = Components;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-XPCOMUtils.defineLazyServiceGetter(this, "ppmm",
-                                   "@mozilla.org/parentprocessmessagemanager;1",
-                                   "nsIMessageListenerManager");
+XPCOMUtils.defineLazyServiceGetter(this, "ppmm", "@mozilla.org/parentprocessmessagemanager;1", "nsIMessageListenerManager");
 XPCOMUtils.defineLazyModuleGetter(this, "utils", "resource://ffosassistant/utils.jsm");
 
 var EXPORTED_SYMBOLS = ['ParentModule'];
@@ -58,4 +62,3 @@ ParentModule.prototype = {
     });
   }
 };
-

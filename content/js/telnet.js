@@ -18,6 +18,7 @@
  *   onclose:
  *     Callback function for connection closing.
  */
+
 function TelnetClient(options) {
   this.initialize(options);
 }
@@ -70,7 +71,7 @@ TelnetClient.prototype = {
     var recvData = this._filterNotification(event.data);
 
     var data = null;
-    
+
     try {
       data = JSON.parse(recvData);
     } catch (e) {
@@ -87,7 +88,7 @@ TelnetClient.prototype = {
         this.options.onmessage(data);
       }
     } catch (e) {
-      console.log('Error occurs when invoking callback: ' + e); 
+      console.log('Error occurs when invoking callback: ' + e);
     } finally {
       this._callback = null;
       this._sendQueuedCommand();
@@ -130,8 +131,9 @@ TelnetClient.prototype = {
       return this;
     }
 
-    this._socket = navigator.mozTCPSocket.open(this.options.host,
-      this.options.port, { binaryType: 'string' });
+    this._socket = navigator.mozTCPSocket.open(this.options.host, this.options.port, {
+      binaryType: 'string'
+    });
 
     this._socket.onopen = this._onopen.bind(this);
     this._socket.onerror = function(event) {
@@ -186,4 +188,3 @@ TelnetClient.prototype = {
     this._socket.send(command);
   }
 };
-

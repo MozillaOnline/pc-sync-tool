@@ -43,9 +43,7 @@ ContactField.prototype = {
     // FIXME escape
     this.elem = document.createElement('li');
     this.elem.id = this._getElemId();
-    this.elem.innerHTML = '<button class="add-new-button" data-l10n-id="' + 
-                          this.options.addButtonLabel + '">' +
-                          _(this.options.addButtonLabel) + '</button>';
+    this.elem.innerHTML = '<button class="add-new-button" data-l10n-id="' + this.options.addButtonLabel + '">' + _(this.options.addButtonLabel) + '</button>';
 
     // Create input fields and fill it with init values.
     var self = this;
@@ -81,9 +79,10 @@ ContactField.prototype = {
     var self = this;
 
     // Fetch attribute, and return empty str if it's undefined.
+
+
     function _f(obj, key) {
-      if (!obj)
-        return '';
+      if (!obj) return '';
       return obj[key] ? obj[key] : '';
     }
 
@@ -96,10 +95,8 @@ ContactField.prototype = {
       html += '      <legend class="action">';
       html += '        <select name="type">';
       this.options.typeList.forEach(function(type) {
-        var selected = (initValue && initValue.type &&
-                        type.toLowerCase() === initValue.type[0].toLowerCase()) ? true : false;
-        html += '        <option value="' + type +
-                '" data-l10n-id="' + type + '"' + (selected ? ' selected' : '') + '>';
+        var selected = (initValue && initValue.type && type.toLowerCase() === initValue.type[0].toLowerCase()) ? true : false;
+        html += '        <option value="' + type + '" data-l10n-id="' + type + '"' + (selected ? ' selected' : '') + '>';
         html += _(type);
         html += '        </option>';
       });
@@ -111,9 +108,9 @@ ContactField.prototype = {
     this.options.fields.forEach(function(f) {
       html += '      <p>';
       if (self.options.fieldType == 'string') {
-        html += '      <input data-l10n-id="' + f.l10nId + '" type="' + f.type +'" value="' + initValue + '"></input>';
+        html += '      <input data-l10n-id="' + f.l10nId + '" type="' + f.type + '" value="' + initValue + '"></input>';
       } else {
-        html += '      <input data-name="' + f.name + '" type="' + f.type +'" data-l10n-id="' + f.l10nId + '" value="' + _f(initValue, f.name) + '"></input>';
+        html += '      <input data-name="' + f.name + '" type="' + f.type + '" data-l10n-id="' + f.l10nId + '" value="' + _f(initValue, f.name) + '"></input>';
       }
       html += '      </p>';
     });
@@ -146,7 +143,7 @@ ContactField.prototype = {
 
     if (this.options.fieldType == 'string') {
       formRows.forEach(function(row) {
-        var value =  $expr('input', row)[0].value.trim();
+        var value = $expr('input', row)[0].value.trim();
         if (value) {
           values.push(value);
         }
@@ -168,7 +165,8 @@ ContactField.prototype = {
 
         if (hasValue) {
           values.push(value);
-        } });
+        }
+      });
     }
 
     return values;
@@ -183,6 +181,7 @@ var ContactForm = (function() {
    * Edit the given contact in the form.
    * If the given contact is null, then adding contact is performed.
    */
+
   function editContact(contact) {
     ViewManager.showViews('contact-edit-view');
 
@@ -206,12 +205,12 @@ var ContactForm = (function() {
       $id('avatar-add-edit').src = '';
       $id('avatar-add-edit').classList.add('avatar-add-edit-default');
     }
-    $id('givenName').value       = contact && contact.givenName ? contact.givenName.join(' ') : '';
-    $id('familyName').value      = contact && contact.familyName ? contact.familyName.join(' ') : '';
-    $id('org').value             = contact && contact.org ? contact.org.join(' ') : '';
+    $id('givenName').value = contact && contact.givenName ? contact.givenName.join(' ') : '';
+    $id('familyName').value = contact && contact.familyName ? contact.familyName.join(' ') : '';
+    $id('org').value = contact && contact.org ? contact.org.join(' ') : '';
     $id('givenName').focus();
 
-    fields['tel']   = new ContactField({
+    fields['tel'] = new ContactField({
       id: 'tel',
       typeList: ['Mobile', 'Home', 'Work', 'Personal', 'FaxHome', 'FaxOffice', 'FaxOther', 'Other'],
       fields: [{
@@ -228,7 +227,7 @@ var ContactForm = (function() {
       addButtonLabel: 'add-new-phone'
     }).render();
 
-    fields['adr']   = new ContactField({
+    fields['adr'] = new ContactField({
       id: 'address',
       typeList: ['Home', 'Work'],
       fields: [{
@@ -292,7 +291,7 @@ var ContactForm = (function() {
 
   function saveContact() {
     var contactId = $id('contact-form-id').value;
-    var updateContact = !!contactId;
+    var updateContact = !! contactId;
     var contact = null;
 
     if (updateContact) {
@@ -328,19 +327,19 @@ var ContactForm = (function() {
 
     // Read modified fields
     contact.familyName = getFieldValue('familyName');
-    contact.givenName  = getFieldValue('givenName');
+    contact.givenName = getFieldValue('givenName');
     // Concat given name with family name as the name
-    contact.name       = getFieldValue('givenName').concat(getFieldValue('familyName'));
-    contact.tel        = getFieldValue('tel');
-    contact.adr        = getFieldValue('adr');
-    contact.email      = getFieldValue('email');
-    contact.org        = getFieldValue('org');
-    contact.note       = getFieldValue('note');
+    contact.name = getFieldValue('givenName').concat(getFieldValue('familyName'));
+    contact.tel = getFieldValue('tel');
+    contact.adr = getFieldValue('adr');
+    contact.email = getFieldValue('email');
+    contact.org = getFieldValue('org');
+    contact.note = getFieldValue('note');
 
     if ($id('avatar-add-edit').classList.contains('avatar-add-edit-default')) {
-         contact.photo = [];
+      contact.photo = [];
     } else {
-         contact.photo = [$id('avatar-add-edit').src];
+      contact.photo = [$id('avatar-add-edit').src];
     }
 
     if (contact.givenName.length == 0) {
@@ -412,11 +411,15 @@ var ContactForm = (function() {
       contact.givenName = [fullName.substr(0, index)];
       contact.name = contact.givenName.concat(contact.familyName);
     } else {
-      contact.familyName = [ ];
+      contact.familyName = [];
       contact.givenName = [fullName];
       contact.name = contact.givenName;
     }
-    contact.tel = [{"type":"Mobile","value":mobile,"carrier":""}];
+    contact.tel = [{
+      "type": "Mobile",
+      "value": mobile,
+      "carrier": ""
+    }];
     CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
       var contactsAdded = [];
       if (!message.result) {
@@ -440,7 +443,7 @@ var ContactForm = (function() {
     $id('quick-save-contact').addEventListener('click', function onclick_quickSaveContact(evt) {
       quickSaveContact();
     });
-    $id('avatar-add-edit').addEventListener('click', function (e) {
+    $id('avatar-add-edit').addEventListener('click', function(e) {
       $id('avatar-input').click();
     });
     $id('avatar-input').addEventListener('change', function() {
@@ -451,11 +454,11 @@ var ContactForm = (function() {
       var offscreenImage = new Image();
       var url = URL.createObjectURL(this.files[0]);
       offscreenImage.src = url;
-      offscreenImage.onerror = function () {
+      offscreenImage.onerror = function() {
         URL.revokeObjectURL(url);
         alert('error');
       };
-      offscreenImage.onload = function () {
+      offscreenImage.onload = function() {
         URL.revokeObjectURL(url);
 
         var canvas = document.createElement('canvas');
@@ -472,12 +475,11 @@ var ContactForm = (function() {
         var x = Math.round((offscreenImage.width - w) / 2);
         var y = Math.round((offscreenImage.height - h) / 2);
 
-        context.drawImage(offscreenImage, x, y, w, h,
-                      0, 0, MAX_WIDTH, MAX_HEIGHT);
-        canvas.toBlob(function (blob) {
+        context.drawImage(offscreenImage, x, y, w, h, 0, 0, MAX_WIDTH, MAX_HEIGHT);
+        canvas.toBlob(function(blob) {
           var fr = new FileReader();
           fr.readAsDataURL(blob);
-          fr.onload = function (e) {
+          fr.onload = function(e) {
             pic.src = e.target.result;
             pic.classList.remove('avatar-add-edit-default');
           };

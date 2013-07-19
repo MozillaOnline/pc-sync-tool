@@ -445,24 +445,24 @@ SendSMSDialog.prototype = {
     // TODO using template
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="w-ui-window draggable">'
-	+ '<header class="w-ui-window-header drag-handel">'
-	+ '<div class="w-ui-window-header-title" data-l10n-id="w-send-sms"></div>'
-	+ '<div class="w-ui-window-header-x" style=""></div>'
+    this._modalElement.innerHTML = '<div class="sms-ui-window draggable">'
+	+ '<header class="sms-ui-window-header drag-handel">'
+	+ '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
+	+ '<div class="sms-ui-window-header-x" style=""></div>'
 	+ '</header>'
-	+ '<div class="w-ui-window-body">'
-	+ '<div class="w-message-sender-window">'
+	+ '<div class="sms-ui-window-body">'
+	+ '<div class="sms-message-sender-window">'
 	+ '<div class="header">'
-	+ '<label data-l10n-id="w-send-address" class="cf" for="address"></label>'
+	+ '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
 	+ '<div class="address">'
 	+ '<input id="address" type="text" class="input-contact searchbox">'
 	+ '</div>'
-	+ '<button data-l10n-id="w-add-contact" class="w-icon-btn button-add-contact">'
+	+ '<button data-l10n-id="sms-add-contact" class="sms-icon-btn button-add-contact">'
 	+ '<span class="icon add-grey"></span>'
 	+ '</button>'
 	+ '</div>'
 	+ '<div class="body">'
-	+ '<label data-l10n-id="w-send-content" class="cf" for="content"></label>'
+	+ '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
 	+ '<textarea id="content" class="input-content" autofocus="true"></textarea>'
 	+ '</div>'
 	+ '<div class="monitor text-secondary">'
@@ -471,10 +471,10 @@ SendSMSDialog.prototype = {
 	+ '</div>'
 	+ '</div>'
 	+ '</div>'
-	+ '<footer class="w-ui-window-footer" style="">'
-	+ '<div class="w-ui-window-footer-monitor"></div>'
-	+ '<div class="w-ui-window-footer-button-ctn">'
-	+ '<button data-l10n-id="w-send-button" class="button-send primary"></button>'
+	+ '<footer class="sms-ui-window-footer" style="">'
+	+ '<div class="sms-ui-window-footer-monitor"></div>'
+	+ '<div class="sms-ui-window-footer-button-ctn">'
+	+ '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
 	+ '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
 	+ '</div>'
 	+ '</footer>'
@@ -528,7 +528,7 @@ SendSMSDialog.prototype = {
   },
 
   _makeDialogCancelable: function() {
-   var closeBtn = $expr('.w-ui-window-header-x', this._modalElement)[0];
+   var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
    closeBtn.hidden = false;
    closeBtn.addEventListener('click', this.close.bind(this));
 
@@ -706,24 +706,24 @@ SendSMSToSingle.prototype = {
     // TODO using template
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="w-ui-window draggable">'
-	+ '<header class="w-ui-window-header drag-handel">'
-	+ '<div class="w-ui-window-header-title" data-l10n-id="w-send-sms"></div>'
-	+ '<div class="w-ui-window-header-x" style=""></div>'
+    this._modalElement.innerHTML = '<div class="sms-ui-window draggable">'
+	+ '<header class="sms-ui-window-header drag-handel">'
+	+ '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
+	+ '<div class="sms-ui-window-header-x" style=""></div>'
 	+ '</header>'
-	+ '<div class="w-ui-window-body">'
-	+ '<div class="w-message-sender-window">'
+	+ '<div class="sms-ui-window-body">'
+	+ '<div class="sms-message-sender-window">'
 	+ '<div class="header" id="select-contact-tel-header">'
-	+ '<label data-l10n-id="w-send-address" class="cf" for="address"></label>'
-	+ '<button class="w-ui-button w-ui-menubutton" id="select-contact-tel-button">'
+	+ '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
+	+ '<button class="sms-ui-button sms-ui-menubutton" id="select-contact-tel-button">'
 	+ '<div class="label wc" id="selected-contact-tel"></div>'
-	+ '<div class="arrow-ctn hbox">'
+	+ '<div class="arrow-ctn">'
 	+ '<div class="arrow"></div>'
 	+ '</div>'
 	+ '</button>'
 	+ '</div>'
 	+ '<div class="body">'
-	+ '<label data-l10n-id="w-send-content" class="cf" for="content"></label>'
+	+ '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
 	+ '<textarea id="content" class="input-content" autofocus="true"></textarea>'
 	+ '</div>'
 	+ '<div class="monitor text-secondary">'
@@ -732,10 +732,10 @@ SendSMSToSingle.prototype = {
 	+ '</div>'
 	+ '</div>'
 	+ '</div>'
-	+ '<footer class="w-ui-window-footer" style="">'
-	+ '<div class="w-ui-window-footer-monitor"></div>'
-	+ '<div class="w-ui-window-footer-button-ctn">'
-	+ '<button data-l10n-id="w-send-button" class="button-send primary"></button>'
+	+ '<footer class="sms-ui-window-footer" style="">'
+	+ '<div class="sms-ui-window-footer-monitor"></div>'
+	+ '<div class="sms-ui-window-footer-button-ctn">'
+	+ '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
 	+ '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
 	+ '</div>'
 	+ '</footer>'
@@ -775,7 +775,7 @@ SendSMSToSingle.prototype = {
       var titleElem = $id('select-contact-tel-header');
       var div = document.createElement('div');
       var html = '';
-      html += '<menu class="w-ui-menu">';
+      html += '<menu class="sms-ui-menu">';
       if (self.options.number && self.options.number.length > 0) {
         for(var i=0;i<self.options.number.length;i++){
           html += '<li>';
@@ -811,7 +811,7 @@ SendSMSToSingle.prototype = {
   },
 
   _makeDialogCancelable: function() {
-   var closeBtn = $expr('.w-ui-window-header-x', this._modalElement)[0];
+   var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
    closeBtn.hidden = false;
    closeBtn.addEventListener('click', this.close.bind(this));
    var okBtn = $expr('.button-send', this._modalElement)[0];
@@ -906,25 +906,25 @@ SelectContactsDialog.prototype = {
     // TODO using template
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    var html = '<div class="w-ui-window-contact">'
-	+ '<header class="w-ui-window-header">'
-	+ '<div data-l10n-id="w-add-contact" class="w-ui-window-header-title"></div>'
-	+ '<div class="w-ui-window-header-x" style=""></div>'
+    var html = '<div class="sms-ui-window-contact">'
+	+ '<header class="sms-ui-window-header">'
+	+ '<div data-l10n-id="sms-add-contact" class="sms-ui-window-header-title"></div>'
+	+ '<div class="sms-ui-window-header-x" style=""></div>'
 	+ '</header>'
-	+ '<div class="w-ui-window-body">'
-	+ '<div class="w-message-contact-selector-body">'
+	+ '<div class="sms-ui-window-body">'
+	+ '<div class="sms-message-contact-selector-body">'
 	+ '<div class="list-ctn">'
-	+ '<div class="w-ui-smartlist" id="w-ui-smartlist-container">'
+	+ '<div class="sms-ui-smartlist" id="sms-ui-smartlist-container">'
         + '</div>'
         + '</div>'
 	+ '</div>'
-	+ '<footer class="w-ui-window-footer" style="">'
-	+ '<div class="w-ui-window-footer-monitor">'
+	+ '<footer class="sms-ui-window-footer" style="">'
+	+ '<div class="sms-ui-window-footer-monitor">'
 	+ '<div>'
 	+ '<span id="select-contact-count" class="text-secondary count"></span>'
 	+ '</div>'
 	+ '</div>'
-	+ '<div class="w-ui-window-footer-button-ctn">'
+	+ '<div class="sms-ui-window-footer-button-ctn">'
 	+ '<button data-l10n-id="OK" class="button-send primary"></button>'
 	+ '<button data-l10n-id="cancel" class="button-cancel"></button>'
 	+ '</div>'
@@ -933,7 +933,7 @@ SelectContactsDialog.prototype = {
 	+ '</div>';
     this._modalElement.innerHTML = html;
     document.body.appendChild(this._modalElement);
-    var closeBtn = $expr('.w-ui-window-header-x', this._modalElement)[0];
+    var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
     closeBtn.hidden = false;
     closeBtn.addEventListener('click', this.close.bind(this));
 
@@ -965,7 +965,7 @@ SelectContactsDialog.prototype = {
     // Make sure other modal dialog has a chance to close itself.
     this._fireEvent('SelectContactsDialog:show');
     
-    var contactSmallListContainer = $id('w-ui-smartlist-container');
+    var contactSmallListContainer = $id('sms-ui-smartlist-container');
     contactSmallListContainer.innerHTML = '';
     contactSmallList = new GroupedList({
       dataList: this.options.contactList,
@@ -1000,7 +1000,7 @@ SelectContactsDialog.prototype = {
         });
       });
     });
-    var itemNum = $expr('#w-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+    var itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
     var header = _('contacts-selected', {
       n: itemNum
     });
@@ -1050,7 +1050,7 @@ SelectContactsDialog.prototype = {
           elem.dataset.checked = false;
           elem.dataset.focused = false;
         }
-        itemNum = $expr('#w-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+        itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
         header = _('contacts-selected', {
           n: itemNum
         });
@@ -1062,7 +1062,7 @@ SelectContactsDialog.prototype = {
         }
         elem.dataset.checked = true;
         elem.dataset.focused = true;
-        itemNum = $expr('#w-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+        itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
         header = _('contacts-selected', {
           n: itemNum
         });
@@ -1090,7 +1090,7 @@ SelectContactsDialog.prototype = {
   },
   select: function() {
     var ids = [];
-    $expr('#w-ui-smartlist-container .contact-list-item[data-checked="true"]').forEach(function(item) {
+    $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').forEach(function(item) {
       ids.push(item.dataset.contact);
     });
     this.options.onok(ids);

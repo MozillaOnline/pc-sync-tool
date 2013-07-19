@@ -29,7 +29,6 @@ var CMD = (function() {
       });
     };
   }
-
   /**
    * Return function only with onresponse and onerror callbacks
    */
@@ -50,7 +49,6 @@ var CMD = (function() {
       });
     };
   }
-
   /**
    * All the available commands grouped by target.
    */
@@ -61,7 +59,6 @@ var CMD = (function() {
        */
       getDeviceInfo:   createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorage),
     },
-
     /***** Contacts commands *****/
     Contacts: {
       getAllContacts:  createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.getAllContacts),
@@ -118,7 +115,6 @@ var CMD = (function() {
        */
       //renamePic:       createCommand(CMD_TYPE.picture, CMD_PIC_RENAME),
     },
-
     /***** Videos commands ******/
     Videos: {
       getAllVideosInfo:  createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getAllVideosInfo),
@@ -199,7 +195,6 @@ var CMD = (function() {
        *   }
        */
       sendMessages:     createCommand(CMD_TYPE.sms, SMS_COMMAND.sendMessages),
-
       /**
        * data:
        *   [id1, id2]

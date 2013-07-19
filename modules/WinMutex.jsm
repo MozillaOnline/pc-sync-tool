@@ -18,7 +18,7 @@ along with Fire-IE.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileOverview Windows system-wide mutex implementation using Win32 API
  */
- 
+
 var EXPORTED_SYMBOLS = ["WinMutex"];
 
 const Cc = Components.classes;
@@ -29,10 +29,11 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/ctypes.jsm");
 
 let DEBUG = 1;
-if (DEBUG)
-  debug = function (s) { dump("-*- WinMutex: " + s + "\n"); };
+if (DEBUG) debug = function(s) {
+  dump("-*- WinMutex: " + s + "\n");
+};
 else
-  debug = function (s) { };
+debug = function(s) {};
 
 let CreateMutexW = null;
 let WaitForSingleObject = null;
@@ -54,22 +55,18 @@ const WAIT_OBJECT_0 = 0;
 const WAIT_TIMEOUT = 0x102;
 const WAIT_FAILED = 0xFFFFFFFF;
 
-function init()
-{
+function init() {
   let CallBackABI = ctypes.stdcall_abi;
   let WinABI = ctypes.winapi_abi;
-  if (ctypes.size_t.size == 8)
-  {
+  if (ctypes.size_t.size == 8) {
     CallBackABI = ctypes.default_abi;
     WinABI = ctypes.default_abi;
   }
-  
-  try
-  {
+
+  try {
     let kernel32dll = ctypes.open("kernel32.dll");
-    if (!kernel32dll)
-      throw "Failed to load kernel32.dll";
-      
+    if (!kernel32dll) throw "Failed to load kernel32.dll";
+
     /**
      * HANDLE WINAPI CreateMutex(
      *   _In_opt_  LPSECURITY_ATTRIBUTES lpMutexAttributes,
@@ -77,33 +74,29 @@ function init()
      *   _In_opt_  LPCTSTR lpName
      * );
      */
-    CreateMutexW = kernel32dll.declare("CreateMutexW", WinABI, HANDLE,
-      PVOID, BOOL, LPCWSTR);
-    
+    CreateMutexW = kernel32dll.declare("CreateMutexW", WinABI, HANDLE, PVOID, BOOL, LPCWSTR);
+
     /**
      * DWORD WINAPI WaitForSingleObject(
      *   _In_  HANDLE hHandle,
      *   _In_  DWORD dwMilliseconds
      * );
      */
-    WaitForSingleObject = kernel32dll.declare("WaitForSingleObject", WinABI, DWORD,
-      HANDLE, DWORD);
-    
+    WaitForSingleObject = kernel32dll.declare("WaitForSingleObject", WinABI, DWORD, HANDLE, DWORD);
+
     /**
      * BOOL WINAPI ReleaseMutex(
      *   _In_  HANDLE hMutex
      * );
      */
-    ReleaseMutex = kernel32dll.declare("ReleaseMutex", WinABI, BOOL,
-      HANDLE);
-    
+    ReleaseMutex = kernel32dll.declare("ReleaseMutex", WinABI, BOOL, HANDLE);
+
     /**
      * BOOL WINAPI CloseHandle(
      *   _In_  HANDLE hObject
      * );
      */
-    CloseHandle = kernel32dll.declare("CloseHandle", WinABI, BOOL,
-      HANDLE);
+    CloseHandle = kernel32dll.declare("CloseHandle", WinABI, BOOL, HANDLE);
   } catch (ex) {
     debug("Failed to initialize WinMutex.jsm: " + ex);
   }
@@ -111,47 +104,43 @@ function init()
 
 const ERROR_ALREADY_EXISTS = 183;
 
-let WinMutex = function(mutexName)
-{
+let WinMutex = function(mutexName) {
   this.name = mutexName;
   let hMutex = CreateMutexW(null, 1, this.name);
-  
+
   if (!hMutex || ctypes.winLastError == ERROR_ALREADY_EXISTS) {
-    if (!!hMutex) {
+    if ( !! hMutex) {
       CloseHandle(hMutex);
     }
 
     throw "CreateMutexW failed with ERROR " + (ctypes.winLastError || 0);
   }
-    
+
   this.handle = hMutex;
 }
 
 WinMutex.prototype = {
-  
+
   /** name of the mutex */
   name: null,
-  
+
   /** whether it's acquired or not */
   acquired: false,
-  
+
   /** handle of the system mutex */
   handle: null,
-  
+
   /**
    * Try to acquire the mutex
    * @param timeout milliseconds to wait, null for waiting forever
    * @returns true if successful, false otherwise
    */
-  acquire: function(timeout)
-  {
-    if (timeout == null)
-      timeout = INFINITE;
-    
+  acquire: function(timeout) {
+    if (timeout == null) timeout = INFINITE;
+
     let ret = WaitForSingleObject(this.handle, timeout);
-    
-    switch (ret)
-    {
+
+    switch (ret) {
     case WAIT_ABANDONED:
     case WAIT_OBJECT_0:
       return this.acquired = true;
@@ -161,46 +150,38 @@ WinMutex.prototype = {
       throw "WaitForSingleObject failed with ERROR " + (ctypes.winLastError || 0);
     }
   },
-  
+
   /**
    * Release the acquired the mutex
    */
-  release: function()
-  {
+  release: function() {
     let ret = ReleaseMutex(this.handle);
-    
-    if (ret == 0)
-      throw "ReleaseMutex failed with ERROR " + (ctypes.winLastError || 0);
-    
+
+    if (ret == 0) throw "ReleaseMutex failed with ERROR " + (ctypes.winLastError || 0);
+
     this.acquired = false;
   },
-  
+
   /**
    * Close the mutex and release the handle
    * REMEMBER TO CALL THIS before object get GCed
    */
-  close: function()
-  {
-    if (this.handle == null)
-      return;
-    
+  close: function() {
+    if (this.handle == null) return;
+
     let ret = CloseHandle(this.handle);
-    
-    if (ret == 0)
-      debug("CloseHandle failed with ERROR " + (ctypes.winLastError || 0));
-    
+
+    if (ret == 0) debug("CloseHandle failed with ERROR " + (ctypes.winLastError || 0));
+
     this.handle = null;
   },
-  
+
   /**
    * Returns the javascript string representation of this mutex
    */
-  toString: function()
-  {
-    return "WinMutex(name=\"[name]\", acquired=\"[acquired]\")".replace(/\[name\]/, this.name)
-      .replace(/\[acquired\]/, this.acquired);
+  toString: function() {
+    return "WinMutex(name=\"[name]\", acquired=\"[acquired]\")".replace(/\[name\]/, this.name).replace(/\[acquired\]/, this.acquired);
   }
 };
 
 init();
-

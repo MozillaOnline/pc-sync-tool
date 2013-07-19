@@ -2,7 +2,7 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var ViewManager = (function () {
+var ViewManager = (function() {
   function setTitle(title) {
     if (!title) {
       $id('view-title').textContent = '';
@@ -12,7 +12,7 @@ var ViewManager = (function () {
   }
 
   function reset() {
-      $expr('#container .item').forEach(function reset_func(elem) {
+    $expr('#container .item').forEach(function reset_func(elem) {
       var viewId = elem.dataset.linkedView;
       if (!viewId) {
         return;
@@ -34,7 +34,7 @@ var ViewManager = (function () {
     }
     var viewOldId = null;
     var contentView = $expr('#container .item');
-    for(var i=0;i<contentView.length;i++){
+    for (var i = 0; i < contentView.length; i++) {
       var oldId = contentView[i].dataset.linkedView;
       if (!oldId) {
         continue;
@@ -43,34 +43,34 @@ var ViewManager = (function () {
       if (!linkedView) {
         continue;
       }
-      if(linkedView.dataset.shown == "true"){
+      if (linkedView.dataset.shown == "true") {
         viewOldId = oldId;
         break;
-      }else{
+      } else {
         continue;
       }
     }
     var isChangeView = false;
-    if(viewOldId != null){
-      if(viewOldId == viewId){
+    if (viewOldId != null) {
+      if (viewOldId == viewId) {
         return;
       }
-      if(viewOldId == "contact-view"){
+      if (viewOldId == "contact-view") {
         var sub = $id('contact-edit-view');
-        if(sub.hidden == false){
+        if (sub.hidden == false) {
           if (window.confirm(_('save-contacts-confirm'))) {
             //$id(viewOldId).dataset.shown = false;
             //isChangeView = true;
           }
-        }else{
+        } else {
           $id(viewOldId).dataset.shown = false;
           isChangeView = true;
         }
-      }else{
+      } else {
         $id(viewOldId).dataset.shown = false;
         isChangeView = true;
       }
-    }else{
+    } else {
       isChangeView = true;
     }
     if (isChangeView == true) {
@@ -109,16 +109,17 @@ var ViewManager = (function () {
       if (viewElem.dataset.firstshown != "true") {
         viewElem.dataset.firstshown = true;
         event = 'firstshow';
-      }else{
+      } else {
         event = 'othershow';
       }
-      callEvent(event, viewId,showData);
+      callEvent(event, viewId, showData);
     }
   }
 
   /**
    * show sub-views related to content
    */
+
   function _showViews(viewId) {
     var subView = $id(viewId);
     if (!subView) {
@@ -138,7 +139,7 @@ var ViewManager = (function () {
   function showViews(viewId) {
     var subView = $id(viewId);
     if (!subView) {
-       return;
+      return;
     }
 
     var parentNode = subView.parentNode;
@@ -157,6 +158,7 @@ var ViewManager = (function () {
    * Supported event name:
    *   firstshow
    */
+
   function addViewEventListener(viewId, name, callback) {
     if (!callbacks[viewId]) {
       callbacks[viewId] = {};
@@ -169,7 +171,7 @@ var ViewManager = (function () {
     callbacks[viewId][name].push(callback);
   }
 
-  function callEvent(name, viewId,viewData) {
+  function callEvent(name, viewId, viewData) {
     console.log('Call event ' + name + ' on ' + viewId);
 
     if (!callbacks[viewId] || !callbacks[viewId][name]) {
@@ -216,4 +218,3 @@ var ViewManager = (function () {
     addViewEventListener: addViewEventListener
   };
 })();
-

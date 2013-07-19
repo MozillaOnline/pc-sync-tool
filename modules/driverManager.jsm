@@ -5,15 +5,21 @@
 'use strict';
 
 let DEBUG = 1;
-if (DEBUG)
-  debug = function (s) { dump("-*- DriverManager: " + s + "\n"); };
+if (DEBUG) debug = function(s) {
+  dump("-*- DriverManager: " + s + "\n");
+};
 else
-  debug = function (s) { };
+debug = function(s) {};
 
 var EXPORTED_SYMBOLS = ['DriverManager'];
 
 const MANAGER_EXE = 'resource://ffosassistant-drivermanager';
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu,
+  results: Cr
+} = Components;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
@@ -29,11 +35,11 @@ var driverManagerModule = new ParentModule({
 
     switch (name) {
       // This is a sync message
-      case 'DriverManager:isRunning':
-        return isDriverManagerRunning();
-      case 'DriverManager:start':
-        startDriverManager();
-        break;
+    case 'DriverManager:isRunning':
+      return isDriverManagerRunning();
+    case 'DriverManager:start':
+      startDriverManager();
+      break;
     }
   }
 });
@@ -63,8 +69,7 @@ function startDriverManager() {
   }
 
   var managerFile = utils.getChromeFileURI(MANAGER_EXE).file;
-  process = Cc['@mozilla.org/process/util;1']
-              .createInstance(Ci.nsIProcess);
+  process = Cc['@mozilla.org/process/util;1'].createInstance(Ci.nsIProcess);
   process.init(managerFile);
   var args = ['install'];
   process.runAsync(args, args.length, processObserver);
@@ -77,4 +82,3 @@ var processObserver = {
 };
 
 debug("inited.");
-

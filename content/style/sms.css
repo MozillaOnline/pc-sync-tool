@@ -56,18 +56,18 @@
 }
 
 .sms-ops-box .sms-op {
-    background-position: 0 center;
-    background-repeat: no-repeat;
-    cursor: pointer;
-    float: left;
-    margin-right: 1.3rem;
-    padding-left: 2rem;
+  background-position: 0 center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  float: left;
+  margin-right: 1.3rem;
+  padding-left: 2rem;
 }
 
 .sms-ops-box {
-    height: 3rem;
-    line-height: 3rem;
-    overflow: hidden;
+  height: 3rem;
+  line-height: 3rem;
+  overflow: hidden;
 }
 
 #remove-sms {
@@ -187,8 +187,8 @@
 
 .threads-list-item > div > * {
   float: left;
-    height: 3.5rem;
-    width: 3.5rem;
+  height: 3.5rem;
+  width: 3.5rem;
 }
 
 .threads-list-item >div input.checkbox[type="checkbox"] + label.selectAll {
@@ -282,6 +282,7 @@
   margin: 1rem 6rem;
   display: -moz-inline-grid;
 }
+
 #sms-send-view-header {
   padding-left: 1rem;
   padding-bottom: 2rem;
@@ -300,8 +301,7 @@
   font-size: 1.4rem
 }
 
-
-.w-ui-window{
+.sms-ui-window{
   background:#fff;
   border:1px #aaaaaa solid;
   border-radius:5px;
@@ -312,12 +312,11 @@
   min-width:360px;
   position:absolute;
   top:0;
-  -moz-transition:opacity .15s linear;
   top:200px;
   left:300px
 }
 
-.w-ui-window-contact{
+.sms-ui-window-contact{
   background:#fff;
   border:1px #aaaaaa solid;
   border-radius:5px;
@@ -328,98 +327,92 @@
   min-width:360px;
   position:absolute;
   top:0;
-  -moz-transition:opacity .15s linear;
   top:100px;
   left:380px
 }
 
 
-.w-ui-window-header{
-	background:-moz-linear-gradient(left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
-	border-radius:5px 5px 0 0;
-	border-bottom:1px #E86000 solid;
-	box-shadow:0 1px 0 #E86000 inset;
-	padding:7px 8px 7px 10px;
-        overflow: hidden;
-        background-color: #E86000;
+.sms-ui-window-header{
+  background:-moz-linear-gradient(left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
+  border-radius:5px 5px 0 0;
+  border-bottom:1px #E86000 solid;
+  box-shadow:0 1px 0 #E86000 inset;
+  padding:7px 8px 7px 10px;
+  overflow: hidden;
+  background-color: #E86000;
 }
-.w-ui-window-header-title{
-        float: left
+.sms-ui-window-header-title{
+  float: left
 }
-.w-ui-window-header-x{
-	background-position:0 -8431px;
-	cursor:default;
-	height:16px;
-	width:16px;
-        float: right;
-        background: url("images/sms-cancel.png");
+.sms-ui-window-header-x{
+  background-position:0 -8431px;
+  cursor:default;
+  height:16px;
+  width:16px;
+  float: right;
+  background: url("images/sms-cancel.png");
 }
-.w-ui-window-header-x:hover{
-	background: url("images/sms-cancel-hover.png");
+.sms-ui-window-header-x:hover{
+  background: url("images/sms-cancel-hover.png");
 }
-.w-ui-window-header-x:active{
-	background: url("images/sms-cancel-active.png");
+.sms-ui-window-header-x:active{
+  background: url("images/sms-cancel-active.png");
 }
-.w-ui-window-body{
-	min-height:2em;
-	padding:15px 15px 10px;
+.sms-ui-window-body{
+  min-height:2em;
+  padding:15px 15px 10px;
 }
-.w-ui-window-body p+p{
-	margin-top:1em
+.sms-ui-window-body p+p{
+  margin-top:1em
 }
-.w-ui-window-footer{
-	border-radius:0 0 5px 5px;
-	padding:0 15px 15px
+.sms-ui-window-footer{
+  border-radius:0 0 5px 5px;
+  padding:0 15px 15px
 }
-.w-ui-window-footer label{
-	display:block
+.sms-ui-window-footer label{
+  display:block
 }
-.w-ui-window-footer label input[type="checkbox"]{
-	margin-right:3px
+.sms-ui-window-footer label input[type="checkbox"]{
+  margin-right:3px
 }
-.w-ui-window.w-ui-alert{
-	min-height:148px;
-	width:360px
+.sms-ui-window.w-ui-alert{
+  min-height:148px;
+  width:360px
 }
-.w-ui-window-footer-monitor{
-	line-height:25px;
-	-moz-box-flex:1
+.sms-ui-window-footer-monitor{
+  line-height:25px;
+  -moz-box-flex:1
 }
-.w-ui-window-footer-button-ctn{
-	text-align:right
+.sms-ui-window-footer-button-ctn{
+  text-align:right
 }
-.w-ui-alert-window{
-	min-height:148px;
-	min-width:360px
+
+.sms-message-sender-window .header{
+  margin-bottom:10px;
+  overflow: hidden
 }
-.w-message-sender-window .header{
-	margin-bottom:10px;
-        overflow: hidden
+.sms-message-sender-window .header label{
+  line-height:25px;
+  margin-right:5px;
+  text-align:right;
+  min-width:80px;
+  float: left
 }
-.w-message-sender-window .header label{
-	line-height:25px;
-	margin-right:5px;
-	text-align:right;
-	min-width:80px;
-        float: left
+.sms-message-sender-window .header .address{
+  border:1px #cacaca solid;
+  cursor:text;
+  margin-right:10px;
+  max-height:63px;
+  min-height:21px;
+  overflow-y:auto;
+  padding:1px;
+  float: left;
+  width: 270px;
 }
-.w-message-sender-window .header .address{
-	border:1px #cacaca solid;
-	cursor:text;
-	margin-right:10px;
-	max-height:63px;
-	min-height:21px;
-	overflow-y:auto;
-	padding:1px;
-	-moz-box-flex:1;
-	-moz-transition:border linear .2s,box-shadow linear .2s;
-        float: left;
-        width: 270px;
+.sms-message-sender-window .header .sms-icon-btn{
+  float: right
 }
-.w-message-sender-window .header .w-icon-btn{
-        float: right
-}
-.w-message-sender-window .header .w-icon-btn{
+.sms-message-sender-window .header .sms-icon-btn{
   background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
   border-color:#2c8e00;
   box-shadow:inset 0 1px 0 0 rgba(255,255,255,0.2);
@@ -432,7 +425,6 @@
   padding: 3px 10px;
   vertical-align: middle;
   font: 12px/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
-  -moz-box-align: center;
   text-align: center;
   cursor: default;
   background-color: buttonface;
@@ -442,10 +434,10 @@
   display: inline-block;
   margin-left: 4px
 }
-.w-message-sender-window .header .w-icon-btn:hover{
+.sms-message-sender-window .header .sms-icon-btn:hover{
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
-.w-message-sender-window .header .w-icon-btn .icon{
+.sms-message-sender-window .header .sms-icon-btn .icon{
   background: url("images/sms-select-contact.png");
   display: inline-block;
   height: 16px;
@@ -453,43 +445,43 @@
   vertical-align: middle;
   width: 16px
 }
-.w-message-sender-window .header .address.focus,.w-message-sender-window .header .address.focus:hover{
-	border-color:#6db800;
-	box-shadow:inset 0 1px 1px rgba(0,0,0,0.075),0 0 4px #6db800
+.sms-message-sender-window .header .address.focus,.sms-message-sender-window .header .address.focus:hover{
+  border-color:#6db800;
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.075),0 0 4px #6db800
 }
-.w-message-sender-window .header .address:hover{
-	border-color:rgba(109,184,0,0.5)
+.sms-message-sender-window .header .address:hover{
+  border-color:rgba(109,184,0,0.5)
 }
-.w-message-sender-window .header .input-contact{
-	border:none;
-	height:18px;
-	line-height:18px;
-	width:100%
+.sms-message-sender-window .header .input-contact{
+  border:none;
+  height:18px;
+  line-height:18px;
+  width:100%
 }
-.w-message-sender-window .header .input-contact:focus,.w-message-sender-window .header .input-contact:focus:hover{
-	box-shadow:none
+.sms-message-sender-window .header .input-contact:focus,.sms-message-sender-window .header .input-contact:focus:hover{
+  box-shadow:none
 }
-.w-message-sender-window .body{
+.sms-message-sender-window .body{
   overflow: hidden
 }
-.w-message-sender-window .body label{
-	line-height:25px;
-	margin-right:5px;
-	text-align:right;
-	width:80px;
-        float: left
+.sms-message-sender-window .body label{
+  line-height:25px;
+  margin-right:5px;
+  text-align:right;
+  width:80px;
+  float: left
 }
-.w-message-sender-window .body .input-content{
-	height:100px;
-	width:405px;
-        float: right;
-        overflow-y: auto;
+.sms-message-sender-window .body .input-content{
+  height:100px;
+  width:405px;
+  float: right;
+  overflow-y: auto;
 }
-.w-message-sender-window .monitor{
-	margin-left:85px
+.sms-message-sender-window .monitor{
+  margin-left:85px
 }
 
-.w-ui-window-footer-button-ctn .button-send{
+.sms-ui-window-footer-button-ctn .button-send{
   background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
   border-color:#2c8e00;
   box-shadow:inset 0 1px 0 0 rgba(255,255,255,0.2);
@@ -502,7 +494,6 @@
   padding: 3px 10px;
   vertical-align: middle;
   font: 12px/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
-  -moz-box-align: center;
   text-align: center;
   cursor: default;
   background-color: buttonface;
@@ -512,7 +503,7 @@
   display: inline-block
 }
 
-.w-ui-window-footer-button-ctn .button-send:hover{
+.sms-ui-window-footer-button-ctn .button-send:hover{
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
 
@@ -521,7 +512,7 @@
   color: #333;
   text-shadow: none
 }
-.w-ui-window-footer-button-ctn .button-cancel{
+.sms-ui-window-footer-button-ctn .button-cancel{
   background: -moz-linear-gradient(center top , #f3f3f3, #e9e9e9) repeat scroll 0 0 transparent;
   border-color:#2c8e00;
   box-shadow:inset 0 1px 0 0 rgba(255,255,255,0.2);
@@ -534,7 +525,6 @@
   padding: 3px 10px;
   vertical-align: middle;
   font: 12px/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
-  -moz-box-align: center;
   text-align: center;
   cursor: default;
   background-color: buttonface;
@@ -545,256 +535,233 @@
   margin-left: 4px
 }
 
-
-
-.w-message-conversation-list-item .input,.w-message-conversation-list-item .date{
-	display:none
-}
-.w-message-conversation-list-item .avatar{
-  float: left;
-  height: 48px;
-  width: 48px;
-  margin-left:5px
-}
-
 .sms-thread-header{
-	margin: auto;
-	width:100%;
-	-moz-box-align:center;
-	-moz-box-pack:center;
-        overflow: hidden;
+  margin: auto;
+  width:100%;
+  overflow: hidden;
 }
 
-.w-message-thread .date-ctn{
-	margin:15px auto;
-	width:100%;
-	-moz-box-align:center;
-	-moz-box-pack:center
+.sms-message-thread .date-ctn{
+  margin:15px auto;
+  width:100%;
 }
-.w-message-thread .date-ctn date{
-	text-shadow:0 1px 0 #fff;
+.sms-message-thread .date-ctn date{
+  text-shadow:0 1px 0 #fff;
 }
-.w-message-thread .date-ctn hr{
-	box-shadow:0 1px 0 #fff;
-	height:0;
-	-moz-box-flex:1
+.sms-message-thread .date-ctn hr{
+  box-shadow:0 1px 0 #fff;
+  height:0;
 }
-.w-message-thread .button-previous,.w-message-thread .button-next{
-	padding:9px 0;
-	text-align:center;
-	text-shadow:0 1px 0 #fff
+.sms-message-thread .button-previous,.sms-message-thread .button-next{
+  padding:9px 0;
+  text-align:center;
+  text-shadow:0 1px 0 #fff
 }
-.w-message-thread .button-previous:hover,.w-message-thread .button-next:hover{
-	cursor:pointer
+.sms-message-thread .button-previous:hover,.sms-message-thread .button-next:hover{
+  cursor:pointer
 }
 
-.w-message-thread .button-previous,.w-message-thread .button-next{
-	padding:9px 0;
-	text-align:center;
-	text-shadow:0 1px 0 #fff
+.sms-message-thread .button-previous,.sms-message-thread .button-next{
+  padding:9px 0;
+  text-align:center;
+  text-shadow:0 1px 0 #fff
 }
-.w-message-thread .button-previous:hover,.w-message-thread .button-next:hover{
-	cursor:pointer
-}
-
-.w-message-item-ctn li{
-	padding: 0 10px 20px;
-}
-.w-message-item-ctn li .content-wrap{
-	background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,#fbfbfb),color-stop(1,#f8f8f8));
-	border:#cacaca 1px solid;
-	border-radius:5px;
-	box-shadow:0 1px 0 white inset,0 0 5px rgba(0,0,0,0.1);
-	box-sizing:border-box;
-	display:inline-block;
-	max-width:136px;
-	min-width:58px;
-        min-height: 20px;
-	padding:7px 13px;
-	position:relative;
-	text-shadow:0 1px 0 #fff;
-        background-color: #E0F9FF;
-}
-.w-message-item-ctn li .content-wrap .content{
-	word-break:break-all;
-	-moz-hyphens:auto
-}
-.w-message-item-ctn li .content-wrap .content em{
-	background-color:#f1ea00;
-	border-radius:4px;
-	box-shadow:rgba(0,0,0,0.5) 3px 3px 4px;
-	color:#000;
-	padding:2px 2px 2px 3px;
-	margin:-2px -2px -2px -3px;
-	opacity:.8;
-	-moz-animation-name:magnifier;
-	-moz-animation-duration:0.2s;
-	-moz-animation-iteration-count:1;
-	-moz-animation-timing-function:linear
-}
-.w-message-item-ctn li .content-wrap .button-toggle{
-	display:inline-block
-}
-.w-message-item-ctn li .content-wrap .arrow{
-	border-bottom:1px #cacaca solid;
-	bottom:-1px;
-	height:9px;
-	left:-10px;
-	overflow:hidden;
-	position:absolute;
-	width:15px
-}
-.w-message-item-ctn li .content-wrap .arrow .side{
-	background-color:#E0F9FF;
-	border-left:1px #cacaca solid;
-	height:20px;
-	left:0;
-	position:absolute;
-	top:3px;
-	width:20px;
-	-moz-transform:rotate(45deg)
-}
-.w-message-item-ctn li .content-wrap .actions{
-	bottom:-20px;
-	display:none;
-	left:0;
-	padding-top:5px;
-	position:absolute;
-	right:0
-}
-.w-message-item-ctn li .content-wrap .actions button{
-	border:none;
-	box-shadow:none;
-	display:inline-block;
-	height:16px;
-	min-width:16px;
-	padding:3px 3px;
-	width:16px
-}
-.w-message-item-ctn li .content-wrap .actions button.button-delete{
-	background: url("images/sms-delete.png");
-        background-size: cover
-}
-.w-message-item-ctn li .content-wrap .actions button.button-delete:hover{
-	background: url("images/sms-delete-hover.png");
-        background-size: cover
-}
-.w-message-item-ctn li .content-wrap .actions button.button-delete:active{
-	background: url("images/sms-delete-active.png");
-        background-size: cover
-}
-.w-message-item-ctn li .content-wrap .actions button.button-forward{
-        background: url("images/sms-reply.png");
-        background-size: cover
-}
-.w-message-item-ctn li .content-wrap .actions button.button-forward:hover{
-        background: url("images/sms-reply-hover.png");
-        background-size: cover
-}
-.w-message-item-ctn li .content-wrap .actions button.button-forward:active{
-        background: url("images/sms-reply-active.png");
-        background-size: cover
-}
-.w-message-item-ctn li .content-wrap .actions button.button-resend{
-	background: url("images/sms-resend.png");
-        background-size: cover
-}
-.w-message-item-ctn li .content-wrap .actions button.button-resend:hover{
-	background: url("images/sms-resend-hover.png");
-        background-size: cover
-}
-.w-message-item-ctn li .content-wrap .actions button.button-resend:active{
-	background: url("images/sms-resend-active.png");
-        background-size: cover
-}
-.w-message-item-ctn li .content-wrap:hover .actions{
-	display:inline-block
-}
-.w-message-item-ctn li .info{
-	display:inline-block;
-	vertical-align:bottom;
-	margin:0 0 0 10px;
-	text-shadow:0 1px 0 #fff
-}
-.w-message-item-ctn li .info .icon{
-	display:inline-block;
-	height:16px;
-	margin:-2px 0 0;
-	vertical-align:middle;
-	width:16px
-}
-.w-message-item-ctn li .info .icon.faild{
-	background-position:0 -5895px;
-	margin-right:3px
-}
-.w-message-item-ctn li .info .icon.sending{
-	background-position:0 -9924px
-}
-.w-message-item-ctn li.from-me{
-	direction:rtl
-}
-.w-message-item-ctn li.from-me .content-wrap{
-	background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
-	border-color:#84c93f;
-	direction:ltr;
-	text-shadow:0 1px 0 rgba(255,255,255,0.6);
-        background-color: #97E647;
-}
-.w-message-item-ctn li.from-me .content-wrap .actions{
-	direction:rtl
-}
-.w-message-item-ctn li.from-me .content-wrap .actions button+button{
-	margin:0 4px 0 0
-}
-.w-message-item-ctn li.from-me .info{
-	direction:ltr;
-	margin:0 10px 0 0
-}
-.w-message-item-ctn li.from-me .arrow{
-	border-bottom:1px #84c93f solid;
-	left:auto;
-	right:-10px
-}
-.w-message-item-ctn li.from-me .arrow .side{
-	background-color:#97e647;
-	border-left:none;
-	border-top:1px #cacaca solid;
-	left:auto;
-	right:0
+.sms-message-thread .button-previous:hover,.sms-message-thread .button-next:hover{
+  cursor:pointer
 }
 
-.w-message-item-ctn li.from-me-error{
-	direction:rtl
+.sms-message-item-ctn li{
+  padding: 0 10px 20px;
 }
-.w-message-item-ctn li.from-me-error .content-wrap{
-	background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
-	border-color:#E86000;
-	direction:ltr;
-	text-shadow:0 1px 0 rgba(255,255,255,0.6);
-        background-color: #F6F6F6;
+.sms-message-item-ctn li .content-wrap{
+  background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,#fbfbfb),color-stop(1,#f8f8f8));
+  border:#cacaca 1px solid;
+  border-radius:5px;
+  box-shadow:0 1px 0 white inset,0 0 5px rgba(0,0,0,0.1);
+  box-sizing:border-box;
+  display:inline-block;
+  max-width:136px;
+  min-width:58px;
+  min-height: 20px;
+  padding:7px 13px;
+  position:relative;
+  text-shadow:0 1px 0 #fff;
+  background-color: #E0F9FF;
 }
-.w-message-item-ctn li.from-me-error .content-wrap .actions{
-	direction:rtl
+.sms-message-item-ctn li .content-wrap .content{
+  word-break:break-all;
 }
-.w-message-item-ctn li.from-me .content-wrap .actions button+button{
-	margin:0 4px 0 0
+.sms-message-item-ctn li .content-wrap .content em{
+  background-color:#f1ea00;
+  border-radius:4px;
+  box-shadow:rgba(0,0,0,0.5) 3px 3px 4px;
+  color:#000;
+  padding:2px 2px 2px 3px;
+  margin:-2px -2px -2px -3px;
+  opacity:.8;
 }
-.w-message-item-ctn li.from-me-error .info{
-	direction:ltr;
-	margin:0 10px 0 0
+.sms-message-item-ctn li .content-wrap .button-toggle{
+  display:inline-block
 }
-.w-message-item-ctn li.from-me-error .arrow{
-	border-bottom:1px #E86000 solid;
-	left:auto;
-	right:-10px;
+.sms-message-item-ctn li .content-wrap .arrow{
+  border-bottom:1px #cacaca solid;
+  bottom:-1px;
+  height:9px;
+  left:-10px;
+  overflow:hidden;
+  position:absolute;
+  width:15px
 }
-.w-message-item-ctn li.from-me-error .arrow .side{
-	background-color:#F6F6F6;
-	border-left:none;
-	border-top:1px #E86000 solid;
-	left:auto;
-	right:0;
-        border-color:#E86000;
+.sms-message-item-ctn li .content-wrap .arrow .side{
+  background-color:#E0F9FF;
+  border-left:1px #cacaca solid;
+  height:20px;
+  left:0;
+  position:absolute;
+  top:3px;
+  width:20px;
+}
+.sms-message-item-ctn li .content-wrap .actions{
+  bottom:-20px;
+  display:none;
+  left:0;
+  padding-top:5px;
+  position:absolute;
+  right:0
+}
+.sms-message-item-ctn li .content-wrap .actions button{
+  border:none;
+  box-shadow:none;
+  display:inline-block;
+  height:16px;
+  min-width:16px;
+  padding:3px 3px;
+  width:16px
+}
+.sms-message-item-ctn li .content-wrap .actions button.button-delete{
+  background: url("images/sms-delete.png");
+  background-size: cover
+}
+.sms-message-item-ctn li .content-wrap .actions button.button-delete:hover{
+  background: url("images/sms-delete-hover.png");
+  background-size: cover
+}
+.sms-message-item-ctn li .content-wrap .actions button.button-delete:active{
+  background: url("images/sms-delete-active.png");
+  background-size: cover
+}
+.sms-message-item-ctn li .content-wrap .actions button.button-forward{
+  background: url("images/sms-reply.png");
+  background-size: cover
+}
+.sms-message-item-ctn li .content-wrap .actions button.button-forward:hover{
+  background: url("images/sms-reply-hover.png");
+  background-size: cover
+}
+.sms-message-item-ctn li .content-wrap .actions button.button-forward:active{
+  background: url("images/sms-reply-active.png");
+  background-size: cover
+}
+.sms-message-item-ctn li .content-wrap .actions button.button-resend{
+  background: url("images/sms-resend.png");
+  background-size: cover
+}
+.sms-message-item-ctn li .content-wrap .actions button.button-resend:hover{
+  background: url("images/sms-resend-hover.png");
+  background-size: cover
+}
+.sms-message-item-ctn li .content-wrap .actions button.button-resend:active{
+  background: url("images/sms-resend-active.png");
+  background-size: cover
+}
+.sms-message-item-ctn li .content-wrap:hover .actions{
+  display:inline-block
+}
+.sms-message-item-ctn li .info{
+  display:inline-block;
+  vertical-align:bottom;
+  margin:0 0 0 10px;
+  text-shadow:0 1px 0 #fff
+}
+.sms-message-item-ctn li .info .icon{
+  display:inline-block;
+  height:16px;
+  margin:-2px 0 0;
+  vertical-align:middle;
+  width:16px
+}
+.sms-message-item-ctn li .info .icon.faild{
+  background-position:0 -5895px;
+  margin-right:3px
+}
+.sms-message-item-ctn li .info .icon.sending{
+  background-position:0 -9924px
+}
+.sms-message-item-ctn li.from-me{
+  direction:rtl
+}
+.sms-message-item-ctn li.from-me .content-wrap{
+  background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
+  border-color:#84c93f;
+  direction:ltr;
+  text-shadow:0 1px 0 rgba(255,255,255,0.6);
+  background-color: #97E647;
+}
+.sms-message-item-ctn li.from-me .content-wrap .actions{
+  direction:rtl
+}
+.sms-message-item-ctn li.from-me .content-wrap .actions button+button{
+  margin:0 4px 0 0
+}
+.sms-message-item-ctn li.from-me .info{
+  direction:ltr;
+  margin:0 10px 0 0
+}
+.sms-message-item-ctn li.from-me .arrow{
+  border-bottom:1px #84c93f solid;
+  left:auto;
+  right:-10px
+}
+.sms-message-item-ctn li.from-me .arrow .side{
+  background-color:#97e647;
+  border-left:none;
+  border-top:1px #cacaca solid;
+  left:auto;
+  right:0
+}
+
+.sms-message-item-ctn li.from-me-error{
+  direction:rtl
+}
+.sms-message-item-ctn li.from-me-error .content-wrap{
+  background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,#d6f5b6),color-stop(1,#97e647));
+  border-color:#E86000;
+  direction:ltr;
+  text-shadow:0 1px 0 rgba(255,255,255,0.6);
+  background-color: #F6F6F6;
+}
+.sms-message-item-ctn li.from-me-error .content-wrap .actions{
+  direction:rtl
+}
+.sms-message-item-ctn li.from-me .content-wrap .actions button+button{
+  margin:0 4px 0 0
+}
+.sms-message-item-ctn li.from-me-error .info{
+  direction:ltr;
+  margin:0 10px 0 0
+}
+.sms-message-item-ctn li.from-me-error .arrow{
+  border-bottom:1px #E86000 solid;
+  left:auto;
+  right:-10px;
+}
+.sms-message-item-ctn li.from-me-error .arrow .side{
+  background-color:#F6F6F6;
+  border-left:none;
+  border-top:1px #E86000 solid;
+  left:auto;
+  right:0;
+  border-color:#E86000;
 }
 
 .sms-select-view-header{
@@ -804,283 +771,150 @@
   padding: 4rem 0;
   text-align: center;
 }
-.w-message-threads-ctn{
+.sms-message-threads-ctn{
   height: 380px;
   overflow-x: hidden;
   overflow-y: auto;
   padding-top: 5px;
 }
-.w-message-quick-sender{
-	background-color:#f9f9f9;
-	padding:10px;
+.sms-message-quick-sender{
+  background-color:#f9f9f9;
+  padding:10px;
 }
-.w-message-quick-sender .selector-ctn{
-	margin-bottom:5px;
-	-moz-box-align:center
+.sms-message-quick-sender .selector-ctn{
+  margin-bottom:5px;
 }
-.w-message-quick-sender .sender-ctn{
-	min-height:26px;
-	-moz-box-align:end
+.sms-message-quick-sender .sender-ctn{
+  min-height:26px;
 }
-.w-message-quick-sender .sender-ctn .input-content{
-	display:block;
-	line-height:19px;
-	margin-right:10px;
-	min-height:20px;
-	-moz-box-flex:1;
-        overflow-x: hidden;
-        overflow-y: auto;
+.sms-message-quick-sender .sender-ctn .input-content{
+  display:block;
+  line-height:19px;
+  margin-right:10px;
+  min-height:20px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
-.w-message-quick-sender .sender-ctn .count-ctn{
-	min-width:78px
+.sms-message-quick-sender .sender-ctn .count-ctn{
+  min-width:78px
 }
-.w-message-quick-sender .sender-ctn .count-ctn .button-send{
-    width:100%;
-    -moz-box-align: center;
-    background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
-    border: 1px solid #999999;
-    border-radius: 3px 3px 3px 3px;
-    box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.2) inset;
-    color: white;
-    cursor: default;
-    display: inline-block;
-    height: 26px;
-    letter-spacing: normal;
-    text-align: center;
-    vertical-align: middle;
-    word-spacing: normal;
+.sms-message-quick-sender .sender-ctn .count-ctn .button-send{
+  width:100%;
+  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
+  border: 1px solid #999999;
+  border-radius: 3px 3px 3px 3px;
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.2) inset;
+  color: white;
+  cursor: default;
+  display: inline-block;
+  height: 26px;
+  letter-spacing: normal;
+  text-align: center;
+  vertical-align: middle;
+  word-spacing: normal;
 }
 
 
-.w-message-quick-sender .sender-ctn .count-ctn .button-send:hover {
+.sms-message-quick-sender .sender-ctn .count-ctn .button-send:hover {
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
-.w-message-quick-sender .sender-ctn .count-ctn .button-send:active {
+.sms-message-quick-sender .sender-ctn .count-ctn .button-send:active {
   background-color: #018CAB;
 }
-.w-message-quick-sender .sender-ctn .count-ctn .button-send:visited {
+.sms-message-quick-sender .sender-ctn .count-ctn .button-send:visited {
   background-color: #00CAF2;
 }
 
-
-.w-message-quick-sender .sender-ctn .count-ctn .count-down{
-	display:block;
-	margin-bottom:3px;
-	width:100%
+.sms-message-quick-sender .sender-ctn .count-ctn .count-down{
+  display:block;
+  margin-bottom:3px;
+  width:100%
 }
 
 .show-sms-item {
-    height: 4rem;
-    margin: 0.5rem 0 0.5rem 1rem;
-    overflow: hidden;
-    width: 23rem;
+  height: 4rem;
+  margin: 0.5rem 0 0.5rem 1rem;
+  overflow: hidden;
+  width: 23rem;
 }
 
 
 .show-multi-sms-content .number {
-    color: #333333;
-    height: 2rem;
-    margin-left: 1rem;
-    overflow: hidden;
-    width: 18rem;
+  color: #333333;
+  height: 2rem;
+  margin-left: 1rem;
+  overflow: hidden;
+  width: 18rem;
 }
 
 .show-multi-sms-content .body {
-    height: 2rem;
-    margin-left: 1rem;
-    overflow: hidden;
-    width: 18rem;
+  height: 2rem;
+  margin-left: 1rem;
+  overflow: hidden;
+  width: 18rem;
 }
 
-.w-message-contact-selector .filter-ctn{
-	margin-right:5px;
+.sms-message-contact-selector-body .searchbox{
+  box-sizing:border-box;
+  width:100%
 }
-.w-message-contact-selector .filter-ctn button{
-	display:block;
-}
-.w-message-contact-selector .suggestion-ctn input[type="text"]{
-	height:24px;
-	width:268px
-}
-.w-message-contact-selector-body .searchbox{
-	box-sizing:border-box;
-	width:100%
-}
-.w-message-contact-selector-body .selector-ctrl{
-	background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
-	border:1px #cacaca solid;
-	border-bottom:none;
-	margin-top:10px;
-	padding-right:10px;
+.sms-message-contact-selector-body .selector-ctrl{
+  background-image:-moz-linear-gradient(left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
+  border:1px #cacaca solid;
+  border-bottom:none;
+  margin-top:10px;
+  padding-right:10px;
 }
 
-.w-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary){
-	background:transparent;
-	border-color:transparent;
-	border-radius:0;
-	box-shadow:none;
-	color:#555555
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary){
+  background:transparent;
+  border-color:transparent;
+  border-radius:0;
+  box-shadow:none;
+  color:#555555
 }
-.w-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary):enabled:hover:not(.active):not(:active),.w-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary):enabled:focus{
-	background:transparent;
-	color:#3c7800
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary):enabled:hover:not(.active):not(:active),.sms-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary):enabled:focus{
+  background:transparent;
+  color:#3c7800
 }
-.w-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary):enabled:active,.w-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary).active{
-	background:transparent;
-	box-shadow:none;
-	color:#2c5300
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary):enabled:active,.sms-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary).active{
+  background:transparent;
+  box-shadow:none;
+  color:#2c5300
 }
-.w-message-contact-selector-body .selector-ctrl .selector-ctn .w-ui-button.w-ui-menubutton{
-	max-width:105px;
-	padding-left:5px;
-	padding-right:5px
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton{
+  max-width:105px;
+  padding-left:5px;
+  padding-right:5px
 }
-.w-message-contact-selector-body .selector-ctrl .selector-ctn .w-ui-button.w-ui-menubutton .arrow-ctn{
-	opacity:1
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton .arrow-ctn{
+  opacity:1
 }
-.w-message-contact-selector-body .selector-ctrl .selector-ctn .w-ui-button.w-ui-menubutton .arrow-ctn .arrow{
-	border-color:#999 transparent transparent transparent
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton .arrow-ctn .arrow{
+  border-color:#999 transparent transparent transparent
 }
-.w-message-contact-selector-body .selector-ctrl .selector-ctn .w-ui-button.w-ui-menubutton:enabled:hover .arrow-ctn .arrow{
-	border-top-color:#6db800
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton:enabled:hover .arrow-ctn .arrow{
+  border-top-color:#6db800
 }
-.w-message-contact-selector-body .selector-ctrl .selector-ctn .w-ui-button.w-ui-menubutton:enabled:active .arrow-ctn .arrow,.w-message-contact-selector-body .selector-ctrl .selector-ctn .w-ui-button.w-ui-menubutton.active .arrow-ctn .arrow,.w-message-contact-selector-body .selector-ctrl .selector-ctn .w-ui-button.w-ui-menubutton.active:hover .arrow-ctn .arrow{
-	border-top-color:#2c5300
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton:enabled:active .arrow-ctn .arrow,.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton.active .arrow-ctn .arrow,.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton.active:hover .arrow-ctn .arrow{
+  border-top-color:#2c5300
 }
-.w-message-contact-selector-body .selector-footer .button-clear-all{
-	float:right
+.sms-message-contact-selector-body .selector-footer .button-clear-all{
+  float:right
 }
-.w-message-contact-selector-body .list-ctn{
-	border:1px #cacaca solid;
-	height:350px
+.sms-message-contact-selector-body .list-ctn{
+  border:1px #cacaca solid;
+  height:350px
 }
-.w-message-contact-selector-body .selector-monitor{
-	border:1px #cacaca solid;
-	height:75px;
-	margin:10px 0;
-	overflow-y:auto;
-	padding:3px
-}
-.w-message-contact-selector-list-item{
-	height:24px;
-	padding:3px;
-}
-.w-message-contact-selector-list-item .avatar{
-	height:24px;
-	width:24px;
-        float: left
-}
-.w-message-contact-selector-list-item .input{
-	display:none;
-	padding:0 5px;
-}
-.w-message-contact-selector-list-item .title{
-	margin:0 5px 0 10px;
-        float: left
-}
-.w-message-contact-selector-list-item .phone-number{
-	margin-right:5px;
-	width:120px;
-        float: left
-}
-.w-message-contact-selector-list-item .state{
-	margin-right:10px;
-	width:45px;
-        float: right
-}
-.w-message-contact-selector-list-item .state .tip,.w-message-contact-selector-list-item .state .check{
-	display:none
-}
-.w-message-contact-selector-list-item .state .check{
-	background-position:0 -8732px;
-	height:12px;
-	width:12px
-}
-.w-message-contact-selector-list-item:not(.highlight):hover .state .tip{
-	display:block
-}
-.w-message-contact-selector-list-item.highlight .state .check{
-	display:block
-}
-.w-message-contact-selector-monitor-item{
-	background-color:#f9f9f9;
-	border:1px #cacaca solid;
-	border-radius:2px;
-	cursor:default;
-	display:inline-block;
-	line-height:18px;
-	margin:1px 3px 1px 0;
-	padding:0 20px 0 10px;
-	position:relative;
-	text-shadow:0 1px 0 #fff
-}
-.w-message-contact-selector-monitor-item .button-delete{
-	background-position:0 -8431px;
-	cursor:default;
-	height:16px;
-	width:16px;
-	display:none;
-	margin-top:-8px;
-	position:absolute;
-	right:2px;
-	top:50%
-}
-.w-message-contact-selector-monitor-item .button-delete:hover{
-	background-position:0 -6118px
-}
-.w-message-contact-selector-monitor-item .button-delete:active{
-	background-position:0 -6178px
-}
-.w-message-contact-selector-monitor-item:hover .button-delete{
-	display:block
+.sms-message-contact-selector-body .selector-monitor{
+  border:1px #cacaca solid;
+  height:75px;
+  margin:10px 0;
+  overflow-y:auto;
+  padding:3px
 }
 
-.w-ui-loading-small{
-	border-radius:5px;
-	display:none;
-	height:25px;
-	width:25px
-}
-.w-ui-loading-small.white{
-	background-color:transparent
-}
-
-.w-ui-smartlist-body-ctn.odd>li:nth-child(odd):not(.highlight):not(:hover){
-	background-color:#f5f5f5
-}
-.w-ui-smartlist-body-ctn.odd>li:nth-child(even):not(.highlight):not(:hover){
-	background-color:transparent
-}
-.w-ui-smartlist-body-ctn>li{
-	border-top:1px #f3f3f3 solid
-}
-.w-ui-smartlist-body-ctn>li:first-child{
-	border-top-color:transparent
-}
-.w-ui-smartlist-body-ctn>li:nth-child(odd):not(.highlight):not(:hover){
-	background-color:transparent
-}
-.w-ui-smartlist-body-ctn>li:nth-child(even):not(.highlight):not(:hover){
-	background-color:#f5f5f5
-}
-.w-ui-smartlist-body-ctn>li.highlight{
-	background-color:#e2fac0;
-	color:#3c7800
-}
-.w-ui-smartlist-body-ctn>li.highlight .text-secondary{
-	color:#3c7800
-}
-.w-ui-smartlist-body-ctn>li.highlight+.highlight{
-	border-color:#d6ecb6
-}
-.w-ui-smartlist-body-ctn>li:hover,.w-ui-smartlist-body-ctn>li.highlight:hover{
-	background-color:rgba(226,250,192,0.5)
-}
-.w-ui-smartlist-body-ctn .item-checker-wrap{
-	display:block;
-}
-
-#w-ui-smartlist-container {
+#sms-ui-smartlist-container {
     max-height: 35rem;
     overflow: auto;
     padding-left: 1rem;
@@ -1092,6 +926,7 @@
     overflow: auto;
     padding-left: 1rem;
 }
+
 #show-sms-container
 {
     max-height: 40rem;
@@ -1099,98 +934,94 @@
     padding-left: 1rem;
 }
 
-.w-ui-button.w-ui-menubutton .label{
-	text-align:left;
-	-moz-box-flex:1;
-        float: left
+.sms-ui-button.sms-ui-menubutton .label{
+  text-align:left;
+  float: left
 }
-.w-ui-button.w-ui-menubutton .label+.arrow-ctn{
-	margin-left:5px;
-        float: left;
-    padding-top: 5px;
-}
-.w-ui-button.w-ui-menubutton .arrow-ctn{
-	-moz-box-align:center
-}
-.w-ui-button.w-ui-menubutton .arrow-ctn .arrow{
-	border-color:#000 transparent transparent transparent;
-	border-style:solid;
-	border-width:4px 4px 0;
-	opacity:.7
-}
-.w-ui-button.w-ui-menubutton:enabled:hover .arrow-ctn .arrow{
-	opacity:1
-}
-.w-ui-button.w-ui-menubutton:enabled:active .arrow-ctn .arrow,.w-ui-button.w-ui-menubutton.active .arrow-ctn .arrow,.w-ui-button.w-ui-menubutton.active:hover .arrow-ctn .arrow{
-	opacity:1
-}
-.w-ui-button.w-ui-menubutton.primary .arrow-ctn .arrow,.w-ui-button.w-ui-menubutton.secondary .arrow-ctn .arrow{
-	border-top-color:#fff
-}
-.w-ui-button.w-ui-menubutton.primary:enabled:hover .arrow-ctn .arrow,.w-ui-button.w-ui-menubutton.secondary:enabled:hover .arrow-ctn .arrow{
-	border-top-color:#fff
-}
-.w-ui-button.w-ui-menubutton.primary:enabled:active .arrow-ctn .arrow,.w-ui-button.w-ui-menubutton.primary.active .arrow-ctn .arrow,.w-ui-button.w-ui-menubutton.primary.active:hover .arrow-ctn .arrow,.w-ui-button.w-ui-menubutton.secondary:enabled:active .arrow-ctn .arrow,.w-ui-button.w-ui-menubutton.secondary.active .arrow-ctn .arrow,.w-ui-button.w-ui-menubutton.secondary.active:hover .arrow-ctn .arrow{
-	border-top-color:#fff
-}
-.w-ui-button.w-ui-menubutton.primary .arrow-ctn,.w-ui-button.w-ui-menubutton.secondary .arrow-ctn{
-	border-color:#fff
-}
-.w-ui-button.w-ui-menubutton.toggle{
-	min-width:22px;
-	padding-left:8px;
-	padding-right:8px
-}
-.w-ui-button.w-ui-menubutton.toggle .label{
-	display:none
-}
-.w-ui-button.w-ui-menubutton.toggle .label+.arrow-ctn{
-	margin-left:0px
+.sms-ui-button.sms-ui-menubutton .label+.arrow-ctn{
+  margin-left:5px;
+  float: left;
+  padding-top: 5px;
 }
 
-.w-ui-menu{
-	background:#fff;
-	border:1px #bbb solid;
-	border-radius:3px;
-	box-shadow:0 2px 10px rgba(0,0,0,0.3);
-	overflow-y:auto;
-	padding:5px 0;
-	position:absolute;
-	-moz-transition:opacity .15s linear;
-        margin-left: 85px;
+.sms-ui-button.sms-ui-menubutton .arrow-ctn .arrow{
+  border-color:#000 transparent transparent transparent;
+  border-style:solid;
+  border-width:4px 4px 0;
+  opacity:.7
 }
-.w-ui-menu li{
-	height:30px;
-	line-height:22px;
-	padding:0 15px 0 5px
+.sms-ui-button.sms-ui-menubutton:enabled:hover .arrow-ctn .arrow{
+  opacity:1
 }
-.w-ui-menu li:hover:not([disabled]){
-	background:-moz-linear-gradient(center top , #5bb70d, #4eaa00) repeat scroll 0 0 transparent;
-	color:#fff
+.sms-ui-button.sms-ui-menubutton:enabled:active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.active:hover .arrow-ctn .arrow{
+  opacity:1
 }
-.w-ui-menu li[disabled]{
-	opacity:0.4
+.sms-ui-button.sms-ui-menubutton.primary .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary .arrow-ctn .arrow{
+  border-top-color:#fff
 }
-.w-ui-menu li.disabled:hover{
-	background:#fff
+.sms-ui-button.sms-ui-menubutton.primary:enabled:hover .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary:enabled:hover .arrow-ctn .arrow{
+  border-top-color:#fff
+}
+.sms-ui-button.sms-ui-menubutton.primary:enabled:active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.primary.active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.primary.active:hover .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary:enabled:active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary.active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary.active:hover .arrow-ctn .arrow{
+  border-top-color:#fff
+}
+.sms-ui-button.sms-ui-menubutton.primary .arrow-ctn,.sms-ui-button.sms-ui-menubutton.secondary .arrow-ctn{
+  border-color:#fff
+}
+.sms-ui-button.sms-ui-menubutton.toggle{
+  min-width:22px;
+  padding-left:8px;
+  padding-right:8px
+}
+.sms-ui-button.sms-ui-menubutton.toggle .label{
+  display:none
+}
+.sms-ui-button.sms-ui-menubutton.toggle .label+.arrow-ctn{
+  margin-left:0px
 }
 
-.w-ui-menu li label{
+.sms-ui-menu{
+  background:#fff;
+  border:1px #bbb solid;
+  border-radius:3px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.3);
+  overflow-y:auto;
+  padding:5px 0;
+  position:absolute;
+  margin-left: 85px;
+}
+.sms-ui-menu li{
+  height:30px;
+  line-height:22px;
+  padding:0 15px 0 5px
+}
+.sms-ui-menu li:hover:not([disabled]){
+  background:-moz-linear-gradient(center top , #5bb70d, #4eaa00) repeat scroll 0 0 transparent;
+  color:#fff
+}
+.sms-ui-menu li[disabled]{
+  opacity:0.4
+}
+.sms-ui-menu li.disabled:hover{
+  background:#fff
+}
+
+.sms-ui-menu li label{
   display:block;
   max-width:150px;
   min-width:80px;
 }
-.w-ui-menu input[type="radio"]{
-	background:none;
-	background-color:transparent;
-	border:none;
-	height:16px;
-	margin:7px 5px 0 0;
-	width:16px;
-        float: left;
-        display: none;
+.sms-ui-menu input[type="radio"]{
+  background:none;
+  background-color:transparent;
+  border:none;
+  height:16px;
+  margin:7px 5px 0 0;
+  width:16px;
+  float: left;
+  display: none;
 }
-.w-ui-menu input[type="radio"]:enabled:hover{
-	background:none;
-	border:none
+.sms-ui-menu input[type="radio"]:enabled:hover{
+  background:none;
+  border:none
 }

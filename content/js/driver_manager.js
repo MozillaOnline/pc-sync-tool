@@ -6,8 +6,7 @@ var DriverManager = (function() {
   var client = null;
 
   function connectToDriverManager() {
-    if (navigator.mozFFOSAssistant.isDriverManagerRunning &&
-        navigator.mozFFOSAssistant.driverManagerPort) {
+    if (navigator.mozFFOSAssistant.isDriverManagerRunning && navigator.mozFFOSAssistant.driverManagerPort) {
       client = new TelnetClient({
         // host: '10.241.5.197',
         host: '127.0.0.1',
@@ -26,24 +25,22 @@ var DriverManager = (function() {
     if (!msg) {
       return;
     }
-
     switch (msg.type) {
-      case 'notification':
-        console.log('Got an notification');
-        checkNotification();
-        break;
-      case 'deviceChanged':
-        onDeviceChanged(msg);
-        break;
-      case 'driverInstalled':
-        onDriverInstalled(msg);
-        break;
+    case 'notification':
+      console.log('Got an notification');
+      checkNotification();
+      break;
+    case 'deviceChanged':
+      onDeviceChanged(msg);
+      break;
+    case 'driverInstalled':
+      onDriverInstalled(msg);
+      break;
     }
   }
 
   function onDeviceChanged(msg) {
     window.clearTimout(failToInstallTimeout);
-
     fireEvent(DriverManager.EVENT_DEVICE_CHANGED, {
       eventType: msg.data.eventType,
       deviceInstanceId: msg.data.deviceInstanceId
@@ -74,12 +71,13 @@ var DriverManager = (function() {
         fireEvent(DriverManager.EVENT_DRIVER_FAIL_INSTALLED, {
           errorMessage: 'no device-storage changed event is received.',
           errorCode: 0
-        }); 
-      }, 5000);      
+        });
+      }, 5000);
     }
   }
 
   var _doubleCheckTimeout = null;
+
   function checkDriverStatus() {
     client.sendCommand('list', function(message) {
       if (message.data.length == 0) {
@@ -180,7 +178,6 @@ var DriverManager = (function() {
 
   return {
     EVENT_INSTALLING_DRIVER: 'DriverManager:installingDriver',
-
     EVENT_DRIVER_INSTALLED: 'DriverManager:driverInstalled',
     EVENT_DRIVER_FAIL_INSTALLED: 'DriverManager:driverFailInstalled',
 
@@ -197,4 +194,3 @@ var DriverManager = (function() {
     }
   };
 })();
-

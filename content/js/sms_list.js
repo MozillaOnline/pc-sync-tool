@@ -375,7 +375,7 @@ var SmsList = (function() {
     
     var html = '';
     html += '<div>';
-    html += '<li class="w-message-thread">';
+    html += '<li class="sms-message-thread">';
     html += '<div class="date-ctn text-thirdly">';
     html += '<date>';
     var dt = new Date(MessageData.timestamp);
@@ -406,7 +406,7 @@ var SmsList = (function() {
     }
     html += '</date>';
     html += '</div>';
-    html += '<ul class="w-message-item-ctn">';
+    html += '<ul class="sms-message-item-ctn">';
     if (MessageData.delivery == "received") {
       html += '<li ';
     } else if(MessageData.delivery == "error"){

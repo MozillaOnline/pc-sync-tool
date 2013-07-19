@@ -5,22 +5,26 @@
 'use strict';
 
 let DEBUG = 1;
-if (DEBUG)
-  debug = function (s) { dump("-*- adbService module: " + s + "\n"); };
+if (DEBUG) debug = function(s) {
+  dump("-*- adbService module: " + s + "\n");
+};
 else
-  debug = function (s) { };
+debug = function(s) {};
 
 var EXPORTED_SYMBOLS = ['ADBService'];
 
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu,
+  results: Cr
+} = Components;
 const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
 const ADB_FILE_URL = 'resource://ffosassistant-adb';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-XPCOMUtils.defineLazyServiceGetter(this, "ppmm",
-                                   "@mozilla.org/parentprocessmessagemanager;1",
-                                   "nsIMessageListenerManager");
+XPCOMUtils.defineLazyServiceGetter(this, "ppmm", "@mozilla.org/parentprocessmessagemanager;1", "nsIMessageListenerManager");
 
 XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 
@@ -61,8 +65,10 @@ let libWorker = new ChromeWorker(WORKER_FILE);
 libWorker.onmessage = worker_onMessage;
 
 function startADBForward(onsuccess, onerror) {
-  onsuccess = onsuccess || function() {};
-  onerror = onerror || function() {};
+  onsuccess = onsuccess ||
+  function() {};
+  onerror = onerror ||
+  function() {};
 
   let libFileUri = utils.getChromeFileURI(LIB_FILE_URL);
   let adbFileUri = utils.getChromeFileURI(ADB_FILE_URL);
@@ -101,44 +107,46 @@ let messageReceiver = {
 
     var self = this;
     switch (aMessage.name) {
-      case 'ADBService:connected':
-        // This message is sync
-        return connected;
-      case 'ADBService:connect':
-        startADBForward(function onsuccess() {
-          connected = true;
-          self._sendMessage('ADBService:connect:Return', true, null, msg);
-        }, function onerror() {
-          connected = false;
-          self._sendMessage('ADBService:connect:Return', false, null, msg);
-        });
-        break;
-      case 'ADBService:disconnect':
-        // Not implemented
-        this._sendMessage('ADBService:disconnect:Return', false, null, msg);
-        break;
-      case 'ADBService:RunCmd':
-        self = this;
-        controlMessage({
-          cmd: 'RunCmd',
-          data: msg.data
-        }, function Result_RunCmd(data) {
-          self._sendMessage('ADBService:RunCmd:Return', true, data.result, msg);
-        });
-        break;
+    case 'ADBService:connected':
+      // This message is sync
+      return connected;
+    case 'ADBService:connect':
+      startADBForward(function onsuccess() {
+        connected = true;
+        self._sendMessage('ADBService:connect:Return', true, null, msg);
+      }, function onerror() {
+        connected = false;
+        self._sendMessage('ADBService:connect:Return', false, null, msg);
+      });
+      break;
+    case 'ADBService:disconnect':
+      // Not implemented
+      this._sendMessage('ADBService:disconnect:Return', false, null, msg);
+      break;
+    case 'ADBService:RunCmd':
+      self = this;
+      controlMessage({
+        cmd: 'RunCmd',
+        data: msg.data
+      }, function Result_RunCmd(data) {
+        self._sendMessage('ADBService:RunCmd:Return', true, data.result, msg);
+      });
+      break;
     }
   },
 
   handleWorkerMessage: function msgRev_handleWorkerMessage(msg) {
     let cmd = msg.cmd;
     switch (cmd) {
-      case 'statechange':
-        // Update ADB forward state
-        connected = msg.connected;
-        ppmm.broadcastAsyncMessage('ADBService:statechange', { connected: connected });
-        break;
-      default:
-        break;
+    case 'statechange':
+      // Update ADB forward state
+      connected = msg.connected;
+      ppmm.broadcastAsyncMessage('ADBService:statechange', {
+        connected: connected
+      });
+      break;
+    default:
+      break;
     }
   },
 
@@ -151,7 +159,7 @@ let messageReceiver = {
   }
 };
 
-const messages = ['ADBService:connect', 'ADBService:connected','ADBService:RunCmd'];
+const messages = ['ADBService:connect', 'ADBService:connected', 'ADBService:RunCmd'];
 messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });
@@ -178,4 +186,3 @@ var ADBService = {
  */
 startADBForward();
 debug('ADBService module is inited.');
-

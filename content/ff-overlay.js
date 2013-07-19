@@ -4,24 +4,23 @@
 
 (function() {
   let DEBUG = 1;
-  if (DEBUG)
-    debug = function (s) { dump("-*- ADBService FF Overlay: " + s + "\n"); };
+  if (DEBUG) debug = function(s) {
+    dump("-*- ADBService FF Overlay: " + s + "\n");
+  };
   else
-    debug = function (s) { };
+  debug = function(s) {};
 
   var modules = {};
-  XPCOMUtils.defineLazyServiceGetter(modules, "cpmm",
-                                     "@mozilla.org/childprocessmessagemanager;1",
-                                     "nsISyncMessageSender");
+  XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
 
   function init() {
     // Import ADB Service module
     debug('Import adbService module');
 
     try {
-    Components.utils.import('resource://ffosassistant/ADBService.jsm');
-    Components.utils.import('resource://ffosassistant/driverDownloader.jsm');
-    Components.utils.import('resource://ffosassistant/driverManager.jsm');
+      Components.utils.import('resource://ffosassistant/ADBService.jsm');
+      Components.utils.import('resource://ffosassistant/driverDownloader.jsm');
+      Components.utils.import('resource://ffosassistant/driverManager.jsm');
     } catch (e) {
       debug('Error occurs when import modules: ' + e);
     }
@@ -83,7 +82,9 @@
       tab = gBrowser.selectedTab;
       gBrowser.selectedBrowser.loadURI('about:ffos');
     } else {
-      tab = gBrowser.loadOneTab('about:ffos', { inBackground: false });
+      tab = gBrowser.loadOneTab('about:ffos', {
+        inBackground: false
+      });
     }
 
     var pinPref = 'extensions.ffosassistant@mozillaonline.com.pinnedOnOpen';
@@ -94,59 +95,56 @@
 
   // Copy from Firefox4
   if (!window["switchToTabHavingURI"]) {
-      window["isTabEmpty"] = function (aTab) {
-          var browser = aTab.linkedBrowser;
-          return  browser.sessionHistory.count < 2 &&
-                  browser.currentURI.spec == "about:blank" &&
-                  !browser.contentDocument.body.hasChildNodes() &&
-                  !aTab.hasAttribute("busy");
+    window["isTabEmpty"] = function(aTab) {
+      var browser = aTab.linkedBrowser;
+      return browser.sessionHistory.count < 2 && browser.currentURI.spec == "about:blank" && !browser.contentDocument.body.hasChildNodes() && !aTab.hasAttribute("busy");
+    }
+
+    window["switchToTabHavingURI"] = function(aURI, aOpenNew) {
+      function switchIfURIInWindow(aWindow) {
+        var browsers = aWindow.gBrowser.browsers;
+        for (var i = 0; i < browsers.length; i++) {
+          var browser = browsers[i];
+          if (browser.currentURI.equals(aURI)) {
+            aWindow.focus();
+            aWindow.gBrowser.tabContainer.selectedIndex = i;
+            return true;
+          }
+        }
+        return false;
       }
 
-      window["switchToTabHavingURI"] = function(aURI, aOpenNew) {
-          function switchIfURIInWindow(aWindow) {
-              var browsers = aWindow.gBrowser.browsers;
-              for (var i = 0; i < browsers.length; i++) {
-                  var browser = browsers[i];
-                  if (browser.currentURI.equals(aURI)) {
-                      aWindow.focus();
-                      aWindow.gBrowser.tabContainer.selectedIndex = i;
-                      return true;
-                  }
-              }
-              return false;
-          }
-
-          if (!(aURI instanceof Ci.nsIURI)) {
-              var ioServices = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
-              aURI = ioServices.newURI(aURI, null, null);
-          }
-
-          var isBrowserWindow = !!window.gBrowser;
-          if (isBrowserWindow && switchIfURIInWindow(window)) {
-              return true;
-          }
-
-          var winEnum = jsm.windowMediator.getEnumerator("navigator:browser");
-          while (winEnum.hasMoreElements()) {
-              var browserWin = winEnum.getNext();
-              if (browserWin.closed || browserWin == window) {
-                  continue;
-              }
-              if (switchIfURIInWindow(browserWin)) {
-                  return true;
-              }
-          }
-
-          if (aOpenNew) {
-              if (isBrowserWindow && isTabEmpty(gBrowser.selectedTab)) {
-                  gBrowser.selectedBrowser.loadURI(aURI.spec);
-              } else {
-                  openUILinkIn(aURI.spec, "tab");
-              }
-          }
-
-          return false;
+      if (!(aURI instanceof Ci.nsIURI)) {
+        var ioServices = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
+        aURI = ioServices.newURI(aURI, null, null);
       }
+
+      var isBrowserWindow = !! window.gBrowser;
+      if (isBrowserWindow && switchIfURIInWindow(window)) {
+        return true;
+      }
+
+      var winEnum = jsm.windowMediator.getEnumerator("navigator:browser");
+      while (winEnum.hasMoreElements()) {
+        var browserWin = winEnum.getNext();
+        if (browserWin.closed || browserWin == window) {
+          continue;
+        }
+        if (switchIfURIInWindow(browserWin)) {
+          return true;
+        }
+      }
+
+      if (aOpenNew) {
+        if (isBrowserWindow && isTabEmpty(gBrowser.selectedTab)) {
+          gBrowser.selectedBrowser.loadURI(aURI.spec);
+        } else {
+          openUILinkIn(aURI.spec, "tab");
+        }
+      }
+
+      return false;
+    }
   }
 
   let heartBeatSocket = null;
@@ -170,8 +168,7 @@
   // Add tcp socket permissions for debugging
   if (Services.prefs.getBoolPref('extensions.ffosassistant@mozillaonline.com.debug')) {
     let domain = Services.prefs.getCharPref('extensions.ffosassistant@mozillaonline.com.tcp_socket_allow_domain');
-    var ios = Components.classes['@mozilla.org/network/io-service;1']
-                .getService(Components.interfaces.nsIIOService);
+    var ios = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
     uri = ios.newURI(domain, null, null);
 
     Services.perms.add(uri, 'tcp-socket', Components.interfaces.nsIPermissionManager.ALLOW_ACTION);
@@ -182,4 +179,3 @@
     window.setTimeout(init, 1000);
   });
 })();
-

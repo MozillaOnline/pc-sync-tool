@@ -22,6 +22,7 @@ function $expr(expr, elem) {
 /**
  * Get l10n
  */
+
 function _(key, args, fallback) {
   return navigator.mozL10n.get(key, args, fallback);
 }
@@ -29,7 +30,7 @@ function _(key, args, fallback) {
 (function() {
   function extend(destination, source) {
     for (var property in source)
-      destination[property] = source[property];
+    destination[property] = source[property];
     return destination;
   }
 
@@ -50,6 +51,7 @@ function log(msg) {
  * Execute the async functions
  * The functions must call the given callback functions when executed.
  */
+
 function syncExecuteAsyncFuncs(asyncFuncs, onFinished) {
   if (asyncFuncs.length == 0) {
     onFinished();
@@ -91,4 +93,3 @@ var os = (function() {
     isMac: /mac/.test(oscpu)
   };
 })();
-

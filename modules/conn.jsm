@@ -4,15 +4,20 @@
 
 var EXPORTED_SYMBOLS = ['SocketConn'];
 
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu,
+  results: Cr
+} = Components;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
 
 var nsISocketTransportService =
-  Cc["@mozilla.org/network/socket-transport-service;1"].
-    getService(Ci.nsISocketTransportService);
+Cc["@mozilla.org/network/socket-transport-service;1"].
+getService(Ci.nsISocketTransportService);
 
 function _error(str) {
   dump('-*- conn.jsm error -*- ' + str + '\n');
@@ -30,6 +35,7 @@ function _logMessage(str) {
  *  onclose:
  *  onMessage:
  */
+
 function SocketConn(options) {
   this.initialize(options);
 }
@@ -69,8 +75,7 @@ SocketConn.prototype = {
   },
 
   // nsITransportEventSink (Triggered by transport.setEventSink)
-  onTransportStatus: function socket_onTransportStatus(transport,
-    status, progress, max) {
+  onTransportStatus: function socket_onTransportStatus(transport, status, progress, max) {
     if (status == Ci.nsISocketTransport.STATUS_CONNECTED_TO) {
       // Call event listeners
       if (this.options.onopen) {
@@ -78,17 +83,16 @@ SocketConn.prototype = {
       }
 
       this.nsIInputStreamPump =
-        Cc["@mozilla.org/network/input-stream-pump;1"].
-          createInstance(Ci.nsIInputStreamPump);
+      Cc["@mozilla.org/network/input-stream-pump;1"].
+      createInstance(Ci.nsIInputStreamPump);
 
       this.nsIInputStreamPump.init(this.inputStream, -1, -1, 0, 0, false);
       var self = this;
       this.nsIInputStreamPump.asyncRead({
-        data: { },
+        data: {},
         restStr: "",
 
-        onStartRequest: function(request, context) {
-        },
+        onStartRequest: function(request, context) {},
 
         onStopRequest: function(request, context, status) {
           try {
@@ -106,8 +110,8 @@ SocketConn.prototype = {
           var str = this.restStr + this.data.value;
           // May receive string composed by serveral JSON, should be split.
           str = str.trim();
-          var lbCount = 0;  // left brace count
-          var rbCount = 0;  // right brace count
+          var lbCount = 0; // left brace count
+          var rbCount = 0; // right brace count
           var start = 0; // start index of json string
           var isLastEscape = false;
           for (var i = 0; i < str.length; i++) {
@@ -123,7 +127,7 @@ SocketConn.prototype = {
                   _logMessage(jsonStr);
                   if (self.options.onMessage) {
                     try {
-                              self.options.onMessage(JSON.parse(jsonStr));
+                      self.options.onMessage(JSON.parse(jsonStr));
                     } catch (e) {
                       _error(e);
                     }
@@ -141,15 +145,15 @@ SocketConn.prototype = {
 
   connect: function() {
     this.nsIConverterInputStream =
-      Cc["@mozilla.org/intl/converter-input-stream;1"].
-      createInstance(Ci.nsIConverterInputStream);
+    Cc["@mozilla.org/intl/converter-input-stream;1"].
+    createInstance(Ci.nsIConverterInputStream);
 
     this.nsIConverterOutputStream =
-      Cc["@mozilla.org/intl/converter-output-stream;1"].
-        createInstance(Ci.nsIConverterOutputStream);
+    Cc["@mozilla.org/intl/converter-output-stream;1"].
+    createInstance(Ci.nsIConverterOutputStream);
 
     var transport = nsISocketTransportService.
-          createTransport(null, 0, this.options.host, this.options.port, null);
+    createTransport(null, 0, this.options.host, this.options.port, null);
 
     transport.setEventSink(this, Services.tm.currentThread);
 
@@ -161,4 +165,3 @@ SocketConn.prototype = {
     this.nsIConverterOutputStream.init(this.outputStream, "utf8", 65535, REPLACEMENT_CHARACTER);
   }
 };
-

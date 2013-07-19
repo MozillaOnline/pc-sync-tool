@@ -3,10 +3,11 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 let DEBUG = 1;
-if (DEBUG)
-  debug = function (s) { dump("-*- adb service worker: " + s + "\n"); };
+if (DEBUG) debug = function(s) {
+  dump("-*- adb service worker: " + s + "\n");
+};
 else
-  debug = function (s) { };
+debug = function(s) {};
 
 var device = '';
 var ADB_PATH = '';
@@ -28,21 +29,20 @@ var libadb = (function() {
     },
 
     findDevice: function() {
-      if(runCmd != null){
-        if(ADB_PATH != ''){
-          return runCmd(ADB_PATH +' devices');
+      if (runCmd != null) {
+        if (ADB_PATH != '') {
+          return runCmd(ADB_PATH + ' devices');
         }
       }
       return null;
     },
 
     setupDevice: function() {
-      if(runCmd != null){
-        if(ADB_PATH != ''){
-          if(device != '')
-            return runCmd(ADB_PATH + ' -s ' + device + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
+      if (runCmd != null) {
+        if (ADB_PATH != '') {
+          if (device != '') return runCmd(ADB_PATH + ' -s ' + device + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
           else
-            return runCmd(ADB_PATH  + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
+          return runCmd(ADB_PATH + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
         }
       }
       return null;
@@ -52,8 +52,8 @@ var libadb = (function() {
       if (runCmd) {
         var pinfo = runCmd('cmd.exe /c netstat -ano | findstr 5037');
         var plisten = pinfo.indexOf("LISTENING");
-        if(plisten > 0 ){
-          var pid = plisten.substring("LISTENING","\r\n");
+        if (plisten > 0) {
+          var pid = plisten.substring("LISTENING", "\r\n");
           return runCmd('cmd.exe /c Tasklist | findstr ' + pid);
         }
         return null;
@@ -62,14 +62,14 @@ var libadb = (function() {
       return null;
     },
 
-    runLocalCmd: function (cmd) {
+    runLocalCmd: function(cmd) {
       if (!cmd) {
         return null;
       }
 
       var commands = cmd.split(' ');
       switch (commands[0]) {
-        case 'adb':
+      case 'adb':
         {
           if (ADB_PATH) {
             if (device) {
@@ -80,12 +80,12 @@ var libadb = (function() {
           }
           return null;
         }
-        case 'listAdbService':
+      case 'listAdbService':
         {
           return this.listAdbService();
         }
-        default:
-          return 'not supported';
+      default:
+        return 'not supported';
       }
     }
   };
@@ -98,57 +98,57 @@ self.onmessage = function(e) {
   let id = e.data.id;
   let cmd = e.data.cmd;
   switch (cmd) {
-    case 'loadlib':
-      // Load adb service library
-      libadb.loadLib(e.data.libPath);
-      // Set the path of adb executive file
-      ADB_PATH = e.data.adbPath;
-      postMessage({
-        id: id,
-        result: true
-      });
-      break;
-    case 'findDevice':
-      postMessage({
-        id: id,
-        result: libadb.findDevice().readString().trim()
-      });
-      break;
-    case 'setupDevice':
-      let result;
-      let ret = libadb.setupDevice().readString().trim();
-      if((ret.indexOf("error") > 0) || (ret.indexOf("failed") > 0))
-        result = false;
-      else
-        result = true;
-      postMessage({
-        id: id,
-        result: result
-      });
-      setConnected(!!result);
-      break;
-    case 'startDeviceDetecting':
-      startDetecting(e.data.start);
-      break;
-    case 'RunCmd':
-      cmd = e.data.data;
-      postMessage({
-        id: id,
-        result: libadb.runLocalCmd(cmd)
-      });
-      break;
-    default:
-      postMessage({
-        id: id,
-        message: 'No handle for \'' + cmd + '\''
-      });
-      break;
+  case 'loadlib':
+    // Load adb service library
+    libadb.loadLib(e.data.libPath);
+    // Set the path of adb executive file
+    ADB_PATH = e.data.adbPath;
+    postMessage({
+      id: id,
+      result: true
+    });
+    break;
+  case 'findDevice':
+    postMessage({
+      id: id,
+      result: libadb.findDevice().readString().trim()
+    });
+    break;
+  case 'setupDevice':
+    let result;
+    let ret = libadb.setupDevice().readString().trim();
+    if ((ret.indexOf("error") > 0) || (ret.indexOf("failed") > 0)) result = false;
+    else
+    result = true;
+    postMessage({
+      id: id,
+      result: result
+    });
+    setConnected( !! result);
+    break;
+  case 'startDeviceDetecting':
+    startDetecting(e.data.start);
+    break;
+  case 'RunCmd':
+    cmd = e.data.data;
+    postMessage({
+      id: id,
+      result: libadb.runLocalCmd(cmd)
+    });
+    break;
+  default:
+    postMessage({
+      id: id,
+      message: 'No handle for \'' + cmd + '\''
+    });
+    break;
   }
 };
 
 /**
  * Change connected state, and send 'statechange' message if changed.
  */
+
 function setConnected(newState) {
   let oldState = connected;
   connected = newState;
@@ -163,6 +163,7 @@ function setConnected(newState) {
 }
 
 let detectingInterval = null;
+
 function startDetecting(start) {
   if (detectingInterval) {
     clearInterval(detectingInterval);
@@ -192,4 +193,3 @@ function startDetecting(start) {
 
 startDetecting(true);
 debug('ADB Service worker is inited.');
-

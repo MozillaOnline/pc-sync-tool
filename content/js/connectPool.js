@@ -40,7 +40,7 @@ TCPConnectionPool.prototype = {
 
   finalize: function tc_finalize() {
     this.options = null;
-    this._connPool.forEach(function (wrapper) {
+    this._connPool.forEach(function(wrapper) {
       wrapper.socket.close();
     });
     this._connPool = null;
@@ -53,8 +53,9 @@ TCPConnectionPool.prototype = {
 
   _initPool: function tc_initPool() {
     for (var i = 0; i < this.options.size; i++) {
-      var socket = navigator.mozTCPSocket.open(this.options.host,
-        this.options.port, { binaryType: 'arraybuffer' });
+      var socket = navigator.mozTCPSocket.open(this.options.host, this.options.port, {
+        binaryType: 'arraybuffer'
+      });
 
       socket.onopen = this._onSocketOpened.bind(this);
     }
@@ -90,7 +91,6 @@ TCPConnectionPool.prototype = {
       onmessage: this._onWrapperMessage.bind(this),
       onclose: this._onSocketClosed.bind(this)
     });
-
     // If a new socket is available, then call onenable to notify
     if (this._connPool.length === 0) {
       this.options.onenable();
@@ -98,12 +98,10 @@ TCPConnectionPool.prototype = {
 
     this._setSocketWrapperIdle(socketWrapper);
     this._connPool.push(socketWrapper);
-
     this._sendQueuedMsg();
-
     if (!this._messageSendingTimer) {
       this._messageSendingTimer = window.setInterval(
-        this._sendQueuedMsg.bind(this), 500);
+      this._sendQueuedMsg.bind(this), 500);
     }
   },
 
@@ -129,8 +127,7 @@ TCPConnectionPool.prototype = {
    * The callback function to be called in the wrapper
    * @see TCPSocketWrapper
    */
-  _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd,
-                                                  sendCallback, recvList) {
+  _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd, sendCallback, recvList) {
     this.log('Receive msg: ' + JSON.stringify(jsonCmd));
 
     var wrapper = this._getWrapperBySocket(socket);
@@ -144,7 +141,6 @@ TCPConnectionPool.prototype = {
     var callback = this._fetchRequestCallback(jsonCmd.id);
 
     // TODO parse the result of the jsonCmd, if failed, to call onerror
-
     var dataList = wrapper.recvList;
     // reset the recvList of the wrapper which is really important.
     wrapper.recvList = [];
@@ -181,7 +177,6 @@ TCPConnectionPool.prototype = {
         return wrapper;
       }
     }
-
     return null;
   },
 
@@ -199,7 +194,6 @@ TCPConnectionPool.prototype = {
       delete this._callbacks[id];
       return tmp;
     }
-
     return null;
   },
 
@@ -212,7 +206,6 @@ TCPConnectionPool.prototype = {
     if (!idleWrapper) {
       return;
     }
-
     if (this._messageQueue.length > 0) {
       var message = this._messageQueue.shift();
       this._doSend(idleWrapper, message);
@@ -241,14 +234,12 @@ TCPConnectionPool.prototype = {
       secondData: null,
       firstDatalength: 0,
       secondDatalength: 0,
-      json: false    // Indicates if the reulst is an JSON string
+      json: false // Indicates if the reulst is an JSON string
     }, obj.cmd);
 
     var wrapper = this._getAvailableSocketWrapper();
     obj.cmd.id = this._getNextId();
-
     this._cacheCallback(obj.cmd.id, obj.cmd.json, obj.onresponse, obj.onerror);
-
     if (!wrapper) {
       // queue the message
       this._messageQueue.push(obj);
@@ -257,4 +248,3 @@ TCPConnectionPool.prototype = {
     }
   }
 };
-

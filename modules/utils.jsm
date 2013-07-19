@@ -5,18 +5,21 @@
 "use strict"
 
 let DEBUG = 1;
-if (DEBUG)
-  debug = function (s) { dump("-*- utils: " + s + "\n"); };
+if (DEBUG) debug = function(s) {
+  dump("-*- utils: " + s + "\n");
+};
 else
-  debug = function (s) { };
+debug = function(s) {};
 
-const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu
+} = Components;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
-XPCOMUtils.defineLazyServiceGetter(this, 'iniFactory',
-                                   '@mozilla.org/xpcom/ini-processor-factory;1',
-                                   'nsIINIParserFactory');
+XPCOMUtils.defineLazyServiceGetter(this, 'iniFactory', '@mozilla.org/xpcom/ini-processor-factory;1', 'nsIINIParserFactory');
 
 var EXPORTED_SYMBOLS = ['utils'];
 
@@ -34,7 +37,7 @@ var utils = {
 
     var utf8Converter = Components.classes["@mozilla.org/intl/utf8converterservice;1"].
     getService(Components.interfaces.nsIUTF8ConverterService);
-    return utf8Converter.convertURISpecToUTF8 (str, "UTF-8");
+    return utf8Converter.convertURISpecToUTF8(str, "UTF-8");
   },
 
   readStrFromFile: function(file) {
@@ -43,10 +46,8 @@ var utils = {
     }
 
     var data = '';
-    var fstream = Cc['@mozilla.org/network/file-input-stream;1']
-      .createInstance(Ci.nsIFileInputStream);
-    var cstream = Cc['@mozilla.org/intl/converter-input-stream;1']
-      .createInstance(Ci.nsIConverterInputStream);
+    var fstream = Cc['@mozilla.org/network/file-input-stream;1'].createInstance(Ci.nsIFileInputStream);
+    var cstream = Cc['@mozilla.org/intl/converter-input-stream;1'].createInstance(Ci.nsIConverterInputStream);
 
     try {
       fstream.init(file, -1, 0, 0);
@@ -55,10 +56,10 @@ var utils = {
       var str = {};
       var read = 0;
       do {
-        read = cstream.readString(0xffffffff, str);  // read as much as we can and  put it in str.value
+        read = cstream.readString(0xffffffff, str); // read as much as we can and  put it in str.value
         data += str.value;
       } while (read != 0);
-    } catch(err) {
+    } catch (err) {
       dump('Error occured when reading file: ' + err);
     } finally {
       if (cstream) {
@@ -113,13 +114,14 @@ var utils = {
 
   md5: function md5(str) {
     var data = str.split('');
-    var ch = Cc["@mozilla.org/security/hash;1"]
-               .createInstance(Ci.nsICryptoHash);
+    var ch = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
     ch.init(ch.MD5);
     ch.update(data, data.length);
     var hash = ch.finish(true);
 
     // return the two-digit hexadecimal code for a byte
+
+
     function toHexString(charCode) {
       return ("0" + charCode.toString(16)).slice(-2);
     }
@@ -137,7 +139,7 @@ var utils = {
     return fileURI;
   },
 
-  emptyFunction: function emptyFunction() { },
+  emptyFunction: function emptyFunction() {},
 
   /**
    * Returns the value for a given property in an INI file
@@ -168,8 +170,7 @@ var utils = {
    */
   saveIniValue: function saveIniValue(iniFile, section, prop, value) {
     try {
-      let iniWriter = iniFactory.createINIParser(iniFile)
-                                .QueryInterface(Ci.nsIINIParserWriter);
+      let iniWriter = iniFactory.createINIParser(iniFile).QueryInterface(Ci.nsIINIParserWriter);
       iniWriter.setString(section, prop, value);
       iniWriter.writeFile();
       return true;
@@ -180,27 +181,25 @@ var utils = {
   },
 
   writeToFile: function(file, json) {
-    var foStream = Cc['@mozilla.org/network/file-output-stream;1']
-                     .createInstance(Ci.nsIFileOutputStream);
+    var foStream = Cc['@mozilla.org/network/file-output-stream;1'].createInstance(Ci.nsIFileOutputStream);
 
     foStream.init(file, 0x02 | 0x08 | 0x20, parseInt('0666', 8), 0);
 
-    var converter = Cc['@mozilla.org/intl/converter-output-stream;1']
-                      .createInstance(Ci.nsIConverterOutputStream);
+    var converter = Cc['@mozilla.org/intl/converter-output-stream;1'].createInstance(Ci.nsIConverterOutputStream);
 
     try {
       converter.init(foStream, 'UTF-8', 0, 0);
       converter.writeString(json);
-    } catch(err) {
+    } catch (err) {
       debug('Error occured when writing file: ' + err);
     } finally {
-       if (converter) {
-         try {
-           converter.close();
-         } catch (err) {
-           debug('Error occured when closing writing addon-notification/rules.json : ' + err);
-         }
-       }
+      if (converter) {
+        try {
+          converter.close();
+        } catch (err) {
+          debug('Error occured when closing writing addon-notification/rules.json : ' + err);
+        }
+      }
     }
   }
 };
@@ -208,7 +207,7 @@ var utils = {
 (function() {
   function extend(destination, source) {
     for (var property in source)
-      destination[property] = source[property];
+    destination[property] = source[property];
     return destination;
   }
 
@@ -216,4 +215,3 @@ var utils = {
     extend: extend
   });
 })();
-

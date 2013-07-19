@@ -5,27 +5,34 @@
 'use strict';
 
 let DEBUG = 1;
-if (DEBUG)
-  debug = function (s) { dump("-*- DriverDownloader: " + s + "\n"); };
+if (DEBUG) debug = function(s) {
+  dump("-*- DriverDownloader: " + s + "\n");
+};
 else
-  debug = function (s) { };
+debug = function(s) {};
 
 var EXPORTED_SYMBOLS = ['DriverDownloader'];
 
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu,
+  results: Cr
+} = Components;
 const DRIVER_HOME = "USBDrivers";
 const DRIVER_LIST_URI = "resource://ffosassistant-driverlist";
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "utils",        "resource://ffosassistant/utils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "utils", "resource://ffosassistant/utils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "ParentModule", "resource://ffosassistant/parentModule.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "FileUtils",    "resource://gre/modules/FileUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "FileUtils", "resource://gre/modules/FileUtils.jsm");
 
 let driverList = null;
 
 /**
  * Get download url from the driver_list.json
  */
+
 function getDownloadURLForInstanceId(id) {
   // TODO update cached driver list
   if (null == driverList) {
@@ -37,11 +44,8 @@ function getDownloadURLForInstanceId(id) {
     if (id == driverList.devices[i].device_instance_id) {
       downloadURL = driverList.devices[i].driver_download_url;
       // Check 32 or 64 bit
-      if (typeof downloadURL == 'object'
-          && !!downloadURL['32']
-          && !!downloadURL['64']) {
-        var oscpu = Cc["@mozilla.org/network/protocol;1?name=http"]
-                      .getService(Ci.nsIHttpProtocolHandler).oscpu;
+      if (typeof downloadURL == 'object' && !! downloadURL['32'] && !! downloadURL['64']) {
+        var oscpu = Cc["@mozilla.org/network/protocol;1?name=http"].getService(Ci.nsIHttpProtocolHandler).oscpu;
         dump('oscpu: ' + oscpu + '\n');
         if (oscpu.indexOf('64') > 0) {
           return downloadURL['64'];
@@ -63,6 +67,7 @@ function getDownloadURLForInstanceId(id) {
  * then return the download url as the local path; if yes, then check
  * if it's been downloaded, and then return the downloaded path if yes.
  */
+
 function getLocalPathForInstanceId(id) {
   let downloadURL = getDownloadURLForInstanceId(id);
   if (!downloadURL) {
@@ -86,11 +91,11 @@ function getDriverName(downloadUrl) {
 }
 
 function handleSyncCommand(cmd) {
-  switch(cmd.command) {
+  switch (cmd.command) {
     // If install file for the given USB ID has been found, then
     // return the path, or return null value.
-    case 'getInstallerPath':
-      return getLocalPathForInstanceId(cmd.deviceInstanceId);
+  case 'getInstallerPath':
+    return getLocalPathForInstanceId(cmd.deviceInstanceId);
   }
 }
 
@@ -102,11 +107,10 @@ var driverDownloaderModule = new ParentModule({
     var self = this;
     switch (name) {
       // This is a sync message.
-      case 'DriverDownloader:syncCommand':
-        return handleSyncCommand(msg);
-      case 'DriverDownloader:asyncCommand':
-        break;
+    case 'DriverDownloader:syncCommand':
+      return handleSyncCommand(msg);
+    case 'DriverDownloader:asyncCommand':
+      break;
     }
   }
 });
-

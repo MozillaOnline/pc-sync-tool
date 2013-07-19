@@ -20,8 +20,9 @@ var MusicList = (function() {
     }
     return str.substr(0, index);
   }
-  
+
   //function retriveTimeSpan() {}
+
   function retriveType(type) {
     var index = type.lastIndexOf('/');
     if (index < 0) {
@@ -39,18 +40,19 @@ var MusicList = (function() {
   }
 
   function retriveSize(size) {
-    return Math.round(100 * size/1024/1024) / 100;
+    return Math.round(100 * size / 1024 / 1024) / 100;
   }
+
   function createMusicListItem(music) {
     var html = '';
     html += '<div>  <input type="checkbox" data-checked="false"></input> </div>';
-    html += '<div class="music-names item">' +  retriveName(music.name) + '</div>';
+    html += '<div class="music-names item">' + retriveName(music.name) + '</div>';
     html += '<div class="music-singer item">' + music.metadate.artist + '</div>';
     html += '<div class="music-album item">' + music.metadate.album + '</div>';
     html += '<div class="music-timespan item">' + '5:05' + '</div>';
-    html += '<div class="music-type item">' + retriveExtension(music.name) +  '</div>';
-    html += '<div class="music-size item">' + retriveSize(music.size) + ' MB' +  '</div>';
-    
+    html += '<div class="music-type item">' + retriveExtension(music.name) + '</div>';
+    html += '<div class="music-size item">' + retriveSize(music.size) + ' MB' + '</div>';
+
     var elem = document.createElement('div');
     elem.classList.add('music-list-item');
     elem.innerHTML = html;
@@ -61,7 +63,6 @@ var MusicList = (function() {
     //elem.dataset.contactId = music.id;
     //elem.id = 'music-' + music.id;
     //elem.dataset.avatar = '';
-
     elem.onclick = function onclick_messages_list(event) {
       var target = event.target;
       if (target instanceof HTMLInputElement) {
@@ -69,10 +70,9 @@ var MusicList = (function() {
       }
     };
     //navigator.mozL10n.translate(elem);
-
     return elem;
   }
-  
+
   function checkIfMusicListEmpty() {
     var isEmpty = groupedList.count() == 0;
     if (isEmpty) {
@@ -90,8 +90,8 @@ var MusicList = (function() {
     container.innerHTML = '';
     musics.forEach(function(music) {
       //console.log('djod');
-    var listItem = createMusicListItem(music);
-    container.appendChild(listItem);
+      var listItem = createMusicListItem(music);
+      container.appendChild(listItem);
     });
     //checkIfMusicListEmpty();
   }
@@ -113,18 +113,19 @@ var MusicList = (function() {
 
     $expr('input[type=checkbox]', item).forEach(function(checkbox) {
       checkbox.checked = select;
-      checkbox.dataset.checked = !!select;
+      checkbox.dataset.checked = !! select;
     });
 
     $id('select-all-musics-checkbox').checked =
-      $expr('#music-list-container input[data-checked=false]').length === 0;
+    $expr('#music-list-container input[data-checked=false]').length === 0;
     $id('remove-musics').dataset.disabled =
-      $expr('#music-list-container input[data-checked=true]').length === 0;
+    $expr('#music-list-container input[data-checked=true]').length === 0;
   }
 
   /**
    * Get music object by give music id
    */
+
   function getMusic(id) {
     var musicItem = $id('music-' + id);
     if (!musicItem) {
@@ -132,10 +133,11 @@ var MusicList = (function() {
     }
     return JSON.parse(musicItem.dataset.music);
   }
-  
+
   /**
    * Remove musics
    */
+
   function removeMusic(id) {
     CMD.Musics.removeMusic(id, function onresponse_removeMusic(message) {
       // Make sure the 'select-all' box is not checked.
@@ -158,7 +160,7 @@ var MusicList = (function() {
       if (vcardView.dataset.contactId == id) {
         keepVcardView = false;
       }
-      
+
       if (!keepVcardView) {
         // Pick a music to show
         var availableContacts = $expr('#music-list-container .music-list-item');
@@ -172,7 +174,7 @@ var MusicList = (function() {
       alert('Error occurs when removing contacts!');
     });
   }
-  
+
   window.addEventListener('load', function wnd_onload(event) {
     $id('select-all-musics-checkbox').addEventListener('change', function sall_onclick(event) {
       selectAllMusics(this.checked);
@@ -203,6 +205,7 @@ var MusicList = (function() {
           setTimeout(function() {
             var length = musics.length;
             var index = 0;
+
             function traverseList() {
               if (index == length) {
                 return;
@@ -211,11 +214,11 @@ var MusicList = (function() {
               var req = navigator.mozFFOSAssistant.runCmd(cmd);
               req.onsuccess = function(e) {
                 index++;
-                setTimeout(traverseList,0);
+                setTimeout(traverseList, 0);
               }
             }
             traverseList();
-          } , 0);
+          }, 0);
         }
       }, {
         title: 'Choose where to save'
@@ -224,10 +227,9 @@ var MusicList = (function() {
   });
 
   return {
-    init:            initList,
-    getMusic:        getMusic,
+    init: initList,
+    getMusic: getMusic,
     selectAllMusics: selectAllMusics,
     removeMusic: removeMusic
   };
 })();
-
