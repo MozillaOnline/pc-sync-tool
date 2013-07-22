@@ -45,15 +45,16 @@ var MusicList = (function() {
 
   function createMusicListItem(music) {
     var html = '';
-    html += '<div>  <input type="checkbox" data-checked="false"></input> </div>';
-    html += '<div class="music-names item">' + retriveName(music.name) + '</div>';
-    html += '<div class="music-singer item">' + music.metadate.artist + '</div>';
-    html += '<div class="music-album item">' + music.metadate.album + '</div>';
-    html += '<div class="music-timespan item">' + '5:05' + '</div>';
-    html += '<div class="music-type item">' + retriveExtension(music.name) + '</div>';
-    html += '<div class="music-size item">' + retriveSize(music.size) + ' MB' + '</div>';
+    html += '<label class="unchecked"></label>';
+    html += '<div class="music-names item"><label>' + retriveName(music.name) + '</label></div>';
+    html += '<div class="music-singer item"><label>' + music.metadate.artist + '</label></div>';
+    html += '<div class="music-album item"><label>' + music.metadate.album + '</label></div>';
+    html += '<div class="music-timespan item"><label>' + '5:05' + '</label></div>';
+    html += '<div class="music-type item"><label>' + retriveExtension(music.name) + '</label></div>';
+    html += '<div class="music-size item"><label>' + retriveSize(music.size) + ' MB' + '</label></div>';
 
     var elem = document.createElement('div');
+    elem.classList.add('music-header');
     elem.classList.add('music-list-item');
     elem.innerHTML = html;
 
@@ -89,7 +90,6 @@ var MusicList = (function() {
     var container = getListContainer();
     container.innerHTML = '';
     musics.forEach(function(music) {
-      //console.log('djod');
       var listItem = createMusicListItem(music);
       container.appendChild(listItem);
     });
@@ -101,7 +101,7 @@ var MusicList = (function() {
       selectMusicItem(item, select);
     });
 
-    $id('select-all-musics-checkbox').checked = select;
+    //$id('select-all-musics-checkbox').checked = select;
   }
 
   function selectMusicItem(item, select) {
@@ -116,10 +116,10 @@ var MusicList = (function() {
       checkbox.dataset.checked = !! select;
     });
 
-    $id('select-all-musics-checkbox').checked =
-    $expr('#music-list-container input[data-checked=false]').length === 0;
-    $id('remove-musics').dataset.disabled =
-    $expr('#music-list-container input[data-checked=true]').length === 0;
+    //$id('select-all-musics-checkbox').checked =
+    //$expr('#music-list-container input[data-checked=false]').length === 0;
+    //$id('remove-musics').dataset.disabled =
+    //$expr('#music-list-container input[data-checked=true]').length === 0;
   }
 
   /**
@@ -176,7 +176,7 @@ var MusicList = (function() {
   }
 
   window.addEventListener('load', function wnd_onload(event) {
-    $id('select-all-musics-checkbox').addEventListener('change', function sall_onclick(event) {
+    $id('selectAll-musics').addEventListener('change', function sall_onclick(event) {
       selectAllMusics(this.checked);
     });
 
