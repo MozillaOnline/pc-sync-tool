@@ -43,7 +43,7 @@ var MusicList = (function() {
     return Math.round(100 * size / 1024 / 1024) / 100;
   }
 
-  function createMusicListItem(music) {
+  function createMusicListItem(music, index) {
     var html = '';
     html += '<label class="unchecked"></label>';
     html += '<div class="music-names item"><label>' + retriveName(music.name) + '</label></div>';
@@ -56,6 +56,11 @@ var MusicList = (function() {
     var elem = document.createElement('div');
     elem.classList.add('music-header');
     elem.classList.add('music-list-item');
+    if (index % 2) {
+      elem.classList.add('odd');
+    } else {
+      elem.classList.add('even');
+    }
     elem.innerHTML = html;
 
     elem.dataset.music = JSON.stringify(music);
@@ -89,9 +94,11 @@ var MusicList = (function() {
   function initList(musics) {
     var container = getListContainer();
     container.innerHTML = '';
+    var index = 0;
     musics.forEach(function(music) {
-      var listItem = createMusicListItem(music);
+      var listItem = createMusicListItem(music, index);
       container.appendChild(listItem);
+      index++;
     });
     //checkIfMusicListEmpty();
   }
