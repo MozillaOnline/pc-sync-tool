@@ -23,6 +23,7 @@
   <script type="text/javascript" src="js/vcard.js"></script>
   <script type="text/javascript" src="js/contact_list.js"></script>
   <script type="text/javascript" src="js/sms_list.js"></script>
+  <script type="text/javascript" src="js/music_list.js"></script>
   <script type="text/javascript" src="js/form.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
   <script type="text/javascript" src="js/view.js"></script>
@@ -223,6 +224,46 @@
             <div id="threads-list-container">
                 <div class="threads-list-item">
                 </div>
+            </div>
+          </section>
+          <section id ="music-view" class="view" hidden="true">
+            <h1 class="title" data-l10n-id="music">音乐</h1>
+            <div class="music-ops-box">
+              <div id="selectAll-musics" data-disabled="false" data-checked="false" class="music-op">
+                <label data-l10n-id="selectall">全选</label>
+              </div>
+              <div id="remove-musics" data-disabled="true" class="music-op">
+                <label data-l10n-id="delete">删除</label>
+              </div>
+              <div id="import-musics" class="music-op">
+                <label data-l10n-id="import">导入</label>
+              </div>
+              <div id="export-musics" data-disabled="true" class="music-op">
+                <label data-l10n-id="export">导出</label>
+              </div>
+              <div id="refresh-musics" class="music-op">
+                <label data-l10n-id="refresh">刷新</label>
+              </div>
+            </div>
+            <div class="music-header">
+              <label class="empty"></label>
+              <div class="music-names"> <label data-l10n-id="songs">歌曲</label></div>
+              <div class="music-singer"> <label data-l10n-id="singer">演唱</label></div>
+              <div class="music-album"> <label data-l10n-id="album">专辑</label></div>
+              <div class="music-timespan"> <label data-l10n-id="timespan">时长</label></div>
+              <div class="music-type"> <label data-l10n-id="type">类型</label></div>
+              <div class="music-size"> <label data-l10n-id="size">大小</label></div>
+            </div>
+            <div id="music-list-container">
+              <div class="music-header music-list-item">
+                <label class="unchecked"></label>
+                <div class="music-names item"><label>诺雅芳周</label></div>
+                <div class="music-singer item"><label>五月天</label></div>
+                <div class="music-album item"><label>第二人生</label></div>
+                <div class="music-timespan item"><label>5:15</label></div>
+                <div class="music-type item"><label>mp3</label></div>
+                <div class="music-size item"><label>13.14MB</label></div>
+              </div>
             </div>
           </section>
         </div>

@@ -75,7 +75,7 @@ var ViewManager = (function() {
     }
     if (isChangeView == true) {
       viewElem.dataset.shown = true;
-      if (viewId == "summary-view" || viewId == "connect-view") {
+      if (viewId == "summary-view" || viewId == "connect-view" || viewId == "music-view") {
         $id('views').classList.add('hidden-views');
       } else {
         $id('views').classList.remove('hidden-views');

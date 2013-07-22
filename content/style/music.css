@@ -9,8 +9,6 @@
 
 .music-ops-box {
   overflow: hidden;
-  padding: 0 0 0 1rem;
-  background-color: #F9F9F9;
   height: 3rem;
   line-height: 3rem;
 }
@@ -28,143 +26,145 @@
   -moz-user-select: none;
 }
 
-#select-all-musics {
-  padding-left: 0;
+#selectAll-musics {
+  background-image: url("images/checkbox.png");
+  margin-left: 2rem;
+  padding-left: 2.2rem;
+}
+#selectAll-musics[data-checked=true] {
+  background-image: url("images/checkbox-checked.png");
+}
+#selectAll-musics[data-disabled=true] {
+  color: #CCCCCC;
+}
+#selectAll-musics[data-disabled=false]:hover {
+  color: #00CAF2;
+}
+#selectAll-musics[data-disabled=false]:active {
+  color: #018CAB;
 }
 
 #remove-musics {
-  background-image: url("images/remove.png");
+  background-image: url("images/remove-default.png");
 }
-
 #remove-musics[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
   cursor: default;
+  color: #CCCCCC;
+}
+#remove-musics[data-disabled=false]:hover {
+  background-image: url("images/remove-highlighted.png");
+  color: #00CAF2;
+}
+#remove-musics[data-disabled=false]:active {
+  background-image: url("images/remove-selected.png");
+  color: #018CAB;
 }
 
-#remove-musics[data-disabled=true] > label {
-  cursor: default;
+#export-musics[data-disabled=true] {
+  background-image: url("images/export-disabled.png");
+  color: #CCCCCC;
 }
-
-#export-musics {
-  background-image: url("images/export.png");
+#export-musics[data-disabled=false] {
+  background-image: url("images/export-default.png");
+}
+#export-musics[data-disabled=false]:hover {
+  background-image: url("images/export-highlighted.png");
+  color: #00CAF2;
+}
+#export-musics[data-disabled=false]:active {
+  background-image: url("images/export-selected.png");
+  color: #018CAB;
 }
 
 #import-musics {
-  background-image: url("images/import.png");
+  background-image: url("images/import-default.png");
+}
+#import-musics:hover {
+  background-image: url("images/import-highlighted.png");
+  color: #00CAF2;
+}
+#import-musics:active {
+  background-image: url("images/import-selected.png");
+  color: #018CAB;
 }
 
 #refresh-musics {
-  background-image: url("images/refresh.png");
+  background-image: url("images/refresh-default.png");
+}
+#refresh-musics:hover {
+  background-image: url("images/refresh-highlighted.png");
+  color: #00CAF2;
+}
+#refresh-musics:active {
+  background-image: url("images/refresh-selected.png");
+  color: #018CAB;
 }
 
 #music-list-container {
-  padding-left: 1rem;
-  max-height: 60rem;
+  max-height: 50rem;
   overflow: auto;
 }
 
-#music-header{
-  padding: 0 0 0 1rem;
+.music-header{
   height: 3rem;
-  background-color: #FFC280;
+  background-color: #E7E7E7;
+  margin: 0 2rem 0 6px;
 }
 
-#music-header div {
+.music-header div {
   font-size: 1.4rem;
-}
-
-#music-header .music-names {
   float:left;
   padding: 0.5rem 0 0  2.5rem;
-  width:15rem;
 }
 
-#music-header .music-singer {
-  float:left;
-  padding: 0.5rem 0 0  2rem;
+.music-header .music-names {
+  width:15rem;
+  padding:  0.5rem 0 0 0.5rem;
+}
+
+.music-header .music-singer {
   width:10rem;
 }
 
-#music-header .music-album {
-  float:left;
-  padding: 0.5rem 0 0  2rem;
+.music-header .music-album {
   width:15rem;
 }
 
-#music-header .music-timespan {
-  float:left;
-  padding: 0.5rem 0 0  2rem;
+.music-header .music-timespan {
   width:5rem;
 }
 
-#music-header .music-type {
-  float:left;
-  padding: 0.5rem 0 0  2rem;
+.music-header .music-type {
   width:5rem;
 }
 
-#music-header .music-size {
-  float:left;
-  padding: 0.5rem 0 0  2rem;
-  width:5rem;
+.music-header .music-size {
+  width:7rem;
+}
+
+
+.music-header >label.empty {
+  height: 2.8rem;
+  width: 3.1rem;
+  float: left;
+}
+
+.music-header >label.unchecked {
+  background-image: url("images/checkbox.png");
+  background-position: right center;
+  background-repeat: no-repeat;
+  height: 2.8rem;
+  width: 3.1rem;
+  float: left;
+}
+
+.music-list-item {
+  background-color: #FFFFFF;
 }
 
 .item {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.music-list-item .music-names {
-  float:left;
-  margin: .5rem 0 0  .5rem;
-  width:17rem;
-}
-
-.music-list-item .music-singer {
-  float:left;
-  padding: 0.5rem 0 0 0;
-  width:12rem;
-}
-
-.music-list-item .music-album {
-  float:left;
-  padding: 0.5rem 0 0 0;
-  width:17rem;
-}
-
-.music-list-item .music-timespan {
-  float:left;
-  padding: 0.5rem 0 0 0;
-  width:7rem;
-}
-
-.music-list-item .music-type {
-  float:left;
-  padding: 0.5rem 0 0 0;
-  width:7rem;
-}
-
-.music-list-item .music-size {
-  float:left;
-  padding: 0.5rem 0 0 0;
-  width:7rem;
-}
-
-.music-list-item {
-  height: 2.5rem;
-}
-
-.music-list-item > div {
-  float:left;
-}
-
-
-.music-list-item > div > * {
-  width: -moz-max-content;
-}
-
-.music-list-item input[type="checkbox"] {
-  float: left;
-  margin: .8rem 0 0 .5rem;
 }
