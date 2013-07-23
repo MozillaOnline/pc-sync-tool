@@ -18,14 +18,8 @@ var SmsList = (function() {
     messageListContainer = $id('message-list-container');
     messageListContainer.innerHTML = '';
     ViewManager.showViews('sms-send-view');
-    var ThreadListData = smsThreads;
-    for (var i = 0; i < ThreadListData.length; i++) {
-      var threadIndex = ThreadListData.length - i - 1;
-      var threadData = ThreadListData[threadIndex];
-      threadData['threadIndex'] = threadIndex;
-    }
     threadList = new GroupedList({
-      dataList: ThreadListData,
+      dataList: smsThreads,
       dataIndexer: function() {
         return 'threadlist';
       },
@@ -167,7 +161,7 @@ var SmsList = (function() {
     elem.innerHTML = html;
     elem.dataset.groupId = threadData.id;
     elem.id = 'id-threads-data-' + threadData.id;
-    elem.dataset.threadIndex = threadData.threadIndex;
+    elem.dataset.threadIndex = threadData.id;
     elem.onclick = function onclick_sms_list(event) {
       var target = event.target;
       if (target instanceof HTMLLabelElement) {
@@ -193,40 +187,43 @@ var SmsList = (function() {
       var index = item[i].dataset.threadIndex;
       var SmsThreadsData = threadList.getGroupedData();
       SmsThreadsData = SmsThreadsData[0].dataList;
-      if ((Number(index) > -1) && (Number(index) < SmsThreadsData.length)) {
-        var threadItem = $id('id-threads-data-' + SmsThreadsData[index].id);
-        var threadname = threadItem.getElementsByTagName('div')[3];
-        var threadimg = threadItem.getElementsByTagName('img')[0];
-        html = '<img class="multi-avatar-show multi-avatar-show-default" src="';
-        html += threadimg.src;
-        html += '" id="';
-        html += 'show-multi-sms-content-img-';
-        html += SmsThreadsData[index].id
-        html += '"></img>';
-        html += '<div class="show-multi-sms-content">';
-        html += '  <div class="number" id="';
-        html += 'show-multi-sms-content-number-';
-        html += SmsThreadsData[index].id
-        html += '">';
-        html += threadname.childNodes[0].nodeValue;//SmsThreadsData[index].participants;
-        if (SmsThreadsData[index].unreadCount > 0) {
-          var header = _('sms-unread-count', {
-            n: SmsThreadsData[index].unreadCount
-          });
-          html += header;
+      for(var j=0;j<SmsThreadsData.length;j++){
+        if(index == SmsThreadsData[j].id){
+          SmsThreadsData = SmsThreadsData[j];
+          var threadItem = $id('id-threads-data-' + SmsThreadsData.id);
+          var threadname = threadItem.getElementsByTagName('div')[3];
+          var threadimg = threadItem.getElementsByTagName('img')[0];
+          html = '<img class="multi-avatar-show multi-avatar-show-default" src="';
+          html += threadimg.src;
+          html += '" id="';
+          html += 'show-multi-sms-content-img-';
+          html += SmsThreadsData.id
+          html += '"></img>';
+          html += '<div class="show-multi-sms-content">';
+          html += '  <div class="number" id="';
+          html += 'show-multi-sms-content-number-';
+          html += SmsThreadsData.id
+          html += '">';
+          html += threadname.childNodes[0].nodeValue;//SmsThreadsData[index].participants;
+          if (SmsThreadsData.unreadCount > 0) {
+            var header = _('sms-unread-count', {
+              n: SmsThreadsData.unreadCount
+            });
+            html += header;
+          }
+          html += '  </div>';
+          html += '  <div class="body">';
+          if (SmsThreadsData.body.length > 12) {
+            html += SmsThreadsData.body.substr(0, 12) + '..';
+          } else {
+            html += SmsThreadsData.body;
+          }
+          html += '  </div>';
+          html += '</div>';
+          div.innerHTML = html;
+          div.classList.add('show-sms-item');
+          selectedListContainer.appendChild(div);
         }
-        html += '  </div>';
-        html += '  <div class="body">';
-        if (SmsThreadsData[index].body.length > 12) {
-          html += SmsThreadsData[index].body.substr(0, 12) + '..';
-        } else {
-          html += SmsThreadsData[index].body;
-        }
-        html += '  </div>';
-        html += '</div>';
-        div.innerHTML = html;
-        div.classList.add('show-sms-item');
-        selectedListContainer.appendChild(div);
       }
     }
     ViewManager.showViews('sms-select-view');
@@ -236,131 +233,134 @@ var SmsList = (function() {
     var index = item[0].dataset.threadIndex;
     var SmsThreadsData = threadList.getGroupedData();
     SmsThreadsData = SmsThreadsData[0].dataList;
-    var threadGroup = $id('id-threads-data-' + SmsThreadsData[index].id);
-    var sp = threadGroup.getElementsByTagName('span');
-    sp[0].innerHTML = '';
-    threadGroup.classList.remove('unread');
-
-    var threadItem = $id('id-threads-data-' + SmsThreadsData[index].id);
-    var threadname = threadItem.getElementsByTagName('div')[3];
-    var threadimg = threadItem.getElementsByTagName('img')[0];
-    var header = $id('sms-thread-header');
-    var html = '';
-    html += '<img style="height:5.5rem; width:5.5rem; padding-top: 20px; float: left;" src="';
-    if(threadimg.src != ""){
-      html += threadimg.src;
-    }else{
-      html += 'style/images/avatar.png';
-    }
-    html += '" id="sms-thread-header-img-';
-    html += SmsThreadsData[index].id;
-    html += '">';
-    html += '<span style="float: left; margin-top: 22px; margin-left: 10px;" id="';
-    html += 'sms-thread-header-name-';
-    html += SmsThreadsData[index].id;
-    html += '">';
-    html += threadname.childNodes[0].nodeValue;//SmsThreadsData[index].participants;
-    html += '</span>';
-    html += '<div id="add-to-contact-';
-    html += SmsThreadsData[index].id;
-    html += '" class="button" data-l10n-id="add-to-contacts-from-sms" style="margin-left: 65px; height: 21px; margin-top: 50px; width: 106px;">添加到联系人</div>';
-    header.innerHTML = html;
-    var addtoContactButton = $id('add-to-contact-'+SmsThreadsData[index].id);
-    if(addtoContactButton){
-      if(threadname.childNodes[0].type != 'contact'){
-        addtoContactButton.style.display = 'block';
-        addtoContactButton.addEventListener('click', function onclick_addto(event) {
-            var addContactData = {
-              type: 'add',
-              number: threadname.childNodes[0].nodeValue
-            }
-            ViewManager.showContent('contact-view',addContactData);
-        });
-      }else{
-        addtoContactButton.style.display = 'none';
-      }
-    }
-
-    CMD.SMS.getThreadMessagesById(JSON.stringify(SmsThreadsData[index].id), function onresponse_getThreadMessagesById(messages) {
-      var MessageListData = JSON.parse(messages.data);
-      for (var i = 0; i < MessageListData.length; i++) {
-        var nearDate = null;
-        if(i > 0){
-          MessageListData[i]['nearDate'] = MessageListData[i-1].timestamp;
+    for(var j=0;j<SmsThreadsData.length;j++){
+      if(index == SmsThreadsData[j].id){
+        SmsThreadsData = SmsThreadsData[j];
+        var threadGroup = $id('id-threads-data-' + SmsThreadsData.id);
+        var sp = threadGroup.getElementsByTagName('span');
+        sp[0].innerHTML = '';
+        threadGroup.classList.remove('unread');
+        var threadItem = $id('id-threads-data-' + SmsThreadsData.id);
+        var threadname = threadItem.getElementsByTagName('div')[3];
+        var threadimg = threadItem.getElementsByTagName('img')[0];
+        var header = $id('sms-thread-header');
+        var html = '';
+        html += '<img style="height:5.5rem; width:5.5rem; padding-top: 20px; float: left;" src="';
+        if(threadimg.src != ""){
+          html += threadimg.src;
         }else{
-          MessageListData[i]['nearDate'] = 0;
+          html += 'style/images/avatar.png';
         }
-      }
-      messageListContainer.innerHTML = '';
-      messageList = new GroupedList({
-        dataList: MessageListData,
-        dataIndexer: function() {
-          return 'messagelist';
-        },
-        disableDataIndexer: true,
-        renderFunc: createGroupMessageList,
-        container: messageListContainer,
-        ondatachange: function() {
-          if(messageListContainer != null){
-            messageListContainer.scrollTop=messageListContainer.scrollTopMax;
-          }
-        }
-      });
-      messageList.render();
-      var forwardBtns = $expr('.button-forward', messageListContainer);
-      for (var j = 0; j < forwardBtns.length; j++) {
-        forwardBtns[j].hidden = false;
-        forwardBtns[j].addEventListener('click', function onclick_replySms(event) {
-          var This = this;
-          new SendSMSDialog({
-            number: null,
-            bodyText: This.value
-          });
-        });
-      }
-      var resendBtns = $expr('.button-resend', messageListContainer);
-      for (var j = 0; j < resendBtns.length; j++) {
-        resendBtns[j].hidden = false;
-        resendBtns[j].addEventListener('click', function onclick_resendSms(event) {
-          var This = this;
-          var smsId = This.id.split("sms-resend-");
-          var num;
-          if(MessageListData[0].delivery == "received"){
-            num = MessageListData[0].sender;
-          }else{
-            num = MessageListData[0].receiver;
-          }
-          CMD.SMS.deleteMessageById(smsId[1], function onSuccess(event) {
-            removeMessage(smsId[1]);
-            CMD.SMS.sendMessage(JSON.stringify({
-              number: num,
-              message: This.value
-            }), function onSuccess_sendSms(sms) {
-              if (!sms.result) {
-              }
-            }, function onError_sendSms(e) {
-              alert(e);
+        html += '" id="sms-thread-header-img-';
+        html += SmsThreadsData.id;
+        html += '">';
+        html += '<span style="float: left; margin-top: 22px; margin-left: 10px;" id="';
+        html += 'sms-thread-header-name-';
+        html += SmsThreadsData.id;
+        html += '">';
+        html += threadname.childNodes[0].nodeValue;//SmsThreadsData[index].participants;
+        html += '</span>';
+        html += '<div id="add-to-contact-';
+        html += SmsThreadsData.id;
+        html += '" class="button" data-l10n-id="add-to-contacts-from-sms" style="margin-left: 65px; height: 21px; margin-top: 50px; width: 106px;">添加到联系人</div>';
+        header.innerHTML = html;
+        var addtoContactButton = $id('add-to-contact-'+SmsThreadsData.id);
+        if(addtoContactButton){
+          if(threadname.childNodes[0].type != 'contact'){
+            addtoContactButton.style.display = 'block';
+            addtoContactButton.addEventListener('click', function onclick_addto(event) {
+                var addContactData = {
+                  type: 'add',
+                  number: threadname.childNodes[0].nodeValue
+                }
+                ViewManager.showContent('contact-view',addContactData);
             });
-          }, function onError(e) {
-            alert('Error occured when removing messae' + e);
+          }else{
+            addtoContactButton.style.display = 'none';
+          }
+        }
+        CMD.SMS.getThreadMessagesById(JSON.stringify(SmsThreadsData.id), function onresponse_getThreadMessagesById(messages) {
+          var MessageListData = JSON.parse(messages.data);
+          for (var i = 0; i < MessageListData.length; i++) {
+            var nearDate = null;
+            if(i > 0){
+              MessageListData[i]['nearDate'] = MessageListData[i-1].timestamp;
+            }else{
+              MessageListData[i]['nearDate'] = 0;
+            }
+          }
+          messageListContainer.innerHTML = '';
+          messageList = new GroupedList({
+            dataList: MessageListData,
+            dataIndexer: function() {
+              return 'messagelist';
+            },
+            disableDataIndexer: true,
+            renderFunc: createGroupMessageList,
+            container: messageListContainer,
+            ondatachange: function() {
+              if(messageListContainer != null){
+                messageListContainer.scrollTop=messageListContainer.scrollTopMax;
+              }
+            }
           });
+          messageList.render();
+          var forwardBtns = $expr('.button-forward', messageListContainer);
+          for (var j = 0; j < forwardBtns.length; j++) {
+            forwardBtns[j].hidden = false;
+            forwardBtns[j].addEventListener('click', function onclick_replySms(event) {
+              var This = this;
+              new SendSMSDialog({
+                number: null,
+                bodyText: This.value
+              });
+            });
+          }
+          var resendBtns = $expr('.button-resend', messageListContainer);
+          for (var j = 0; j < resendBtns.length; j++) {
+            resendBtns[j].hidden = false;
+            resendBtns[j].addEventListener('click', function onclick_resendSms(event) {
+              var This = this;
+              var smsId = This.id.split("sms-resend-");
+              var num;
+              if(MessageListData[0].delivery == "received"){
+                num = MessageListData[0].sender;
+              }else{
+                num = MessageListData[0].receiver;
+              }
+              CMD.SMS.deleteMessageById(smsId[1], function onSuccess(event) {
+                removeMessage(smsId[1]);
+                CMD.SMS.sendMessage(JSON.stringify({
+                  number: num,
+                  message: This.value
+                }), function onSuccess_sendSms(sms) {
+                  if (!sms.result) {
+                  }
+                }, function onError_sendSms(e) {
+                  alert(e);
+                });
+              }, function onError(e) {
+                alert('Error occured when removing message' + e);
+              });
+            });
+          }
+          var deleteBtns = $expr('.button-delete', messageListContainer);
+          for (var j = 0; j < deleteBtns.length; j++) {
+            deleteBtns[j].hidden = false;
+            deleteBtns[j].addEventListener('click', function onclick_deleteSms(event) {
+              var This = this;
+              CMD.SMS.deleteMessageById(This.value, function onSuccess(event) {
+                removeMessage(This.value);
+              }, function onError(e) {
+                alert('Error occured when removing message' + e);
+              });
+            });
+          }
+        }, function onerror_getThreadMessagesById(messages) {
+          log('Error occurs when fetching all messages' + messages.message);
         });
       }
-      var deleteBtns = $expr('.button-delete', messageListContainer);
-      for (var j = 0; j < deleteBtns.length; j++) {
-        deleteBtns[j].hidden = false;
-        deleteBtns[j].addEventListener('click', function onclick_deleteSms(event) {
-          var This = this;
-          CMD.SMS.deleteMessageById(This.value, function onSuccess(event) {
-            removeMessage(This.value);
-          }, function onError(e) {
-            alert('Error occured when removing messae' + e);
-          });
-        });
-      }
-    }, function onerror_getThreadMessagesById(messages) {
-      log('Error occurs when fetching all messages' + messages.message);
-    });
+    }
     ViewManager.showViews('sms-thread-view');
   }
 
@@ -610,7 +610,7 @@ var SmsList = (function() {
         'participants': tempparticipants,
         'lastMessageType': sms.type
       };
-      tempthreadListData['threadIndex'] = threadListData.length;
+      tempthreadListData['threadIndex'] = sms.threadId;
       threadList.add(tempthreadListData);
     }
   }
@@ -621,15 +621,20 @@ var SmsList = (function() {
   function removeThreads(item) {
     SmsList.selectAllSms(false);
     var groupedData = threadList.getGroupedData();
-    var threadId = groupedData[0].dataList[item.threadIndex].id;
-    CMD.SMS.getThreadMessagesById(JSON.stringify(threadId), function onresponse_getThreadMessagesById(messages) {
+    groupedData = groupedData[0].dataList;
+    var threadId = item.threadIndex;
+    CMD.SMS.getThreadMessagesById(threadId, function onresponse_getThreadMessagesById(messages) {
       var result = [];
       var Sms = JSON.parse(messages.data);
       for (var i = 0; i < Sms.length; i++) {
         CMD.SMS.deleteMessageById(JSON.stringify(Sms[i].id), function onSuccess(event) {
           result.push(event.result);
           if (result.length == Sms.length) {
-            threadList.remove(groupedData[0].dataList[item.threadIndex]);
+            for(var j=0;j<groupedData.length;j++){
+              if(threadId == groupedData[j].id){
+                threadList.remove(groupedData[j]);
+              }
+            }
           }
         }, function onError(e) {
           alert('Error occured when removing messae' + e);
@@ -644,9 +649,8 @@ var SmsList = (function() {
     var content = '';
     var threadnum = 0;
     ids.forEach(function(item) {
-      var groupedData = threadList.getGroupedData();
-      var threadId = groupedData[0].dataList[item.threadIndex].id;
-      CMD.SMS.getThreadMessagesById(JSON.stringify(threadId), function onresponse_getThreadMessagesById(messages) {
+      var threadId = item.threadIndex;
+      CMD.SMS.getThreadMessagesById(threadId, function onresponse_getThreadMessagesById(messages) {
         var result = [];
         var Sms = JSON.parse(messages.data);
         threadnum++;

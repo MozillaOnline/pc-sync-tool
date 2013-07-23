@@ -355,6 +355,7 @@ var ContactForm = (function() {
           contactsUpdated.push(JSON.parse(message.data));
         }
         ContactList.updateContacts(contactsUpdated);
+        ContactList.showContactInfo(contact);
       }, function onerror_updatecontact(message) {
         alert('Error occurs when updating contacts: ' + JSON.stringify(message));
       });
@@ -490,6 +491,7 @@ var ContactForm = (function() {
 
   return {
     // If contact object is not given, perform adding a new contact
-    editContact: editContact
+    editContact: editContact,
+    saveContact: saveContact
   };
 })();

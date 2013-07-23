@@ -497,8 +497,18 @@ SendSMSDialog.prototype = {
       n: 0
     });
     $id('text-count').innerHTML = header;
+    var senderNum = 0;
+    if(this.options.number){
+      var senders = this.options.number.split(';');
+      senderNum = senders.length;
+      for(var i=0;i<senders.length;i++){
+        if(senders[i] == ""){
+          senderNum--;
+        }
+      }
+    }
     header = _('send-sms-count', {
-      n: 0
+      n: senderNum
     });
     $id('sender-count').innerHTML = header;
    
@@ -608,13 +618,15 @@ SendSMSDialog.prototype = {
     }
     for( var i=0;i<data.length;i++){
       var contact = JSON.parse(data[i]);
-      var sendStr = contact.name + "(" + contact.tel[0].value + ");";
-      var searchStr = contact.tel[0].value+";";
-      if(titleElem.value.indexOf(searchStr) >= 0){
-        titleElem.value = titleElem.value.replace(searchStr, sendStr);
-      }else{
-        if(titleElem.value.indexOf("("+contact.tel[0].value+")") < 0 ){
-          titleElem.value += sendStr;
+      if(contact.tel && contact.tel.length > 0){
+        var sendStr = contact.name + "(" + contact.tel[0].value + ");";
+        var searchStr = contact.tel[0].value+";";
+        if(titleElem.value.indexOf(searchStr) >= 0){
+          titleElem.value = titleElem.value.replace(searchStr, sendStr);
+        }else{
+          if(titleElem.value.indexOf("("+contact.tel[0].value+")") < 0 ){
+            titleElem.value += sendStr;
+          }
         }
       }
     }
@@ -650,9 +662,10 @@ SendSMSDialog.prototype = {
   },
   send: function() {
     var number = $id('address').value.split(';');
-    var message = $id('content').value;
+    var message = $id('content');
     var sender = [];
     var self=this;
+    message.readOnly = true;
     number.forEach(function(item) {
       var start = item.indexOf("(");
       var end = item.indexOf(")");
@@ -662,7 +675,7 @@ SendSMSDialog.prototype = {
         sender.push(item);
       }
     });
-    CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message}),
+    CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message.value}),
       function onSuccess_sendSms(event) {
         if(!event.result) {
           self._mask.parentNode.removeChild(self._mask);
@@ -854,20 +867,12 @@ SendSMSToSingle.prototype = {
     this.options.onclose();
   },
   send: function() {
-    var number = $id('address').value.split(';');
-    var message = $id('content').value;
-    var sender = [];
+    var tel =$id('selected-contact-tel');
+    var message = $id('content');
+    var sender = [tel.textContent];
     var self=this;
-    number.forEach(function(item) {
-      var start = item.indexOf("(");
-      var end = item.indexOf(")");
-      if(start >= 0 &&  end > 0){
-        sender.push(item.slice(start+1,end));
-      }else if(item != ""){
-        sender.push(item);
-      }
-    });
-    CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message}),
+    message.readOnly = true;
+    CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message.value}),
       function onSuccess_sendSms(event) {
         if(!event.result) {
           self._mask.parentNode.removeChild(self._mask);

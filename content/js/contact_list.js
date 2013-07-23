@@ -4,7 +4,7 @@
 
 var ContactList = (function() {
   var groupedList = null;
-  
+  var handler = null;
   function getListContainer() {
     return $id('contact-list-container');
   }
@@ -512,6 +512,9 @@ var ContactList = (function() {
         container.appendChild(div);
         navigator.mozL10n.translate(div);
       });
+      $id('sms-send-incontact').style.display = 'block';
+    }else{
+      $id('sms-send-incontact').style.display = 'none';
     }
     if (contact.email && contact.email.length > 0) {
       contact.email.forEach(function(item) {
@@ -590,16 +593,20 @@ var ContactList = (function() {
       div.classList.add('show-contacts-item');
       container.appendChild(div);
       if (contact.tel && contact.tel.length > 0) {
-        num += contact.tel[0].value;
-        num += ';';
+        num += contact.name + "(" + contact.tel[0].value + ");";
       }
     });
-    $id('sms-send-inmulticontact').addEventListener ('click', function sms_send_incontact() {
+    var btn = $id('sms-send-inmulticontact');
+    if(handler){
+      btn.removeEventListener('click', handler,false);
+    }
+    handler = function () {
       new SendSMSDialog({
         number: num,
         bodyText: null
       });
-    });
+    };
+    btn.addEventListener ('click', handler,false);
     ViewManager.showViews('show-multi-contacts');
   }
   /**
@@ -631,6 +638,10 @@ var ContactList = (function() {
       groupedList.remove(existingContact);
       groupedList.add(contact);
       updateContactAvatar(contact);
+      var item = $id('contact-' + contact.id);
+      if(item){
+        selectContactItem(item, true);
+      }
     });
   }
 
@@ -1120,8 +1131,9 @@ var ContactList = (function() {
     updateContacts:    updateContacts,
     addContacts:       addContacts,
     getContact:        getContact,
-    showContactInfo:   showVcardInView,
-    selectAllContacts: selectAllContacts
+    showVcardInView:   showVcardInView,
+    selectAllContacts: selectAllContacts,
+    showContactInfo: showContactInfo
   };
 })();
 

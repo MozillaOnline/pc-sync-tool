@@ -59,9 +59,10 @@ var ViewManager = (function() {
         var sub = $id('contact-edit-view');
         if (sub.hidden == false) {
           if (window.confirm(_('save-contacts-confirm'))) {
-            //$id(viewOldId).dataset.shown = false;
-            //isChangeView = true;
+            ContactForm.saveContact();
           }
+          $id(viewOldId).dataset.shown = false;
+          isChangeView = true;
         } else {
           $id(viewOldId).dataset.shown = false;
           isChangeView = true;
