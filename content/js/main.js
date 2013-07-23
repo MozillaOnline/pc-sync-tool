@@ -39,27 +39,32 @@ var FFOSAssistant = (function() {
   function fillStorageSummaryInfo(elemId, info) {
     var elem = $id(elemId);
     var total = info.usedInBytes + info.freeInBytes;
-    var usedInP = Math.floor(info.usedInBytes / total * 100) + '%';
-    $expr('.storage-number', elem)[0].textContent =
-      formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
-    $expr('.storage-graph .used', elem)[0].style.width = usedInP;
-    if(elemId =='sdcard-storage-summary' ){
-      var subInP = Math.floor(info.picture / info.usedInBytes * 100);
-      if(subInP == 0)
-	subInP = 1;
-      $expr('.storage-used', elem)[0].style.width = subInP + '%';
-      subInP = Math.floor(info.music / info.usedInBytes * 100);
-      if(subInP == 0)
-	subInP = 1;
-      $expr('.storage-used', elem)[1].style.width = subInP + '%';
-      subInP = Math.floor(info.video / info.usedInBytes * 100);
-      if(subInP == 0)
-	subInP = 1;
-      $expr('.storage-used', elem)[2].style.width = subInP + '%';
-      subInP = Math.floor((info.usedInBytes - info.music - info.picture - info.video) / info.usedInBytes * 100);
-      if(subInP == 0)
-	subInP = 1;
-      $expr('.storage-used', elem)[3].style.width =  subInP + '%';
+    if(total > 0){
+      var usedInP = Math.floor(info.usedInBytes / total * 100) + '%';
+      $expr('.storage-number', elem)[0].textContent =
+	formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
+      $expr('.storage-graph .used', elem)[0].style.width = usedInP;
+      if(elemId =='sdcard-storage-summary' ){
+	var subInP = Math.floor(info.picture / info.usedInBytes * 100);
+	if(subInP == 0)
+	  subInP = 1;
+	$expr('.storage-used', elem)[0].style.width = subInP + '%';
+	subInP = Math.floor(info.music / info.usedInBytes * 100);
+	if(subInP == 0)
+	  subInP = 1;
+	$expr('.storage-used', elem)[1].style.width = subInP + '%';
+	subInP = Math.floor(info.video / info.usedInBytes * 100);
+	if(subInP == 0)
+	  subInP = 1;
+	$expr('.storage-used', elem)[2].style.width = subInP + '%';
+	subInP = Math.floor((info.usedInBytes - info.music - info.picture - info.video) / info.usedInBytes * 100);
+	if(subInP == 0)
+	  subInP = 1;
+	$expr('.storage-used', elem)[3].style.width =  subInP + '%';
+      }
+    }else{
+      $expr('.storage-number', elem)[0].textContent =
+	formatStorage(info.usedInBytes) + '/' + formatStorage(total);
     }
   }
 
