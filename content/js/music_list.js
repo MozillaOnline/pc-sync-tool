@@ -46,12 +46,12 @@ var MusicList = (function() {
   function createMusicListItem(music, index) {
     var html = '';
     html += '<label class="unchecked"></label>';
-    html += '<div class="music-names item"><label>' + retriveName(music.name) + '</label></div>';
-    html += '<div class="music-singer item"><label>' + music.metadate.artist + '</label></div>';
-    html += '<div class="music-album item"><label>' + music.metadate.album + '</label></div>';
-    html += '<div class="music-timespan item"><label>' + '5:05' + '</label></div>';
-    html += '<div class="music-type item"><label>' + retriveExtension(music.name) + '</label></div>';
-    html += '<div class="music-size item"><label>' + retriveSize(music.size) + ' MB' + '</label></div>';
+    html += '<div class="music-names item"><span>' + retriveName(music.name) + '</span></div>';
+    html += '<div class="music-singer item"><span>' + music.metadate.artist + '</span></div>';
+    html += '<div class="music-album item"><span>' + music.metadate.album + '</span></div>';
+    html += '<div class="music-timespan item"><span>' + '5:05' + '</span></div>';
+    html += '<div class="music-type item"><span>' + retriveExtension(music.name) + '</span></div>';
+    html += '<div class="music-size item"><span>' + retriveSize(music.size) + ' MB' + '</span></div>';
 
     var elem = document.createElement('div');
     elem.classList.add('music-header');
@@ -66,17 +66,70 @@ var MusicList = (function() {
     elem.dataset.music = JSON.stringify(music);
     elem.dataset.name = retriveName(music.name);
     elem.dataset.type = retriveExtension(music.name);
-    //elem.dataset.contactId = music.id;
-    //elem.id = 'music-' + music.id;
-    //elem.dataset.avatar = '';
+    elem.dataset.checked = false;
     elem.onclick = function onclick_messages_list(event) {
       var target = event.target;
-      if (target instanceof HTMLInputElement) {
-        selectMusicItem(elem, target.checked);
+      if (target instanceof HTMLLabelElement) {
+        toggleMusicItem(elem);
+      } else {
+        musicItemClicked(elem);
       }
     };
-    //navigator.mozL10n.translate(elem);
     return elem;
+  }
+
+  function toggleMusicItem(elem) {
+    var item = $expr('label.unchecked', elem)[0];
+    if (item) {
+      item.classList.toggle('checked');
+    }
+    if (item.classList.contains('checked')) {
+      elem.dataset.checked = true;
+    } else {
+      elem.dataset.checked = false;
+    }
+    opStateChanged();
+  }
+
+  function opStateChanged() {
+    if ($expr('#music-list-container .music-list-item').length == 0) {
+      $id('selectAll-musics').dataset.checked = false;
+      $id('selectAll-musics').dataset.disabled = true;
+    } else {
+      $id('selectAll-musics').dataset.checked =
+        $expr('#music-list-container .music-list-item').length ===
+          $expr('#music-list-container .music-list-item[data-checked="true"]').length;
+      $id('selectAll-musics').dataset.disabled = false;
+    }
+    $id('remove-musics').dataset.disabled =
+      $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
+    $id('export-musics').dataset.disabled =
+      $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
+  }
+
+  function musicItemClicked(elem) {
+    $expr('#music-list-container .music-list-item[data-checked="true"]').forEach(function(e) {
+      if (e != elem) {
+        e.dataset.checked = false;
+        var item = $expr('label.unchecked', e)[0];
+        if (item) {
+          item.classList.remove('checked');
+        }
+      }
+    });
+
+    item = $expr('label.unchecked', elem)[0];
+    if (item) {
+      item.classList.add('checked');
+    }
+    elem.dataset.checked = true;
+    if ($expr('#music-list-container .music-list-item').length === 1) {
+      $id('selectAll-musics').dataset.checked = true;
+    } else {
+      $id('selectAll-musics').dataset.checked = false;
+    }
+    $id('remove-musics').dataset.disabled = false;
+    $id('export-musics').dataset.disabled = false;
   }
 
   function checkIfMusicListEmpty() {
@@ -108,25 +161,20 @@ var MusicList = (function() {
       selectMusicItem(item, select);
     });
 
-    //$id('select-all-musics-checkbox').checked = select;
+    opStateChanged();
   }
 
-  function selectMusicItem(item, select) {
-    if (select) {
-      item.classList.add('selected');
-    } else {
-      item.classList.remove('selected');
+  function selectMusicItem(elem, selected) {
+    var item = $expr('label.unchecked', elem)[0];
+    if (item) {
+      if (selected) {
+        item.classList.add('checked');
+        elem.dataset.checked = true;
+      } else {
+        item.classList.remove('checked');
+        elem.dataset.checked = false;
+      }
     }
-
-    $expr('input[type=checkbox]', item).forEach(function(checkbox) {
-      checkbox.checked = select;
-      checkbox.dataset.checked = !! select;
-    });
-
-    //$id('select-all-musics-checkbox').checked =
-    //$expr('#music-list-container input[data-checked=false]').length === 0;
-    //$id('remove-musics').dataset.disabled =
-    //$expr('#music-list-container input[data-checked=true]').length === 0;
   }
 
   /**
@@ -183,8 +231,15 @@ var MusicList = (function() {
   }
 
   window.addEventListener('load', function wnd_onload(event) {
-    $id('selectAll-musics').addEventListener('change', function sall_onclick(event) {
-      selectAllMusics(this.checked);
+    $id('selectAll-musics').addEventListener('click', function sall_onclick(event) {
+      if (this.dataset.disabled == "true") {
+        return;
+      }
+      if (this.dataset.checked == "false") {
+        selectAllMusics(true);
+      } else {
+        selectAllMusics(false);
+      }
     });
 
     $id('remove-musics').addEventListener('click', function onclick_removeMusic(event) {

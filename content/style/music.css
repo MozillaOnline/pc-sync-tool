@@ -110,6 +110,7 @@
   height: 3rem;
   background-color: #E7E7E7;
   margin: 0 2rem 0 6px;
+  cursor: default;
 }
 
 .music-header div {
@@ -150,7 +151,7 @@
   float: left;
 }
 
-.music-header >label.unchecked {
+.music-list-item >label.unchecked {
   background-image: url("images/checkbox.png");
   background-position: right center;
   background-repeat: no-repeat;
@@ -159,7 +160,19 @@
   float: left;
 }
 
+.music-list-item >label.checked {
+  background-image: url("images/checkbox-checked.png");
+}
+
 .music-list-item {
+}
+
+.music-list-item:hover {
+  background-color: #D0F7FF;
+}
+
+.music-list-item[data-checked=true] {
+  background-color: #60DFF9;
 }
 
 .odd {

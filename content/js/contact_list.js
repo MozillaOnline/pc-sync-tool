@@ -658,6 +658,14 @@ var ContactList = (function() {
     return escaped;
   }
 
+  function extractCarrier(tel) {
+    var ret = '';
+    if (/carrier=(.+)/i.test(tel)) {
+      ret = tel.match(/carrier=(.+)/i)[1];
+    }
+    return ret;
+  }
+
   window.addEventListener('load', function wnd_onload(event) {
     $id('selectAll-contacts').addEventListener('click', function selectAll_onclick(event) {
       if (this.dataset.disabled == "true") {
@@ -944,56 +952,57 @@ var ContactList = (function() {
               }
               if (item.tel) {
                 for (var e in item.tel) {
+                  var carrier = extractCarrier(e);
                   if (e.indexOf('type=cell') != -1 || e.indexOf('type=mobile') != -1) {
                     item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['mobile'], 'value':t});
+                      contact.tel.push({'type':['mobile'], 'carrier':carrier, 'value':t});
                     });
                     continue;
                   }
                   if (e.indexOf('type=home') != -1) {
                     item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['home'], 'value':t});
+                      contact.tel.push({'type':['home'], 'carrier':carrier, 'value':t});
                     });
                     continue;
                   }
                   if (e.indexOf('type=pref') != -1) {
                     item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['personal'], 'value':t});
+                      contact.tel.push({'type':['personal'], 'carrier':carrier, 'value':t});
                     });
                     continue;
                   }
                   if (e.indexOf('type=voice') != -1 || e.indexOf('type=personal') != -1) {
                     item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['personal'], 'value':t});
+                      contact.tel.push({'type':['personal'], 'carrier':carrier, 'value':t});
                     });
                     continue;
                   }
                   if (e.indexOf('type=work') != -1) {
                     item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['work'], 'value':t});
+                      contact.tel.push({'type':['work'], 'carrier':carrier, 'value':t});
                     });
                     continue;
                   }
                   if (e.indexOf('type=faxhome') != -1) {
                     item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['faxHome'], 'value':t});
+                      contact.tel.push({'type':['faxHome'], 'carrier':carrier, 'value':t});
                     });
                     continue;
                   }
                   if (e.indexOf('type=faxoffice') != -1) {
                     item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['faxOffice'], 'value':t});
+                      contact.tel.push({'type':['faxOffice'], 'carrier':carrier, 'value':t});
                     });
                     continue;
                   }
                   if (e.indexOf('type=faxother') != -1) {
                     item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['faxOther'], 'value':t});
+                      contact.tel.push({'type':['faxOther'], 'carrier':carrier, 'value':t});
                     });
                     continue;
                   }
                   item.tel[e].forEach(function(t) {
-                    contact.tel.push({'type':['other'], 'value':t});
+                    contact.tel.push({'type':['other'], 'carrier':carrier, 'value':t});
                   });
                 }
               }
@@ -1074,7 +1083,11 @@ var ContactList = (function() {
         }
         if (contact.tel && contact.tel.length > 0) {
           contact.tel.forEach(function(t) {
-            vcard += '\nTEL;TYPE=' + t.type + ':' + t.value;
+            vcard += '\nTEL;TYPE=' + t.type;
+            if (t.carrier != '') {
+              vcard += ';carrier=' + t.carrier;
+            }
+            vcard += ':' + t.value;
           });
         }
         if (contact.email && contact.email.length > 0) {
