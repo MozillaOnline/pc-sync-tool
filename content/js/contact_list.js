@@ -1095,7 +1095,7 @@ var ContactList = (function() {
         if (contact.tel && contact.tel.length > 0) {
           contact.tel.forEach(function(t) {
             vcard += '\nTEL;TYPE=' + t.type;
-            if (t.carrier != '') {
+            if (t.carrier && t.carrier != '') {
               vcard += ';carrier=' + t.carrier;
             }
             vcard += ':' + t.value;
@@ -1108,11 +1108,27 @@ var ContactList = (function() {
         }
         if (contact.adr && contact.adr.length > 0) {
           contact.adr.forEach(function(adr) {
-            vcard += '\nADR;TYPE=' + adr.type + ':;;' + adr.streetAddress + ';'
-                                                      + adr.locality + ';'
-                                                      + adr.region + ';'
-                                                      + adr.postalCode + ';'
-                                                      + adr.countryName;
+            vcard += '\nADR;TYPE=' + adr.type + ':;;';
+            if (adr.streetAddress)
+            {
+              vcard += adr.streetAddress;
+            }
+            vcard += ';';
+            if (adr.locality) {
+              vcard += adr.locality;
+            }
+            vcard += ';';
+            if (adr.region) {
+              vcard += adr.region;
+            }
+            vcard += ';';
+            if (adr.postalCode) {
+              vcard += adr.postalCode;
+            }
+            vcard += ';';
+            if (adr.countryName) {
+              vcard += adr.countryName;
+            }
           });
         }
         if (contact.note && contact.note.length > 0) {
