@@ -919,127 +919,265 @@ var ContactList = (function() {
                 }
               }
             } else {
-              if (item.fn != '') {
-                var fullName = item.fn;
-                var index = fullName.indexOf(' ');
-                if (index > 0) {
-                  contact.familyName = fullName.substr(index + 1, fullName.length);
-                  contact.givenName = fullName.substr(0, index);
-                  contact.name = [fullName];
-                }else {
-                  contact.name = [fullName];
+              if (item.version == '3.0') {
+                if (item.fn != '') {
+                  var fullName = item.fn;
+                  var index = fullName.indexOf(' ');
+                  if (index > 0) {
+                    contact.familyName = fullName.substr(index + 1, fullName.length);
+                    contact.givenName = fullName.substr(0, index);
+                    contact.name = [fullName];
+                  }else {
+                    contact.givenName = fullName;
+                    contact.name = [fullName];
+                  }
                 }
-              }
-              if (item.org && item.org != '') {
-                contact.org = item.org.split(';');
-              }
-              if (item.note && item.note != '') {
-                contact.note = item.note.split(';');
-              }
-              if (item.email) {
-                for (var e in item.email) {
-                  if (e.indexOf('type=cell') != -1 || e.indexOf('type=personal') != -1) {
-                    item.email[e].forEach(function(email) {
-                      contact.email.push({'type':['personal'], 'value':email});
-                    });
-                    continue;
-                  }
-                  if (e.indexOf('type=home') != -1) {
-                    item.email[e].forEach(function(email) {
-                      contact.email.push({'type':['home'], 'value':email});
-                    });
-                    continue;
-                  }
-                  if (e.indexOf('type=work') != -1) {
-                    item.email[e].forEach(function(email) {
-                      contact.email.push({'type':['work'], 'value':email});
-                    });
-                    continue;
-                  }
-                  item.email[e].forEach(function(email) {
-                    contact.email.push({'type':['other'], 'value':email});
-                  });
+                if (item.org && item.org != '') {
+                  contact.org = item.org.split(';');
                 }
-              }
-              if (item.tel) {
-                for (var e in item.tel) {
-                  var carrier = extractCarrier(e);
-                  if (e.indexOf('type=cell') != -1 || e.indexOf('type=mobile') != -1) {
-                    item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['mobile'], 'carrier':carrier, 'value':t});
-                    });
-                    continue;
-                  }
-                  if (e.indexOf('type=home') != -1) {
-                    item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['home'], 'carrier':carrier, 'value':t});
-                    });
-                    continue;
-                  }
-                  if (e.indexOf('type=pref') != -1) {
-                    item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['personal'], 'carrier':carrier, 'value':t});
-                    });
-                    continue;
-                  }
-                  if (e.indexOf('type=voice') != -1 || e.indexOf('type=personal') != -1) {
-                    item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['personal'], 'carrier':carrier, 'value':t});
-                    });
-                    continue;
-                  }
-                  if (e.indexOf('type=work') != -1) {
-                    item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['work'], 'carrier':carrier, 'value':t});
-                    });
-                    continue;
-                  }
-                  if (e.indexOf('type=faxhome') != -1) {
-                    item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['faxHome'], 'carrier':carrier, 'value':t});
-                    });
-                    continue;
-                  }
-                  if (e.indexOf('type=faxoffice') != -1) {
-                    item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['faxOffice'], 'carrier':carrier, 'value':t});
-                    });
-                    continue;
-                  }
-                  if (e.indexOf('type=faxother') != -1) {
-                    item.tel[e].forEach(function(t) {
-                      contact.tel.push({'type':['faxOther'], 'carrier':carrier, 'value':t});
-                    });
-                    continue;
-                  }
-                  item.tel[e].forEach(function(t) {
-                    contact.tel.push({'type':['other'], 'carrier':carrier, 'value':t});
-                  });
+                if (item.note && item.note != '') {
+                  contact.note = item.note.split(';');
                 }
-              }
-              if (item.adr) {
-                for (var e in item.adr) {
-                  if (e.indexOf('type=home') != -1) {
+                if (item.email) {
+                  for (var e in item.email) {
+                    if (e.indexOf('type=cell') != -1 || e.indexOf('type=personal') != -1) {
+                      item.email[e].forEach(function(email) {
+                        contact.email.push({'type':['personal'], 'value':email});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=home') != -1) {
+                      item.email[e].forEach(function(email) {
+                        contact.email.push({'type':['home'], 'value':email});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=work') != -1) {
+                      item.email[e].forEach(function(email) {
+                        contact.email.push({'type':['work'], 'value':email});
+                      });
+                      continue;
+                    }
+                    item.email[e].forEach(function(email) {
+                      contact.email.push({'type':['other'], 'value':email});
+                    });
+                  }
+                }
+                if (item.tel) {
+                  for (var e in item.tel) {
+                    var carrier = extractCarrier(e);
+                    if (e.indexOf('type=cell') != -1 || e.indexOf('type=mobile') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['mobile'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=home') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['home'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=pref') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['personal'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=voice') != -1 || e.indexOf('type=personal') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['personal'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=work') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['work'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=faxhome') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['faxHome'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=faxoffice') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['faxOffice'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=faxother') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['faxOther'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    item.tel[e].forEach(function(t) {
+                      contact.tel.push({'type':['other'], 'carrier':carrier, 'value':t});
+                    });
+                  }
+                }
+                if (item.adr) {
+                  for (var e in item.adr) {
+                    if (e.indexOf('type=home') != -1) {
+                      item.adr[e].forEach(function(adr) {
+                        var length = adr.length;
+                        var address = adr[length-5].replace('\\n','');
+                        contact.adr.push({"type":["Home"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('type=work') != -1) {
+                      item.adr[e].forEach(function(adr) {
+                        var length = adr.length;
+                        var address = adr[length-5].replace('\\n','');
+                        contact.adr.push({"type":["Work"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                      });
+                      continue;
+                    }
                     item.adr[e].forEach(function(adr) {
                       var length = adr.length;
                       var address = adr[length-5].replace('\\n','');
-                      contact.adr.push({"type":["Home"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                      contact.adr.push({"type":["Other"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
                     });
-                    continue;
                   }
-                  if (e.indexOf('type=work') != -1) {
+                }
+              }
+              if (item.version == '2.1') {
+                if (item.fn != '') {
+                  var fullName = decodeURIComponent(item.fn.replace(/=/g,'%'));
+                  var index = fullName.indexOf(' ');
+                  if (index > 0) {
+                    contact.familyName = fullName.substr(index + 1, fullName.length);
+                    contact.givenName = fullName.substr(0, index);
+                    contact.name = [fullName];
+                  }else {
+                    contact.givenName = fullName;
+                    contact.name = [fullName];
+                  }
+                }
+                if (item.org && item.org != '') {
+                  contact.org = decodeURIComponent(item.org.replace(/=/g,'%')).split(';');
+                }
+                //if (item.note && item.note != '') {
+                //  contact.note = decodeURIComponent(item.note.replace(/=/g,'%')).split(';');
+                //}
+                if (item.email) {
+                  for (var e in item.email) {
+                    if (e.indexOf('cell') != -1 || e.indexOf('personal') != -1) {
+                      item.email[e].forEach(function(email) {
+                        contact.email.push({'type':['personal'], 'value':email});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('home') != -1) {
+                      item.email[e].forEach(function(email) {
+                        contact.email.push({'type':['home'], 'value':email});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('work') != -1) {
+                      item.email[e].forEach(function(email) {
+                        contact.email.push({'type':['work'], 'value':email});
+                      });
+                      continue;
+                    }
+                    item.email[e].forEach(function(email) {
+                      contact.email.push({'type':['other'], 'value':email});
+                    });
+                  }
+                }
+                if (item.tel) {
+                  for (var e in item.tel) {
+                    var carrier = extractCarrier(e);
+                    if (e.indexOf('cell') != -1 || e.indexOf('type=mobile') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['mobile'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('home') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['home'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('pref') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['personal'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('voice') != -1 || e.indexOf('personal') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['personal'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('work') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['work'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('faxhome') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['faxHome'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('faxoffice') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['faxOffice'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('faxother') != -1) {
+                      item.tel[e].forEach(function(t) {
+                        contact.tel.push({'type':['faxOther'], 'carrier':carrier, 'value':t});
+                      });
+                      continue;
+                    }
+                    item.tel[e].forEach(function(t) {
+                      contact.tel.push({'type':['other'], 'carrier':carrier, 'value':t});
+                    });
+                  }
+                }
+                if (item.adr) {
+                  for (var e in item.adr) {
+                    if (e.indexOf('home') != -1) {
+                      item.adr[e].forEach(function(adr) {
+                        var length = adr.length;
+                        for (var index = 0; index < length; index++) {
+                          adr[index] = decodeURIComponent(adr[index].replace(/=/g,'%'));
+                        }
+                        var address = adr[length-5].replace('\\n','');
+                        contact.adr.push({"type":["Home"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                      });
+                      continue;
+                    }
+                    if (e.indexOf('work') != -1) {
+                      item.adr[e].forEach(function(adr) {
+                        var length = adr.length;
+                        for (var index = 0; index < length; index++) {
+                          adr[index] = decodeURIComponent(adr[index].replace(/=/g,'%'));
+                        }
+                        var address = adr[length-5].replace('\\n','');
+                        contact.adr.push({"type":["Work"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                      });
+                      continue;
+                    }
                     item.adr[e].forEach(function(adr) {
                       var length = adr.length;
+                      for (var index = 0; index < length; index++) {
+                        adr[index] = decodeURIComponent(adr[index].replace(/=/g,'%'));
+                      }
                       var address = adr[length-5].replace('\\n','');
-                      contact.adr.push({"type":["Work"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
+                      contact.adr.push({"type":["Other"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
                     });
-                    continue;
                   }
-                  item.adr[e].forEach(function(adr) {
-                    var length = adr.length;
-                    var address = adr[length-5].replace('\\n','');
-                    contact.adr.push({"type":["Other"],"streetAddress":address,"locality":adr[length-3],"postalCode":adr[length-2],"countryName":adr[length-1]});
-                  });
                 }
               }
             }
