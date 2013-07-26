@@ -133,12 +133,21 @@ var MusicList = (function() {
   }
 
   function checkIfMusicListEmpty() {
-    var isEmpty = groupedList.count() == 0;
+    var isEmpty = $expr('#music-list-container .music-list-item').length === 0 ;
     if (isEmpty) {
-      MusicForm.editMusic();
-      $id('music-view').classList.add('empty-list');
+      $id('selectAll-musics').dataset.disabled = true;
+      showEmptyMusics(true);
     } else {
-      $id('music-view').classList.remove('empty-list');
+      $id('selectAll-musics').dataset.disabled = false;
+      showEmptyMusics(false);
+    }
+  }
+
+  function showEmptyMusics(bFlag) {
+    if (bFlag) {
+      $id('empty-music-container').style.display = 'block';
+    } else {
+      $id('empty-music-container').style.display = 'none';
     }
   }
 
@@ -153,7 +162,7 @@ var MusicList = (function() {
       container.appendChild(listItem);
       index++;
     });
-    //checkIfMusicListEmpty();
+    checkIfMusicListEmpty();
   }
 
   function selectAllMusics(select) {

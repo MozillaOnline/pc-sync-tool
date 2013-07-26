@@ -106,6 +106,32 @@
   overflow: auto;
 }
 
+.content {
+  margin: 0 2rem 0 6px;
+}
+
+.empty-musics {
+  background: url('images/empty-musics.png') no-repeat scroll center center transparent;
+  height: 16rem;
+  margin: 10rem 0 2rem;
+}
+
+.empty-musics-prompt {
+  text-align: center;
+}
+
+.import-musics-btn-container {
+  height: 4rem;
+}
+
+.import-musics {
+  float: left;
+  height: 2rem;
+  width: 12rem;
+  margin: 1rem 0 0 31rem;
+  padding: 0.1rem 1rem;
+}
+
 .music-header{
   height: 3rem;
   background-color: #E7E7E7;
