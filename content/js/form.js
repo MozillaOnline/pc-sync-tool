@@ -350,23 +350,12 @@ var ContactForm = (function() {
     if (updateContact) {
       // Save to device
       CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {
-        var contactsUpdated = [];
-        if (!message.result) {
-          contactsUpdated.push(JSON.parse(message.data));
-        }
-        ContactList.updateContacts(contactsUpdated);
-        ContactList.showContactInfo(contact);
       }, function onerror_updatecontact(message) {
         alert('Error occurs when updating contacts: ' + JSON.stringify(message));
       });
     } else {
       // Create new contact
       CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
-        var contactsAdded = [];
-        if (!message.result) {
-          contactsAdded.push(JSON.parse(message.data));
-        }
-        ContactList.addContacts(contactsAdded);
       }, function onerror_addcontact(message) {
         alert('Error occurs when adding contacts: ' + JSON.stringify(message));
       });
@@ -422,11 +411,6 @@ var ContactForm = (function() {
       "carrier": ""
     }];
     CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
-      var contactsAdded = [];
-      if (!message.result) {
-        contactsAdded.push(JSON.parse(message.data));
-      }
-      ContactList.addContacts(contactsAdded);
     }, function onerror_addcontact(message) {
       alert('Error occurs when quick adding contact: ' + JSON.stringify(message));
     });

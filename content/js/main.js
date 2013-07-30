@@ -119,7 +119,6 @@ var FFOSAssistant = (function() {
 
   function getAndShowAllSMSThreads() {
     updateSMSThreads();
-    SmsList.startListening();
   }
   
   function updateSMSThreads() {
@@ -166,8 +165,13 @@ var FFOSAssistant = (function() {
         socket = null;
         ViewManager.reset();
       } ,
-      onMsmListening: function onMsmListening(message) {
-        SmsList.onMessage(message);
+      onListening: function onListening(message) {
+	if(message.type == 'sms'){
+	  SmsList.onMessage(message);
+	}else if(message.type == 'contact'){
+	  ContactList.onMessage(message);
+	  SmsList.onMessage('updateAvatar');
+	}
       }
     });
   }
@@ -243,7 +247,9 @@ var FFOSAssistant = (function() {
         connectToUSB();
       }
     }
-
+    CMD.Listen.listenMessage(function() {}, function(e) {
+      alert(e);
+    });
     // Register view event callbacks
     ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
     ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);

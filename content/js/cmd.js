@@ -84,7 +84,8 @@ var CMD = (function() {
       removeContact:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.removeContactById),
 
       clearAllContacts:  createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.clearAllContacts),
-      getContactByPhoneNumber:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactByPhoneNumber)
+      getContactByPhoneNumber:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactByPhoneNumber),
+      getContactById:  createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactById)
     },
 
     /***** Picture commands ******/
@@ -200,10 +201,13 @@ var CMD = (function() {
        *   [id1, id2]
        */
       deleteMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.deleteMessageById),
-      listenMessage:  createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.listenMessage),
       markReadMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.markReadMessageById),
       getThreads:  createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.getThreads),
       getThreadMessagesById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.getThreadMessagesById)
+    },
+    //listen command
+    Listen: {
+      listenMessage:  createCommandWithNonData(CMD_TYPE.listen, LISTEN_COMMAND.listen)
     }
   };
 })();

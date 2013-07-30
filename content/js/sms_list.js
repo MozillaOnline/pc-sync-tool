@@ -67,33 +67,29 @@ var SmsList = (function() {
             }*/
           }
         }
-        CMD.Contacts.getContactProfilePic(contactData.id, function(result2) {
-          if (result2.data != '') {
-            var threadItem = $id('id-threads-data-' + threadInfo.id);
-            var img = threadItem.getElementsByTagName('img')[0];
-            img.src = result2.data;
-            threadItem.dataset.avatar = result2.data;
-            if (img.classList.contains('avatar-default')) {
-              img.classList.remove('avatar-default');
-            }
-            var selectViewimg = $id('show-multi-sms-content-img-' + threadInfo.id);
-            if(selectViewimg != null){
-              selectViewimg.src = result2.data;
-              if (selectViewimg.classList.contains('avatar-default')) {
-                selectViewimg.classList.remove('avatar-default');
-              }
-            }
-            var messageViewimg = $id('sms-thread-header-img-' + threadInfo.id);
-            if(messageViewimg != null){
-              messageViewimg.src = result2.data;
-              if (messageViewimg.classList.contains('avatar-default')) {
-                messageViewimg.classList.remove('avatar-default');
-              }
+        if ((contactData.photo != null) && (contactData.photo.length > 0)) {
+          var threadItem = $id('id-threads-data-' + threadInfo.id);
+          var img = threadItem.getElementsByTagName('img')[0];
+          img.src = contactData.photo;
+          threadItem.dataset.avatar = contactData.photo;
+          if (img.classList.contains('avatar-default')) {
+            img.classList.remove('avatar-default');
+          }
+          var selectViewimg = $id('show-multi-sms-content-img-' + threadInfo.id);
+          if(selectViewimg != null){
+            selectViewimg.src = contactData.photo;
+            if (selectViewimg.classList.contains('avatar-default')) {
+              selectViewimg.classList.remove('avatar-default');
             }
           }
-        }, function(e) {
-          alert('get getContactProfilePic error:' + e);
-        });
+          var messageViewimg = $id('sms-thread-header-img-' + threadInfo.id);
+          if(messageViewimg != null){
+            messageViewimg.src = contactData.photo;
+            if (messageViewimg.classList.contains('avatar-default')) {
+              messageViewimg.classList.remove('avatar-default');
+            }
+          }
+        }
       }
     }, function(e) {
       alert('get getContactByPhoneNumber error:' + e);
@@ -335,6 +331,7 @@ var SmsList = (function() {
                   message: This.value
                 }), function onSuccess_sendSms(sms) {
                   if (!sms.result) {
+                    updateAvatar();
                   }
                 }, function onError_sendSms(e) {
                   alert(e);
@@ -561,57 +558,61 @@ var SmsList = (function() {
 
   function onMessage(sms) {
     if(threadList){
-      var threadListData = threadList.getGroupedData();
-      if(threadListData.length > 0){
-        threadListData = threadListData[0].dataList;
-        for(var i=0;i<threadListData.length;i++){
-          if(threadListData[i].id == sms.threadId){
-            threadList.remove(threadListData[i]);
-            if (sms.delivery == "received") {
-              threadListData[i].unreadCount += 1;
-            }
-            if(messageList){
-              var messageListData = messageList.getGroupedData();
-              messageListData = messageListData[0].dataList;
-              if(messageListData.length > 0){
-                if(sms.threadId == messageListData[0].threadId){
-                  sms['nearDate'] = messageListData[messageListData.length-1].timestamp;
-                  messageList.add(sms);
-                  if (sms.delivery == "received") {
-                    threadListData[i].unreadCount = 0;
+      if(sms == 'updateAvatar'){
+        updateAvatar();
+      }else{
+        var threadListData = threadList.getGroupedData();
+        if(threadListData.length > 0){
+          threadListData = threadListData[0].dataList;
+          for(var i=0;i<threadListData.length;i++){
+            if(threadListData[i].id == sms.threadId){
+              threadList.remove(threadListData[i]);
+              if (sms.delivery == "received") {
+                threadListData[i].unreadCount += 1;
+              }
+              if(messageList){
+                var messageListData = messageList.getGroupedData();
+                messageListData = messageListData[0].dataList;
+                if(messageListData.length > 0){
+                  if(sms.threadId == messageListData[0].threadId){
+                    sms['nearDate'] = messageListData[messageListData.length-1].timestamp;
+                    messageList.add(sms);
+                    if (sms.delivery == "received") {
+                      threadListData[i].unreadCount = 0;
+                    }
                   }
                 }
               }
+              threadListData[i].body = sms.body;
+              threadListData[i].timestamp = sms.timestamp;
+              threadListData[i].lastMessageType = sms.type;
+              threadList.add(threadListData[i]);
+              return;
             }
-            threadListData[i].body = sms.body;
-            threadListData[i].timestamp = sms.timestamp;
-            threadListData[i].lastMessageType = sms.type;
-            threadList.add(threadListData[i]);
-            return;
           }
+        }else{
+          threadListContainer.innerHTML = '';
         }
-      }else{
-        threadListContainer.innerHTML = '';
+        var tempparticipants;
+        var unreadCount;
+        if (sms.delivery == "received") {
+          tempparticipants = sms.sender;
+          unreadCount = 1;
+        } else {
+          tempparticipants = sms.receiver;
+          unreadCount = 0;
+        }
+        var tempthreadListData = {
+          'id': sms.threadId,
+          'body': sms.body,
+          'timestamp': sms.timestamp,
+          'unreadCount': unreadCount,
+          'participants': tempparticipants,
+          'lastMessageType': sms.type
+        };
+        tempthreadListData['threadIndex'] = sms.threadId;
+        threadList.add(tempthreadListData);
       }
-      var tempparticipants;
-      var unreadCount;
-      if (sms.delivery == "received") {
-        tempparticipants = sms.sender;
-        unreadCount = 1;
-      } else {
-        tempparticipants = sms.receiver;
-        unreadCount = 0;
-      }
-      var tempthreadListData = {
-        'id': sms.threadId,
-        'body': sms.body,
-        'timestamp': sms.timestamp,
-        'unreadCount': unreadCount,
-        'participants': tempparticipants,
-        'lastMessageType': sms.type
-      };
-      tempthreadListData['threadIndex'] = sms.threadId;
-      threadList.add(tempthreadListData);
     }
   }
 
@@ -702,6 +703,7 @@ var SmsList = (function() {
                 threadListData[j].timestamp = messageListData[i].timestamp;
                 threadListData[j].lastMessageType = messageListData[i].type;
                 threadList.add(threadListData[j]);
+                updateAvatar();
                 break;
               }
             }
@@ -713,15 +715,7 @@ var SmsList = (function() {
     }
   }
 
-  function startListening() {
-    CMD.SMS.listenMessage(function(sms) {}, function(e) {
-      alert(e);
-    });
-  }
-
   window.addEventListener('load', function wnd_onload(event) {
-    //window.setTimeout(startListening, 1000);
-    //startListening();
     $id('selectAll-sms').addEventListener('click', function sall_onclick(event) {
       if (this.dataset.disabled == "true") {
         return;
@@ -814,6 +808,7 @@ var SmsList = (function() {
             message: body.value
           }), function onSuccess_sendSms(sms) {
             if (!sms.result) {
+              updateAvatar();
             }
           }, function onError_sendSms(e) {
             alert(e);
@@ -833,6 +828,5 @@ var SmsList = (function() {
     exportThreads: exportThreads,
     onMessage: onMessage,
     selectAllSms: selectAllSms,
-    startListening: startListening,
   };
 })();

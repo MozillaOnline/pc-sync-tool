@@ -988,21 +988,17 @@ SelectContactsDialog.prototype = {
     contactSmallList.render();
     contactSmallList.getGroupedData().forEach(function(group) {
       group.dataList.forEach( function (contact) {
-        CMD.Contacts.getContactProfilePic(contact.id, function(result) {
-          if (result.data != '') {
-            var item = $id('contact-' + contact.id);
-            if(item != null){
-              var img = item.getElementsByTagName('img')[0];
-              img.src = result.data;
-              item.dataset.avatar = result.data;
-              if (img.classList.contains('avatar-default')) {
-                img.classList.remove('avatar-default');
-              }
+        if ((contact.photo != null) && (contact.photo.length > 0)) {
+          var item = $id('contact-' + contact.id);
+          if(item != null){
+            var img = item.getElementsByTagName('img')[0];
+            img.src = contact.photo;
+            item.dataset.avatar = contact.photo;
+            if (img.classList.contains('avatar-default')) {
+              img.classList.remove('avatar-default');
             }
           }
-        }, function(e) {
-          alert('get contactSmallList getContactProfilePic error:' + e);
-        });
+        }
       });
     });
     var itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
