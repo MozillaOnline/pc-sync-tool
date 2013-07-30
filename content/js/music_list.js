@@ -66,6 +66,7 @@ var MusicList = (function() {
     elem.dataset.music = JSON.stringify(music);
     elem.dataset.name = retriveName(music.name);
     elem.dataset.type = retriveExtension(music.name);
+    elem.dataset.id = music.name;
     elem.dataset.checked = false;
     elem.onclick = function onclick_messages_list(event) {
       var target = event.target;
@@ -75,6 +76,7 @@ var MusicList = (function() {
         musicItemClicked(elem);
       }
     };
+    elem.setAttribute('id', music.name);
     return elem;
   }
 
@@ -202,41 +204,38 @@ var MusicList = (function() {
    * Remove musics
    */
 
-  function removeMusic(id) {
-    CMD.Musics.removeMusic(id, function onresponse_removeMusic(message) {
-      // Make sure the 'select-all' box is not checked.
-      MusicList.selectAllMusics(false);
-      var keepVcardView = true;
-      var vcardView = $id('music-vcard-view');
-      if (message.result) {
-        return;
-      }
-
-      // Check if music exists in the list.
-      var item = $id('music-' + id);
-      if (!item) {
-        return;
-      }
-
-      // Remove music from grouped list
-      groupedList.remove(getContact(id));
-
-      if (vcardView.dataset.contactId == id) {
-        keepVcardView = false;
-      }
-
-      if (!keepVcardView) {
-        // Pick a music to show
-        var availableContacts = $expr('#music-list-container .music-list-item');
-        if (availableContacts.length == 0) {
-          vcardView.hidden = true;
-        } else {
-          showVcardInView(JSON.parse(availableContacts[0].dataset.music));
+  function removeMusic(files) {
+    var items = files || [];
+    var toBeRemovedFiles = [];
+    var index = 0;
+    items.forEach(function(item) {
+      var req = navigator.mozFFOSAssistant.runCmd('adb shell rm ' + item);
+      req.onsuccess = function (result) {
+        tobeRemovedFiles.push(item);
+        index++;
+        if (index == items.length) {
+          updateMusicsList(toBeRemovedFiles);
         }
       }
-    }, function onerror_removeContact(message) {
-      alert('Error occurs when removing contacts!');
+      req.onerror = function(e) {
+        index++;
+        if (index == items.length) {
+          updateMusicsList(toBeRemovedFiles);
+        }
+        alert('error occured when removing ' + item);
+      }
     });
+  }
+
+  function updateMusicsList(toBeRemovedFiles) {
+    var container = $id('music-list-container');
+    var musics = $expr('#music-list-container .music-list-item');
+    for (var i = 0; i < container.childNodes.length; i++) {
+      var child = container.childNodes[i];
+      if (child.dataset.id == item) {
+        //code
+      }
+    }
   }
 
   window.addEventListener('load', function wnd_onload(event) {
@@ -252,7 +251,19 @@ var MusicList = (function() {
     });
 
     $id('remove-musics').addEventListener('click', function onclick_removeMusic(event) {
-      alert('remove musics');
+      // Do nothing if the button is disabled.
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      var files = [];
+      $expr('#music-list-container .music-list-item[data-checked="true"]').forEach(function(item) {
+        files.push(JSON.parse(item.dataset.music).name);
+      });
+
+      if (window.confirm(_('delete-musics-confirm', {n: files.length}))) {
+        MusicList.removeMusic(files);
+      }
     });
 
     $id('refresh-musics').addEventListener('click', function onclick_refreshMusics(event) {
