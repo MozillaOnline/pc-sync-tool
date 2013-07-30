@@ -183,9 +183,9 @@ var ContactList = (function() {
     var isEmpty = groupedList.count() == 0;
     if (isEmpty) {
       $id('selectAll-contacts').dataset.disabled = true;
-      showEmptyContacts();
+      showEmptyContacts(true);
     } else {
-      hideEmptyContacts();
+      showEmptyContacts(false);
       $id('selectAll-contacts').dataset.disabled = false;
     }
     var searchContent = $id('search-contact-input');
@@ -291,51 +291,27 @@ var ContactList = (function() {
     checkIfContactListEmpty();
   }
 
-  function hideEmptyContacts() {
-    $id('empty-contact-container').style.display = 'none';
+  function showEmptyContacts(bFlag) {
+    if (bFlag) {
+      $id('empty-contact-container').style.display = 'block';
+    } else {
+      $id('empty-contact-container').style.display = 'none';
+    }
   }
 
-  function showEmptyContacts() {
-    $id('empty-contact-container').style.display = 'block';
-    /*
-    getListContainer().innerHTML = '';
-    var div = document.createElement('div');
-    div.classList.add('empty-contacts');
-    getListContainer().appendChild(div);
-    div = document.createElement('div');
-    html = '<label data-l10n-id="empty-contacts"> </label>';
-    div.innerHTML = html;
-    div.classList.add('empty-contacts-prompt');
-    navigator.mozL10n.translate(div)
-    getListContainer().appendChild(div);
-    */
-  }
   /**
    * Clear all contacts
    */
   function clearAllContacts() {
-    CMD.Contacts.clearAllContacts(function onresponse_clearAllContacts(message) {
-      if (message.result) {
-        alert(message.result);
-        return;
-      }
-      var ids = [];
-      $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
-        ids.push(item.dataset.contactId);
-      });
-      ids.forEach(function(id){
-        var existingContact = getContact(id);
-        groupedList.remove(existingContact);
-        });
-
-      // Make sure the 'select-all' box is not checked.
-      ContactList.selectAllContacts(false);
-
-      //showEmptyContacts();
-      ViewManager.showViews('contact-quick-add-view');
-    }, function onerror_clearAllContacts(message) {
-      alert('Error occurs when removing contacts!');
+    var ids = [];
+    $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
+      ids.push(item.dataset.contactId);
     });
+    ids.forEach(function(id){
+      removeContact(id);
+    });
+
+    ViewManager.showViews('contact-quick-add-view');
   }
 
   /**
@@ -343,36 +319,17 @@ var ContactList = (function() {
    */
   function removeContact(id) {
     CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
-      // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
-      //var keepVcardView = true;
-      //var vcardView = $id('contact-vcard-view');
       if (message.result) {
         return;
       }
 
-      // Check if contact exists in the list.
       var item = $id('contact-' + id);
       if (!item) {
         return;
       }
 
-      // Remove contact from grouped list
       groupedList.remove(getContact(id));
-
-      //if (vcardView.dataset.contactId == id) {
-      //  keepVcardView = false;
-      //}
-      /*
-      if (!keepVcardView) {
-        // Pick a contact to show
-        var availableContacts = $expr('#contact-list-container .contact-list-item');
-        if (availableContacts.length == 0) {
-          vcardView.hidden = true;
-        } else {
-          showVcardInView(JSON.parse(availableContacts[0].dataset.contact));
-        }
-      }*/
     }, function onerror_removeContact(message) {
       alert('Error occurs when removing contacts!');
     });
@@ -508,7 +465,6 @@ var ContactList = (function() {
             break;
         }
         div.classList.add('contact-item');
-        //navigator.mozL10n.translate(div);
         container.appendChild(div);
         navigator.mozL10n.translate(div);
       });
@@ -609,6 +565,7 @@ var ContactList = (function() {
     btn.addEventListener ('click', handler,false);
     ViewManager.showViews('show-multi-contacts');
   }
+
   /**
    * Add contact lists.
    */
@@ -621,7 +578,6 @@ var ContactList = (function() {
         getListContainer().innerHTML = '';
       }
       groupedList.add(contact);
-      //showVcardInView(contact);
     });
   }
 
