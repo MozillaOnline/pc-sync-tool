@@ -20,9 +20,6 @@ var ContactList = (function() {
 
     // Update contact
     CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {
-      if (message.result) {
-        item.classList.toggle('favorite');
-      }
     }, function onerror_updateContact() {
       alert('Error occurs when updating contact.');
     });
@@ -131,17 +128,13 @@ var ContactList = (function() {
         $id('contact-' + contact.id).dataset.avatar != DEFAULT_AVATAR) {
       $id('avatar-s').src = $id('contact-' + contact.id).dataset.avatar;
     } else {
-      CMD.Contacts.getContactProfilePic(contact.id, function(result) {
-        if (result.data == '') {
-          $id('avatar-s').src = DEFAULT_AVATAR;//'style/images/avatar.jpeg';
-          $id('contact-' + contact.id).dataset.avatar = DEFAULT_AVATAR;
-        } else {
-          $id('avatar-s').src = result.data;
-          $id('contact-' + contact.id).dataset.avatar = result.data;
-        }
-      }, function(e) {
-        alert('get contact avatar error:' + e);
-      });
+      if ((contact.photo != null) && (contact.photo.length > 0)) {
+        $id('avatar-s').src = contact.photo;
+        $id('contact-' + contact.id).dataset.avatar = contact.photo;
+      } else {
+        $id('avatar-s').src = DEFAULT_AVATAR;//'style/images/avatar.jpeg';
+        $id('contact-' + contact.id).dataset.avatar = DEFAULT_AVATAR;
+      }
     }
     $expr('#vcard-basic-info-box .name')[0].textContent = contact.name.join(' ');
     $expr('#vcard-basic-info-box .company')[0].textContent
@@ -208,26 +201,18 @@ var ContactList = (function() {
   function updateAvatar() {
     groupedList.getGroupedData().forEach(function(group) {
       group.dataList.forEach( function (contact) {
-        updateContactAvatar(contact);
-      });
-    });
-  }
-
-  function updateContactAvatar(contact) {
-    CMD.Contacts.getContactProfilePic(contact.id, function(result) {
-      if (result.data != '') {
-        var item = $id('contact-' + contact.id);
-        if(item != null){
-          var img = item.getElementsByTagName('img')[0];
-          img.src = result.data;
-          item.dataset.avatar = result.data;
-          if (img.classList.contains('avatar-default')) {
-            img.classList.remove('avatar-default');
+        if ((contact.photo != null) && (contact.photo.length > 0)) {
+          var item = $id('contact-' + contact.id);
+          if(item != null){
+            var img = item.getElementsByTagName('img')[0];
+            img.src = contact.photo;
+            item.dataset.avatar = contact.photo;
+            if (img.classList.contains('avatar-default')) {
+              img.classList.remove('avatar-default');
+            }
           }
         }
-      }
-    }, function(e) {
-      alert('get contact avatar error:' + e);
+      });
     });
   }
 
@@ -319,17 +304,6 @@ var ContactList = (function() {
    */
   function removeContact(id) {
     CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
-      ContactList.selectAllContacts(false);
-      if (message.result) {
-        return;
-      }
-
-      var item = $id('contact-' + id);
-      if (!item) {
-        return;
-      }
-
-      groupedList.remove(getContact(id));
     }, function onerror_removeContact(message) {
       alert('Error occurs when removing contacts!');
     });
@@ -593,7 +567,17 @@ var ContactList = (function() {
       var existingContact = getContact(contact.id);
       groupedList.remove(existingContact);
       groupedList.add(contact);
-      updateContactAvatar(contact);
+      if ((contact.photo != null) && (contact.photo.length > 0)) {
+        var item = $id('contact-' + contact.id);
+        if(item != null){
+          var img = item.getElementsByTagName('img')[0];
+          img.src = contact.photo;
+          item.dataset.avatar = contact.photo;
+          if (img.classList.contains('avatar-default')) {
+            img.classList.remove('avatar-default');
+          }
+        }
+      }
       var item = $id('contact-' + contact.id);
       if(item){
         selectContactItem(item, true);
@@ -625,6 +609,48 @@ var ContactList = (function() {
     return escaped;
   }
 
+  function onMessage(changeEvent) {
+    switch (changeEvent.reason) {
+      case 'update':
+        var contactsUpdated = [];
+        CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
+          if (result.data != '') {
+            var contactData = JSON.parse(result.data);
+            contactsUpdated.push(contactData);
+            if (!groupedList) {
+              return;
+            }
+            updateContacts(contactsUpdated);
+            showContactInfo(contact);
+          }
+        }, function(e) {
+          alert('get getContactById error:' + e);
+        });
+        break;
+      case 'create':
+        var contactsAdded = [];
+        CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
+          if (result.data != '') {
+            var contactData = JSON.parse(result.data);
+            contactsAdded.push(contactData);
+            if (!groupedList) {
+              return;
+            }
+            addContacts(contactsAdded);
+          }
+        }, function(e) {
+          alert('get getContactById error:' + e);
+        });
+        break;
+      case 'remove':
+        var item = $id('contact-' + changeEvent.contactID);
+        if (!item||!groupedList) {
+          return;
+        }
+        groupedList.remove(getContact(changeEvent.contactID));
+        break;
+    }
+  }
   function extractCarrier(tel) {
     var ret = '';
     if (/carrier=(.+)/i.test(tel)) {
@@ -1138,11 +1164,6 @@ var ContactList = (function() {
               }
             }
             CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
-              var contactsAdded = [];
-              if (!message.result) {
-                contactsAdded.push(JSON.parse(message.data));
-              }
-              ContactList.addContacts(contactsAdded);
               }, function onerror_addcontact(message) {
               alert('Error occurs when adding contacts: ' + JSON.stringify(message));
             });
@@ -1256,6 +1277,7 @@ var ContactList = (function() {
     getContact:        getContact,
     showVcardInView:   showVcardInView,
     selectAllContacts: selectAllContacts,
+    onMessage: onMessage,
     showContactInfo: showContactInfo
   };
 })();

@@ -27,7 +27,7 @@ TCPConnectionPool.prototype = {
       port: 10010,
       onenable: emptyFunction,
       ondisable: emptyFunction,
-      onMsmListening: emptyFunction
+      onListening: emptyFunction
     }, options);
 
     this._connPool = [];
@@ -146,8 +146,8 @@ TCPConnectionPool.prototype = {
     wrapper.recvList = [];
 
     //set message listener handle
-    if (jsonCmd.type == 5 && jsonCmd.command == 4 && jsonCmd.result == 0) {
-      this.options.onMsmListening(JSON.parse(dataList.join('')));
+    if (jsonCmd.type == 9 && jsonCmd.command == 1 && jsonCmd.result == 0) {
+      this.options.onListening(JSON.parse(dataList.join('')));
       return;
     }
 
