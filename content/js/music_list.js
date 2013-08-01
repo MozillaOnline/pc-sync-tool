@@ -286,13 +286,10 @@ var MusicList = (function() {
     });
 
     $id('export-musics').addEventListener('click', function onclick_exportMusics(event) {
-      var musics = [];
-      $expr('#music-list-container div.selected').forEach(function(item) {
-        var e = {};
-        e.music = JSON.parse(item.dataset.music);
-        e.name = item.dataset.name + '.' + item.dataset.type;
-        musics.push(e);
-      });
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+      var musics = $expr('#music-list-container .music-list-item[data-checked="true"]');
       navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
         if (status) {
           setTimeout(function() {
@@ -303,9 +300,10 @@ var MusicList = (function() {
               if (index == length) {
                 return;
               }
-              var cmd = 'adb pull ' + musics[index].music.name + ' ' + dir + '/' + musics[index].name;
+              var cmd = 'adb pull ' + musics[index].dataset.id + ' ' + dir + '/'
+                        + musics[index].dataset.name + '.' + musics[index].dataset.type;
               var req = navigator.mozFFOSAssistant.runCmd(cmd);
-              req.onsuccess = function(e) {
+              req.onsuccess = req.onerror= function(e) {
                 index++;
                 setTimeout(traverseList, 0);
               }
@@ -316,6 +314,7 @@ var MusicList = (function() {
       }, {
         title: 'Choose where to save'
       });
+    selectAllMusics(false);
     });
   });
 
