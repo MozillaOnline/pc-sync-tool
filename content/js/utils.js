@@ -84,12 +84,3 @@ function removeFromArray(objOrFunc, array) {
 
   return newArray;
 }
-
-var os = (function() {
-  var oscpu = navigator.oscpu.toLowerCase();
-  return {
-    isWindows: /windows/.test(oscpu),
-    isLinux: /linux/.test(oscpu),
-    isMac: /mac/.test(oscpu)
-  };
-})();

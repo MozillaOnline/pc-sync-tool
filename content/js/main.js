@@ -259,62 +259,9 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('music-view', 'firstshow', getAndShowAllMusics);
   }
 
-  function addDeviceManagerEventListeners() {
-    document.addEventListener(DriverManager.EVENT_INSTALLING_DRIVER, function(event) {
-      new ModalDialog({
-        title: 'Installing driver',
-        titleL10n: 'installing-driver-title',
-        bodyText: 'We are installing driver for you.',
-        bodyTextL10n: 'installing-driver-body',
-        cancelable: false
-      });
-    });
-
-    document.addEventListener(DriverManager.EVENT_DRIVER_FAIL_INSTALLED, function(event) {
-      new ModalDialog({
-        title: 'Failed To Install Driver',
-        titleL10n: 'failed-install-driver-title',
-        bodyText: 'We encountered an error when installing driver: ' + event.data.errorMessage,
-        bodyTextL10n: 'failed-install-driver-body'
-      });
-    });
-
-    document.addEventListener(DriverManager.EVENT_DEVICE_READY, function(event) {
-      // Just make sure the modal dialog is closed.
-      ModalDialog.closeAll();
-    });
-
-    document.addEventListener(DriverManager.EVENT_NO_DEVICE_FOUND, function(event) {
-      // Just make sure the modal dialog is closed.
-      ModalDialog.closeAll();
-    });
-
-    document.addEventListener(DriverManager.EVENT_DEVICE_CHANGED, function(event) {
-      new ModalDialog({
-        title: 'Device Changed',
-        titleL10n: 'device-changed-title',
-        bodyText: 'We detected that device is changed.',
-        bodyTextL10n: 'device-changed-body'
-      });
-    });
-
-    document.addEventListener(DriverManager.EVENT_DEVICE_FOUND, function(event) {
-      new ModalDialog({
-        title: 'Device Found',
-        titleL10n: 'device-found-title',
-        bodyText: 'We detected a FFOS device',
-        bodyTextL10n: 'device-found-body'
-      });
-    });
-  }
-
   window.addEventListener('load', function window_onload(event) {
     window.removeEventListener('load', window_onload);
     init();
-
-    if (os.isWindows) {
-      addDeviceManagerEventListeners();
-    }
   });
 
   window.addEventListener('localized', function showBody() {

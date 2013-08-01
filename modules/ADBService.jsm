@@ -172,6 +172,21 @@ var ADBService = {
     }, function startDeviceDetecting_callback() {
       // pass
     });
+  },
+  startAdbServer: function startAdbServer() {
+    controlMessage({
+      cmd: 'startAdbServer'
+    }, function startAdbServer_callback() {
+      // pass
+    });
+  },
+  killAdbServer: function killAdbServer() {
+  debug('killAdbServer');
+    controlMessage({
+      cmd: 'killAdbServer'
+    }, function killAdbServer_callback() {
+      // pass
+    });
   }
 };
 

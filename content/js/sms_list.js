@@ -587,6 +587,7 @@ var SmsList = (function() {
               threadListData[i].timestamp = sms.timestamp;
               threadListData[i].lastMessageType = sms.type;
               threadList.add(threadListData[i]);
+              updateAvatar();
               return;
             }
           }
@@ -612,6 +613,7 @@ var SmsList = (function() {
         };
         tempthreadListData['threadIndex'] = sms.threadId;
         threadList.add(tempthreadListData);
+        updateAvatar();
       }
     }
   }

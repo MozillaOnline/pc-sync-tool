@@ -5,6 +5,7 @@
         <em:id>ffosassistant@mozillaonline.com</em:id>
         <em:name>FFOS Assistant</em:name>
         <em:version>0.1</em:version>
+        <em:iconURL>chrome://ffosassistant/content/style/icons/pcsync64.png</em:iconURL>
         <em:description></em:description>
         <em:creator>Pin Zhang</em:creator>
         <em:homepageURL>http://www.firefox.com.cn/</em:homepageURL>

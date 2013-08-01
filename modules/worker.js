@@ -13,6 +13,7 @@ var device = '';
 var ADB_PATH = '';
 var LOCAL_PORT = 10010;
 var REMOTE_PORT = 10010;
+let detectingInterval = null;
 
 var libadb = (function() {
   let library = null;
@@ -48,6 +49,26 @@ var libadb = (function() {
       return null;
     },
 
+    startAdbServer: function() {
+      if (runCmd != null) {
+        if (ADB_PATH != '') {
+          return runCmd(ADB_PATH + ' start-server');
+        }
+      }
+      return null;
+    },
+
+    killAdbServer: function() {
+	debug('killAdbServer ' + ADB_PATH);
+	debug('killAdbServer ' + runCmd);
+      if (runCmd != null) {
+        if (ADB_PATH != '') {
+          return runCmd('adb kill-server');
+        }
+      }
+      return null;
+    },
+
     listAdbService: function() {
       if (runCmd) {
         var pinfo = runCmd('cmd.exe /c netstat -ano | findstr 5037');
@@ -56,9 +77,7 @@ var libadb = (function() {
           var pid = plisten.substring("LISTENING", "\r\n");
           return runCmd('cmd.exe /c Tasklist | findstr ' + pid);
         }
-        return null;
       }
-
       return null;
     },
 
@@ -126,6 +145,12 @@ self.onmessage = function(e) {
     });
     setConnected( !! result);
     break;
+  case 'startAdbServer':
+    libadb.startAdbServer();
+    break;
+  case 'killAdbServer':
+    libadb.killAdbServer();
+    break;
   case 'startDeviceDetecting':
     startDetecting(e.data.start);
     break;
@@ -162,8 +187,6 @@ function setConnected(newState) {
   }
 }
 
-let detectingInterval = null;
-
 function startDetecting(start) {
   if (detectingInterval) {
     clearInterval(detectingInterval);
@@ -171,6 +194,7 @@ function startDetecting(start) {
   }
 
   if (start) {
+	libadb.startAdbServer();
     detectingInterval = setInterval(function checkConnectState() {
       var devices = libadb.findDevice().readString().trim();
       // TODO: hard coded for full_unagi only now, try to add other devices
