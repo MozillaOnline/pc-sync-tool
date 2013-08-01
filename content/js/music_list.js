@@ -211,7 +211,7 @@ var MusicList = (function() {
     items.forEach(function(item) {
       var req = navigator.mozFFOSAssistant.runCmd('adb shell rm ' + item);
       req.onsuccess = function (result) {
-        tobeRemovedFiles.push(item);
+        toBeRemovedFiles.push(item);
         index++;
         if (index == items.length) {
           updateMusicsList(toBeRemovedFiles);
@@ -229,11 +229,22 @@ var MusicList = (function() {
 
   function updateMusicsList(toBeRemovedFiles) {
     var container = $id('music-list-container');
+    toBeRemovedFiles.forEach(function(item) {
+      var music = $id(item);
+      container.removeChild(music);
+    });
     var musics = $expr('#music-list-container .music-list-item');
-    for (var i = 0; i < container.childNodes.length; i++) {
-      var child = container.childNodes[i];
-      if (child.dataset.id == item) {
-        //code
+    for (var index = 0; index < musics.length; index++) {
+      if (index % 2) {
+        if (musics[index].classList.contains('even')) {
+          musics[index].classList.remove('even');
+        }
+        musics[index].classList.add('odd');
+      } else {
+        if (musics[index].classList.contains('odd')) {
+          musics[index].classList.remove('odd');
+        }
+        musics[index].classList.add('even');
       }
     }
   }
