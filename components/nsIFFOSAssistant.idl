@@ -45,10 +45,16 @@ interface nsIFFOSAssistant : nsISupports
   boolean saveToDisk(in DOMString content,
                      in jsval callback,
                      [optional] in jsval options);
+
   /**
    * Read content from disk
    */
   boolean readFromDisk(in jsval callback);
+
+  /**
+   * Get file names from directory
+   */
+  void selectMultiFilesFromDisk(in jsval callback);
 
   /**
    * Run command from local host

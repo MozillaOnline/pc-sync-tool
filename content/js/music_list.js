@@ -249,6 +249,57 @@ var MusicList = (function() {
     }
   }
 
+  function importMusics() {
+    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
+      data = data.substr(0,data.length-1);
+      var musics = data.split(';');
+      var importedNum = 0;
+      var oldFileIndex = 0;
+      var steps = 0;
+      var dialog = new ImportFilesDialog({});
+      var filesIndicator = $id('files-indicator');
+      var pb = $id('processbar');
+      var ratio = 0;
+      filesIndicator.innerHTML = '0/' + musics.length;
+      if (musics.length > 0) {
+        var range = Math.round(100 / musics.length);
+        var step = range / 50;
+        var bTimer = false;
+         for (var index = 0; index < musics.length; index++) {
+          var cmd = 'adb push ' + musics[index] + ' /sdcard/Music/';
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
+          if (!bTimer) {
+            bTimer = true;
+            var timer = setInterval(function() {
+              if (oldFileIndex == importedNum) {
+                if (steps < 50) {
+                  steps++;
+                  ratio+= step;
+                  pb.style.width = ratio + '%';
+                }
+              } else {
+                oldFileIndex = importedNum;
+                steps = 0;
+              }
+            },100);
+          }
+          req.onsuccess = req.onerror= function(e) {
+            importedNum++;
+            ratio = Math.round(importedNum * 100 / musics.length);
+            pb.style.width = ratio + '%';
+            filesIndicator.innerHTML = importedNum + '/' + musics.length;
+            if (importedNum == musics.length) {
+              clearInterval(timer);
+              pb.style.width.innerHTML = '100%';
+              dialog.closeAll();
+              FFOSAssistant.getAndShowAllMusics();
+            }
+          }
+        }
+      }
+    });
+  }
+
   window.addEventListener('load', function wnd_onload(event) {
     $id('selectAll-musics').addEventListener('click', function sall_onclick(event) {
       if (this.dataset.disabled == "true") {
@@ -281,9 +332,9 @@ var MusicList = (function() {
       FFOSAssistant.getAndShowAllMusics();
     });
 
-    $id('import-musics').addEventListener('click', function onclick_importMusics(event) {
-      alert('import musics');
-    });
+    $id('import-musics-btn').addEventListener('click', importMusics);
+
+    $id('import-musics').addEventListener('click', importMusics);
 
     $id('export-musics').addEventListener('click', function onclick_exportMusics(event) {
       if (this.dataset.disabled == 'true') {
