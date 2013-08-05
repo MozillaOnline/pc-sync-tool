@@ -66,6 +66,7 @@ var MusicList = (function() {
     elem.dataset.music = JSON.stringify(music);
     elem.dataset.name = retriveName(music.name);
     elem.dataset.type = retriveExtension(music.name);
+    elem.dataset.id = music.name;
     elem.dataset.checked = false;
     elem.onclick = function onclick_messages_list(event) {
       var target = event.target;
@@ -75,6 +76,7 @@ var MusicList = (function() {
         musicItemClicked(elem);
       }
     };
+    elem.setAttribute('id', music.name);
     return elem;
   }
 
@@ -202,40 +204,99 @@ var MusicList = (function() {
    * Remove musics
    */
 
-  function removeMusic(id) {
-    CMD.Musics.removeMusic(id, function onresponse_removeMusic(message) {
-      // Make sure the 'select-all' box is not checked.
-      MusicList.selectAllMusics(false);
-      var keepVcardView = true;
-      var vcardView = $id('music-vcard-view');
-      if (message.result) {
-        return;
-      }
-
-      // Check if music exists in the list.
-      var item = $id('music-' + id);
-      if (!item) {
-        return;
-      }
-
-      // Remove music from grouped list
-      groupedList.remove(getContact(id));
-
-      if (vcardView.dataset.contactId == id) {
-        keepVcardView = false;
-      }
-
-      if (!keepVcardView) {
-        // Pick a music to show
-        var availableContacts = $expr('#music-list-container .music-list-item');
-        if (availableContacts.length == 0) {
-          vcardView.hidden = true;
-        } else {
-          showVcardInView(JSON.parse(availableContacts[0].dataset.music));
+  function removeMusic(files) {
+    var items = files || [];
+    var toBeRemovedFiles = [];
+    var index = 0;
+    items.forEach(function(item) {
+      var req = navigator.mozFFOSAssistant.runCmd('adb shell rm ' + item);
+      req.onsuccess = function (result) {
+        toBeRemovedFiles.push(item);
+        index++;
+        if (index == items.length) {
+          updateMusicsList(toBeRemovedFiles);
         }
       }
-    }, function onerror_removeContact(message) {
-      alert('Error occurs when removing contacts!');
+      req.onerror = function(e) {
+        index++;
+        if (index == items.length) {
+          updateMusicsList(toBeRemovedFiles);
+        }
+        alert('error occured when removing ' + item);
+      }
+    });
+  }
+
+  function updateMusicsList(toBeRemovedFiles) {
+    var container = $id('music-list-container');
+    toBeRemovedFiles.forEach(function(item) {
+      var music = $id(item);
+      container.removeChild(music);
+    });
+    var musics = $expr('#music-list-container .music-list-item');
+    for (var index = 0; index < musics.length; index++) {
+      if (index % 2) {
+        if (musics[index].classList.contains('even')) {
+          musics[index].classList.remove('even');
+        }
+        musics[index].classList.add('odd');
+      } else {
+        if (musics[index].classList.contains('odd')) {
+          musics[index].classList.remove('odd');
+        }
+        musics[index].classList.add('even');
+      }
+    }
+  }
+
+  function importMusics() {
+    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
+      data = data.substr(0,data.length-1);
+      var musics = data.split(';');
+      var importedNum = 0;
+      var oldFileIndex = 0;
+      var steps = 0;
+      var dialog = new ImportFilesDialog({});
+      var filesIndicator = $id('files-indicator');
+      var pb = $id('processbar');
+      var ratio = 0;
+      filesIndicator.innerHTML = '0/' + musics.length;
+      if (musics.length > 0) {
+        var range = Math.round(100 / musics.length);
+        var step = range / 50;
+        var bTimer = false;
+         for (var index = 0; index < musics.length; index++) {
+          var cmd = 'adb push ' + musics[index] + ' /sdcard/Music/';
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
+          if (!bTimer) {
+            bTimer = true;
+            var timer = setInterval(function() {
+              if (oldFileIndex == importedNum) {
+                if (steps < 50) {
+                  steps++;
+                  ratio+= step;
+                  pb.style.width = ratio + '%';
+                }
+              } else {
+                oldFileIndex = importedNum;
+                steps = 0;
+              }
+            },100);
+          }
+          req.onsuccess = req.onerror= function(e) {
+            importedNum++;
+            ratio = Math.round(importedNum * 100 / musics.length);
+            pb.style.width = ratio + '%';
+            filesIndicator.innerHTML = importedNum + '/' + musics.length;
+            if (importedNum == musics.length) {
+              clearInterval(timer);
+              pb.style.width.innerHTML = '100%';
+              dialog.closeAll();
+              FFOSAssistant.getAndShowAllMusics();
+            }
+          }
+        }
+      }
     });
   }
 
@@ -252,25 +313,34 @@ var MusicList = (function() {
     });
 
     $id('remove-musics').addEventListener('click', function onclick_removeMusic(event) {
-      alert('remove musics');
+      // Do nothing if the button is disabled.
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      var files = [];
+      $expr('#music-list-container .music-list-item[data-checked="true"]').forEach(function(item) {
+        files.push(JSON.parse(item.dataset.music).name);
+      });
+
+      if (window.confirm(_('delete-musics-confirm', {n: files.length}))) {
+        MusicList.removeMusic(files);
+      }
     });
 
     $id('refresh-musics').addEventListener('click', function onclick_refreshMusics(event) {
       FFOSAssistant.getAndShowAllMusics();
     });
 
-    $id('import-musics').addEventListener('click', function onclick_importMusics(event) {
-      alert('import musics');
-    });
+    $id('import-musics-btn').addEventListener('click', importMusics);
+
+    $id('import-musics').addEventListener('click', importMusics);
 
     $id('export-musics').addEventListener('click', function onclick_exportMusics(event) {
-      var musics = [];
-      $expr('#music-list-container div.selected').forEach(function(item) {
-        var e = {};
-        e.music = JSON.parse(item.dataset.music);
-        e.name = item.dataset.name + '.' + item.dataset.type;
-        musics.push(e);
-      });
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+      var musics = $expr('#music-list-container .music-list-item[data-checked="true"]');
       navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
         if (status) {
           setTimeout(function() {
@@ -281,9 +351,10 @@ var MusicList = (function() {
               if (index == length) {
                 return;
               }
-              var cmd = 'adb pull ' + musics[index].music.name + ' ' + dir + '/' + musics[index].name;
+              var cmd = 'adb pull ' + musics[index].dataset.id + ' ' + dir + '/'
+                        + musics[index].dataset.name + '.' + musics[index].dataset.type;
               var req = navigator.mozFFOSAssistant.runCmd(cmd);
-              req.onsuccess = function(e) {
+              req.onsuccess = req.onerror= function(e) {
                 index++;
                 setTimeout(traverseList, 0);
               }
@@ -294,6 +365,7 @@ var MusicList = (function() {
       }, {
         title: 'Choose where to save'
       });
+    selectAllMusics(false);
     });
   });
 

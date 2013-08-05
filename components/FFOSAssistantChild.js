@@ -352,6 +352,31 @@ FFOSAssistant.prototype = {
     });
   },
 
+  selectMultiFilesFromDisk: function(callback) {
+    var filePicker = Cc["@mozilla.org/filepicker;1"]
+                       .createInstance(Ci.nsIFilePicker);
+    filePicker.init(this._window, null, Ci.nsIFilePicker.modeOpenMultiple);
+    //filePicker.appendFilter('*.vcf', '*.vcf');
+    filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
+    filePicker.open(function onPickComplete(returnCode) {
+      switch (returnCode) {
+        case Ci.nsIFilePicker.returnOK:
+        case Ci.nsIFilePicker.returnReplace:
+          var files = filePicker.files;
+          var filePath = '';
+          while (files.hasMoreElements()) {
+            var file = files.getNext().QueryInterface(Components.interfaces.nsIFile);
+            filePath += file.path + ';';
+          }
+          callback(true, filePath);
+          break;
+        case Ci.nsIFilePicker.returnCancel:
+        default:
+          callback(false, null);
+      }
+    });
+  },
+
   runCmd: function(cmd) {
     return this._callMessage('ADBService', 'RunCmd', cmd);
   },
