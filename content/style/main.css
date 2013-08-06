@@ -366,13 +366,11 @@ input[type="url"], textarea {
 
 #summary-infos > div:first-child{
   margin-top: 1rem;
-  padding: 1rem 2rem;
   height: auto;
 }
 
 #summary-infos > div:last-child{
   margin-top: 1rem;
-  padding: 1rem 2rem;
   height: 20rem;
 }
 
@@ -408,14 +406,31 @@ input[type="url"], textarea {
   transition-duration: 1s;
 }
 
+#summary-infos .device-info{
+  height: 3rem;
+}
+
+#summary-infos .device-info > div:first-child {
+  font-size: 1.4rem;
+  color: #868686;
+  float: left;
+  margin-top: 1rem;
+}
+
+#summary-infos .device-info  > div:last-child  {
+  float: left;
+  margin-left: 0.8rem;
+  margin-top: 1rem;
+}
+
 #summary-infos .storage-detail {
   font-size: 1.6rem;
   color: #090909;
-  height: 4rem;
+  height: 3rem;
 }
 
 #summary-infos .storage-detail > div:first-child {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   color: #868686;
   float: left;
   margin-top: 1rem;
@@ -425,8 +440,8 @@ input[type="url"], textarea {
   width: 15rem;
   float: left;
   height: 0.5rem;
-  margin-top: 2rem;
-  margin-left: .5rem;
+  margin-top: 1.8rem;
+  margin-left: .8rem;
 }
 
 #summary-infos .storage-detailgraph .storage-used {

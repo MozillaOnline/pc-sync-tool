@@ -69,7 +69,7 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowSummaryInfo() {
-    CMD.Device.getDeviceInfo(function onresponse_getDeviceInfo(message) {
+    CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
       var deviceInfo = {};
       var sdcardInfo = {
         usedInBytes: 0,
@@ -90,7 +90,17 @@ var FFOSAssistant = (function() {
 
       fillStorageSummaryInfo('device-storage-summary', deviceInfo);
       fillStorageSummaryInfo('sdcard-storage-summary', sdcardInfo);
-    }, function onerror_getDeviceInfo(message) {
+    }, function onerror_getStorage(message) {
+      console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
+    });
+    CMD.Device.getSettings(function onresponse_getDeviceInfo(message) {
+      var dataJSON = JSON.parse(message.data);
+      var elem = $id('device-storage-summary');
+      $expr('.device-os-version-number', elem)[0].textContent = dataJSON["deviceinfo.os"];
+      $expr('.device-hardware-revision-number', elem)[0].textContent = dataJSON["deviceinfo.hardware"];
+      $expr('.device-platform-version-number', elem)[0].textContent = dataJSON["deviceinfo.platform_version"];
+      $expr('.device-build-identifier-number', elem)[0].textContent = dataJSON["deviceinfo.platform_build_id"];
+    }, function onerror_getSettings(message) {
       console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
     });
   }
@@ -239,6 +249,9 @@ var FFOSAssistant = (function() {
     if (navigator.mozFFOSAssistant) {
       navigator.mozFFOSAssistant.onadbstatechange = function onADBStateChange(event) {
         if (navigator.mozFFOSAssistant.adbConnected === true) {
+	  var devicename = navigator.mozFFOSAssistant.adbffosDeviceName;
+	  var elem = $id('mgmt-list');
+          $expr('.header', elem)[0].textContent = devicename;
           connectToUSB();
         }
       };

@@ -192,6 +192,10 @@ FFOSAssistant.prototype = {
     return cpmm.sendSyncMessage('ADBService:connected')[0];
   },
 
+  get adbffosDeviceName() {
+    return cpmm.sendSyncMessage('ADBService:ffosDeviceName')[0];
+  },
+
   get driverManagerPort() {
     // Read port number from driver_manager.ini
     try {

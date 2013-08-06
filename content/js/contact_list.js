@@ -621,7 +621,7 @@ var ContactList = (function() {
               return;
             }
             updateContacts(contactsUpdated);
-            showContactInfo(contact);
+            showContactInfo(contactData);
           }
         }, function(e) {
           alert('get getContactById error:' + e);

@@ -11,6 +11,7 @@ interface nsIFFOSAssistant : nsISupports
    */
   readonly attribute boolean adbConnected;
 
+  readonly attribute jsval adbffosDeviceName;
   /**
    * Get the port listened by the Driver Manager.
    * It should be great than 1024, or the Driver Manager failed to start.

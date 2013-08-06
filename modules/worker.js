@@ -59,8 +59,8 @@ var libadb = (function() {
     },
 
     killAdbServer: function() {
-	debug('killAdbServer ' + ADB_PATH);
-	debug('killAdbServer ' + runCmd);
+      debug('killAdbServer ' + ADB_PATH);
+      debug('killAdbServer ' + runCmd);
       if (runCmd != null) {
         if (ADB_PATH != '') {
           return runCmd('adb kill-server');
@@ -182,7 +182,8 @@ function setConnected(newState) {
     debug('Connection state is changed!');
     postMessage({
       cmd: 'statechange',
-      connected: connected
+      connected: connected,
+      device: device
     });
   }
 }
@@ -194,17 +195,27 @@ function startDetecting(start) {
   }
 
   if (start) {
-	libadb.startAdbServer();
+    libadb.startAdbServer();
     detectingInterval = setInterval(function checkConnectState() {
       var devices = libadb.findDevice().readString().trim();
       // TODO: hard coded for full_unagi only now, try to add other devices
-      if (devices.indexOf('full_unagi') == -1) {
+      var sigstr = 'List of devices attached \n';
+      var devstr = '\tdevice';
+      var indexStart = devices.indexOf(sigstr);
+      if (indexStart < 0) {
         setConnected(false);
         return;
       } else {
-        device = 'full_unagi';
+        devices = devices.substring(indexStart + sigstr.length, devices.length);
+        var indexEnd = devices.indexOf(devstr);
+        if (indexEnd < 0) {
+          setConnected(false);
+          return;
+        } else {
+          device = devices.substring(0, indexEnd);
+        }
       }
-
+      debug(device);
       var ret = libadb.setupDevice(device).readString().trim();
       if ((ret.indexOf("error") > 0) || (ret.indexOf("failed") > 0)) {
         setConnected(false);

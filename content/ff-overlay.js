@@ -222,7 +222,7 @@
         heartBeatSocket.onclose = function onclose_socket() {
           // Restart usb querying interval
           if(isDisabled == false)
-			ADBService.startDeviceDetecting(true);
+	    ADBService.startDeviceDetecting(true);
         };
 
         ADBService.startDeviceDetecting(false);

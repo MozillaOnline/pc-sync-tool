@@ -29,6 +29,7 @@ XPCOMUtils.defineLazyServiceGetter(this, "ppmm", "@mozilla.org/parentprocessmess
 XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 
 let connected = false;
+let ffosDeviceName = 'Unknown';
 let libWorker = null;
 
 function worker_onMessage(e) {
@@ -110,6 +111,9 @@ let messageReceiver = {
     case 'ADBService:connected':
       // This message is sync
       return connected;
+    case 'ADBService:ffosDeviceName':
+      // This message is sync
+      return ffosDeviceName;
     case 'ADBService:connect':
       startADBForward(function onsuccess() {
         connected = true;
@@ -141,6 +145,7 @@ let messageReceiver = {
     case 'statechange':
       // Update ADB forward state
       connected = msg.connected;
+      ffosDeviceName = msg.device;
       ppmm.broadcastAsyncMessage('ADBService:statechange', {
         connected: connected
       });
@@ -159,7 +164,7 @@ let messageReceiver = {
   }
 };
 
-const messages = ['ADBService:connect', 'ADBService:connected', 'ADBService:RunCmd'];
+const messages = ['ADBService:connect', 'ADBService:connected', 'ADBService:ffosDeviceName', 'ADBService:RunCmd'];
 messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });
