@@ -351,7 +351,7 @@ var MusicList = (function() {
               if (index == length) {
                 return;
               }
-              var cmd = 'adb pull ' + musics[index].dataset.id + ' ' + dir + '/'
+              var cmd = 'adb pull ' + musics[index].dataset.id + ' ' + decodeURI(dir) + '/'
                         + musics[index].dataset.name + '.' + musics[index].dataset.type;
               var req = navigator.mozFFOSAssistant.runCmd(cmd);
               req.onsuccess = req.onerror= function(e) {
