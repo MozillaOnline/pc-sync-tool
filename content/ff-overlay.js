@@ -22,8 +22,8 @@
     Components.utils.import('resource://ffosassistant/ADBService.jsm');
     Components.utils.import('resource://ffosassistant/driverDownloader.jsm');
     Components.utils.import('resource://ffosassistant/driverManager.jsm');
+    Components.utils.import('resource://ffosassistant/utils.jsm');
     Components.utils.import("resource://gre/modules/AddonManager.jsm");
-
 
     // Register messages
     const messages = ['ADBService:statechange'];
@@ -44,7 +44,7 @@
     debug('os.isWindows =' + os.isWindows);
     if (os.isWindows) {
       this._addonListener = {
-        onUninstalled: function(addon) {
+        onUninstalling: function(addon) {
           if (addon.id == "ffosassistant@mozillaonline.com") {
             isDisabled = true;
             if (client != null && client.isConnected()) client.sendCommand('shutdown', function() {});
