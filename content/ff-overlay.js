@@ -4,15 +4,14 @@
 
 (function() {
   let DEBUG = 1;
-  if (DEBUG) debug = function(s){
+  if (DEBUG) debug = function(s) {
     dump("-*- ADBService FF Overlay: " + s + "\n");
-    this.console = Components.classes["@mozilla.org/consoleservice;1"]
-      .getService(Components.interfaces.nsIConsoleService);
+    this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
     this.console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
   };
   else
   debug = function(s) {};
-	var isDisabled =false;
+  var isDisabled = false;
   var modules = {};
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
 
@@ -20,10 +19,10 @@
     // Import ADB Service module
     debug('Import adbService module');
 
-      Components.utils.import('resource://ffosassistant/ADBService.jsm');
-      Components.utils.import('resource://ffosassistant/driverDownloader.jsm');
-      Components.utils.import('resource://ffosassistant/driverManager.jsm');
-      Components.utils.import("resource://gre/modules/AddonManager.jsm");
+    Components.utils.import('resource://ffosassistant/ADBService.jsm');
+    Components.utils.import('resource://ffosassistant/driverDownloader.jsm');
+    Components.utils.import('resource://ffosassistant/driverManager.jsm');
+    Components.utils.import("resource://gre/modules/AddonManager.jsm");
 
 
     // Register messages
@@ -43,59 +42,48 @@
       };
     })();
     debug('os.isWindows =' + os.isWindows);
-    if (!os.isWindows) {
-      return;
-    }
-    this._addonListener =  {
-      onUninstalled: function(addon) {
-        if (addon.id == "ffosassistant@mozillaonline.com") {
-		isDisabled =true;
-          if(client != null && client.isConnected())
-		  client.sendCommand('shutdown', function() {
-		});
-		  ADBService.startDeviceDetecting(false);
-          ADBService.killAdbServer();
+    if (os.isWindows) {
+      this._addonListener = {
+        onUninstalled: function(addon) {
+          if (addon.id == "ffosassistant@mozillaonline.com") {
+            isDisabled = true;
+            if (client != null && client.isConnected()) client.sendCommand('shutdown', function() {});
+            ADBService.startDeviceDetecting(false);
+            ADBService.killAdbServer();
+          }
+        },
+        onDisabling: function(addon, needsRestart) {
+          debug('onDisabled ' + addon.id);
+          if (addon.id == "ffosassistant@mozillaonline.com") {
+            isDisabled = true;
+            debug('onDisabled ' + client.isConnected());
+            if (client != null && client.isConnected()) client.sendCommand('shutdown', function() {});
+            ADBService.startDeviceDetecting(false);
+            ADBService.killAdbServer();
+          }
+        },
+        onOperationCancelled: function(addon, needsRestart) {
+          if (addon.id == "ffosassistant@mozillaonline.com") {
+            if (isDisabled == false) {
+              isDisabled = true;
+              ADBService.startAdbServer();
+              ADBService.startDeviceDetecting(true);
+              if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
+                navigator.mozFFOSAssistant.startDriverManager();
+              }
+              window.setTimeout(connectToDriverManager, 1000);
+            }
+          }
         }
-      },
-      onDisabling: function(addon, needsRestart) {
-	  debug('onDisabled ' + addon.id);
-        if (addon.id == "ffosassistant@mozillaonline.com") {
-		isDisabled =true;
-		debug('onDisabled ' + client.isConnected());
-	   if(client != null && client.isConnected())
-		  client.sendCommand('shutdown', function() {
-		});
-		  ADBService.startDeviceDetecting(false);
-          ADBService.killAdbServer();
-        }
-      },
-      onOperationCancelled: function(addon, needsRestart) {
-        if (addon.id == "ffosassistant@mozillaonline.com") {
-		if(isDisabled == false){
-			isDisabled =true;
-          ADBService.startAdbServer();
-		  debug('xds5');
-          ADBService.startDeviceDetecting(true);
-		  if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
-		  navigator.mozFFOSAssistant.startDriverManager();
-		  // FIXME 1000 may not enough when running on a lower computer.
-		  window.setTimeout(connectToDriverManager, 1000);
-		} else {
-		  connectToDriverManager();
-		}
-		}
-        }
+      };
+      AddonManager.addAddonListener(this._addonListener);
+      if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
+        navigator.mozFFOSAssistant.startDriverManager();
       }
-    };
-    AddonManager.addAddonListener(this._addonListener);
-    if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
-      navigator.mozFFOSAssistant.startDriverManager();
-      // FIXME 1000 may not enough when running on a lower computer.
       window.setTimeout(connectToDriverManager, 2000);
-    } else {
-      connectToDriverManager();
     }
     checkFirstRun();
+    if (isDisabled == false) ADBService.startDeviceDetecting(true);
   }
 
   function checkFirstRun() {
@@ -221,10 +209,8 @@
         heartBeatSocket = navigator.mozTCPSocket.open('localhost', 10010);
         heartBeatSocket.onclose = function onclose_socket() {
           // Restart usb querying interval
-          if(isDisabled == false)
-	    ADBService.startDeviceDetecting(true);
+          if (isDisabled == false) ADBService.startDeviceDetecting(true);
         };
-
         ADBService.startDeviceDetecting(false);
       }
     }
@@ -240,6 +226,7 @@
   }
 
   var client = null;
+
   function connectToDriverManager() {
     if (navigator.mozFFOSAssistant.driverManagerPort) {
       client = new TelnetClient({
@@ -276,7 +263,7 @@
 
   function onDeviceChanged(msg) {
     window.clearTimout(failToInstallTimeout);
-    /*new ModalDialog({
+/*new ModalDialog({
         title: 'Device Changed',
         titleL10n: 'device-changed-title',
         bodyText: 'We detected that device is changed.',
@@ -286,6 +273,7 @@
   }
 
   var failToInstallTimeout = null;
+
   function onDriverInstalled(msg) {
     // `driverInstalled` means the driver installer running completes, however it
     // does not mean the driver for the plugged device is installed, so it's not
@@ -295,7 +283,7 @@
     // We don't need to fire device-ready-event here, we will might receive a
     // device-change event if driver is installed successfully.
     if (msg.data.errorName && !navigator.mozFFOSAssistant.adbConnected) {
-      /*new ModalDialog({
+/*new ModalDialog({
         title: 'Failed To Install Driver',
         titleL10n: 'failed-install-driver-title',
         bodyText: 'We encountered an error when installing driver: ' + msg.data.errorMessage,
@@ -305,7 +293,7 @@
       // Sometimes we can't receive a device-change event, we need to set a timeout
       // to fire fail-to-install event
       failToInstallTimeout = window.setTimeout(function() {
-        /*new ModalDialog({
+/*new ModalDialog({
           title: 'Failed To Install Driver',
           titleL10n: 'failed-install-driver-title',
           bodyText: 'We encountered an error when installing driver: ' + 'no device-storage changed event is received.',
@@ -315,13 +303,14 @@
     }
   }
   var _doubleCheckTimeout = null;
+
   function checkDriverStatus() {
     client.sendCommand('list', function(message) {
       if (message.data.length == 0) {
         //ModalDialog.closeAll();
         return;
       } else {
-        /*new ModalDialog({
+/*new ModalDialog({
           title: 'Device Found',
           titleL10n: 'device-found-title',
           bodyText: 'We detected a FFOS device',
@@ -359,7 +348,7 @@
         command: 'getInstallerPath',
         deviceInstanceId: instanceId
       });
-      /*new ModalDialog({
+/*new ModalDialog({
         title: 'Installing driver',
         titleL10n: 'installing-driver-title',
         bodyText: 'We are installing driver for you.',
@@ -417,7 +406,7 @@ TelnetClient.prototype = {
     this._connected = false;
     this._socket = null;
 
-    /*var self = this;
+/*var self = this;
     window.addEventListener("unload", function(event) {
       debug('unload window');
       self.disconnect();
@@ -561,6 +550,6 @@ TelnetClient.prototype = {
 
     var command = args.join("\t") + "\n";
     this._socket.send(command);
-	debug('xds2');
+    debug('xds2');
   }
 };
