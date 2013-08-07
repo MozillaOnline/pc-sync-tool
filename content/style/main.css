@@ -542,13 +542,13 @@ input.modal-btn {
 }
 
 .select-multi-files-dialog-header {
-  background:-moz-linear-gradient(center top,#f9f9f9,#ededed) repeat scroll 0 0 transparent;
   border-radius:5px 5px 0 0;
   border-bottom:1px #E86000 solid;
   box-shadow:0 1px 0 #E86000 inset;
   padding:7px 8px 7px 10px;
   overflow: hidden;
   background-color: #E86000;
+  color: #FFFFFF;
 }
 
 .select-multi-files-dialog-header-title {

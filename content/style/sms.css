@@ -333,13 +333,13 @@
 
 
 .sms-ui-window-header{
-  background:-moz-linear-gradient(center top,#f9f9f9,#ededed) repeat scroll 0 0 transparent;
   border-radius:5px 5px 0 0;
   border-bottom:1px #E86000 solid;
   box-shadow:0 1px 0 #E86000 inset;
   padding:7px 8px 7px 10px;
   overflow: hidden;
   background-color: #E86000;
+  color: #FFFFFF;
 }
 .sms-ui-window-header-title{
   float: left
@@ -566,7 +566,6 @@
   padding: 0 10px 20px;
 }
 .sms-message-item-ctn li .content-wrap{
-  background:-moz-linear-gradient(center top,#fbfbfb,#f8f8f8) repeat scroll 0 0 transparent;
   border:#cacaca 1px solid;
   border-radius:5px;
   box-shadow:0 1px 0 white inset,0 0 5px rgba(0,0,0,0.1);
@@ -579,6 +578,7 @@
   text-shadow:0 1px 0 #fff;
   background-color: #E0F9FF;
 }
+
 .sms-message-item-ctn li .content-wrap .content{
   word-break:break-all;
 }
@@ -692,7 +692,6 @@
   direction:rtl
 }
 .sms-message-item-ctn li.from-me .content-wrap{
-  background:-moz-linear-gradient(center top,#d6f5b6,#97e647) repeat scroll 0 0 transparent;
   border-color:#84c93f;
   direction:ltr;
   text-shadow:0 1px 0 rgba(255,255,255,0.6);
@@ -725,11 +724,10 @@
   direction:rtl
 }
 .sms-message-item-ctn li.from-me-error .content-wrap{
-  background:-moz-linear-gradient(center top,#d6f5b6,#97e647) repeat scroll 0 0 transparent;
-  border-color:#E86000;
   direction:ltr;
   text-shadow:0 1px 0 rgba(255,255,255,0.6);
   background-color: #F6F6F6;
+  border-color:#E86000;
 }
 .sms-message-item-ctn li.from-me-error .content-wrap .actions{
   direction:rtl
@@ -849,7 +847,6 @@
   width:100%
 }
 .sms-message-contact-selector-body .selector-ctrl{
-  background:-moz-linear-gradient(center top,#f9f9f9,#ededed) repeat scroll 0 0 transparent;
   border:1px #cacaca solid;
   border-bottom:none;
   margin-top:10px;
