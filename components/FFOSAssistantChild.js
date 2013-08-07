@@ -231,7 +231,10 @@ FFOSAssistant.prototype = {
     if (this.isDriverManagerRunning) {
       return;
     }
+    this._callDriverManager('start', null);
+  },
 
+  setAddonInfo: function(isRun) {
     // Write firefox path to the ini file
     try {
       let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
@@ -239,15 +242,12 @@ FFOSAssistant.prototype = {
       if (!file.exists()) {
         file.create(Ci.nsIFile.NORMAL_FILE_TYPE, '0644');
       }
-
       utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
+      utils.saveIniValue(file, 'status', 'isRun', isRun);
     } catch (e) {
       debug(e);
     }
-
-    this._callDriverManager('start', null);
   },
-
   /**
    * If it's an async command, a request object will be returned.
    */
@@ -461,7 +461,7 @@ FFOSAssistant.prototype = {
 
 function getFirefoxPath() {
   // FIXME only available on Windows (Single Process)
-  let BUFFER_SIZE = 260;
+/*  let BUFFER_SIZE = 260;
   let buffer = new ctypes.jschar(BUFFER_SIZE).address();
   let lib = ctypes.open("Kernel32.dll");
   let getModuleFileName = lib.declare("GetModuleFileNameW",
@@ -473,7 +473,12 @@ function getFirefoxPath() {
   getModuleFileName(0, buffer, BUFFER_SIZE);
   lib.close();
 
-  return buffer.readString();
+  return buffer.readString();*/
+  var firefoxPath = Services.dirsvc.get('XREExeF', Ci.nsIFile);
+  //var firefoxProfile = Services.dirsvc.get('ProfD', Ci.nsIFile);
+  //var firefoxProfileName = firefoxProfile.leafName;
+  //firefoxProfileName = firefoxProfileName.split('.');
+  return firefoxPath.path;// + ' -p ' + firefoxProfileName[1];
 }
 
 this.NSGetFactory = XPCOMUtils.generateNSGetFactory([FFOSAssistant]);

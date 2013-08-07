@@ -207,7 +207,7 @@ input[type="url"], textarea {
   padding: .5rem 4.5rem;
   cursor: pointer;
   background-repeat: no-repeat;
-  background-position: 2rem; center;
+  background-position: 2rem  center;
   -moz-user-select: none;
 }
 
@@ -542,7 +542,7 @@ input.modal-btn {
 }
 
 .select-multi-files-dialog-header {
-  background:-moz-linear-gradient(left top,left bottom,color-stop(0,white),color-stop(0.05,#f9f9f9),color-stop(1,#ededed));
+  background:-moz-linear-gradient(center top,#f9f9f9,#ededed) repeat scroll 0 0 transparent;
   border-radius:5px 5px 0 0;
   border-bottom:1px #E86000 solid;
   box-shadow:0 1px 0 #E86000 inset;
@@ -604,7 +604,7 @@ input.modal-btn {
   border-color:#2c8e00;
   box-shadow:inset 0 1px 0 0 rgba(255,255,255,0.2);
   color:rgba(0,0,0,0.9);
-  text-shadow:0 - 1px 0 rgba(0,0,0,0.2);
+  text-shadow:0 1px 0 rgba(0,0,0,0.2);
   border: 1px #999999 solid;
   border-radius: 3px;
   height: 26px;
@@ -615,7 +615,6 @@ input.modal-btn {
   text-align: center;
   cursor: default;
   background-color: buttonface;
-  box-sizing: border-box;
   letter-spacing: normal;
   word-spacing: normal;
   display: inline-block;

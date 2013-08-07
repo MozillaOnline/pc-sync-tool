@@ -64,8 +64,8 @@
         },
         onOperationCancelled: function(addon, needsRestart) {
           if (addon.id == "ffosassistant@mozillaonline.com") {
-            if (isDisabled == false) {
-              isDisabled = true;
+            if (isDisabled == true) {
+              isDisabled = false;
               ADBService.startAdbServer();
               ADBService.startDeviceDetecting(true);
               if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
@@ -262,7 +262,7 @@
   }
 
   function onDeviceChanged(msg) {
-    window.clearTimout(failToInstallTimeout);
+    window.clearTimeout(failToInstallTimeout);
 /*new ModalDialog({
         title: 'Device Changed',
         titleL10n: 'device-changed-title',
@@ -326,7 +326,9 @@
       // Windows need to load the driver when USB connected, so sometimes
       // the message told us it's not installed, we need wait for seconds
       // and query again to double check the status.
-      window.clearTimeout(_doubleCheckTimeout);
+      if(_doubleCheckTimeout){
+        window.clearTimeout(_doubleCheckTimeout);
+      }
       _doubleCheckTimeout = window.setTimeout(doCheckAndInstallDrivers, 5000);
     });
   }
@@ -381,6 +383,11 @@
   window.addEventListener('load', function wnd_onload(e) {
     window.removeEventListener('load', wnd_onload);
     window.setTimeout(init, 1000);
+    navigator.mozFFOSAssistant.setAddonInfo(true);
+  });
+  window.addEventListener('unload', function wnd_onunload(e) {
+    window.removeEventListener('unload', wnd_onunload);
+    navigator.mozFFOSAssistant.setAddonInfo(false);
   });
 })();
 
@@ -433,16 +440,13 @@ TelnetClient.prototype = {
   _ondata: function ondata(event) {
     debug('Received data: ' + event.data);
     var recvData = this._filterNotification(event.data);
-
     var data = null;
-
     try {
       data = JSON.parse(recvData);
     } catch (e) {
       debug('Not a valid JSON string.');
       return;
     }
-
     // Check if the _callback is null, if yes, it means the message
     // is the echo for last command.
     try {
@@ -550,6 +554,5 @@ TelnetClient.prototype = {
 
     var command = args.join("\t") + "\n";
     this._socket.send(command);
-    debug('xds2');
   }
 };

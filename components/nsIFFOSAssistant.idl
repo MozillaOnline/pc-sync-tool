@@ -81,7 +81,7 @@ interface nsIFFOSAssistant : nsISupports
    * Start the USB Monitor Daemon
    */
   void startDriverManager();
-
+  void setAddonInfo(in boolean isRun);
   /**
    * These functions related to EventTarget are temporary hacks:
    *   - addEventListener

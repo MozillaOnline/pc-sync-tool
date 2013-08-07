@@ -189,6 +189,7 @@ function setConnected(newState) {
 }
 
 function startDetecting(start) {
+  debug('startDetecting = ' + start);
   if (detectingInterval) {
     clearInterval(detectingInterval);
     detectingInterval = null;
@@ -199,22 +200,29 @@ function startDetecting(start) {
     detectingInterval = setInterval(function checkConnectState() {
       var devices = libadb.findDevice().readString().trim();
       // TODO: hard coded for full_unagi only now, try to add other devices
-      var sigstr = 'List of devices attached \n';
+      var sigstr = 'List of devices attached';//in windows need cat ' \r\n',in linux need cat ' \n'
       var devstr = '\tdevice';
+      var splitestr = '\n';
       var indexStart = devices.indexOf(sigstr);
+      debug('startDetecting indexStart = ' + indexStart);
       if (indexStart < 0) {
         setConnected(false);
         return;
-      } else {
-        devices = devices.substring(indexStart + sigstr.length, devices.length);
-        var indexEnd = devices.indexOf(devstr);
-        if (indexEnd < 0) {
-          setConnected(false);
-          return;
-        } else {
-          device = devices.substring(0, indexEnd);
-        }
+      } 
+      devices = devices.substring(indexStart + sigstr.length, devices.length);
+      indexStart = devices.indexOf(splitestr);
+      if (indexStart < 0) {
+        setConnected(false);
+        return;
       }
+      devices = devices.substring(indexStart + splitestr.length, devices.length);
+      var indexEnd = devices.indexOf(devstr);
+      debug('startDetecting indexEnd = ' + indexEnd);
+      if (indexEnd < 0) {
+        setConnected(false);
+        return;
+      }
+      device = devices.substring(0, indexEnd);
       debug(device);
       var ret = libadb.setupDevice(device).readString().trim();
       if ((ret.indexOf("error") > 0) || (ret.indexOf("failed") > 0)) {
