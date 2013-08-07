@@ -5,6 +5,9 @@
 var ContactList = (function() {
   var groupedList = null;
   var handler = null;
+  var handlerEdit = null;
+  var handlerSend = null;
+
   function getListContainer() {
     return $id('contact-list-container');
   }
@@ -468,16 +471,26 @@ var ContactList = (function() {
         container.appendChild(div);
       });
     }
-    $id('edit-contact').addEventListener ('click', function edit_contact() {
+
+    if(handlerEdit){
+      $id('edit-contact').removeEventListener('click', handlerEdit,false);
+    }
+    handlerEdit = function () {
       ContactForm.editContact(contact);
-    });
-    $id('sms-send-incontact').addEventListener ('click', function sms_send_incontact() {
+    };
+    $id('edit-contact').addEventListener ('click', handlerEdit,false);
+
+    if(handlerSend){
+      $id('sms-send-incontact').removeEventListener('click', handlerSend,false);
+    }
+    handlerSend = function () {
       if (contact.tel && contact.tel.length > 0) {
         new SendSMSToSingle({
-        number: contact.tel
-      });
+          number: contact.tel
+        });
       }
-    });
+    };
+    $id('sms-send-incontact').addEventListener ('click', handlerSend,false);
     ViewManager.showViews('show-contact-view');
     var item = $id('contact-' + contact.id);
     if (item.dataset.avatar) {
@@ -611,7 +624,17 @@ var ContactList = (function() {
 
   function onMessage(changeEvent) {
     switch (changeEvent.reason) {
+      case 'remove':
+      {
+        var item = $id('contact-' + changeEvent.contactID);
+        if (!item||!groupedList) {
+          return;
+        }
+        groupedList.remove(getContact(changeEvent.contactID));
+        break;
+      }
       case 'update':
+      {
         var contactsUpdated = [];
         CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
           if (result.data != '') {
@@ -622,12 +645,15 @@ var ContactList = (function() {
             }
             updateContacts(contactsUpdated);
             showContactInfo(contactData);
+            updateAvatar();
           }
         }, function(e) {
           alert('get getContactById error:' + e);
         });
         break;
+      }
       case 'create':
+      {
         var contactsAdded = [];
         CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
           if (result.data != '') {
@@ -642,12 +668,8 @@ var ContactList = (function() {
           alert('get getContactById error:' + e);
         });
         break;
-      case 'remove':
-        var item = $id('contact-' + changeEvent.contactID);
-        if (!item||!groupedList) {
-          return;
-        }
-        groupedList.remove(getContact(changeEvent.contactID));
+      }
+      default:
         break;
     }
   }
