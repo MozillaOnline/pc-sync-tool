@@ -24,8 +24,6 @@ resource ffosassistant-adb           components/binary/mac/adb                os
 resource ffosassistant-adb           components/binary/win/adb.exe            os=WINNT
 
 # Driver Manager home dir
-resource ffosassistant-dmhome       components/binary/linux/driver_manager    os=linux
-resource ffosassistant-dmhome       components/binary/mac/driver_manager      os=Darwin
 resource ffosassistant-dmhome       components/binary/win/driver_manager      os=WINNT
 
 # Driver Manager

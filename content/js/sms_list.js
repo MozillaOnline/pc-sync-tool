@@ -245,7 +245,7 @@ var SmsList = (function() {
         if(threadimg.src != ""){
           html += threadimg.src;
         }else{
-          html += 'style/images/avatar.png';
+          html += 'chrome://ffosassistant/content/style/images/avatar.png';
         }
         html += '" id="sms-thread-header-img-';
         html += SmsThreadsData.id;

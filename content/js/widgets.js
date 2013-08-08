@@ -989,7 +989,7 @@ SelectContactsDialog.prototype = {
     contactSmallList.getGroupedData().forEach(function(group) {
       group.dataList.forEach( function (contact) {
         if ((contact.photo != null) && (contact.photo.length > 0)) {
-          var item = $id('contact-' + contact.id);
+          var item = $id('smartlist-contact-' + contact.id);
           if(item != null){
             var img = item.getElementsByTagName('img')[0];
             img.src = contact.photo;
@@ -1032,7 +1032,7 @@ SelectContactsDialog.prototype = {
     elem.innerHTML = html;
     elem.dataset.contact = JSON.stringify(contact);
     elem.dataset.contactId = contact.id;
-    elem.id = 'contact-' + contact.id;
+    elem.id = 'smartlist-contact-' + contact.id;
     elem.dataset.avatar = '';
     elem.dataset.checked = false;
     elem.onclick = function onclick_contact_list(event) {
