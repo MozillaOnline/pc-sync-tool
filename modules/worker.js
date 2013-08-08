@@ -63,7 +63,7 @@ var libadb = (function() {
       debug('killAdbServer ' + runCmd);
       if (runCmd != null) {
         if (ADB_PATH != '') {
-          return runCmd('adb kill-server');
+          return runCmd(ADB_PATH + ' kill-server');
         }
       }
       return null;
