@@ -5,6 +5,7 @@
 
 var FFOSAssistant = (function() {
   var connPool = null;
+  var connListenPool = null;
 
   var wsurl = "ws://" + location.host + "/ws";
   // var wsurl = "ws://localhost:8888/ws";
@@ -17,6 +18,22 @@ var FFOSAssistant = (function() {
   }
 
   function showSummaryView() {
+    if(connListenPool) {
+      connListenPool.finalize();
+      connListenPool = null;
+    }
+
+    connListenPool = new TCPListenConnectionPool({
+      onListening: function onListening(message) {
+	if(message.type == 'sms'){
+	  SmsList.onMessage(message);
+	}else if(message.type == 'contact'){
+	  ContactList.onMessage(message);
+	  SmsList.onMessage('updateAvatar');
+	}
+      }
+    });
+
     $id('device-connected').classList.remove('hiddenElement');
     $id('device-unconnected').classList.add('hiddenElement');
     ViewManager.showContent('summary-view');
@@ -174,14 +191,6 @@ var FFOSAssistant = (function() {
         showConnectView();
         socket = null;
         ViewManager.reset();
-      } ,
-      onListening: function onListening(message) {
-	if(message.type == 'sms'){
-	  SmsList.onMessage(message);
-	}else if(message.type == 'contact'){
-	  ContactList.onMessage(message);
-	  SmsList.onMessage('updateAvatar');
-	}
       }
     });
   }
@@ -260,9 +269,7 @@ var FFOSAssistant = (function() {
         connectToUSB();
       }
     }
-    CMD.Listen.listenMessage(function() {}, function(e) {
-      alert(e);
-    });
+
     // Register view event callbacks
     ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
     ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);
@@ -295,6 +302,12 @@ var FFOSAssistant = (function() {
     sendRequest: function(obj) {
       if (connPool) {
         connPool.send(obj);
+      }
+    },
+
+    sendListenRequest: function(obj) {
+      if (connListenPool) {
+        connListenPool.send(obj);
       }
     },
 

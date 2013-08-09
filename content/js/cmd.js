@@ -49,6 +49,24 @@ var CMD = (function() {
       });
     };
   }
+
+  function createListenCommand(target, command) {
+    return function(onresponse, onerror) {
+      FFOSAssistant.sendListenRequest({
+        cmd: {
+          type: target,
+          command: command,
+          result: 0,
+          firstData: null,
+          firstDatalength: 0,
+          secondData: null,
+          secondDatalength: 0
+        },
+        onresponse: onresponse,
+        onerror: onerror
+      });
+    };
+  }
   /**
    * All the available commands grouped by target.
    */
@@ -208,7 +226,7 @@ var CMD = (function() {
     },
     //listen command
     Listen: {
-      listenMessage:  createCommandWithNonData(CMD_TYPE.listen, LISTEN_COMMAND.listen)
+      listenMessage:  createListenCommand(CMD_TYPE.listen, LISTEN_COMMAND.listen)
     }
   };
 })();

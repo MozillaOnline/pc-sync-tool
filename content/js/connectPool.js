@@ -47,8 +47,10 @@ TCPConnectionPool.prototype = {
     this._currentId = null;
     this._callbacks = null;
     this._messageQueue = null;
-    window.clearInterval(this._messageSendingTimer);
-    this._messageSendingTimer = null;
+    if(this._messageSendingTimer){
+      window.clearInterval(this._messageSendingTimer);
+      this._messageSendingTimer = null;
+    }
   },
 
   _initPool: function tc_initPool() {
@@ -80,7 +82,6 @@ TCPConnectionPool.prototype = {
         return wrapper;
       }
     }
-
     return null;
   },
 
@@ -128,30 +129,17 @@ TCPConnectionPool.prototype = {
    * @see TCPSocketWrapper
    */
   _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd, sendCallback, recvList) {
-    this.log('Receive msg: ' + JSON.stringify(jsonCmd));
-
-    var wrapper = this._getWrapperBySocket(socket);
-    if (!wrapper) {
-      return;
-    }
-
-    // Reset socket state
-    this._setSocketWrapperIdle(wrapper);
-
-    var callback = this._fetchRequestCallback(jsonCmd.id);
-
-    // TODO parse the result of the jsonCmd, if failed, to call onerror
-    var dataList = wrapper.recvList;
-    // reset the recvList of the wrapper which is really important.
-    wrapper.recvList = [];
-
-    //set message listener handle
-    if (jsonCmd.type == 9 && jsonCmd.command == 1 && jsonCmd.result == 0) {
-      this.options.onListening(JSON.parse(dataList.join('')));
-      return;
-    }
-
     try {
+      this.log('Receive msg: ' + JSON.stringify(jsonCmd));
+      var wrapper = this._getWrapperBySocket(socket);
+      if (!wrapper) {
+        return;
+      }
+      var callback = this._fetchRequestCallback(jsonCmd.id);
+      // TODO parse the result of the jsonCmd, if failed, to call onerror
+      var dataList = wrapper.recvList;
+      // reset the recvList of the wrapper which is really important.
+      wrapper.recvList = [];
       if (callback.json) {
         // Parse the result as the object
         callback.onresponse({
@@ -168,6 +156,8 @@ TCPConnectionPool.prototype = {
     } catch (e) {
       callback.onerror(e);
     }
+    // Reset socket state
+    this._setSocketWrapperIdle(wrapper);
   },
 
   _getAvailableSocketWrapper: function tc_getAvailableSocketWrapper() {
@@ -245,6 +235,97 @@ TCPConnectionPool.prototype = {
       this._messageQueue.push(obj);
     } else {
       this._doSend(wrapper, obj);
+    }
+  }
+};
+
+function TCPListenConnectionPool(options) {
+  this.initialize(options);
+}
+
+TCPListenConnectionPool.prototype = {
+  initialize: function tc_initialize(options) {
+    this.options = extend({
+      host: 'localhost',
+      port: 10010,
+      onListening: emptyFunction
+    }, options);
+    this.wrapper = null;
+    this._messageQueue = [];
+    this._messageRecvingTimer = null;
+    var socket = navigator.mozTCPSocket.open(this.options.host, this.options.port, {
+      binaryType: 'arraybuffer'
+    });
+    socket.onopen = this._onSocketOpened.bind(this);
+  },
+
+  finalize: function tc_finalize() {
+    this.options = null;
+    this._messageQueue = null;
+    if(this.wrapper) {
+      this.wrapper.socket.close();
+      this.wrapper = null;
+    }
+    if(this._messageRecvingTimer){
+      window.clearInterval(this._messageRecvingTimer);
+      this._messageRecvingTimer = null;
+    }
+  },
+
+  _onSocketOpened: function tc_onSocketOpened(event) {
+    // Init wrapper
+    var socketWrapper = new TCPSocketWrapper({
+      socket: event.target,
+      onmessage: this._onWrapperMessage.bind(this),
+      onclose: this._onSocketClosed.bind(this)
+    });
+    this.wrapper = socketWrapper;
+    CMD.Listen.listenMessage(function() {}, function(e) {
+      alert(e);
+    });
+    this._recvQueuedMsg();
+    if (!this._messageRecvingTimer) {
+      this._messageRecvingTimer = window.setInterval(
+      this._recvQueuedMsg.bind(this), 500);
+    }
+  },
+
+  _onSocketClosed: function tc_onSocketClosed(event) {
+    this.wrapper = null;
+  },
+
+  _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd, sendCallback, recvList) {
+    console.log('-*- TCPListenConnectionPool -*-Receive msg: ' + JSON.stringify(jsonCmd));
+    if (this.wrapper == null) {
+      return;
+    }
+    // TODO parse the result of the jsonCmd, if failed, to call onerror
+    var dataList = this.wrapper.recvList;
+    // reset the recvList of the wrapper which is really important.
+    this.wrapper.recvList = [];
+    this._messageQueue.push(dataList);
+  },
+
+  _recvQueuedMsg: function tc_recvQueuedMsg() {
+    if (this._messageQueue.length > 0) {
+      var message = this._messageQueue.shift();
+      this.options.onListening(JSON.parse(message.join('')));
+    }
+  },
+
+  send: function tc_send(obj) {
+    obj.cmd = extend({
+      cmd: null,
+      firstData: null,
+      secondData: null,
+      firstDatalength: 0,
+      secondDatalength: 0,
+      json: false // Indicates if the reulst is an JSON string
+    }, obj.cmd);
+
+    obj.cmd.id = 1;
+    if (this.wrapper) {
+      this.wrapper.send(obj.cmd, obj.cmd.firstData, obj.cmd.secondData);
     }
   }
 };

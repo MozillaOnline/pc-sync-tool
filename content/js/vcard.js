@@ -32,6 +32,7 @@ vCard = {
       if(regexps['begin'].test(line))
       {
         bParsing = true;
+        fields = {};
         continue;
       }
       if (!bParsing) {
