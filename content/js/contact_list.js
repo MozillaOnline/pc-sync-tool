@@ -1280,10 +1280,10 @@ var ContactList = (function() {
 
       navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
         if (status) {
-          alert('Contacts have been save to disk.');
+          alert(_('export-contacts-success'));
         }
       }, {
-        title: 'Choose where to save',
+        title: _('export-contacts-title'),
         name: 'contacts.vcf',
         extension: 'vcf'
       });

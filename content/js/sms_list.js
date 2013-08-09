@@ -669,10 +669,10 @@ var SmsList = (function() {
         if(threadnum == ids.length){
           navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
             if (status) {
-              alert('Sms have been save to disk.');
+              alert(_('export-sms-success'));
             }
           }, {
-            title: 'Choose where to save',
+            title: _('export-sms-success'),
             name: 'sms.vcf',
             extension: 'vcf'
           });
