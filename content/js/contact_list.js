@@ -146,7 +146,7 @@ var ContactList = (function() {
     editButton.dataset.contactId = contact.id;
     editButton.onclick = function(event) {
       var contact = ContactList.getContact(this.dataset.contactId);
-      contact.photo = [$id('avatar-s').src];
+      contact.photo = $id('avatar-s').src;
       ContactForm.editContact(contact);
     };
 

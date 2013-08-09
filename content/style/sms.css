@@ -219,19 +219,6 @@
   background-image: url("images/checkbox-checked.png");
 }
 
-.threads-list-item .bookmark {
-  width: 3rem;
-  height: 3.3rem;
-  text-align: center;
-  background-image: url("images/bookmark.png");
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-
-#threads-list-container div.favorite .bookmark {
-  background-image: url("images/bookmarked.png");
-}
-
 .threads-list-item .avatar-default {
   background-image: url("images/avatar.png");
   background-repeat: no-repeat;

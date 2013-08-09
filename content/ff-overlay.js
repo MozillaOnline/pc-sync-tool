@@ -18,7 +18,6 @@
   function init() {
     // Import ADB Service module
     debug('Import adbService module');
-
     Components.utils.import('resource://ffosassistant/ADBService.jsm');
     Components.utils.import('resource://ffosassistant/driverDownloader.jsm');
     Components.utils.import('resource://ffosassistant/driverManager.jsm');
@@ -81,9 +80,12 @@
         navigator.mozFFOSAssistant.startDriverManager();
       }
       window.setTimeout(connectToDriverManager, 2000);
+      navigator.mozFFOSAssistant.setAddonInfo(true);
     }
     checkFirstRun();
-    if (isDisabled == false) ADBService.startDeviceDetecting(true);
+    if (isDisabled == false) {
+      ADBService.startDeviceDetecting(true);
+    }
   }
 
   function checkFirstRun() {
@@ -209,7 +211,9 @@
         heartBeatSocket = navigator.mozTCPSocket.open('localhost', 10010);
         heartBeatSocket.onclose = function onclose_socket() {
           // Restart usb querying interval
-          if (isDisabled == false) ADBService.startDeviceDetecting(true);
+          if (isDisabled == false) {
+            ADBService.startDeviceDetecting(true);
+          }
         };
         ADBService.startDeviceDetecting(false);
       }
@@ -383,11 +387,20 @@
   window.addEventListener('load', function wnd_onload(e) {
     window.removeEventListener('load', wnd_onload);
     window.setTimeout(init, 1000);
-    navigator.mozFFOSAssistant.setAddonInfo(true);
   });
   window.addEventListener('unload', function wnd_onunload(e) {
     window.removeEventListener('unload', wnd_onunload);
-    navigator.mozFFOSAssistant.setAddonInfo(false);
+    var os = (function() {
+      var oscpu = navigator.oscpu.toLowerCase();
+      return {
+        isWindows: /windows/.test(oscpu),
+        isLinux: /linux/.test(oscpu),
+        isMac: /mac/.test(oscpu)
+      };
+    })();
+    if (os.isWindows) {
+      navigator.mozFFOSAssistant.setAddonInfo(false);
+    }
   });
 })();
 

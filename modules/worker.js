@@ -39,14 +39,17 @@ var libadb = (function() {
     },
 
     setupDevice: function() {
+      var ret =null;
       if (runCmd != null) {
         if (ADB_PATH != '') {
-          if (device != '') return runCmd(ADB_PATH + ' -s ' + device + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
-          else
-          return runCmd(ADB_PATH + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
+          if (device != '') {
+            ret = runCmd(ADB_PATH + ' -s ' + device + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
+          } else {
+            ret = runCmd(ADB_PATH + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
+          }
         }
       }
-      return null;
+      return ret;
     },
 
     startAdbServer: function() {
@@ -178,7 +181,7 @@ function setConnected(newState) {
   let oldState = connected;
   connected = newState;
 
-  if (oldState !== connected) {
+  if ((oldState !== connected) || ( oldState && connected)) {
     debug('Connection state is changed!');
     postMessage({
       cmd: 'statechange',

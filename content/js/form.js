@@ -176,6 +176,11 @@ ContactField.prototype = {
 var ContactForm = (function() {
   // Hold all the contact field that we add.
   var fields = {};
+  var handlerSaveContact = null;
+  var handlerCancelEditContact = null;
+  var handlerQuickSaveContact = null;
+  var handlerAvatarAddEdit = null;
+  var handlerAvatarInput = null;
 
   /**
    * Edit the given contact in the form.
@@ -198,11 +203,11 @@ var ContactForm = (function() {
         $id('avatar-add-edit').src = $id('contact-' + contact.id).dataset.avatar;
         $id('avatar-add-edit').classList.remove('avatar-add-edit-default');
       } else {
-        $id('avatar-add-edit').src = '';
+        $id('avatar-add-edit').removeAttribute('src');
         $id('avatar-add-edit').classList.add('avatar-add-edit-default');
       }
     } else {
-      $id('avatar-add-edit').src = '';
+      $id('avatar-add-edit').removeAttribute('src');
       $id('avatar-add-edit').classList.add('avatar-add-edit-default');
     }
     $id('givenName').value = contact && contact.givenName ? contact.givenName.join(' ') : '';
@@ -339,7 +344,7 @@ var ContactForm = (function() {
     if ($id('avatar-add-edit').classList.contains('avatar-add-edit-default')) {
       contact.photo = [];
     } else {
-      contact.photo = [$id('avatar-add-edit').src];
+      contact.photo = $id('avatar-add-edit').src;
     }
 
     if (contact.givenName.length == 0) {
@@ -418,20 +423,44 @@ var ContactForm = (function() {
 
   window.addEventListener('load', function onload(event) {
     window.removeEventListener('load', onload);
-    $id('save-contact').addEventListener('click', function onclick_saveContact(evt) {
+
+    if(handlerSaveContact){
+      $id('save-contact').removeEventListener('click', handlerSaveContact,false);
+    }
+    handlerSaveContact = function () {
       saveContact();
       ViewManager.showViews('show-contact-view');
-    });
-    $id('cancel-edit-contact').addEventListener('click', function onclick_cancel(evt) {
+    };
+    $id('save-contact').addEventListener ('click', handlerSaveContact,false);
+
+    if(handlerCancelEditContact){
+      $id('cancel-edit-contact').removeEventListener('click', handlerCancelEditContact,false);
+    }
+    handlerCancelEditContact = function () {
       ViewManager.showViews('show-contact-view');
-    });
-    $id('quick-save-contact').addEventListener('click', function onclick_quickSaveContact(evt) {
+    };
+    $id('cancel-edit-contact').addEventListener ('click', handlerCancelEditContact,false);
+
+    if(handlerQuickSaveContact){
+      $id('quick-save-contact').removeEventListener('click', handlerQuickSaveContact,false);
+    }
+    handlerQuickSaveContact = function () {
       quickSaveContact();
-    });
-    $id('avatar-add-edit').addEventListener('click', function(e) {
+    };
+    $id('quick-save-contact').addEventListener ('click', handlerQuickSaveContact,false);
+
+    if(handlerAvatarAddEdit){
+      $id('avatar-add-edit').removeEventListener('click', handlerAvatarAddEdit,false);
+    }
+    handlerAvatarAddEdit = function () {
       $id('avatar-input').click();
-    });
-    $id('avatar-input').addEventListener('change', function() {
+    };
+    $id('avatar-add-edit').addEventListener ('click', handlerAvatarAddEdit,false);
+
+    if(handlerAvatarInput){
+      $id('avatar-input').removeEventListener('change', handlerAvatarInput,false);
+    }
+    handlerAvatarInput = function () {
       var MAX_WIDTH = 320;
       var MAX_HEIGHT = 320;
       var pic = $id('avatar-add-edit');
@@ -470,7 +499,8 @@ var ContactForm = (function() {
           };
         });
       };
-    });
+    };
+    $id('avatar-input').addEventListener ('change', handlerAvatarInput,false);
   });
 
   return {
