@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
+const ADB_FILE_URL = 'resource://ffosassistant-adb';
+
 (function() {
   let DEBUG = 1;
   if (DEBUG) debug = function(s) {
@@ -40,7 +43,10 @@
         isMac: /mac/.test(oscpu)
       };
     })();
-    debug('os.isWindows =' + os.isWindows);
+    //var firefoxProfile = Services.dirsvc.get('ProfD', Ci.nsIFile);
+    let libPath = utils.getChromeFileURI(LIB_FILE_URL);
+    let adbPath = utils.getChromeFileURI(ADB_FILE_URL);
+    ADBService.initAdbService(os.isWindows, libPath.file.path, adbPath.file.path);
     if (os.isWindows) {
       this._addonListener = {
         onUninstalling: function(addon) {
@@ -61,6 +67,18 @@
             ADBService.killAdbServer();
           }
         },
+        onEnabling: function(addon, needsRestart) {
+          if (addon.id == "ffosassistant@mozillaonline.com") {
+            debug('onEnabling ' + addon.id);
+            isDisabled = false;
+            ADBService.startAdbServer();
+            ADBService.startDeviceDetecting(true);
+            if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
+              navigator.mozFFOSAssistant.startDriverManager();
+            }
+            window.setTimeout(connectToDriverManager, 1000);
+          }
+        },
         onOperationCancelled: function(addon, needsRestart) {
           if (addon.id == "ffosassistant@mozillaonline.com") {
             if (isDisabled == true) {
@@ -75,12 +93,12 @@
           }
         }
       };
+      navigator.mozFFOSAssistant.setAddonInfo(true);
       AddonManager.addAddonListener(this._addonListener);
       if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
         navigator.mozFFOSAssistant.startDriverManager();
       }
       window.setTimeout(connectToDriverManager, 2000);
-      navigator.mozFFOSAssistant.setAddonInfo(true);
     }
     checkFirstRun();
     if (isDisabled == false) {

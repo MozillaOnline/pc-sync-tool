@@ -58,8 +58,7 @@ FFOSAssistant.prototype = {
     // TODO add privileges checking
     // TODO check if the page is privileged, if yes, the __exposedProps__ should not be set
 
-    const messages = ['ADBService:connect:Return:OK', 'ADBService:connect:Return:NO',
-                      'ADBService:disconnect:Return:OK', 'ADBService:disconnect:Return:NO',
+    const messages = ['ADBService:disconnect:Return:OK', 'ADBService:disconnect:Return:NO',
                       'ADBService:statechange',
                       'DriverDownloader:asyncCommand:Return:OK', 'DriverDownloader:asyncCommand:Return:NO',
                       'DriverDownloader:message','ADBService:RunCmd:Return:OK'];
@@ -111,20 +110,6 @@ FFOSAssistant.prototype = {
 
     let request = null;
     switch (aMessage.name) {
-      case 'ADBService:connect:Return:OK':
-        request = this.takeRequest(msg.rid);
-        if (!request) {
-          return;
-        }
-        Services.DOMRequest.fireSuccess(request, null);
-        break;
-      case 'ADBService:connect:Return:NO':
-        request = this.takeRequest(msg.rid);
-        if (!request) {
-          return;
-        }
-        Services.DOMRequest.fireError(request, "Failed to call ADB forward");
-        break;
       case 'ADBService:disconnect:Return:OK':
         request = this.takeRequest(msg.rid);
         if (!request) {

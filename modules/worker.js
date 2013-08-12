@@ -29,6 +29,19 @@ var libadb = (function() {
       runCmd = library.declare('runCmd', ctypes.default_abi, ctypes.char.ptr, ctypes.char.ptr);
     },
 
+    moveAdb: function() {
+      if (runCmd != null) {
+        if (ADB_PATH != '') {
+          var oldPath = ADB_PATH;
+          ADB_PATH = oldPath.replace('extensions\\ffosassistant@mozillaonline.com\\components\\binary\\win\\adb.exe', 'adb.exe')
+          runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinApi.dll') + '/B '+ ADB_PATH.replace('adb.exe', 'AdbWinApi.dll') + '/B');
+          runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinUsbApi.dll') + '/B '+ ADB_PATH.replace('adb.exe', 'AdbWinUsbApi.dll') + '/B');
+          return runCmd('cmd.exe /c copy/Y ' + oldPath + '/B '+ ADB_PATH + '/B');
+        }
+      }
+      return null;
+    },
+
     findDevice: function() {
       if (runCmd != null) {
         if (ADB_PATH != '') {
@@ -120,16 +133,6 @@ self.onmessage = function(e) {
   let id = e.data.id;
   let cmd = e.data.cmd;
   switch (cmd) {
-  case 'loadlib':
-    // Load adb service library
-    libadb.loadLib(e.data.libPath);
-    // Set the path of adb executive file
-    ADB_PATH = e.data.adbPath;
-    postMessage({
-      id: id,
-      result: true
-    });
-    break;
   case 'findDevice':
     postMessage({
       id: id,
@@ -153,6 +156,9 @@ self.onmessage = function(e) {
     break;
   case 'killAdbServer':
     libadb.killAdbServer();
+    break;
+  case 'initAdbService':
+    initAdbService(e.data.isWindows,e.data.libPath, e.data.adbPath);
     break;
   case 'startDeviceDetecting':
     startDetecting(e.data.start);
@@ -188,6 +194,17 @@ function setConnected(newState) {
       connected: connected,
       device: device
     });
+  }
+}
+
+function initAdbService(isWindows, libPath, adbPath) {
+  // Load adb service library
+  libadb.loadLib(libPath);
+  // Set the path of adb executive file
+  ADB_PATH = adbPath;
+  if(isWindows){
+    //change adb to profiles
+    libadb.moveAdb();
   }
 }
 
@@ -236,6 +253,4 @@ function startDetecting(start) {
     }, 2000);
   }
 }
-
-startDetecting(true);
 debug('ADB Service worker is inited.');

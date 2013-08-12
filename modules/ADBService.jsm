@@ -19,8 +19,6 @@ const {
   utils: Cu,
   results: Cr
 } = Components;
-const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
-const ADB_FILE_URL = 'resource://ffosassistant-adb';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
@@ -65,42 +63,6 @@ const WORKER_FILE = 'resource://ffosassistant/worker.js';
 let libWorker = new ChromeWorker(WORKER_FILE);
 libWorker.onmessage = worker_onMessage;
 
-function startADBForward(onsuccess, onerror) {
-  onsuccess = onsuccess ||
-  function() {};
-  onerror = onerror ||
-  function() {};
-
-  let libFileUri = utils.getChromeFileURI(LIB_FILE_URL);
-  let adbFileUri = utils.getChromeFileURI(ADB_FILE_URL);
-  if (!libFileUri || !adbFileUri) {
-    onerror();
-    return;
-  }
-
-  controlMessage({
-    cmd: 'loadlib',
-    libPath: libFileUri.file.path,
-    adbPath: adbFileUri.file.path
-  }, function callback_loadlib(data) {
-    if (!data.result) {
-      onerror();
-      return;
-    }
-
-    controlMessage({
-      cmd: 'setupDevice'
-    }, function callback_setupDevice(data) {
-      debug('Setup device result: ' + data.result);
-      if (!data.result) {
-        onerror();
-      } else {
-        onsuccess();
-      }
-    });
-  });
-}
-
 let messageReceiver = {
   receiveMessage: function msgRev_receiveMessage(aMessage) {
     let msg = aMessage.json || {};
@@ -114,15 +76,6 @@ let messageReceiver = {
     case 'ADBService:ffosDeviceName':
       // This message is sync
       return ffosDeviceName;
-    case 'ADBService:connect':
-      startADBForward(function onsuccess() {
-        connected = true;
-        self._sendMessage('ADBService:connect:Return', true, null, msg);
-      }, function onerror() {
-        connected = false;
-        self._sendMessage('ADBService:connect:Return', false, null, msg);
-      });
-      break;
     case 'ADBService:disconnect':
       // Not implemented
       this._sendMessage('ADBService:disconnect:Return', false, null, msg);
@@ -164,12 +117,22 @@ let messageReceiver = {
   }
 };
 
-const messages = ['ADBService:connect', 'ADBService:connected', 'ADBService:ffosDeviceName', 'ADBService:RunCmd'];
+const messages = ['ADBService:connected', 'ADBService:ffosDeviceName', 'ADBService:RunCmd'];
 messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });
 
 var ADBService = {
+  initAdbService: function initAdbService(isWindows, libPath, adbPath) {
+    controlMessage({
+      cmd: 'initAdbService',
+      isWindows: isWindows,
+      libPath: libPath,
+      adbPath: adbPath
+    }, function initAdbService_callback() {
+      // pass
+    });
+  },
   startDeviceDetecting: function startDeviceDetecting(start) {
     controlMessage({
       cmd: 'startDeviceDetecting',
@@ -194,15 +157,4 @@ var ADBService = {
     });
   }
 };
-
-/**
- * Tell the worker to load lib and forward.
- * I tried to send ADBService:connect when mozFFOSAssistant is inited, but in
- * some cases, the messages listeners in this module haven't been added, for
- * example: the browser is restarted when the current page is about:ffos.
- *
- * TODO make it be lazily loaded, and make sure that messages listeners are
- * registered before it can receive any messages.
- */
-startADBForward();
 debug('ADBService module is inited.');
