@@ -5,11 +5,12 @@
 'use strict';
 
 let DEBUG = 1;
-if (DEBUG) debug = function(s) {
-  dump("-*- adbService module: " + s + "\n");
+
+debug = function(s) {
+  if (DEBUG) {
+    dump("-*- adbService module: " + s + "\n");
+  }
 };
-else
-debug = function(s) {};
 
 var EXPORTED_SYMBOLS = ['ADBService'];
 
@@ -133,6 +134,7 @@ var ADBService = {
       // pass
     });
   },
+
   startDeviceDetecting: function startDeviceDetecting(start) {
     controlMessage({
       cmd: 'startDeviceDetecting',
@@ -141,6 +143,7 @@ var ADBService = {
       // pass
     });
   },
+
   startAdbServer: function startAdbServer() {
     controlMessage({
       cmd: 'startAdbServer'
@@ -148,8 +151,8 @@ var ADBService = {
       // pass
     });
   },
+
   killAdbServer: function killAdbServer() {
-  debug('killAdbServer');
     controlMessage({
       cmd: 'killAdbServer'
     }, function killAdbServer_callback() {

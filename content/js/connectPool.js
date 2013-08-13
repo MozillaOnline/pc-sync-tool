@@ -124,7 +124,7 @@ TCPConnectionPool.prototype = {
     }
   },
 
-  /**
+  /*
    * The callback function to be called in the wrapper
    * @see TCPSocketWrapper
    */
@@ -207,7 +207,7 @@ TCPConnectionPool.prototype = {
     wrapper.send(obj.cmd, obj.cmd.firstData, obj.cmd.secondData);
   },
 
-  /**
+  /*
    * obj = {
    *   cmd: { id: 1, command: 1, type: 1},
    *   firstData: null,

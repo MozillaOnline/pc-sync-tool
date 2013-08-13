@@ -29,11 +29,12 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/ctypes.jsm");
 
 let DEBUG = 1;
-if (DEBUG) debug = function(s) {
+
+function debug(s) {
+  if (DEBUG) {
   dump("-*- WinMutex: " + s + "\n");
-};
-else
-debug = function(s) {};
+  }
+}
 
 let CreateMutexW = null;
 let WaitForSingleObject = null;

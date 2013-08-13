@@ -261,6 +261,7 @@ var MusicList = (function() {
       var pb = $id('processbar');
       var ratio = 0;
       filesIndicator.innerHTML = '0/' + musics.length;
+
       if (musics.length > 0) {
         var range = Math.round(100 / musics.length);
         var step = range / 50;

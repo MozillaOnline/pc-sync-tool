@@ -79,8 +79,6 @@ ContactField.prototype = {
     var self = this;
 
     // Fetch attribute, and return empty str if it's undefined.
-
-
     function _f(obj, key) {
       if (!obj) return '';
       return obj[key] ? obj[key] : '';
@@ -182,7 +180,7 @@ var ContactForm = (function() {
   var handlerAvatarAddEdit = null;
   var handlerAvatarInput = null;
 
-  /**
+  /*
    * Edit the given contact in the form.
    * If the given contact is null, then adding contact is performed.
    */
@@ -198,6 +196,7 @@ var ContactForm = (function() {
     fields = [];
 
     $id('contact-form-id').value = contact ? contact.id : '';
+
     if (contact) {
       if ($id('contact-' + contact.id).dataset.avatar) {
         $id('avatar-add-edit').src = $id('contact-' + contact.id).dataset.avatar;
@@ -210,6 +209,7 @@ var ContactForm = (function() {
       $id('avatar-add-edit').removeAttribute('src');
       $id('avatar-add-edit').classList.add('avatar-add-edit-default');
     }
+
     $id('givenName').value = contact && contact.givenName ? contact.givenName.join(' ') : '';
     $id('familyName').value = contact && contact.familyName ? contact.familyName.join(' ') : '';
     $id('org').value = contact && contact.org ? contact.org.join(' ') : '';
@@ -424,42 +424,47 @@ var ContactForm = (function() {
   window.addEventListener('load', function onload(event) {
     window.removeEventListener('load', onload);
 
-    if(handlerSaveContact){
+    if (handlerSaveContact) {
       $id('save-contact').removeEventListener('click', handlerSaveContact,false);
     }
+
     handlerSaveContact = function () {
       saveContact();
       ViewManager.showViews('show-contact-view');
     };
     $id('save-contact').addEventListener ('click', handlerSaveContact,false);
 
-    if(handlerCancelEditContact){
+    if (handlerCancelEditContact) {
       $id('cancel-edit-contact').removeEventListener('click', handlerCancelEditContact,false);
     }
+
     handlerCancelEditContact = function () {
       ViewManager.showViews('show-contact-view');
     };
     $id('cancel-edit-contact').addEventListener ('click', handlerCancelEditContact,false);
 
-    if(handlerQuickSaveContact){
+    if (handlerQuickSaveContact) {
       $id('quick-save-contact').removeEventListener('click', handlerQuickSaveContact,false);
     }
+
     handlerQuickSaveContact = function () {
       quickSaveContact();
     };
     $id('quick-save-contact').addEventListener ('click', handlerQuickSaveContact,false);
 
-    if(handlerAvatarAddEdit){
+    if (handlerAvatarAddEdit) {
       $id('avatar-add-edit').removeEventListener('click', handlerAvatarAddEdit,false);
     }
+
     handlerAvatarAddEdit = function () {
       $id('avatar-input').click();
     };
     $id('avatar-add-edit').addEventListener ('click', handlerAvatarAddEdit,false);
 
-    if(handlerAvatarInput){
+    if (handlerAvatarInput) {
       $id('avatar-input').removeEventListener('change', handlerAvatarInput,false);
     }
+
     handlerAvatarInput = function () {
       var MAX_WIDTH = 320;
       var MAX_HEIGHT = 320;
@@ -468,10 +473,12 @@ var ContactForm = (function() {
       var offscreenImage = new Image();
       var url = URL.createObjectURL(this.files[0]);
       offscreenImage.src = url;
+
       offscreenImage.onerror = function() {
         URL.revokeObjectURL(url);
         alert('error');
       };
+
       offscreenImage.onload = function() {
         URL.revokeObjectURL(url);
 

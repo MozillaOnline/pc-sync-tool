@@ -5,11 +5,12 @@
 'use strict';
 
 let DEBUG = 1;
-if (DEBUG) debug = function(s) {
-  dump("-*- DriverManager: " + s + "\n");
-};
-else
-debug = function(s) {};
+
+function debug(s) {
+  if (DEBUG) {
+    dump("-*- DriverManager: " + s + "\n");
+  }
+}
 
 var EXPORTED_SYMBOLS = ['DriverManager'];
 
@@ -81,4 +82,4 @@ var processObserver = {
   }
 };
 
-debug("inited.");
+debug("driverManager inited.");

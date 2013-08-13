@@ -31,33 +31,32 @@ var ContactList = (function() {
   function createContactListItem(contact) {
     var html = '';
     html += '<div>';
-    //html += '  <input id="checkbox-' + contact.id + '"';
-    //html += '  class="checkbox" type="checkbox"></input>';
-    //html += '  <label class="selectAll" for="checkbox-' + contact.id + '"></label>';
-    //html += '  <input class="checkbox" type="checkbox"></input>';
     html += '  <label class="unchecked"></label>';
-    html += '    <div class="bookmark"></div>';
-    html += '    <img class="avatar avatar-default"></img>';
-    html += '      <div class="contact-info">';
-    html += '        <div class="name">';
+    html += '  <div class="bookmark"></div>';
+    html += '  <img class="avatar avatar-default"></img>';
+    html += '  <div class="contact-info">';
+    html += '     <div class="name">';
 
     if (contact.name) {
       html += contact.name.join(' ');
     }
 
-    html += '</div>';
+    html += '    </div>';
     // Only show the first phone number
     if (contact.tel && contact.tel.length > 0) {
-      html += '        <div class="tel">' + contact.tel[0].value +  '</div>';
+      html += '  <div class="tel">' + contact.tel[0].value +  '</div>';
     }
-    html += '      </div>';
-    html += '    </div>';
+
+    html += '  </div>';
+    html += '</div>';
 
     var elem = document.createElement('div');
     elem.classList.add('contact-list-item');
+
     if (contact.category && contact.category.indexOf('favorite') > -1) {
       elem.classList.add('favorite');
     }
+
     elem.innerHTML = html;
 
     elem.dataset.contact = JSON.stringify(contact);
@@ -70,14 +69,14 @@ var ContactList = (function() {
       var target = event.target;
       if (target instanceof HTMLLabelElement) {
         toggleContactItem(elem);
-      } else if(target.classList.contains('bookmark')) {
+      } else if (target.classList.contains('bookmark')) {
         toggleFavorite(elem);
       } else {
         contactItemClicked(elem);
       }
     };
     var searchContent = $id('search-contact-input');
-    if((searchContent)&&(searchContent.value.length>0)){
+    if (searchContent && searchContent.value.length > 0) {
       var searchInfo = [];
       var searchable = ['givenName', 'familyName', 'org'];
       searchable.forEach(function(field) {
@@ -88,33 +87,37 @@ var ContactList = (function() {
           }
         }
       });
-      if (contact.tel && contact.tel.length) {
+
+      if (contact.tel && contact.tel.length > 0) {
         for (var i = contact.tel.length - 1; i >= 0; i--) {
           var current = contact.tel[i];
           searchInfo.push(current.value);
         }
       }
-      if (contact.email && contact.email.length) {
+
+      if (contact.email && contact.email.length > 0) {
         for (var i = contact.email.length - 1; i >= 0; i--) {
           var current = contact.email[i];
           searchInfo.push(current.value);
         }
       }
+
       var escapedValue = Text_escapeHTML(searchInfo.join(' '), true);
-      //定义要搜索的字符
-      var search=searchContent.value;
-      if((escapedValue.length>0)&&(escapedValue.indexOf(search) >= 0)){
+      //search key word
+      var search = searchContent.value;
+
+      if ((escapedValue.length > 0) && (escapedValue.indexOf(search) >= 0)) {
         elem.style.display = 'block';
-      }else{
+      } else {
         elem.style.display = 'none';
       }
-    }else{
+    } else {
       elem.style.display = 'block';
     }
     return elem;
   }
 
-  /**
+  /*
    * Show the contact info in the contact card view
    */
   function showVcardInView(contact) {
@@ -184,16 +187,17 @@ var ContactList = (function() {
       showEmptyContacts(false);
       $id('selectAll-contacts').dataset.disabled = false;
     }
+
     var searchContent = $id('search-contact-input');
-    if((searchContent)&&(searchContent.value.length>0)){
+    if ((searchContent) && (searchContent.value.length > 0)) {
       var allContactData = groupedList.getGroupedData();
       allContactData.forEach(function(group) {
         var groupIndexItem = $id('id-grouped-data-' + group.index);
-        if(groupIndexItem){
+        if (groupIndexItem) {
           var child = groupIndexItem.childNodes[0];
-          if(searchContent.value.length>0){
+          if (searchContent.value.length > 0) {
             child.style.display = 'none';
-          }else{
+          } else {
             child.style.display = 'block';
           }
         }
@@ -203,10 +207,10 @@ var ContactList = (function() {
 
   function updateAvatar() {
     groupedList.getGroupedData().forEach(function(group) {
-      group.dataList.forEach( function (contact) {
+      group.dataList.forEach(function(contact) {
         if ((contact.photo != null) && (contact.photo.length > 0)) {
           var item = $id('contact-' + contact.id);
-          if(item != null){
+          if (item != null) {
             var img = item.getElementsByTagName('img')[0];
             img.src = contact.photo;
             item.dataset.avatar = contact.photo;
@@ -223,36 +227,33 @@ var ContactList = (function() {
     var container = getListContainer();
     container.innerHTML = '';
     var searchContent = $id('search-contact-input');
-    if((searchContent)&&(searchContent.value.length>0)){
+    if ((searchContent) && (searchContent.value.length > 0)) {
       searchContent.value = '';
     }
-    /*
-    if (contacts.length == 0 ) {
-      showEmptyContacts(container);
-      ViewManager.showViews('contact-quick-add-view');
-      return;
-    } */
+
     var quickName = $id('fullName');
     var quickNumber = $id('mobile');
-    if(viewData){
-      if(viewData.type == 'add'){
+
+    if (viewData) {
+      if (viewData.type == 'add') {
         ViewManager.showViews('contact-quick-add-view');
-        if(quickName){
+        if (quickName) {
           quickName.value = '';
         }
-        if(quickNumber){
+        if (quickNumber) {
           quickNumber.value = viewData.number;
         }
       }
-    }else{
+    } else {
       ViewManager.showViews('contact-quick-add-view');
-      if(quickName){
+      if (quickName) {
         quickName.value = '';
       }
-      if(quickNumber){
+      if (quickNumber) {
         quickNumber.value = '';
       }
     }
+
     groupedList = new GroupedList({
       dataList: contacts,
       dataIndexer: function getContactIndex(contact) {
@@ -287,7 +288,7 @@ var ContactList = (function() {
     }
   }
 
-  /**
+  /*
    * Clear all contacts
    */
   function clearAllContacts() {
@@ -295,14 +296,14 @@ var ContactList = (function() {
     $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
       ids.push(item.dataset.contactId);
     });
-    ids.forEach(function(id){
+    ids.forEach(function(id) {
       removeContact(id);
     });
 
     ViewManager.showViews('contact-quick-add-view');
   }
 
-  /**
+  /*
    * Remove contacts
    */
   function removeContact(id) {
@@ -446,9 +447,10 @@ var ContactList = (function() {
         navigator.mozL10n.translate(div);
       });
       $id('sms-send-incontact').style.display = 'block';
-    }else{
+    } else {
       $id('sms-send-incontact').style.display = 'none';
     }
+
     if (contact.email && contact.email.length > 0) {
       contact.email.forEach(function(item) {
         var div = document.createElement('div');
@@ -472,17 +474,19 @@ var ContactList = (function() {
       });
     }
 
-    if(handlerEdit){
+    if (handlerEdit) {
       $id('edit-contact').removeEventListener('click', handlerEdit,false);
     }
+
     handlerEdit = function () {
       ContactForm.editContact(contact);
     };
     $id('edit-contact').addEventListener ('click', handlerEdit,false);
 
-    if(handlerSend){
+    if (handlerSend) {
       $id('sms-send-incontact').removeEventListener('click', handlerSend,false);
     }
+
     handlerSend = function () {
       if (contact.tel && contact.tel.length > 0) {
         new SendSMSToSingle({
@@ -490,9 +494,11 @@ var ContactList = (function() {
         });
       }
     };
+
     $id('sms-send-incontact').addEventListener ('click', handlerSend,false);
     ViewManager.showViews('show-contact-view');
     var item = $id('contact-' + contact.id);
+
     if (item.dataset.avatar) {
       $id('show-avatar').src = item.dataset.avatar;
       $id('show-avatar').classList.remove('avatar-show-default');
@@ -513,6 +519,7 @@ var ContactList = (function() {
       var contact = JSON.parse(item.dataset.contact);
       var div = document.createElement('div');
       var html = '';
+
       if (item.dataset.avatar) {
         html = '<img class="multi-avatar-show" src= ';
         html += item.dataset.avatar;
@@ -520,40 +527,48 @@ var ContactList = (function() {
       } else {
         html = '<img class="multi-avatar-show multi-avatar-show-default"></img>';
       }
+
       html += '<div class="show-multi-contact-content">';
       html += '  <div class="name">';
       html += contact.name.join(' ');
       html += '  </div>';
       html += '  <div class="tel">';
+
       if (contact.tel.length > 0) {
         html += contact.tel[0].value;
       } else {
         html += '';
       }
+
       html += '  </div>';
       html += '</div>';
       div.innerHTML = html;
       div.classList.add('show-contacts-item');
       container.appendChild(div);
+
       if (contact.tel && contact.tel.length > 0) {
         num += contact.name + "(" + contact.tel[0].value + ");";
       }
     });
+
     var btn = $id('sms-send-inmulticontact');
-    if(handler){
+
+    if (handler) {
       btn.removeEventListener('click', handler,false);
     }
+
     handler = function () {
       new SendSMSDialog({
         number: num,
         bodyText: null
       });
     };
+
     btn.addEventListener ('click', handler,false);
     ViewManager.showViews('show-multi-contacts');
   }
 
-  /**
+  /*
    * Add contact lists.
    */
   function addContacts(contacts) {
@@ -568,7 +583,7 @@ var ContactList = (function() {
     });
   }
 
-  /**
+  /*
    * Update contact lists.
    */
   function updateContacts(contacts) {
@@ -576,13 +591,15 @@ var ContactList = (function() {
       if (!contact.id) {
         return;
       }
+
       $id('selectAll-contacts').dataset.checked = false;
       var existingContact = getContact(contact.id);
       groupedList.remove(existingContact);
       groupedList.add(contact);
+
       if ((contact.photo != null) && (contact.photo.length > 0)) {
         var item = $id('contact-' + contact.id);
-        if(item != null){
+        if (item != null) {
           var img = item.getElementsByTagName('img')[0];
           img.src = contact.photo;
           item.dataset.avatar = contact.photo;
@@ -591,34 +608,39 @@ var ContactList = (function() {
           }
         }
       }
+
       var item = $id('contact-' + contact.id);
-      if(item){
+      if (item) {
         selectContactItem(item, true);
       }
     });
   }
 
-  /**
-   * Get contact object by give contact id
+  /*
+   * Get contact object by contact id
    */
   function getContact(id) {
     var contactItem = $id('contact-' + id);
+
     if (!contactItem) {
       throw 'No contact item is found!';
     }
+
     return JSON.parse(contactItem.dataset.contact);
   }
-  
+
   function Text_escapeHTML(str, escapeQuotes) {
     if (Array.isArray(str)) {
       return Text_escapeHTML(str.join(' '), escapeQuotes);
     }
+
     if (!str || typeof str != 'string')
       return '';
+
     var escaped = str.replace(/&/g, '&amp;').replace(/</g, '&lt;')
                      .replace(/>/g, '&gt;');
     if (escapeQuotes)
-      return escaped.replace(/"/g, '&quot;').replace(/'/g, '&#x27;'); //"
+      return escaped.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
     return escaped;
   }
 
@@ -673,6 +695,7 @@ var ContactList = (function() {
         break;
     }
   }
+
   function extractCarrier(tel) {
     var ret = '';
     if (/carrier=(.+)/i.test(tel)) {
@@ -698,24 +721,26 @@ var ContactList = (function() {
         selectAllContacts(false);
         ViewManager.showViews('contact-quick-add-view');
       }
-    }); 
-  
+    });
+
     $id('search-contact-input').addEventListener('keyup', function onclick_searchContact(event) {
       var self = this;
       var allContactData = groupedList.getGroupedData();
       allContactData.forEach(function(group) {
         var groupIndexItem = $id('id-grouped-data-' + group.index);
-        if(groupIndexItem){
+
+        if (groupIndexItem) {
           var child = groupIndexItem.childNodes[0];
-          if(self.value.length>0){
+          if (self.value.length > 0) {
             child.style.display = 'none';
-          }else{
+          } else {
             child.style.display = 'block';
           }
         }
+
         group.dataList.forEach( function (contact) {
           var contactItem = $id('contact-' + contact.id);
-          if((contactItem)&&(self.value.length>0)){
+          if ((contactItem) && (self.value.length > 0)) {
             var searchInfo = [];
             var searchable = ['givenName', 'familyName', 'org'];
             searchable.forEach(function(field) {
@@ -726,27 +751,30 @@ var ContactList = (function() {
                 }
               }
             });
-            if (contact.tel && contact.tel.length) {
+
+            if (contact.tel && contact.tel.length > 0) {
               for (var i = contact.tel.length - 1; i >= 0; i--) {
                 var current = contact.tel[i];
                 searchInfo.push(current.value);
               }
             }
-            if (contact.email && contact.email.length) {
+
+            if (contact.email && contact.email.length > 0 ) {
               for (var i = contact.email.length - 1; i >= 0; i--) {
                 var current = contact.email[i];
                 searchInfo.push(current.value);
               }
             }
+
             var escapedValue = Text_escapeHTML(searchInfo.join(' '), true);
-            //定义要搜索的字符
+            // search key words
             var search=self.value;
-            if((escapedValue.length>0)&&(escapedValue.indexOf(search) >= 0)){
+            if ((escapedValue.length > 0) && (escapedValue.indexOf(search) >= 0)) {
               contactItem.style.display = 'block';
-            }else{
+            } else {
               contactItem.style.display = 'none';
             }
-          }else{
+          } else {
             contactItem.style.display = 'block';
           }
         });
@@ -763,7 +791,7 @@ var ContactList = (function() {
       $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
         ids.push(item.dataset.contactId);
       });
-      
+
       if (window.confirm(_('delete-contacts-confirm', {n: ids.length}))) {
         if ($id('selectAll-contacts').dataset.checked == "true") {
           ContactList.clearAllContacts();
@@ -785,9 +813,8 @@ var ContactList = (function() {
     });
 
     $id('import-contacts').addEventListener('click', function onclick_importContacts(event) {
-      //navigator.mozFFOSAssistant.readFromDisk({title:'*.vcf', filter:'*.vcf'},function (state, data){
-      navigator.mozFFOSAssistant.readFromDisk(function (state, data){
-        if(state) {
+      navigator.mozFFOSAssistant.readFromDisk(function (state, data) {
+        if (state) {
           var items = vCard.initialize(data);
           items.forEach(function(item) {
             var contact = {"name":[],"honorificPrefix":[],"givenName":[],"additionalName":[],
@@ -1206,29 +1233,35 @@ var ContactList = (function() {
         var vcard = 'BEGIN:VCARD';
         vcard += '\nVERSION:3.0';
         vcard += '\nN:';
+
         if (contact.familyName) {
           vcard += contact.familyName;
         }
+
         vcard += ';';
         if (contact.givenName) {
+
           vcard += contact.givenName;
         }
+
         vcard += ';;;';
         vcard += '\nFN:';
+
         if (contact.familyName) {
           vcard += contact.familyName + ' ';
         }
+
         if (contact.givenName) {
           vcard += contact.givenName;
         }
-        //vcard += '\nN:' + contact.familyName + ';' + contact.givenName + ';;;';
-        //vcard += '\nFN:' + contact.familyName + ' ' + contact.givenName;
+
         if (contact.org && contact.org.length > 0) {
           vcard += '\nORG:';
           contact.org.forEach(function(org) {
             vcard += org + ';';
           });
         }
+
         if (contact.tel && contact.tel.length > 0) {
           contact.tel.forEach(function(t) {
             vcard += '\nTEL;TYPE=' + t.type;
@@ -1238,11 +1271,13 @@ var ContactList = (function() {
             vcard += ':' + t.value;
           });
         }
+
         if (contact.email && contact.email.length > 0) {
           contact.email.forEach(function(e) {
             vcard += '\nEMAIL;TYPE=' + e.type + ':' + e.value;
           });
         }
+
         if (contact.adr && contact.adr.length > 0) {
           contact.adr.forEach(function(adr) {
             vcard += '\nADR;TYPE=' + adr.type + ':;;';
@@ -1268,12 +1303,14 @@ var ContactList = (function() {
             }
           });
         }
+
         if (contact.note && contact.note.length > 0) {
           vcard += '\nnote:';
           contact.note.forEach(function(note) {
             vcard += note + ';';
           });
         }
+
         vcard += '\nEND:VCARD';
         content += vcard + '\n';
       });
@@ -1297,7 +1334,7 @@ var ContactList = (function() {
     updateContacts:    updateContacts,
     addContacts:       addContacts,
     getContact:        getContact,
-    showVcardInView:   showVcardInView,
+    // showVcardInView:   showVcardInView,
     selectAllContacts: selectAllContacts,
     onMessage: onMessage,
     showContactInfo: showContactInfo

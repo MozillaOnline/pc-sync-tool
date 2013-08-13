@@ -233,6 +233,7 @@ FFOSAssistant.prototype = {
       debug(e);
     }
   },
+
   /**
    * If it's an async command, a request object will be returned.
    */
@@ -345,7 +346,6 @@ FFOSAssistant.prototype = {
     var filePicker = Cc["@mozilla.org/filepicker;1"]
                        .createInstance(Ci.nsIFilePicker);
     filePicker.init(this._window, null, Ci.nsIFilePicker.modeOpenMultiple);
-    //filePicker.appendFilter('*.vcf', '*.vcf');
     filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
@@ -445,25 +445,8 @@ FFOSAssistant.prototype = {
 };
 
 function getFirefoxPath() {
-  // FIXME only available on Windows (Single Process)
-/*  let BUFFER_SIZE = 260;
-  let buffer = new ctypes.jschar(BUFFER_SIZE).address();
-  let lib = ctypes.open("Kernel32.dll");
-  let getModuleFileName = lib.declare("GetModuleFileNameW",
-                            ctypes.winapi_abi,
-                            ctypes.uint32_t,
-                            ctypes.int32_t,
-                            ctypes.jschar.ptr,
-                            ctypes.uint32_t);
-  getModuleFileName(0, buffer, BUFFER_SIZE);
-  lib.close();
-
-  return buffer.readString();*/
   var firefoxPath = Services.dirsvc.get('XREExeF', Ci.nsIFile);
-  //var firefoxProfile = Services.dirsvc.get('ProfD', Ci.nsIFile);
-  //var firefoxProfileName = firefoxProfile.leafName;
-  //firefoxProfileName = firefoxProfileName.split('.');
-  return firefoxPath.path;// + ' -p ' + firefoxProfileName[1];
+  return firefoxPath.path;
 }
 
 this.NSGetFactory = XPCOMUtils.generateNSGetFactory([FFOSAssistant]);

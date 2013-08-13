@@ -5,20 +5,17 @@
 'use strict';
 
 let DEBUG = 1;
-if (DEBUG) debug = function(s) {
-  dump("-*- DriverDownloader: " + s + "\n");
+
+debug = function(s) {
+  if (DEBUG) {
+    dump("-*- DriverDownloader: " + s + "\n");
+  }
 };
-else
-debug = function(s) {};
 
 var EXPORTED_SYMBOLS = ['DriverDownloader'];
 
-const {
-  classes: Cc,
-  interfaces: Ci,
-  utils: Cu,
-  results: Cr
-} = Components;
+const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+
 const DRIVER_HOME = "USBDrivers";
 const DRIVER_LIST_URI = "resource://ffosassistant-driverlist";
 

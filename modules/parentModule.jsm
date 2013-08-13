@@ -5,11 +5,12 @@
 'use strict';
 
 let DEBUG = 0;
-if (DEBUG) debug = function(s) {
-  dump("-*- ParentModule: " + s + "\n");
-};
-else
-debug = function(s) {};
+
+function debug(s) {
+  if (DEBUG) {
+    dump("-*- ParentModule: " + s + "\n");
+  }
+}
 
 const {
   classes: Cc,

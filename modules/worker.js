@@ -3,11 +3,11 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 let DEBUG = 1;
-if (DEBUG) debug = function(s) {
-  dump("-*- adb service worker: " + s + "\n");
-};
-else
-debug = function(s) {};
+function debug(s) {
+  if (DEBUG) {
+    dump("-*- adb service worker: " + s + "\n");
+  }
+}
 
 var device = '';
 var ADB_PATH = '';

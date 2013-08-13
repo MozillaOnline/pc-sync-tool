@@ -165,14 +165,14 @@ GroupedList.prototype = {
   _renderGroup: function gl_renderGroup(group) {
     var groupElem = document.createElement('div');
     groupElem.id = this._getGroupElemId(group.index);
-    if(this.options.disableDataIndexer == false){
+    if (this.options.disableDataIndexer == false) {
       groupElem.appendChild(this.options.indexRender(group.index));
     }
     var self = this;
     // Render data list
     group.dataList.forEach(function(dataObj) {
       var dataElem = self.options.renderFunc(dataObj);
-      if(dataElem){
+      if (dataElem) {
         dataElem.dataset.dataIdentity = self.options.dataIdentifier(dataObj);
         groupElem.appendChild(dataElem);
       }
@@ -202,7 +202,7 @@ GroupedList.prototype = {
     if (groupElem) {
       // TODO sort data elements
       var elem = this.options.renderFunc(dataObj);
-      if(elem){
+      if (elem) {
         elem.dataset.dataIdentity = this.options.dataIdentifier(dataObj);
         groupElem.appendChild(elem);
       }
@@ -446,39 +446,39 @@ SendSMSDialog.prototype = {
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
     this._modalElement.innerHTML = '<div class="sms-ui-window draggable">'
-	+ '<header class="sms-ui-window-header drag-handel">'
-	+ '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
-	+ '<div class="sms-ui-window-header-x" style=""></div>'
-	+ '</header>'
-	+ '<div class="sms-ui-window-body">'
-	+ '<div class="sms-message-sender-window">'
-	+ '<div class="header">'
-	+ '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
-	+ '<div class="address">'
-	+ '<input id="address" type="text" class="input-contact searchbox">'
-	+ '</div>'
-	+ '<button data-l10n-id="sms-add-contact" class="sms-icon-btn button-add-contact">'
-	+ '<span class="icon add-grey"></span>'
-	+ '</button>'
-	+ '</div>'
-	+ '<div class="body">'
-	+ '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
-	+ '<textarea id="content" class="input-content" autofocus="true"></textarea>'
-	+ '</div>'
-	+ '<div class="monitor text-secondary">'
-	+ '<span id="text-count" class="content-count"></span>'
-	+ '<span id="sender-count" class="contacts-count"></span>'
-	+ '</div>'
-	+ '</div>'
-	+ '</div>'
-	+ '<footer class="sms-ui-window-footer" style="">'
-	+ '<div class="sms-ui-window-footer-monitor"></div>'
-	+ '<div class="sms-ui-window-footer-button-ctn">'
-	+ '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
-	+ '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
-	+ '</div>'
-	+ '</footer>'
-        + '</div>';
+      + '<header class="sms-ui-window-header drag-handel">'
+      + '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
+      + '<div class="sms-ui-window-header-x" style=""></div>'
+      + '</header>'
+      + '<div class="sms-ui-window-body">'
+      + '<div class="sms-message-sender-window">'
+      + '<div class="header">'
+      + '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
+      + '<div class="address">'
+      + '<input id="address" type="text" class="input-contact searchbox">'
+      + '</div>'
+      + '<button data-l10n-id="sms-add-contact" class="sms-icon-btn button-add-contact">'
+      + '<span class="icon add-grey"></span>'
+      + '</button>'
+      + '</div>'
+      + '<div class="body">'
+      + '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
+      + '<textarea id="content" class="input-content" autofocus="true"></textarea>'
+      + '</div>'
+      + '<div class="monitor text-secondary">'
+      + '<span id="text-count" class="content-count"></span>'
+      + '<span id="sender-count" class="contacts-count"></span>'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+      + '<footer class="sms-ui-window-footer" style="">'
+      + '<div class="sms-ui-window-footer-monitor"></div>'
+      + '<div class="sms-ui-window-footer-button-ctn">'
+      + '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
+      + '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
+      + '</div>'
+      + '</footer>'
+      + '</div>';
 
     var titleElem = $expr('.input-contact', this._modalElement)[0];
     if (this.options.number) {
@@ -498,11 +498,11 @@ SendSMSDialog.prototype = {
     });
     $id('text-count').innerHTML = header;
     var senderNum = 0;
-    if(this.options.number){
+    if (this.options.number) {
       var senders = this.options.number.split(';');
       senderNum = senders.length;
-      for(var i=0;i<senders.length;i++){
-        if(senders[i] == ""){
+      for(var i = 0; i < senders.length; i++) {
+        if (senders[i] == "") {
           senderNum--;
         }
       }
@@ -511,7 +511,7 @@ SendSMSDialog.prototype = {
       n: senderNum
     });
     $id('sender-count').innerHTML = header;
-   
+
     // Translate l10n value
     navigator.mozL10n.translate(this._modalElement);
 
@@ -582,7 +582,7 @@ SendSMSDialog.prototype = {
       var senders = this.value.split(';');
       var senderNum = senders.length;
       for(var i=0;i<senders.length;i++){
-        if(senders[i] == ""){
+        if (senders[i] == "") {
           senderNum--;
         }
       }
@@ -593,38 +593,25 @@ SendSMSDialog.prototype = {
     });
    // Make sure we can close the dialog by hitting ENTER or ESC
    okBtn.focus();
-
-   // Close modal dialog when mousedown on the realestate outside.
-/*   this._modalElement.addEventListener('mousedown', this.close.bind(this));
-   var container = $expr('.modal-container', this._modalElement)[0];
-   container.addEventListener('mousedown', function(event) {
-     event.stopPropagation();
-   }, true); */
   },
 
   _adjustModalPosition: function() {
-/*    var container = $expr('.modal-container', this._modalElement)[0];
-    var documentHeight = document.documentElement.clientHeight;
-    var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';*/
   },
 
   _selectContacts: function(data) {
     var titleElem = $expr('.input-contact', this._modalElement)[0];
-    if((titleElem.value.length > 0) && (titleElem.value[titleElem.value.length-1] != ";")){
+    if ((titleElem.value.length > 0) && (titleElem.value[titleElem.value.length-1] != ";")) {
       titleElem.value += ';';
-      //titleElem.value = titleElem.value.replace(/[ ]/g,"")
     }
-    for( var i=0;i<data.length;i++){
+    for (var i = 0; i < data.length; i++) {
       var contact = JSON.parse(data[i]);
-      if(contact.tel && contact.tel.length > 0){
+      if (contact.tel && contact.tel.length > 0) {
         var sendStr = contact.name + "(" + contact.tel[0].value + ");";
-        var searchStr = contact.tel[0].value+";";
-        if(titleElem.value.indexOf(searchStr) >= 0){
+        var searchStr = contact.tel[0].value + ";";
+        if (titleElem.value.indexOf(searchStr) >= 0) {
           titleElem.value = titleElem.value.replace(searchStr, sendStr);
-        }else{
-          if(titleElem.value.indexOf("("+contact.tel[0].value+")") < 0 ){
+        } else {
+          if (titleElem.value.indexOf("(" + contact.tel[0].value+")") < 0 ) {
             titleElem.value += sendStr;
           }
         }
@@ -632,8 +619,8 @@ SendSMSDialog.prototype = {
     }
     var senders = titleElem.value.split(';');
     var senderNum = senders.length;
-    for(var i=0;i<senders.length;i++){
-      if(senders[i] == ""){
+    for (var i = 0; i < senders.length; i++) {
+      if (senders[i] == "") {
         senderNum--;
       }
     }
@@ -669,15 +656,15 @@ SendSMSDialog.prototype = {
     number.forEach(function(item) {
       var start = item.indexOf("(");
       var end = item.indexOf(")");
-      if(start >= 0 &&  end > 0){
+      if (start >= 0 &&  end > 0) {
         sender.push(item.slice(start+1,end));
-      }else if(item != ""){
+      } else if (item != "") {
         sender.push(item);
       }
     });
     CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message.value}),
       function onSuccess_sendSms(event) {
-        if(!event.result) {
+        if (!event.result) {
           self._mask.parentNode.removeChild(self._mask);
           self._modalElement.parentNode.removeChild(self._modalElement);
           self._mask = null;
@@ -716,43 +703,43 @@ SendSMSToSingle.prototype = {
     this._mask = document.createElement('div');
     this._mask.className = 'modal-mask';
     document.body.appendChild(this._mask);
-    // TODO using template
+
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
     this._modalElement.innerHTML = '<div class="sms-ui-window draggable">'
-	+ '<header class="sms-ui-window-header drag-handel">'
-	+ '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
-	+ '<div class="sms-ui-window-header-x" style=""></div>'
-	+ '</header>'
-	+ '<div class="sms-ui-window-body">'
-	+ '<div class="sms-message-sender-window">'
-	+ '<div class="header" id="select-contact-tel-header">'
-	+ '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
-	+ '<button class="sms-ui-button sms-ui-menubutton" id="select-contact-tel-button">'
-	+ '<div class="label wc" id="selected-contact-tel"></div>'
-	+ '<div class="arrow-ctn">'
-	+ '<div class="arrow"></div>'
-	+ '</div>'
-	+ '</button>'
-	+ '</div>'
-	+ '<div class="body">'
-	+ '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
-	+ '<textarea id="content" class="input-content" autofocus="true"></textarea>'
-	+ '</div>'
-	+ '<div class="monitor text-secondary">'
-	+ '<span id="text-count" class="content-count"></span>'
-	+ '<span id="sender-count" class="contacts-count"></span>'
-	+ '</div>'
-	+ '</div>'
-	+ '</div>'
-	+ '<footer class="sms-ui-window-footer" style="">'
-	+ '<div class="sms-ui-window-footer-monitor"></div>'
-	+ '<div class="sms-ui-window-footer-button-ctn">'
-	+ '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
-	+ '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
-	+ '</div>'
-	+ '</footer>'
-        + '</div>';
+      + '<header class="sms-ui-window-header drag-handel">'
+      + '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
+      + '<div class="sms-ui-window-header-x" style=""></div>'
+      + '</header>'
+      + '<div class="sms-ui-window-body">'
+      + '<div class="sms-message-sender-window">'
+      + '<div class="header" id="select-contact-tel-header">'
+      + '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
+      + '<button class="sms-ui-button sms-ui-menubutton" id="select-contact-tel-button">'
+      + '<div class="label wc" id="selected-contact-tel"></div>'
+      + '<div class="arrow-ctn">'
+      + '<div class="arrow"></div>'
+      + '</div>'
+      + '</button>'
+      + '</div>'
+      + '<div class="body">'
+      + '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
+      + '<textarea id="content" class="input-content" autofocus="true"></textarea>'
+      + '</div>'
+      + '<div class="monitor text-secondary">'
+      + '<span id="text-count" class="content-count"></span>'
+      + '<span id="sender-count" class="contacts-count"></span>'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+      + '<footer class="sms-ui-window-footer" style="">'
+      + '<div class="sms-ui-window-footer-monitor"></div>'
+      + '<div class="sms-ui-window-footer-button-ctn">'
+      + '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
+      + '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
+      + '</div>'
+      + '</footer>'
+      + '</div>';
 
     var titleElem = $expr('.label', this._modalElement)[0];
     if (this.options.number && this.options.number.length > 0) {
@@ -764,7 +751,7 @@ SendSMSToSingle.prototype = {
       n: 0
     });
     $id('text-count').innerHTML = header;
-   
+
     // Translate l10n value
     navigator.mozL10n.translate(this._modalElement);
 
@@ -783,7 +770,7 @@ SendSMSToSingle.prototype = {
     // Make sure other modal dialog has a chance to close itself.
     this._fireEvent('SendSMSToSingle:show');
     window.addEventListener('resize', this._onWindowResize);
-    
+
     $id('select-contact-tel-button').addEventListener('click', function onclick_selectContactTel(event) {
       var titleElem = $id('select-contact-tel-header');
       var div = document.createElement('div');
@@ -804,16 +791,17 @@ SendSMSToSingle.prototype = {
         }
       }
       html += '</menu>';
+
       div.onclick = function onclick_sms_list(event) {
         var target = event.target;
-        if(target.textContent!=''){
+        if (target.textContent!='') {
           var titleElem = $expr('.label', self._modalElement)[0];
-          if(titleElem != null){
+          if (titleElem != null) {
             titleElem.innerHTML = target.textContent;
           }
           titleElem = $id('select-contact-tel-header');
           var child = titleElem.childNodes[2];
-          if(child){
+          if (child) {
             child.parentNode.removeChild(child);
           }
         }
@@ -831,11 +819,13 @@ SendSMSToSingle.prototype = {
    okBtn.hidden = false;
    okBtn.addEventListener('click', this.send.bind(this));
    var self = this;
+
    okBtn.addEventListener('keydown', function(event) {
      if (event.keyCode == 27) {
        self.close();
      }
    });
+
    var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
    cancelBtn.hidden = false;
    cancelBtn.addEventListener('click', this.close.bind(this));
@@ -867,14 +857,14 @@ SendSMSToSingle.prototype = {
     this.options.onclose();
   },
   send: function() {
-    var tel =$id('selected-contact-tel');
+    var tel = $id('selected-contact-tel');
     var message = $id('content');
     var sender = [tel.textContent];
-    var self=this;
+    var self = this;
     message.readOnly = true;
     CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message.value}),
       function onSuccess_sendSms(event) {
-        if(!event.result) {
+        if (!event.result) {
           self._mask.parentNode.removeChild(self._mask);
           self._modalElement.parentNode.removeChild(self._modalElement);
           self._mask = null;
@@ -912,30 +902,30 @@ SelectContactsDialog.prototype = {
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
     var html = '<div class="sms-ui-window-contact">'
-	+ '<header class="sms-ui-window-header">'
-	+ '<div data-l10n-id="sms-add-contact" class="sms-ui-window-header-title"></div>'
-	+ '<div class="sms-ui-window-header-x" style=""></div>'
-	+ '</header>'
-	+ '<div class="sms-ui-window-body">'
-	+ '<div class="sms-message-contact-selector-body">'
-	+ '<div class="list-ctn">'
-	+ '<div class="sms-ui-smartlist" id="sms-ui-smartlist-container">'
-        + '</div>'
-        + '</div>'
-	+ '</div>'
-	+ '<footer class="sms-ui-window-footer" style="">'
-	+ '<div class="sms-ui-window-footer-monitor">'
-	+ '<div>'
-	+ '<span id="select-contact-count" class="text-secondary count"></span>'
-	+ '</div>'
-	+ '</div>'
-	+ '<div class="sms-ui-window-footer-button-ctn">'
-	+ '<button data-l10n-id="OK" class="button-send primary"></button>'
-	+ '<button data-l10n-id="cancel" class="button-cancel"></button>'
-	+ '</div>'
-	+ '</footer>'
-	+ '</div>'
-	+ '</div>';
+      + '<header class="sms-ui-window-header">'
+      + '<div data-l10n-id="sms-add-contact" class="sms-ui-window-header-title"></div>'
+      + '<div class="sms-ui-window-header-x" style=""></div>'
+      + '</header>'
+      + '<div class="sms-ui-window-body">'
+      + '<div class="sms-message-contact-selector-body">'
+      + '<div class="list-ctn">'
+      + '<div class="sms-ui-smartlist" id="sms-ui-smartlist-container">'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+      + '<footer class="sms-ui-window-footer" style="">'
+      + '<div class="sms-ui-window-footer-monitor">'
+      + '<div>'
+      + '<span id="select-contact-count" class="text-secondary count"></span>'
+      + '</div>'
+      + '</div>'
+      + '<div class="sms-ui-window-footer-button-ctn">'
+      + '<button data-l10n-id="OK" class="button-send primary"></button>'
+      + '<button data-l10n-id="cancel" class="button-cancel"></button>'
+      + '</div>'
+      + '</footer>'
+      + '</div>'
+      + '</div>';
     this._modalElement.innerHTML = html;
     document.body.appendChild(this._modalElement);
     var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
@@ -969,7 +959,7 @@ SelectContactsDialog.prototype = {
     document.addEventListener('SelectContactsDialog:show', this._onModalDialogShown);
     // Make sure other modal dialog has a chance to close itself.
     this._fireEvent('SelectContactsDialog:show');
-    
+
     var contactSmallListContainer = $id('sms-ui-smartlist-container');
     contactSmallListContainer.innerHTML = '';
     contactSmallList = new GroupedList({
@@ -990,7 +980,7 @@ SelectContactsDialog.prototype = {
       group.dataList.forEach( function (contact) {
         if ((contact.photo != null) && (contact.photo.length > 0)) {
           var item = $id('smartlist-contact-' + contact.id);
-          if(item != null){
+          if (item != null) {
             var img = item.getElementsByTagName('img')[0];
             img.src = contact.photo;
             item.dataset.avatar = contact.photo;
@@ -1081,7 +1071,7 @@ SelectContactsDialog.prototype = {
     evt.targetElement = this._modalElement;
     document.dispatchEvent(evt);
   },
-  
+
   close: function() {
     this._mask.parentNode.removeChild(this._mask);
     this._modalElement.parentNode.removeChild(this._modalElement);
@@ -1128,25 +1118,25 @@ ImportFilesDialog.prototype = {
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
     this._modalElement.innerHTML = '<div class="modal-container">'
-        + '<div class="select-multi-files-dialog">'
-	+ '  <header class="select-multi-files-dialog-header">'
-	+ '    <div class="select-multi-files-dialog-header-title" data-l10n-id="import-music-dialog-header"></div>'
-	+ '    <div class="select-multi-files-dialog-header-x"></div>'
-	+ '  </header>'
-	+ '  <div class="select-multi-files-dialog-body">'
-        + '    <div class="processbar-prompt"><span data-l10n-id="processbar-prompt"></span>'
-        + '      <div><span id="files-indicator"></span></div>'
-        + '    </div>'
-        + '    <div id="processbar-container" class="processbar-container">'
-	+ '      <div id="processbar" class="processbar"></div>'
-        + '    </div>'
-        + '  </div>'
-	+ '  <footer class="select-multi-files-dialog-footer">'
-	+ '    <div class="select-multi-files-dialog-footer-button-ctn">'
-	+ '      <button data-l10n-id="cancel" class="button button-cancel"></button>'
-	+ '    </div>'
-	+ '  </footer>'
-        + '</div></div>';
+      + '<div class="select-multi-files-dialog">'
+      + '  <header class="select-multi-files-dialog-header">'
+      + '    <div class="select-multi-files-dialog-header-title" data-l10n-id="import-music-dialog-header"></div>'
+      + '    <div class="select-multi-files-dialog-header-x"></div>'
+      + '  </header>'
+      + '  <div class="select-multi-files-dialog-body">'
+      + '    <div class="processbar-prompt"><span data-l10n-id="processbar-prompt"></span>'
+      + '      <div><span id="files-indicator"></span></div>'
+      + '    </div>'
+      + '    <div id="processbar-container" class="processbar-container">'
+      + '      <div id="processbar" class="processbar"></div>'
+      + '    </div>'
+      + '  </div>'
+      + '  <footer class="select-multi-files-dialog-footer">'
+      + '    <div class="select-multi-files-dialog-footer-button-ctn">'
+      + '      <button data-l10n-id="cancel" class="button button-cancel"></button>'
+      + '    </div>'
+      + '  </footer>'
+      + '</div></div>';
 
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
@@ -1187,16 +1177,6 @@ ImportFilesDialog.prototype = {
    cancelBtn.addEventListener('click', this.close.bind(this));
 
    var self = this;
-
-   // Make sure we can close the dialog by hitting ENTER or ESC
-   //okBtn.focus();
-
-   // Close modal dialog when mousedown on the realestate outside.
-/*   this._modalElement.addEventListener('mousedown', this.close.bind(this));
-   var container = $expr('.modal-container', this._modalElement)[0];
-   container.addEventListener('mousedown', function(event) {
-     event.stopPropagation();
-   }, true); */
   },
 
   _adjustModalPosition: function() {

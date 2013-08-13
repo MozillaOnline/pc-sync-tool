@@ -8,7 +8,6 @@ var FFOSAssistant = (function() {
   var connListenPool = null;
 
   var wsurl = "ws://" + location.host + "/ws";
-  // var wsurl = "ws://localhost:8888/ws";
 
   function showConnectView() {
     $id('device-connected').classList.add('hiddenElement');
@@ -18,19 +17,19 @@ var FFOSAssistant = (function() {
   }
 
   function showSummaryView() {
-    if(connListenPool) {
+    if (connListenPool) {
       connListenPool.finalize();
       connListenPool = null;
     }
 
     connListenPool = new TCPListenConnectionPool({
       onListening: function onListening(message) {
-	if(message.type == 'sms'){
-	  SmsList.onMessage(message);
-	}else if(message.type == 'contact'){
-	  ContactList.onMessage(message);
-	  SmsList.onMessage('updateAvatar');
-	}
+        if (message.type == 'sms') {
+          SmsList.onMessage(message);
+        } else if (message.type == 'contact') {
+          ContactList.onMessage(message);
+          SmsList.onMessage('updateAvatar');
+        }
       }
     });
 
@@ -56,32 +55,44 @@ var FFOSAssistant = (function() {
   function fillStorageSummaryInfo(elemId, info) {
     var elem = $id(elemId);
     var total = info.usedInBytes + info.freeInBytes;
-    if(total > 0){
+    if (total > 0 ) {
       var usedInP = Math.floor(info.usedInBytes / total * 100) + '%';
       $expr('.storage-number', elem)[0].textContent =
-	formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
+        formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
       $expr('.storage-graph .used', elem)[0].style.width = usedInP;
-      if(elemId =='sdcard-storage-summary' ){
-	var subInP = Math.floor(info.picture / info.usedInBytes * 100);
-	if(subInP == 0)
-	  subInP = 1;
-	$expr('.storage-used', elem)[0].style.width = subInP + '%';
-	subInP = Math.floor(info.music / info.usedInBytes * 100);
-	if(subInP == 0)
-	  subInP = 1;
-	$expr('.storage-used', elem)[1].style.width = subInP + '%';
-	subInP = Math.floor(info.video / info.usedInBytes * 100);
-	if(subInP == 0)
-	  subInP = 1;
-	$expr('.storage-used', elem)[2].style.width = subInP + '%';
-	subInP = Math.floor((info.usedInBytes - info.music - info.picture - info.video) / info.usedInBytes * 100);
-	if(subInP == 0)
-	  subInP = 1;
-	$expr('.storage-used', elem)[3].style.width =  subInP + '%';
+
+      if (elemId =='sdcard-storage-summary' ) {
+        var subInP = Math.floor(info.picture / info.usedInBytes * 100);
+
+        if (subInP == 0) {
+          subInP = 1;
+        }
+
+        $expr('.storage-used', elem)[0].style.width = subInP + '%';
+        subInP = Math.floor(info.music / info.usedInBytes * 100);
+
+        if (subInP == 0) {
+          subInP = 1;
+        }
+
+        $expr('.storage-used', elem)[1].style.width = subInP + '%';
+        subInP = Math.floor(info.video / info.usedInBytes * 100);
+
+        if (subInP == 0) {
+          subInP = 1;
+        }
+
+        $expr('.storage-used', elem)[2].style.width = subInP + '%';
+        subInP = Math.floor((info.usedInBytes - info.music - info.picture - info.video) / info.usedInBytes * 100);
+
+        if (subInP == 0) {
+          subInP = 1;
+        }
+
+        $expr('.storage-used', elem)[3].style.width =  subInP + '%';
       }
-    }else{
-      $expr('.storage-number', elem)[0].textContent =
-	formatStorage(info.usedInBytes) + '/' + formatStorage(total);
+    } else {
+        $expr('.storage-number', elem)[0].textContent = formatStorage(info.usedInBytes) + '/' + formatStorage(total);
     }
   }
 
@@ -91,10 +102,11 @@ var FFOSAssistant = (function() {
       var sdcardInfo = {
         usedInBytes: 0,
         freeInBytes: 0,
-	picture: 0,
-	music: 0,
-	video:0
+        picture: 0,
+        music: 0,
+        video:0
       };
+
       var dataJSON = JSON.parse(message.data);
       deviceInfo.usedInBytes = dataJSON[4].usedSpace;
       deviceInfo.freeInBytes = dataJSON[4].freeSpace;
@@ -104,12 +116,12 @@ var FFOSAssistant = (function() {
       sdcardInfo.music = dataJSON[1].usedSpace;
       sdcardInfo.video = dataJSON[2].usedSpace;
 
-
       fillStorageSummaryInfo('device-storage-summary', deviceInfo);
       fillStorageSummaryInfo('sdcard-storage-summary', sdcardInfo);
     }, function onerror_getStorage(message) {
       console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
     });
+
     CMD.Device.getSettings(function onresponse_getDeviceInfo(message) {
       var dataJSON = JSON.parse(message.data);
       var elem = $id('device-storage-summary');
@@ -126,7 +138,6 @@ var FFOSAssistant = (function() {
    * Show the contact view, and start fetching the contacts data from device.
    */
   function showContactView() {
-    // Switch view to manage view
     ViewManager.showContent('contact-view');
   }
 
@@ -136,9 +147,6 @@ var FFOSAssistant = (function() {
       ContactList.selectAllContacts(false);
       var dataJSON = JSON.parse(message.data);
       ContactList.init(dataJSON,viewData);
-      //if (dataJSON.length > 0) {
-      //  ContactList.showContactInfo(dataJSON[0]);
-      //}
     }, function onerror_getAllContacts(message) {
       log('getAndShowAllContacts Error occurs when fetching all contacts.');
     });
@@ -147,13 +155,12 @@ var FFOSAssistant = (function() {
   function getAndShowAllSMSThreads() {
     updateSMSThreads();
   }
-  
+
   function updateSMSThreads() {
     CMD.SMS.getThreads(function onresponse_getThreads(messages) {
       // Make sure the 'select-all' box is not checked.  
       SmsList.selectAllSms(false); 
       var dataJSON = JSON.parse(messages.data);
-      //console.log(messages.data);
       SmsList.init(dataJSON);
     }, function onerror_getThreads(messages) {
       log('Error occurs when fetching all messages' + messages.message);  
@@ -170,7 +177,7 @@ var FFOSAssistant = (function() {
       log('Error occurs when fetching all musics.');
     });
   }
-  
+
   function connectToUSB(event) {
     var timeout = null;
 
@@ -182,7 +189,7 @@ var FFOSAssistant = (function() {
     connPool = new TCPConnectionPool({
       size: 2,
       onenable: function onenable() {
-        // FIXME 此时server端还未完成data监听事件注册，延迟显示
+        // FIXME, still not finish binding data listening event in server socket, displaying info. delay 
         timeout = window.setTimeout(showSummaryView, 1000);
       },
       ondisable: function ondisable() {
@@ -196,52 +203,6 @@ var FFOSAssistant = (function() {
   }
 
   function init() {
-    /*
-    $id('avatar-e').addEventListener('click', function (e) {
-      $id('image').click();
-    });
-
-    $id('image').addEventListener('change', function() {
-      var MAX_WIDTH = 320;
-      var MAX_HEIGHT = 320;
-      var pic = $id('avatar-e');
-
-      var offscreenImage = new Image();
-      var url = URL.createObjectURL($id('image').files[0]);
-      offscreenImage.src = url;
-      offscreenImage.onerror = function () {
-        URL.revokeObjectURL(url);
-        alert('error');
-      };
-      offscreenImage.onload = function () {
-        URL.revokeObjectURL(url);
-
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
-        canvas.width = MAX_WIDTH;
-        canvas.height = MAX_HEIGHT;
-        var scalex = canvas.width / offscreenImage.width;
-        var scaley = canvas.height / offscreenImage.height;
-
-        var scale = Math.max(scalex, scaley);
-
-        var w = Math.round(MAX_WIDTH / scale);
-        var h = Math.round(MAX_HEIGHT / scale);
-        var x = Math.round((offscreenImage.width - w) / 2);
-        var y = Math.round((offscreenImage.height - h) / 2);
-
-        context.drawImage(offscreenImage, x, y, w, h,
-                      0, 0, MAX_WIDTH, MAX_HEIGHT);
-        canvas.toBlob(function (blob) {
-          var fr = new FileReader();
-          fr.readAsDataURL(blob);
-          fr.onload = function (e) {
-            pic.src = e.target.result;
-          };
-        });
-      };
-    });
-*/
     $id('lang-settings').addEventListener('click', function onclick_langsetting(event) {
       if (!event.target.classList.contains('language-code-button')) {
         return;
@@ -258,8 +219,8 @@ var FFOSAssistant = (function() {
     if (navigator.mozFFOSAssistant) {
       navigator.mozFFOSAssistant.onadbstatechange = function onADBStateChange(event) {
         if (navigator.mozFFOSAssistant.adbConnected === true) {
-	  var devicename = navigator.mozFFOSAssistant.adbffosDeviceName;
-	  var elem = $id('mgmt-list');
+          var devicename = navigator.mozFFOSAssistant.adbffosDeviceName;
+          var elem = $id('mgmt-list');
           $expr('.header', elem)[0].textContent = devicename;
           connectToUSB();
         }

@@ -7,13 +7,14 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
 
 (function() {
   let DEBUG = 1;
-  if (DEBUG) debug = function(s) {
-    dump("-*- ADBService FF Overlay: " + s + "\n");
-    this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-    this.console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
-  };
-  else
-  debug = function(s) {};
+
+  function  debug(s) {
+    if (DEBUG) {
+      this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+      this.console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
+    }
+  }
+
   var isDisabled = false;
   var modules = {};
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
@@ -33,8 +34,6 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
       modules.cpmm.addMessageListener(msgName, messageHandler)
     });
 
-    //var osString = Components.classes["@mozilla.org/xre/app-info;1"]
-    //  .getService(Components.interfaces.nsIXULRuntime).OS;
     var os = (function() {
       var oscpu = navigator.oscpu.toLowerCase();
       return {
@@ -43,7 +42,7 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
         isMac: /mac/.test(oscpu)
       };
     })();
-    //var firefoxProfile = Services.dirsvc.get('ProfD', Ci.nsIFile);
+
     let libPath = utils.getChromeFileURI(LIB_FILE_URL);
     let adbPath = utils.getChromeFileURI(ADB_FILE_URL);
     ADBService.initAdbService(os.isWindows, libPath.file.path, adbPath.file.path);
@@ -252,7 +251,6 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
   function connectToDriverManager() {
     if (navigator.mozFFOSAssistant.driverManagerPort) {
       client = new TelnetClient({
-        // host: '10.241.5.197',
         host: '127.0.0.1',
         port: navigator.mozFFOSAssistant.driverManagerPort,
         onmessage: handleMessage,
@@ -285,12 +283,6 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
 
   function onDeviceChanged(msg) {
     window.clearTimeout(failToInstallTimeout);
-/*new ModalDialog({
-        title: 'Device Changed',
-        titleL10n: 'device-changed-title',
-        bodyText: 'We detected that device is changed.',
-        bodyTextL10n: 'device-changed-body'
-      });*/
     checkDriverStatus();
   }
 
@@ -305,22 +297,12 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
     // We don't need to fire device-ready-event here, we will might receive a
     // device-change event if driver is installed successfully.
     if (msg.data.errorName && !navigator.mozFFOSAssistant.adbConnected) {
-/*new ModalDialog({
-        title: 'Failed To Install Driver',
-        titleL10n: 'failed-install-driver-title',
-        bodyText: 'We encountered an error when installing driver: ' + msg.data.errorMessage,
-        bodyTextL10n: 'failed-install-driver-body'
-      });*/
+      //todo: handle driver installation error
     } else {
       // Sometimes we can't receive a device-change event, we need to set a timeout
       // to fire fail-to-install event
       failToInstallTimeout = window.setTimeout(function() {
-/*new ModalDialog({
-          title: 'Failed To Install Driver',
-          titleL10n: 'failed-install-driver-title',
-          bodyText: 'We encountered an error when installing driver: ' + 'no device-storage changed event is received.',
-          bodyTextL10n: 'failed-install-driver-body'
-        });*/
+        //todo: handle failure of driver installation
       }, 5000);
     }
   }
@@ -329,19 +311,11 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
   function checkDriverStatus() {
     client.sendCommand('list', function(message) {
       if (message.data.length == 0) {
-        //ModalDialog.closeAll();
         return;
       } else {
-/*new ModalDialog({
-          title: 'Device Found',
-          titleL10n: 'device-found-title',
-          bodyText: 'We detected a FFOS device',
-          bodyTextL10n: 'device-found-body'
-        });*/
       }
       // TODO handle all devices
       if (message.data[0].state == 'installed') {
-        //ModalDialog.closeAll();
         return;
       }
 
@@ -359,12 +333,9 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
     debug('Double check the driver installation state.');
     client.sendCommand('list', function(message) {
       if (message.data.length == 0) {
-        //ModalDialog.closeAll();
         return;
       }
-      // TODO handle all devices
       if (message.data[0].state == 'installed') {
-        //ModalDialog.closeAll();
         return;
       }
       var instanceId = message.data[0].deviceInstanceId;
@@ -372,13 +343,6 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
         command: 'getInstallerPath',
         deviceInstanceId: instanceId
       });
-/*new ModalDialog({
-        title: 'Installing driver',
-        titleL10n: 'installing-driver-title',
-        bodyText: 'We are installing driver for you.',
-        bodyTextL10n: 'installing-driver-body',
-        cancelable: false
-      });*/
       client.sendCommand('install', instanceId, driverPath, function(message) {
         debug('Receive install message: ' + JSON.stringify(message));
       });
@@ -425,6 +389,7 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
 function TelnetClient(options) {
   this.initialize(options);
 }
+
 TelnetClient.prototype = {
   initialize: function tc_init(options) {
     this.options = utils.extend({
@@ -443,12 +408,6 @@ TelnetClient.prototype = {
     this._queue = [];
     this._connected = false;
     this._socket = null;
-
-/*var self = this;
-    window.addEventListener("unload", function(event) {
-      debug('unload window');
-      self.disconnect();
-    }, true);*/
   },
 
   _onopen: function onopen(event) {

@@ -5,11 +5,12 @@
 "use strict"
 
 let DEBUG = 1;
-if (DEBUG) debug = function(s) {
-  dump("-*- utils: " + s + "\n");
-};
-else
-debug = function(s) {};
+
+function debug(s) {
+  if (DEBUG) {
+    dump("-*- utils: " + s + "\n");
+  }
+}
 
 const {
   classes: Cc,
