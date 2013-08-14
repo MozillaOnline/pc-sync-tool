@@ -99,13 +99,34 @@
         <div class="content table-cell">
           <section id="connect-view" class="view">
             <div id="welcome-msg">
-              <h3 data-l10n-id="pls_connect_device">请连接手机</h3>
+              <h3 data-l10n-id="pls_connect_device">连接手机</h3>
               <p data-l10n-id="ffos-description"></p>
             </div>
-
             <section id="user-guide">
-              <div><a data-l10n-id="nodevice-found-msg">您的手机尚未连接到电脑，请通过USB数据线连接</a></div>
-              <p><a href="http://mozilla.com.cn/" target="_blank" data-l10n-id="usb-problem">已连接USB数据线，无法识别手机？</a></p>
+              <div class="connection-title">
+                <a data-l10n-id="nodevice-found-msg">您可以通过以下方式连接手机</a>
+              </div>
+              <div class="connection-button">
+                <a id="usb-connection-button">
+                  <span data-l10n-id="usb-connection">USB 连接</span>
+                </a>
+                <a id="wifi-connection-button">
+                  <span data-l10n-id="wifi-connection">Wifi 连接</span>
+                </a>
+              </div>
+              <div class="connection-step">
+                <div id="usb-arrow" class="usbarrow">
+                  <div class="side"></div>
+                </div>
+                <div id="wifi-arrow"  class="wifiarrow hiddenElement">
+                  <div class="side"></div>
+                </div>
+                <li id="step-one" data-l10n-id="usb-step-one"></li>
+                <li id="step-two" data-l10n-id="usb-step-two"></li>
+                <li id="step-three" data-l10n-id="usb-step-three"></li>
+                <textarea id="wifi-connection-code-input" class="wifi-connection-code-content hiddenElement" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></textarea>
+                <div id="wifi-connect-button" class="button hiddenElement" href="javascript: void(0);" data-l10n-id="wifi-connect"></div>
+              </div>
             </section>
           </section>
           <section id="summary-view" class="view" hidden>
