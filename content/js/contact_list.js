@@ -592,7 +592,7 @@ var ContactList = (function() {
         return;
       }
 
-      $id('selectAll-contacts').dataset.checked = false;
+//      $id('selectAll-contacts').dataset.checked = false;
       var existingContact = getContact(contact.id);
       groupedList.remove(existingContact);
       groupedList.add(contact);
@@ -609,10 +609,10 @@ var ContactList = (function() {
         }
       }
 
-      var item = $id('contact-' + contact.id);
+/*      var item = $id('contact-' + contact.id);
       if (item) {
         selectContactItem(item, true);
-      }
+      }*/
     });
   }
 
