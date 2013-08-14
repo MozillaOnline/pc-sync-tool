@@ -12,6 +12,7 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
     if (DEBUG) {
       this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
       this.console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
+      dump("-*- ADBService FF Overlay: " + s + "\n");
     }
   }
 
@@ -222,17 +223,18 @@ const ADB_FILE_URL = 'resource://ffosassistant-adb';
   let messageHandler = {
     receiveMessage: function(aMessage) {
       var connected = aMessage.json.connected;
+      var serverIP = aMessage.json.serverip;
       debug('Receive message: ' + connected);
       if (connected) {
+        ADBService.startDeviceDetecting(false);
         // Establish a heart-beat socket, and stop usb querying interval
-        heartBeatSocket = navigator.mozTCPSocket.open('localhost', 10010);
+        heartBeatSocket = navigator.mozTCPSocket.open(serverIP, 10010);
         heartBeatSocket.onclose = function onclose_socket() {
           // Restart usb querying interval
           if (isDisabled == false) {
             ADBService.startDeviceDetecting(true);
           }
         };
-        ADBService.startDeviceDetecting(false);
       }
     }
   };

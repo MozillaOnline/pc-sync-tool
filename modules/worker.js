@@ -192,7 +192,8 @@ function setConnected(newState) {
     postMessage({
       cmd: 'statechange',
       connected: connected,
-      device: device
+      device: device,
+      serverip: 'localhost'
     });
   }
 }

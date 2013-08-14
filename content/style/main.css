@@ -163,21 +163,137 @@ input[type="url"], textarea {
 
 #user-guide {
   height: 40rem;
-  background: url("images/landing.png") no-repeat  center  10rem transparent;
 }
-
-#user-guide p {
-  padding: 1rem 3rem;
-  text-align: center;
-}
-
-#user-guide div {
+.connection-title {
   padding: 1rem 3rem;
   text-align: center;
   font-size: 2rem;
 }
 
+.connection-button {
+  height: 17rem;
+  text-align: center;
+}
 
+#usb-connection-button{
+  background: url("images/usb.png") no-repeat center center transparent;
+  float: left;
+  height: 15rem;
+  width: 15rem;
+  text-align: center;
+  vertical-align: text-bottom;
+  padding: 5px;
+  margin-left: 20rem;
+  margin-right: 10px;
+  background-color: #F4F4F4;
+}
+
+#usb-connection-button:hover{
+  background-color: #E0F9FF;
+}
+
+#usb-connection-button span{
+  margin-left: -27px;
+  margin-top: 130px;
+  position: absolute;
+}
+
+#wifi-connection-button{
+  background: url("images/wireless.png") no-repeat center center transparent;
+  float: left;
+  height: 15rem;
+  width: 15rem;
+  text-align: center;
+  vertical-align: text-bottom;
+  padding: 5px;
+  background-color: #F4F4F4;
+}
+
+#wifi-connection-button:hover{
+  background-color: #E0F9FF;
+}
+
+#wifi-connection-button span{
+  margin-left: -27px;
+  margin-top: 130px;
+  position: absolute;
+}
+
+.connection-step{
+  background-color: #F4F4F4;
+  height: 16rem;
+  text-align: center;
+  margin-right: 150px;
+  margin-left: 110px;
+  margin-top: 15px;
+}
+
+.connection-step li{
+  text-align: left;
+  padding-left: 90px;
+  padding-top: 5px;
+  list-style: none outside none;
+}
+
+.wifi-connection-code-content{
+  height: 35px;
+  width: 22rem;
+  float: left;
+  margin-left: 90px;
+  margin-top: 10px;
+}
+
+#wifi-connect-button {
+  height: 2rem;
+  width: 4rem;
+  float: left;
+  font-size: 15px;
+  margin-left: 15px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.connection-step .usbarrow{
+  border-bottom: 1px solid #CACACA;
+  bottom: 10px;
+  height: 10px;
+  left: 165px;
+  overflow: hidden;
+  position: relative;
+  width: 15px;
+  transform: rotate(112deg);
+}
+.connection-step .usbarrow .side{
+  background-color: #F4F4F4;
+  border-left: 1px solid #CACACA;
+  height: 20px;
+  left: 0;
+  position: absolute;
+  top: 3px;
+  transform: rotate(45deg);
+  width: 20px;
+}
+
+.connection-step .wifiarrow{
+  border-bottom: 1px solid #CACACA;
+  bottom: 10px;
+  height: 10px;
+  left: 330px;
+  overflow: hidden;
+  position: relative;
+  width: 15px;
+  transform: rotate(112deg);
+}
+.connection-step .wifiarrow .side{
+  background-color: #F4F4F4;
+  border-left: 1px solid #CACACA;
+  height: 20px;
+  left: 0;
+  position: absolute;
+  top: 3px;
+  transform: rotate(45deg);
+  width: 20px;
+}
 
 /****** sidebar *******/
 .sidebar {

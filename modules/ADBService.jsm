@@ -71,6 +71,13 @@ let messageReceiver = {
 
     var self = this;
     switch (aMessage.name) {
+    case 'ADBService:wifiConnected':
+      // This message is sync
+      return ADBService.startDeviceDetecting(false);
+    case 'ADBService:wifiUnconnected':
+      // This message is sync
+
+      return ADBService.startDeviceDetecting(true);
     case 'ADBService:connected':
       // This message is sync
       return connected;
@@ -91,6 +98,7 @@ let messageReceiver = {
       });
       break;
     }
+    return null;
   },
 
   handleWorkerMessage: function msgRev_handleWorkerMessage(msg) {
@@ -101,7 +109,8 @@ let messageReceiver = {
       connected = msg.connected;
       ffosDeviceName = msg.device;
       ppmm.broadcastAsyncMessage('ADBService:statechange', {
-        connected: connected
+        connected: connected,
+        serverip: msg.serverip
       });
       break;
     default:
@@ -118,7 +127,7 @@ let messageReceiver = {
   }
 };
 
-const messages = ['ADBService:connected', 'ADBService:ffosDeviceName', 'ADBService:RunCmd'];
+const messages = ['ADBService:connected', 'ADBService:ffosDeviceName', 'ADBService:RunCmd', 'ADBService:wifiConnected', 'ADBService:wifiUnconnected'];
 messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });

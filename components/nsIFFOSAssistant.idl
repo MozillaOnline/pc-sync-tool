@@ -16,6 +16,8 @@ interface nsIFFOSAssistant : nsISupports
    */
   readonly attribute jsval adbffosDeviceName;
 
+  readonly attribute boolean isWifiConnect;
+
   /**
    * Get the port listened by the Driver Manager.
    * It should be great than 1024, or the Driver Manager failed to start.
@@ -90,6 +92,8 @@ interface nsIFFOSAssistant : nsISupports
   void startDriverManager();
 
   void setAddonInfo(in boolean isRun);
+
+  void wifiConnected(in boolean isConnected);
 
   /**
    * These functions related to EventTarget are temporary hacks:

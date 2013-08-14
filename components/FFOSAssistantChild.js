@@ -234,6 +234,24 @@ FFOSAssistant.prototype = {
     }
   },
 
+  wifiConnected: function(isConnected) {
+    // Write firefox path to the ini file
+    try {
+      if (isConnected) {
+        this._isWifiConnect = true;
+        cpmm.sendSyncMessage('ADBService:wifiConnected')[0];
+      } else {
+        this._isWifiConnect = false;
+        cpmm.sendSyncMessage('ADBService:wifiUnconnected')[0];
+      }
+    } catch (e) {
+      debug(e);
+    }
+  },
+
+  get isWifiConnect() {
+    return this._isWifiConnect;
+  },
   /**
    * If it's an async command, a request object will be returned.
    */
