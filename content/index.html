@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/contact.css">
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/sms.css">
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/music.css">
+  <link rel="stylesheet" href="chrome://ffosassistant/content/style/gallery.css">
   <link rel="resource" type="application/l10n" href="chrome://ffosassistant/content/locales/locales.ini">
   <link REL="shortcut icon" HREF="chrome://ffosassistant/content/style/icons/favicon.ico">
   <script type="text/javascript" src="chrome://ffosassistant/content/js/l10n.js"></script>
@@ -23,6 +24,7 @@
   <script type="text/javascript" src="chrome://ffosassistant/content/js/contact_list.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/sms_list.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/music_list.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/gallery.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/form.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/main.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/view.js"></script>
@@ -298,15 +300,30 @@
               </div>
             </div>
             <div id="music-list-container">
-              <!--<div class="music-header music-list-item">
-                <label class="unchecked"></label>
-                <div class="music-names item"><label>诺雅芳周</label></div>
-                <div class="music-singer item"><label>五月天</label></div>
-                <div class="music-album item"><label>第二人生</label></div>
-                <div class="music-timespan item"><label>5:15</label></div>
-                <div class="music-type item"><label>mp3</label></div>
-                <div class="music-size item"><label>13.14MB</label></div>
-              </div>-->
+            </div>
+          </section>
+          <section id ="gallery-view" class="view" hidden="true">
+            <h1 class="title" data-l10n-id="gallery">相册图片</h1>
+            <div id="modal-container">
+              <div class="gallery-ops-box">
+                <div id="selectAll-pictures" data-disabled="false" data-checked="false" class="gallery-op">
+                  <label data-l10n-id="selectall">全选</label>
+                </div>
+                <div id="remove-pictures" data-disabled="true" class="gallery-op">
+                  <label data-l10n-id="delete">删除</label>
+                </div>
+                <div id="import-pictures" class="gallery-op">
+                  <label data-l10n-id="import">导入</label>
+                </div>
+                <div id="export-pictures" data-disabled="true" class="gallery-op">
+                  <label data-l10n-id="export">导出</label>
+                </div>
+                <div id="refresh-pictures" class="gallery-op">
+                  <label data-l10n-id="refresh">刷新</label>
+                </div>
+              </div>
+              <div id="picture-list-container">
+              </div>
             </div>
           </section>
         </div>

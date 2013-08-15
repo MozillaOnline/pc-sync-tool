@@ -67,6 +67,11 @@ interface nsIFFOSAssistant : nsISupports
   void selectMultiFilesFromDisk(in jsval callback);
 
   /**
+   *
+   */
+  void getDirInTmp(in jsval folderName, in jsval callback);
+
+  /**
    * Run command from local host
    */
   nsIDOMDOMRequest runCmd(in DOMString cmd);

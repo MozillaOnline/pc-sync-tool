@@ -127,7 +127,7 @@ var CMD = (function() {
 
     /***** Picture commands ******/
     Pictures: {
-      getAllPicsInfo:  createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getAllPicsInfo)
+      getAllPicsInfo:  createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getAllPicturesInfo)
     },
 
     /***** Videos commands ******/

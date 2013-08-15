@@ -239,6 +239,13 @@ var FFOSAssistant = (function() {
     });
   }
 
+  function getAndShowGallery () {
+    CMD.Pictures.getAllPicsInfo(function onresponse_getAllPicturesInfo(message) {
+      var dataJSON = JSON.parse(message.data);
+      Gallery.init(dataJSON);
+    });
+  }
+
   function connectToDevice(serverIP) {
     var timeout = null;
 
@@ -307,6 +314,7 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSThreads);
     ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
     ViewManager.addViewEventListener('music-view', 'firstshow', getAndShowAllMusics);
+    ViewManager.addViewEventListener('gallery-view', 'firstshow', getAndShowGallery);
   }
 
   window.addEventListener('load', function window_onload(event) {
@@ -344,6 +352,7 @@ var FFOSAssistant = (function() {
     getAndShowAllContacts: getAndShowAllContacts,
     getAndShowAllSMSThreads: getAndShowAllSMSThreads,
     getAndShowAllMusics : getAndShowAllMusics,
+    getAndShowGallery: getAndShowGallery,
     updateSMSThreads: updateSMSThreads
   };
 })();

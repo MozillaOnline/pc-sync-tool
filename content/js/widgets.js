@@ -1205,3 +1205,225 @@ ImportFilesDialog.prototype = {
     this.options.onclose();
   }
 };
+
+function FilesOPDialog(options) {
+  this.initailize(options);
+}
+
+FilesOPDialog.prototype = {
+  initailize: function(options) {
+    this.options = extend({
+      onclose: emptyFunction,
+      title_l10n_id : '',
+      processbar_l10n_id : ''
+    }, options);
+
+    this._modalElement = null;
+    this._mask = null;
+    this._build();
+  },
+
+  closeAll: function() {
+    var evt = document.createEvent('Event');
+    evt.initEvent('FilesOPDialog:show', true, true);
+    document.dispatchEvent(evt);
+  },
+
+  _build: function() {
+    this._mask = document.createElement('div');
+    this._mask.className = 'modal-mask';
+    document.body.appendChild(this._mask);
+
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    var html = '';
+    html += '<div class="modal-container">';
+    html += '<div class="select-multi-files-dialog">';
+    html += '  <header class="select-multi-files-dialog-header">';
+    html += '    <div class="select-multi-files-dialog-header-title"';
+    if (this.options.title_l10n_id != '') {
+      html += ' data-l10n-id="' + this.options.title_l10n_id + '"';
+    }
+    html += '    ></div>';
+    html += '    <div class="select-multi-files-dialog-header-x"></div>';
+    html += '  </header>';
+    html += '  <div class="select-multi-files-dialog-body">';
+    html += '    <div class="processbar-prompt"><span';
+    if (this.options.processbar_l10n_id != '') {
+      html += ' data-l10n-id="' + this.options.processbar_l10n_id + '"';
+    }
+    html += '    ></span>';
+    html += '      <div><span id="files-indicator"></span></div>';
+    html += '    </div>';
+    html += '    <div id="processbar-container" class="processbar-container">';
+    html += '      <div id="processbar" class="processbar"></div>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '  <footer class="select-multi-files-dialog-footer">';
+    html += '    <div class="select-multi-files-dialog-footer-button-ctn">';
+    html += '      <button data-l10n-id="cancel" class="button button-cancel"></button>';
+    html += '    </div>';
+    html += '  </footer>';
+    html += '</div></div>';
+
+    this._modalElement.innerHTML = html;
+    document.body.appendChild(this._modalElement);
+    this._adjustModalPosition();
+    this._makeDialogCancelable();
+
+    // Translate l10n value
+    navigator.mozL10n.translate(this._modalElement);
+
+    // Only one modal dialog is shown at a time.
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      // Show a popup dialog at a time.
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+
+      self.close();
+    }
+    document.addEventListener('FilesOPDialog:show', this._onModalDialogShown);
+
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('FilesOPDialog:show');
+
+    // Tweak modal dialog position when resizing.
+    this._onWindowResize = function(event) {
+      self._adjustModalPosition();
+    };
+    window.addEventListener('resize', this._onWindowResize);
+  },
+
+  _makeDialogCancelable: function() {
+   var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
+   closeBtn.hidden = false;
+   closeBtn.addEventListener('click', this.close.bind(this));
+
+   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+   cancelBtn.hidden = false;
+   cancelBtn.addEventListener('click', this.close.bind(this));
+
+   var self = this;
+  },
+
+  _adjustModalPosition: function() {
+    var container = $expr('.modal-container', this._modalElement)[0];
+    var documentHeight = document.documentElement.clientHeight;
+    var containerHeight = container.clientHeight;
+    container.style.top = (documentHeight > containerHeight ?
+      (documentHeight - containerHeight) / 2 : 0) + 'px';
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  },
+
+  close: function() {
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+    document.removeEventListener('FilesOPDialog:show', this._onModalDialogShown);
+    window.removeEventListener('resize', this._onWindowResize)
+    this.options.onclose();
+  }
+};
+
+function ShowPicDialog(options) {
+  this.initailize(options);
+}
+
+ShowPicDialog.prototype = {
+  initailize: function(options) {
+    this.options = extend({
+      onclose: emptyFunction,
+      picUrl: null,
+      showPreviousPic: emptyFunction,
+      showNextPic: emptyFunction
+    }, options);
+
+    if (!this.options.picUrl) {
+      alert("selected picture doesn't exist");
+      return;
+    }
+    this._modalElement = null;
+    this._mask = null;
+    this._build();
+  },
+
+  closeAll: function() {
+    var evt = document.createEvent('Event');
+    evt.initEvent('ShowPicDialog:show', true, true);
+    document.dispatchEvent(evt);
+  },
+
+  _build: function() {
+    this._mask = document.createElement('div');
+    this._mask.className = 'mask';
+    var container = document.getElementById('modal-container');
+    container.appendChild(this._mask);
+
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'dialog';
+    this._modalElement.innerHTML = '<div class="bar">'
+      + '<div class="closeX"></div></div>'
+      + '<div class="column-left">'
+      + '<div id="gallery-left-arrow" class="gallery-left-arrow"></div>'
+      + '</div>'
+      + '<div class="column-middle">'
+      + '<img id="pic-content" src='
+      + this.options.picUrl
+      + '></div>'
+      + '<div class="column-right">'
+      + '<div id="gallery-right-arrow" class="gallery-right-arrow"></div>'
+      + '</div>';
+
+    container.appendChild(this._modalElement);
+    this._makeDialogCancelable();
+
+    $id('gallery-left-arrow').onclick = this.options.showPreviousPic;
+    $id('gallery-right-arrow').onclick = this.options.showNextPic;
+
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+
+      self.close();
+    }
+    document.addEventListener('ShowPicDialog:show', this._onModalDialogShown);
+
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('ShowPicDialog:show');
+  },
+
+  _makeDialogCancelable: function() {
+   var closeBtn = $expr('.closeX', this._modalElement)[0];
+   closeBtn.hidden = false;
+   closeBtn.addEventListener('click', this.close.bind(this));
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  },
+
+  close: function() {
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+    document.removeEventListener('ShowPicDialog:show', this._onModalDialogShown);
+    this.options.onclose();
+  }
+};

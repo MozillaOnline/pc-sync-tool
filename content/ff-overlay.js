@@ -17,6 +17,7 @@ function  debug(s) {
   
 (function() {
   var isDisabled = false;
+
   var modules = {};
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
 

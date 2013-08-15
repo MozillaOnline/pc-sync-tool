@@ -384,6 +384,11 @@ FFOSAssistant.prototype = {
     });
   },
 
+  getDirInTmp: function (path, callback) {
+    var file = FileUtils.getDir("ProfD", path, false);
+    callback(file.path);
+  },
+
   runCmd: function(cmd) {
     return this._callMessage('ADBService', 'RunCmd', cmd);
   },
