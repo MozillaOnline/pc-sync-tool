@@ -13,7 +13,7 @@ var Gallery = (function() {
   // Modify addonDir to the place on your PC
   // and set debug = 1 for debugging in html with firebug
   var addonDir = '/home/tiger/work/ffosassistant/'
-  var debug = 0;
+  var debug = 1;
 
   if (debug) {
     var prePath = '';
@@ -71,6 +71,7 @@ var Gallery = (function() {
     var index = 0;
     setTimeout(function getGalleryGoups() {
       if (index == dataPool.groupedData.length) {
+        opStateChanged();
         return;
       }
 
@@ -99,6 +100,7 @@ var Gallery = (function() {
       groupItem.appendChild(groupBody);
       groupItem.dataset.length = group.data.length;
       groupItem.dataset.checked = false;
+      groupItem.dataset.groupId = group.id;
 
       var position = 0;
       setTimeout(function getGoupPictures() {
@@ -265,6 +267,14 @@ var Gallery = (function() {
     return group;
   }
 
+  function removeGroup(group) {
+    for (var i =0; i < dataPool.groupedData.length; i++) {
+      if (dataPool.groupedData[i].id == group.id) {
+        dataPool.groupedData.splice(i, 1);
+        break;
+      }
+    }
+  }
   function showPreviousPic() {
     var pic = $id('pic-content');
 
@@ -387,7 +397,7 @@ var Gallery = (function() {
       req.onsuccess = function(e) {
         filesToBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(fileIndex * 100 / items.length);
+        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
         pb.style.width = ratio + '%';
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
@@ -402,17 +412,9 @@ var Gallery = (function() {
             alert(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
-          filesToBeRemoved.forEach(function(file) {
-            var picDiv = $expr('.pic-item-div[data-pic-url="' + file + '"]')[0];
-            if (picDiv) {
-              var parent = picDiv.parentNode;
-              parent.removeChild(picDiv);
-              if ($expr('.pic-item-div', parent).length == 0) {
-                var group = parent.parentNode;
-                getListContainer().removeChild(group);
-              }
-            }
-          });
+          removePicturesProcess(filesToBeRemoved);
+
+          opStateChanged();
         } else {
           removePicture();
         }
@@ -421,6 +423,10 @@ var Gallery = (function() {
       req.onerror = function (e) {
         filesCanNotBeRemoved.push(items[fileIndex]);
         fileIndex++;
+        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
+        pb.style.width = ratio + '%';
+        filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
+
         if (fileIndex == items.length) {
           clearInterval(timer);
           pb.style.width = '100%';
@@ -431,22 +437,42 @@ var Gallery = (function() {
             //TODO: tell user some files can't be removed
             alert(filesCanNotBeRemoved.length + " files can't be removed");
           }
-          filesToBeRemoved.forEach(function(file) {
-            var picDiv = $expr('.pic-item-div[data-pic-url="' + file + '"]')[0];
-            if (picDiv) {
-              var parent = picDiv.parentNode;
-              parent.removeChild(picDiv);
-              if ($expr('.pic-item-div', parent).length == 0) {
-                var group = parent.parentNode;
-                getListContainer().removeChild(group);
-              }
-            }
-          });
+
+          removePicturesProcess(filesToBeRemoved);
+
+          opStateChanged();
         } else {
           removePicture();
         }
       };
     }, 0);
+  }
+
+  function removePicturesProcess(filesToBeRemoved) {
+    for (var i = 0; i < filesToBeRemoved.length; i++) {
+      var picDiv = $expr('.pic-item-div[data-pic-url="' + filesToBeRemoved[i] + '"]')[0];
+      if (picDiv) {
+        var groupBody = picDiv.parentNode;
+        groupBody.removeChild(picDiv);
+        var group = groupBody.parentNode;
+        var groupId = group.dataset.groupId;
+        var groupData = findGroupById(groupId);
+        if (groupData) {
+          for (var j = 0; j < groupData.data.length; j++) {
+            if (groupData.data[j].name  == picDiv.dataset.picUrl) {
+              groupData.data.splice(j ,1);
+              if (groupData.data.length == 0) {
+                removeGroup(groupData);
+              }
+              break;
+            }
+          }
+        }
+        if ($expr('.pic-item-div', groupBody).length == 0) {
+          getListContainer().removeChild(group);
+        }
+      }
+    }
   }
 
   function importPictures() {
@@ -505,7 +531,6 @@ var Gallery = (function() {
         }
       }
     });
-    selectAllPictures(false);
   }
 
   window.addEventListener('load', function wnd_onload(event) {

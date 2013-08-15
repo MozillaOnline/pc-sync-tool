@@ -103,6 +103,7 @@
 .pictures-group {
   margin-left: 1.8rem;
   height: 12rem;
+  clear: both;
 }
 
 .pictures-group .title {
