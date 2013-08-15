@@ -10,8 +10,11 @@ var Gallery = (function() {
   // directory for caching pitures
   var galleryCachedDir = 'gallery_tmp';
 
-  //switch between addon and html debugging
-  let debug = 1;
+  // Modify addonDir to the place on your PC
+  // and set debug = 1 for debugging in html with firebug
+  var addonDir = '/home/tiger/work/ffosassistant/'
+  var debug = 0;
+
   if (debug) {
     var prePath = '';
   } else {
@@ -136,7 +139,11 @@ var Gallery = (function() {
         }
 
         navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-          var cmd = 'adb pull "' + group.data[position].name + '" "' + path + group.data[position].name + '"';
+          if (debug) {
+            var cmd = 'adb pull "' + group.data[position].name + '" "' + addonDir + 'content/' + galleryCachedDir + group.data[position].name + '"';
+          } else {
+            var cmd = 'adb pull "' + group.data[position].name + '" "' + path + group.data[position].name + '"';
+          }
           var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
           req.onsuccess = function on_success(result) {
@@ -540,31 +547,111 @@ var Gallery = (function() {
       if (this.dataset.disabled == 'true') {
         return;
       }
-      var pictures = $expr('#picture-list-container .pic-item-div[data-checked="true"]');
-      navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
-        if (status) {
-          setTimeout(function() {
-            var length = pictures.length;
-            var index = 0;
 
-            function traverseList() {
-              if (index == length) {
-                return;
-              }
-              var cmd = 'adb pull "' + pictures[index].dataset.picUrl + '" "' + decodeURI(dir) + pictures[index].dataset.picUrl + '"';
-              var req = navigator.mozFFOSAssistant.runCmd(cmd);
-              req.onsuccess = req.onerror= function(e) {
-                index++;
-                setTimeout(traverseList, 0);
-              }
-            }
-            traverseList();
-          }, 0);
+      var pictures = $expr('#picture-list-container .pic-item-div[data-checked="true"]');
+
+      if (pictures.length <= 0 ) {
+        return;
+      }
+
+      navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
+        var filesToBeExported = [];
+        var filesCanNotBeExported = [];
+
+        var fileIndex = 0;
+        var oldFileIndex = 0;
+        var steps = 0;
+
+        var dialog = new FilesOPDialog({
+          title_l10n_id: 'export-pictures-dialog-header',
+          processbar_l10n_id: 'processbar-export-pictures-promot'
+        });
+
+        var filesIndicator = $id('files-indicator');
+        var pb = $id('processbar');
+        var ratio = 0;
+        filesIndicator.innerHTML = '0/' + pictures.length;
+
+        //processbar range for one file
+        var range = Math.round(100 / pictures.length);
+        var step = range / 50;
+        var bTimer = false;
+
+        var os = (function() {
+          var oscpu = navigator.oscpu.toLowerCase();
+          return {
+            isWindows: /windows/.test(oscpu),
+            isLinux: /linux/.test(oscpu),
+            isMac: /mac/.test(oscpu)
+          };
+        })();
+
+        var newDir = dir;
+        if (os.isWindows) {
+          newDir = dir.substring(1, dir.length);
         }
+
+        setTimeout(function exportPicture() {
+          var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + pictures[fileIndex].dataset.picUrl + '"';
+
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
+          if (!bTimer) {
+            bTimer = true;
+            var timer = setInterval(function() {
+              if (oldFileIndex == fileIndex) {
+                if (steps < 50) {
+                  steps++;
+                  ratio+= step;
+                  pb.style.width = ratio + '%';
+                }
+              } else {
+                oldFileIndex = fileIndex;
+                steps = 0;
+              }
+            }, 100);
+          }
+
+          req.onsuccess = function(e) {
+            filesToBeExported.push(pictures[fileIndex]);
+            fileIndex++;
+            ratio = Math.round(fileIndex * 100 / pictures.length);
+            pb.style.width = ratio + '%';
+            filesIndicator.innerHTML = filesToBeExported.length + '/' + pictures.length;
+
+            if (fileIndex == pictures.length) {
+              clearInterval(timer);
+              pb.style.width = '100%';
+              dialog.closeAll();
+
+              if (filesCanNotBeExported.length > 0) {
+                //TODO: tell user some files can't be exported
+                alert(filesCanNotBeExported.length + " files can't be exported");
+              }
+            } else {
+              exportPicture();
+            }
+          };
+
+          req.onerror = function (e) {
+            filesCanNotBeExported.push(items[fileIndex]);
+            fileIndex++;
+            if (fileIndex == items.length) {
+              clearInterval(timer);
+              pb.style.width = '100%';
+              dialog.closeAll();
+
+              if (filesCanNotBeExported.length > 0) {
+                //TODO: tell user some files can't be exported
+                alert(filesCanNotBeExported.length + " files can't be exported");
+              }
+            } else {
+              exportPicture();
+            }
+          };
+        }, 0);
       }, {
         title: 'Choose where to save'
       });
-    selectAllPictures(false);
     });
   });
 
