@@ -352,7 +352,19 @@ var MusicList = (function() {
               if (index == length) {
                 return;
               }
-              var cmd = 'adb pull "' + musics[index].dataset.id + '" "' + decodeURI(dir) + '/'
+              var os = (function() {
+                var oscpu = navigator.oscpu.toLowerCase();
+                return {
+                  isWindows: /windows/.test(oscpu),
+                  isLinux: /linux/.test(oscpu),
+                  isMac: /mac/.test(oscpu)
+                };
+              })();
+              var newDir = dir;
+              if (os.isWindows) {
+                newDir = dir.substring(1, dir.length);
+              }
+              var cmd = 'adb pull "' + musics[index].dataset.id + '" "' + decodeURI(newDir) + '/'
                         + musics[index].dataset.name + '.' + musics[index].dataset.type + '"';
               var req = navigator.mozFFOSAssistant.runCmd(cmd);
               req.onsuccess = req.onerror= function(e) {
