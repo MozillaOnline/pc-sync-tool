@@ -5,17 +5,17 @@
 const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
 const ADB_FILE_URL = 'resource://ffosassistant-adb';
 
-(function() {
-  let DEBUG = 1;
+let DEBUG = 1;
 
-  function  debug(s) {
-    if (DEBUG) {
-      this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-      this.console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
-      dump("-*- ADBService FF Overlay: " + s + "\n");
-    }
+function  debug(s) {
+  if (DEBUG) {
+    this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+    this.console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
+    dump("-*- ADBService FF Overlay: " + s + "\n");
   }
-
+}
+  
+(function() {
   var isDisabled = false;
   var modules = {};
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
