@@ -20,6 +20,7 @@ var FFOSAssistant = (function() {
     if (handlerUsbConnection) {
       $id('usb-connection-button').removeEventListener('click', handlerUsbConnection,false);
     }
+
     handlerUsbConnection = function () {
       $id('wifi-arrow').classList.add('hiddenElement');
       $id('usb-arrow').classList.remove('hiddenElement');
@@ -29,11 +30,13 @@ var FFOSAssistant = (function() {
       $id('step-two').textContent = _('usb-step-two');
       $id('step-three').textContent = _('usb-step-three');
     };
+
     $id('usb-connection-button').addEventListener ('click', handlerUsbConnection,false);
 
     if (handlerWifiConnection) {
       $id('wifi-connection-button').removeEventListener('click', handlerWifiConnection,false);
     }
+
     handlerWifiConnection = function () {
       $id('usb-arrow').classList.add('hiddenElement');
       $id('wifi-arrow').classList.remove('hiddenElement');
@@ -43,32 +46,35 @@ var FFOSAssistant = (function() {
       $id('step-two').textContent = _('wifi-step-two');
       $id('step-three').textContent = _('wifi-step-three');
     };
+
     $id('wifi-connection-button').addEventListener ('click', handlerWifiConnection,false);
 
     if (handlerWifiConnect) {
       $id('wifi-connect-button').removeEventListener('click', handlerWifiConnect,false);
     }
+
     handlerWifiConnect = function () {
       var wifiCode = $id('wifi-connection-code-input');
-      if(wifiCode && wifiCode.value && wifiCode.value.length > 0){
-	var ip = '';
-	var dataArray = new ArrayBuffer(4);
-	var int8Array = new Uint8Array(dataArray);
-	var int32Array = new Uint32Array(dataArray);
-	int32Array[0] = parseInt(wifiCode.value);
-	ip = int8Array[0].toString() + '.' + int8Array[1].toString() + '.' + int8Array[2].toString() + '.' + int8Array[3].toString();
+      if (wifiCode && wifiCode.value && wifiCode.value.length > 0) {
+        var ip = '';
+        var dataArray = new ArrayBuffer(4);
+        var int8Array = new Uint8Array(dataArray);
+        var int32Array = new Uint32Array(dataArray);
+        int32Array[0] = parseInt(wifiCode.value);
+        ip = int8Array[0].toString() + '.' + int8Array[1].toString() + '.' + int8Array[2].toString() + '.' + int8Array[3].toString();
         var elem = $id('mgmt-list');
         $expr('.header', elem)[0].textContent = wifiCode.value;
-	if (navigator.mozFFOSAssistant) {
-	  heartBeatSocket = navigator.mozTCPSocket.open(ip, 10010);
-	  heartBeatSocket.onclose = function onclose_socket() {
-	    navigator.mozFFOSAssistant.wifiConnected(false);
-	  };
-	  heartBeatSocket.onopen = function onclose_socket() {
-	    navigator.mozFFOSAssistant.wifiConnected(true);
-	  };
-	}
-	connectToDevice(ip);
+
+        if (navigator.mozFFOSAssistant) {
+          heartBeatSocket = navigator.mozTCPSocket.open(ip, 10010);
+          heartBeatSocket.onclose = function onclose_socket() {
+            navigator.mozFFOSAssistant.wifiConnected(false);
+          };
+          heartBeatSocket.onopen = function onclose_socket() {
+            navigator.mozFFOSAssistant.wifiConnected(true);
+          };
+        }
+        connectToDevice(ip);
       }
     };
     $id('wifi-connect-button').addEventListener ('click', handlerWifiConnect,false);
@@ -260,8 +266,8 @@ var FFOSAssistant = (function() {
       onenable: function onenable() {
         // FIXME, still not finish binding data listening event in server socket, displaying info. delay 
         timeout = window.setTimeout(function imedb_cacheTimeout() {
-	  showSummaryView(serverIP);
-	}, 1000);
+          showSummaryView(serverIP);
+        }, 1000);
       },
       ondisable: function ondisable() {
         log('USB Socket is closed');
@@ -300,7 +306,7 @@ var FFOSAssistant = (function() {
       };
 
       if (navigator.mozFFOSAssistant.adbConnected === true) {
-	var devicename = navigator.mozFFOSAssistant.adbffosDeviceName;
+        var devicename = navigator.mozFFOSAssistant.adbffosDeviceName;
         var elem = $id('mgmt-list');
         $expr('.header', elem)[0].textContent = devicename;
         connectToDevice('localhost');
