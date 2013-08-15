@@ -267,7 +267,7 @@ var MusicList = (function() {
         var step = range / 50;
         var bTimer = false;
          for (var index = 0; index < musics.length; index++) {
-          var cmd = 'adb push ' + musics[index] + ' /sdcard/Music/';
+          var cmd = 'adb push "' + musics[index] + '" /sdcard/Music/';
           var req = navigator.mozFFOSAssistant.runCmd(cmd);
           if (!bTimer) {
             bTimer = true;
@@ -352,21 +352,21 @@ var MusicList = (function() {
               if (index == length) {
                 return;
               }
-              var cmd = 'adb pull ' + musics[index].dataset.id + ' ' + decodeURI(dir) + '/'
-                        + musics[index].dataset.name + '.' + musics[index].dataset.type;
+              var cmd = 'adb pull "' + musics[index].dataset.id + '" "' + decodeURI(dir) + '/'
+                        + musics[index].dataset.name + '.' + musics[index].dataset.type + '"';
               var req = navigator.mozFFOSAssistant.runCmd(cmd);
               req.onsuccess = req.onerror= function(e) {
                 index++;
                 setTimeout(traverseList, 0);
               }
-            }
+            };
             traverseList();
           }, 0);
         }
       }, {
         title: 'Choose where to save'
       });
-    selectAllMusics(false);
+    //selectAllMusics(false);
     });
   });
 
