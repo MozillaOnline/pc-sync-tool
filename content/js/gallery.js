@@ -480,7 +480,14 @@ var Gallery = (function() {
     navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
       data = data.substr(0,data.length-1);
       var pictures = data.split(';');
-      var importedNum = 0;
+
+      if (pictures.length <= 0) {
+        return;
+      }
+
+      var filesToBeImported = [];
+      var filesCanNotBeImported = [];
+      var fileIndex = 0;
       var oldFileIndex = 0;
       var steps = 0;
 
@@ -494,43 +501,73 @@ var Gallery = (function() {
       var ratio = 0;
       filesIndicator.innerHTML = '0/' + pictures.length;
 
-      if (pictures.length > 0) {
-        var range = Math.round(100 / pictures.length);
-        var step = range / 50;
-        var bTimer = false;
-         for (var index = 0; index < pictures.length; index++) {
-          var cmd = 'adb push "' + pictures[index] + '" /sdcard/DCIM/';
-          var req = navigator.mozFFOSAssistant.runCmd(cmd);
-          if (!bTimer) {
-            bTimer = true;
-            var timer = setInterval(function() {
-              if (oldFileIndex == importedNum) {
-                if (steps < 50) {
-                  steps++;
-                  ratio+= step;
-                  pb.style.width = ratio + '%';
-                }
-              } else {
-                oldFileIndex = importedNum;
-                steps = 0;
-              }
-            },100);
-          }
+      var range = Math.round(100 / pictures.length);
+      var step = range / 50;
+      var bTimer = false;
 
-          req.onsuccess = req.onerror= function(e) {
-            importedNum++;
-            ratio = Math.round(importedNum * 100 / pictures.length);
-            pb.style.width = ratio + '%';
-            filesIndicator.innerHTML = importedNum + '/' + pictures.length;
-            if (importedNum == pictures.length) {
-              clearInterval(timer);
-              pb.style.width.innerHTML = '100%';
-              dialog.closeAll();
-              FFOSAssistant.getAndShowGallery();
+      setTimeout(function importPicture() {
+        var cmd = 'adb push "' + pictures[fileIndex] + '" /sdcard/DCIM/';
+        var req = navigator.mozFFOSAssistant.runCmd(cmd);
+
+        if (!bTimer) {
+          bTimer = true;
+          var timer = setInterval(function() {
+            if (oldFileIndex == fileIndex) {
+              if (steps < 50) {
+                steps++;
+                ratio += step;
+                pb.style.width = ratio + '%';
+              }
+            } else {
+              oldFileIndex = fileIndex;
+              steps = 0;
             }
-          };
+          }, 100);
         }
-      }
+
+        req.onsuccess = function(e) {
+          filesToBeImported.push(pictures[fileIndex]);
+          fileIndex++;
+          ratio = Math.round(filesToBeImported.length * 100 / pictures.length);
+          pb.style.width = ratio + '%';
+          filesIndicator.innerHTML = fileIndex + '/' + pictures.length;
+
+          if (fileIndex == pictures.length) {
+            clearInterval(timer);
+            pb.style.width.innerHTML = '100%';
+            dialog.closeAll();
+
+            if (filesCanNotBeImported.length > 0) {
+              //TODO: tell user some files can't be imported
+              alert(filesCanNotBeImported.length + " files can't be imported");
+            }
+            //TODO: update imported files insteadof refreshing gallery
+            FFOSAssistant.getAndShowGallery();
+          } else {
+            importPicture();
+          }
+        };
+
+        req.onerror = function (e) {
+          filesCanNotBeImported.push(pictures[fileIndex]);
+          fileIndex++;
+
+          if (fileIndex == pictures.length) {
+            clearInterval(timer);
+            pb.style.width.innerHTML = '100%';
+            dialog.closeAll();
+
+            if (filesCanNotBeImported.length > 0) {
+              //TODO: tell user some files can't be imported
+              alert(filesCanNotBeImported.length + " files can't be imported");
+            }
+            //TODO: update imported files insteadof refreshing gallery
+            FFOSAssistant.getAndShowGallery();
+          } else {
+            importPicture();
+          }
+        };
+      }, 0);
     });
   }
 
@@ -641,7 +678,7 @@ var Gallery = (function() {
             req.onsuccess = function(e) {
               filesToBeExported.push(pictures[fileIndex]);
               fileIndex++;
-              ratio = Math.round(fileIndex * 100 / pictures.length);
+              ratio = Math.round(filesToBeExported.length * 100 / pictures.length);
               pb.style.width = ratio + '%';
               filesIndicator.innerHTML = filesToBeExported.length + '/' + pictures.length;
 
@@ -662,6 +699,7 @@ var Gallery = (function() {
             req.onerror = function (e) {
               filesCanNotBeExported.push(pictures[fileIndex]);
               fileIndex++;
+
               if (fileIndex == pictures.length) {
                 clearInterval(timer);
                 pb.style.width = '100%';
