@@ -275,6 +275,7 @@ var Gallery = (function() {
       }
     }
   }
+
   function showPreviousPic() {
     var pic = $id('pic-content');
 
@@ -555,7 +556,7 @@ var Gallery = (function() {
         files.push(item.dataset.picUrl);
       });
 
-      if (window.confirm(_('delete-musics-confirm', {n: files.length}))) {
+      if (window.confirm(_('delete-pictures-confirm', {n: files.length}))) {
         Gallery.removePictures(files);
       }
     });
