@@ -581,102 +581,104 @@ var Gallery = (function() {
       }
 
       navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
-        var filesToBeExported = [];
-        var filesCanNotBeExported = [];
+        if (status) {
+          var filesToBeExported = [];
+          var filesCanNotBeExported = [];
 
-        var fileIndex = 0;
-        var oldFileIndex = 0;
-        var steps = 0;
+          var fileIndex = 0;
+          var oldFileIndex = 0;
+          var steps = 0;
 
-        var dialog = new FilesOPDialog({
-          title_l10n_id: 'export-pictures-dialog-header',
-          processbar_l10n_id: 'processbar-export-pictures-promot'
-        });
+          var dialog = new FilesOPDialog({
+            title_l10n_id: 'export-pictures-dialog-header',
+            processbar_l10n_id: 'processbar-export-pictures-promot'
+          });
 
-        var filesIndicator = $id('files-indicator');
-        var pb = $id('processbar');
-        var ratio = 0;
-        filesIndicator.innerHTML = '0/' + pictures.length;
+          var filesIndicator = $id('files-indicator');
+          var pb = $id('processbar');
+          var ratio = 0;
+          filesIndicator.innerHTML = '0/' + pictures.length;
 
-        //processbar range for one file
-        var range = Math.round(100 / pictures.length);
-        var step = range / 50;
-        var bTimer = false;
+          //processbar range for one file
+          var range = Math.round(100 / pictures.length);
+          var step = range / 50;
+          var bTimer = false;
 
-        var os = (function() {
-          var oscpu = navigator.oscpu.toLowerCase();
-          return {
-            isWindows: /windows/.test(oscpu),
-            isLinux: /linux/.test(oscpu),
-            isMac: /mac/.test(oscpu)
-          };
-        })();
+          var os = (function() {
+            var oscpu = navigator.oscpu.toLowerCase();
+            return {
+              isWindows: /windows/.test(oscpu),
+              isLinux: /linux/.test(oscpu),
+              isMac: /mac/.test(oscpu)
+            };
+          })();
 
-        var newDir = dir;
-        if (os.isWindows) {
-          newDir = dir.substring(1, dir.length);
-        }
-
-        setTimeout(function exportPicture() {
-          var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + pictures[fileIndex].dataset.picUrl + '"';
-
-          var req = navigator.mozFFOSAssistant.runCmd(cmd);
-          if (!bTimer) {
-            bTimer = true;
-            var timer = setInterval(function() {
-              if (oldFileIndex == fileIndex) {
-                if (steps < 50) {
-                  steps++;
-                  ratio+= step;
-                  pb.style.width = ratio + '%';
-                }
-              } else {
-                oldFileIndex = fileIndex;
-                steps = 0;
-              }
-            }, 100);
+          var newDir = dir;
+          if (os.isWindows) {
+            newDir = dir.substring(1, dir.length);
           }
 
-          req.onsuccess = function(e) {
-            filesToBeExported.push(pictures[fileIndex]);
-            fileIndex++;
-            ratio = Math.round(fileIndex * 100 / pictures.length);
-            pb.style.width = ratio + '%';
-            filesIndicator.innerHTML = filesToBeExported.length + '/' + pictures.length;
+          setTimeout(function exportPicture() {
+            var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + pictures[fileIndex].dataset.picUrl + '"';
 
-            if (fileIndex == pictures.length) {
-              clearInterval(timer);
-              pb.style.width = '100%';
-              dialog.closeAll();
-
-              if (filesCanNotBeExported.length > 0) {
-                //TODO: tell user some files can't be exported
-                alert(filesCanNotBeExported.length + " files can't be exported");
-              }
-            } else {
-              exportPicture();
+            var req = navigator.mozFFOSAssistant.runCmd(cmd);
+            if (!bTimer) {
+              bTimer = true;
+              var timer = setInterval(function() {
+                if (oldFileIndex == fileIndex) {
+                  if (steps < 50) {
+                    steps++;
+                    ratio+= step;
+                    pb.style.width = ratio + '%';
+                  }
+                } else {
+                  oldFileIndex = fileIndex;
+                  steps = 0;
+                }
+              }, 100);
             }
-          };
 
-          req.onerror = function (e) {
-            filesCanNotBeExported.push(items[fileIndex]);
-            fileIndex++;
-            if (fileIndex == items.length) {
-              clearInterval(timer);
-              pb.style.width = '100%';
-              dialog.closeAll();
+            req.onsuccess = function(e) {
+              filesToBeExported.push(pictures[fileIndex]);
+              fileIndex++;
+              ratio = Math.round(fileIndex * 100 / pictures.length);
+              pb.style.width = ratio + '%';
+              filesIndicator.innerHTML = filesToBeExported.length + '/' + pictures.length;
 
-              if (filesCanNotBeExported.length > 0) {
-                //TODO: tell user some files can't be exported
-                alert(filesCanNotBeExported.length + " files can't be exported");
+              if (fileIndex == pictures.length) {
+                clearInterval(timer);
+                pb.style.width = '100%';
+                dialog.closeAll();
+
+                if (filesCanNotBeExported.length > 0) {
+                  //TODO: tell user some files can't be exported
+                  alert(filesCanNotBeExported.length + " files can't be exported");
+                }
+              } else {
+                exportPicture();
               }
-            } else {
-              exportPicture();
-            }
-          };
-        }, 0);
+            };
+
+            req.onerror = function (e) {
+              filesCanNotBeExported.push(items[fileIndex]);
+              fileIndex++;
+              if (fileIndex == items.length) {
+                clearInterval(timer);
+                pb.style.width = '100%';
+                dialog.closeAll();
+
+                if (filesCanNotBeExported.length > 0) {
+                  //TODO: tell user some files can't be exported
+                  alert(filesCanNotBeExported.length + " files can't be exported");
+                }
+              } else {
+                exportPicture();
+              }
+            };
+          }, 0);
+        }
       }, {
-        title: 'Choose where to save'
+        title: 'Select directory for saving pictures'
       });
     });
   });
