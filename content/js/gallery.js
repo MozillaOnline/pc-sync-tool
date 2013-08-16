@@ -628,7 +628,7 @@ var Gallery = (function() {
                 if (oldFileIndex == fileIndex) {
                   if (steps < 50) {
                     steps++;
-                    ratio+= step;
+                    ratio += step;
                     pb.style.width = ratio + '%';
                   }
                 } else {
@@ -660,9 +660,9 @@ var Gallery = (function() {
             };
 
             req.onerror = function (e) {
-              filesCanNotBeExported.push(items[fileIndex]);
+              filesCanNotBeExported.push(pictures[fileIndex]);
               fileIndex++;
-              if (fileIndex == items.length) {
+              if (fileIndex == pictures.length) {
                 clearInterval(timer);
                 pb.style.width = '100%';
                 dialog.closeAll();

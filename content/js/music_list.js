@@ -341,44 +341,115 @@ var MusicList = (function() {
       if (this.dataset.disabled == 'true') {
         return;
       }
+
       var musics = $expr('#music-list-container .music-list-item[data-checked="true"]');
+
+      if (musics.length <= 0 ) {
+        return;
+      }
+
       navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
         if (status) {
-          setTimeout(function() {
-            var length = musics.length;
-            var index = 0;
+          var filesToBeExported = [];
+          var filesCanNotBeExported = [];
 
-            function traverseList() {
-              if (index == length) {
-                return;
-              }
-              var os = (function() {
-                var oscpu = navigator.oscpu.toLowerCase();
-                return {
-                  isWindows: /windows/.test(oscpu),
-                  isLinux: /linux/.test(oscpu),
-                  isMac: /mac/.test(oscpu)
-                };
-              })();
-              var newDir = dir;
-              if (os.isWindows) {
-                newDir = dir.substring(1, dir.length);
-              }
-              var cmd = 'adb pull "' + musics[index].dataset.id + '" "' + decodeURI(newDir) + '/'
-                        + musics[index].dataset.name + '.' + musics[index].dataset.type + '"';
-              var req = navigator.mozFFOSAssistant.runCmd(cmd);
-              req.onsuccess = req.onerror= function(e) {
-                index++;
-                setTimeout(traverseList, 0);
+          var fileIndex = 0;
+          var oldFileIndex = 0;
+          var steps = 0;
+
+          var dialog = new FilesOPDialog({
+            title_l10n_id: 'export-musics-dialog-header',
+            processbar_l10n_id: 'processbar-export-musics-promot'
+          });
+
+          var filesIndicator = $id('files-indicator');
+          var pb = $id('processbar');
+          var ratio = 0;
+          filesIndicator.innerHTML = '0/' + musics.length;
+
+          //processbar range for one file
+          var range = Math.round(100 / musics.length);
+          var step = range / 50;
+          var bTimer = false;
+
+          var os = (function() {
+            var oscpu = navigator.oscpu.toLowerCase();
+            return {
+              isWindows: /windows/.test(oscpu),
+              isLinux: /linux/.test(oscpu),
+              isMac: /mac/.test(oscpu)
+            };
+          })();
+
+          var newDir = dir;
+          if (os.isWindows) {
+            newDir = dir.substring(1, dir.length);
+          }
+
+          setTimeout(function exportMusic() {
+            var cmd = 'adb pull "' + musics[fileIndex].dataset.id + '" "' + decodeURI(newDir) + '/'
+                      + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type + '"';
+
+            var req = navigator.mozFFOSAssistant.runCmd(cmd);
+
+            if (!bTimer) {
+              bTimer = true;
+              var timer = setInterval(function() {
+                if (oldFileIndex == fileIndex) {
+                  if (steps < 50) {
+                    steps++;
+                    ratio += step;
+                    pb.style.width = ratio + '%';
+                  }
+                } else {
+                  oldFileIndex = fileIndex;
+                  steps = 0;
+                }
+              }, 100);
+            }
+
+            req.onsuccess = function(e) {
+              filesToBeExported.push(musics[fileIndex]);
+              fileIndex++;
+              ratio = Math.round(fileIndex * 100 / musics.length);
+              pb.style.width = ratio + '%';
+              filesIndicator.innerHTML = filesToBeExported.length + '/' + musics.length;
+
+              if (fileIndex == musics.length) {
+                clearInterval(timer);
+                pb.style.width = '100%';
+                dialog.closeAll();
+
+                if (filesCanNotBeExported.length > 0) {
+                  //TODO: tell user some files can't be exported
+                  alert(filesCanNotBeExported.length + " music files can't be exported");
+                }
+              } else {
+                exportMusic();
               }
             };
-            traverseList();
+
+            req.onerror = function (e) {
+              filesCanNotBeExported.push(musics[fileIndex]);
+              fileIndex++;
+              if (fileIndex == musics.length) {
+                clearInterval(timer);
+                pb.style.width = '100%';
+                dialog.closeAll();
+
+                if (filesCanNotBeExported.length > 0) {
+                  //TODO: tell user some musics can't be exported
+                  alert(filesCanNotBeExported.length + " music files can't be exported");
+                }
+              } else {
+                exportMusic();
+              }
+            };
           }, 0);
         }
       }, {
-        title: 'Choose where to save'
+        title: 'Select directory for saving musics'
       });
-    //selectAllMusics(false);
     });
   });
 
