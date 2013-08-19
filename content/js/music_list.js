@@ -206,25 +206,104 @@ var MusicList = (function() {
 
   function removeMusic(files) {
     var items = files || [];
-    var toBeRemovedFiles = [];
-    var index = 0;
-    items.forEach(function(item) {
-      var req = navigator.mozFFOSAssistant.runCmd('adb shell rm ' + item);
-      req.onsuccess = function (result) {
-        toBeRemovedFiles.push(item);
-        index++;
-        if (index == items.length) {
-          updateMusicsList(toBeRemovedFiles);
-        }
-      }
-      req.onerror = function(e) {
-        index++;
-        if (index == items.length) {
-          updateMusicsList(toBeRemovedFiles);
-        }
-        alert('error occured when removing ' + item);
-      }
+    if (items.length <= 0) {
+      //TODO: prompt select musics to be removed...
+      return;
+    }
+
+    var filesToBeRemoved = [];
+    var filesCanNotBeRemoved = [];
+
+    var fileIndex = 0;
+    var oldFileIndex = 0;
+    var steps = 0;
+
+    var dialog = new FilesOPDialog({
+      title_l10n_id: 'remove-musics-dialog-header',
+      processbar_l10n_id: 'processbar-remove-musics-promot'
     });
+
+    var filesIndicator = $id('files-indicator');
+    var pb = $id('processbar');
+    var ratio = 0;
+    filesIndicator.innerHTML = '0/' + items.length;
+
+    //processbar range for one file
+    var range = Math.round(100 / items.length);
+    var step = range / 50;
+    var bTimer = false;
+
+    setTimeout(function removeMusic() {
+      var cmd = 'adb shell rm "' + items[fileIndex] + '"';
+      var req = navigator.mozFFOSAssistant.runCmd(cmd);
+      if (!bTimer) {
+        bTimer = true;
+        var timer = setInterval(function() {
+          if (oldFileIndex == fileIndex) {
+            if (steps < 50) {
+              steps++;
+              ratio+= step;
+              pb.style.width = ratio + '%';
+            }
+          } else {
+            oldFileIndex = fileIndex;
+            steps = 0;
+          }
+        }, 100);
+      }
+
+      req.onsuccess = function(e) {
+        filesToBeRemoved.push(items[fileIndex]);
+        fileIndex++;
+        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
+        pb.style.width = ratio + '%';
+        filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
+
+        if (fileIndex == items.length) {
+          clearInterval(timer);
+          pb.style.width = '100%';
+          dialog.closeAll();
+
+          //updating UI after removing pictures
+          if (filesCanNotBeRemoved.length > 0) {
+            //TODO: tell user some files can't be removed
+            alert(filesCanNotBeRemoved.length + " files can't be removed");
+          }
+
+          updateMusicsList(filesToBeRemoved);
+
+          opStateChanged();
+        } else {
+          removeMusic();
+        }
+      };
+
+      req.onerror = function (e) {
+        filesCanNotBeRemoved.push(items[fileIndex]);
+        fileIndex++;
+        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
+        pb.style.width = ratio + '%';
+        filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
+
+        if (fileIndex == items.length) {
+          clearInterval(timer);
+          pb.style.width = '100%';
+          dialog.closeAll();
+
+          //updating UI after removing pictures
+          if (filesCanNotBeRemoved.length > 0) {
+            //TODO: tell user some files can't be removed
+            alert(filesCanNotBeRemoved.length + " files can't be removed");
+          }
+
+          updateMusicsList(filesToBeRemoved);
+
+          opStateChanged();
+        } else {
+          removeMusic();
+        }
+      };
+    }, 0);
   }
 
   function updateMusicsList(toBeRemovedFiles) {

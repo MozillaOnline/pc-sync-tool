@@ -583,7 +583,7 @@ var Gallery = (function() {
       }
     });
 
-    $id('remove-pictures').addEventListener('click', function onclick_removeMusic(event) {
+    $id('remove-pictures').addEventListener('click', function onclick_removePictures(event) {
       if (this.dataset.disabled == 'true') {
         return;
       }
@@ -598,11 +598,11 @@ var Gallery = (function() {
       }
     });
 
-    $id('refresh-pictures').addEventListener('click', function onclick_refreshMusics(event) {
+    $id('refresh-pictures').addEventListener('click', function onclick_refreshPictures(event) {
       FFOSAssistant.getAndShowGallery();
     });
 
-    //$id('import-picturess-btn').addEventListener('click', importMusics);
+    //$id('import-picturess-btn').addEventListener('click', importPictures);
 
     $id('import-pictures').addEventListener('click', importPictures);
 
