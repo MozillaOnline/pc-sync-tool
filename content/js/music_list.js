@@ -253,51 +253,94 @@ var MusicList = (function() {
     navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
       data = data.substr(0,data.length-1);
       var musics = data.split(';');
-      var importedNum = 0;
+
+      if (musics.length <= 0) {
+        return;
+      }
+
+      var filesToBeImported = [];
+      var filesCanNotBeImported = [];
+      var fileIndex = 0;
       var oldFileIndex = 0;
       var steps = 0;
-      var dialog = new ImportFilesDialog({});
+
+      var dialog = new FilesOPDialog({
+        title_l10n_id: 'import-musics-dialog-header',
+        processbar_l10n_id: 'processbar-import-musics-promot'
+      });
+
       var filesIndicator = $id('files-indicator');
       var pb = $id('processbar');
       var ratio = 0;
       filesIndicator.innerHTML = '0/' + musics.length;
 
-      if (musics.length > 0) {
-        var range = Math.round(100 / musics.length);
-        var step = range / 50;
-        var bTimer = false;
-         for (var index = 0; index < musics.length; index++) {
-          var cmd = 'adb push "' + musics[index] + '" /sdcard/Music/';
-          var req = navigator.mozFFOSAssistant.runCmd(cmd);
-          if (!bTimer) {
-            bTimer = true;
-            var timer = setInterval(function() {
-              if (oldFileIndex == importedNum) {
-                if (steps < 50) {
-                  steps++;
-                  ratio+= step;
-                  pb.style.width = ratio + '%';
-                }
-              } else {
-                oldFileIndex = importedNum;
-                steps = 0;
+      var range = Math.round(100 / musics.length);
+      var step = range / 50;
+      var bTimer = false;
+
+      setTimeout(function importMusic() {
+        var cmd = 'adb push "' + musics[fileIndex] + '" /sdcard/Music/';
+        var req = navigator.mozFFOSAssistant.runCmd(cmd);
+
+        if (!bTimer) {
+          bTimer = true;
+          var timer = setInterval(function() {
+            if (oldFileIndex == fileIndex) {
+              if (steps < 50) {
+                steps++;
+                ratio += step;
+                pb.style.width = ratio + '%';
               }
-            },100);
-          }
-          req.onsuccess = req.onerror= function(e) {
-            importedNum++;
-            ratio = Math.round(importedNum * 100 / musics.length);
-            pb.style.width = ratio + '%';
-            filesIndicator.innerHTML = importedNum + '/' + musics.length;
-            if (importedNum == musics.length) {
-              clearInterval(timer);
-              pb.style.width.innerHTML = '100%';
-              dialog.closeAll();
-              FFOSAssistant.getAndShowAllMusics();
+            } else {
+              oldFileIndex = fileIndex;
+              steps = 0;
             }
-          }
+          }, 100);
         }
-      }
+
+        req.onsuccess = function(e) {
+          filesToBeImported.push(musics[fileIndex]);
+          fileIndex++;
+          ratio = Math.round(filesToBeImported.length * 100 / musics.length);
+          pb.style.width = ratio + '%';
+          filesIndicator.innerHTML = fileIndex + '/' + musics.length;
+
+          if (fileIndex == musics.length) {
+            clearInterval(timer);
+            pb.style.width.innerHTML = '100%';
+            dialog.closeAll();
+
+            if (filesCanNotBeImported.length > 0) {
+              //TODO: tell user some files can't be imported
+              alert(filesCanNotBeImported.length + " files can't be imported");
+            }
+            //TODO: update imported files insteadof refreshing musics
+            FFOSAssistant.getAndShowAllMusics();
+          } else {
+            importMusic();
+          }
+        };
+
+        req.onerror = function (e) {
+          filesCanNotBeImported.push(musics[fileIndex]);
+          fileIndex++;
+
+          if (fileIndex == musics.length) {
+            clearInterval(timer);
+            pb.style.width.innerHTML = '100%';
+            dialog.closeAll();
+
+            if (filesCanNotBeImported.length > 0) {
+              //TODO: tell user some files can't be imported
+              alert(filesCanNotBeImported.length + " files can't be imported");
+            }
+            //TODO: update imported files insteadof refreshing musics
+            FFOSAssistant.getAndShowAllMusics();
+          } else {
+            importMusic();
+          }
+        };
+      }, 0);
     });
   }
 
