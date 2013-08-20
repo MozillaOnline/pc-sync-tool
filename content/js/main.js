@@ -236,7 +236,6 @@ var FFOSAssistant = (function() {
 
   function getAndShowAllVideos(args) {
     CMD.Videos.getAllVideosInfo(function onresponse_getAllVideosInfo(message) {
-      console.log('===' + message.data);
       var dataJSON = JSON.parse(message.data);
       Video.init(dataJSON);
     }, function onerror_getAllVideosInfo(message) {

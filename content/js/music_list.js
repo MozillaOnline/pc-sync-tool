@@ -47,9 +47,8 @@ var MusicList = (function() {
     var html = '';
     html += '<label class="unchecked"></label>';
     html += '<div class="music-names item"><span>' + retriveName(music.name) + '</span></div>';
-    html += '<div class="music-singer item"><span>' + music.metadate.artist + '</span></div>';
-    html += '<div class="music-album item"><span>' + music.metadate.album + '</span></div>';
-    html += '<div class="music-timespan item"><span>' + '5:05' + '</span></div>';
+    html += '<div class="music-singer item"><span>' + music.metadata.artist + '</span></div>';
+    html += '<div class="music-album item"><span>' + music.metadata.album + '</span></div>';
     html += '<div class="music-type item"><span>' + retriveExtension(music.name) + '</span></div>';
     html += '<div class="music-size item"><span>' + retriveSize(music.size) + ' MB' + '</span></div>';
 
