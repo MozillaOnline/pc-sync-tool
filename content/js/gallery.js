@@ -568,7 +568,10 @@ var Gallery = (function() {
           }
         };
       }, 0);
-    });
+    }, {
+        title: _('import-picture-title'),
+        fileType: 'Image'
+      });
   }
 
   window.addEventListener('load', function wnd_onload(event) {
@@ -716,7 +719,8 @@ var Gallery = (function() {
           }, 0);
         }
       }, {
-        title: 'Select directory for saving pictures'
+        title: _('export-picture-title'),
+        fileType: 'Image'
       });
     });
   });

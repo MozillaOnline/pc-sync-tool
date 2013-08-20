@@ -420,7 +420,10 @@ var MusicList = (function() {
           }
         };
       }, 0);
-    });
+    }, {
+        title: _('import-music-title'),
+        fileType: 'Audio'
+      });
   }
 
   window.addEventListener('load', function wnd_onload(event) {
@@ -570,7 +573,8 @@ var MusicList = (function() {
           }, 0);
         }
       }, {
-        title: 'Select directory for saving musics'
+        title: _('export-music-title'),
+        fileType: 'Audio'
       });
     });
   });

@@ -64,7 +64,7 @@ interface nsIFFOSAssistant : nsISupports
   /**
    * Get file names from directory
    */
-  void selectMultiFilesFromDisk(in jsval callback);
+  void selectMultiFilesFromDisk(in jsval callback, in jsval options);
 
   /**
    *

@@ -264,10 +264,24 @@ FFOSAssistant.prototype = {
   },
 
   selectDirectory: function (callback, options) {
+    var nsIFilePicker = Ci.nsIFilePicker;
     var filePicker = Cc["@mozilla.org/filepicker;1"]
                        .createInstance(Ci.nsIFilePicker);
     let title = options && options.title ? options.title : null;
     filePicker.init(this._window, title, Ci.nsIFilePicker.modeGetFolder);
+    if (options && options.fileType) {
+      if (options.fileType == 'Image') {
+        filePicker.appendFilters(nsIFilePicker.filterImages);
+      } else if (options.fileType == 'Audio') {
+        filePicker.appendFilters(nsIFilePicker.filterAudio);
+      } else if (options.fileType == 'Video') {
+        filePicker.appendFilters(nsIFilePicker.filterVideo);
+      } else {
+        filePicker.appendFilters(nsIFilePicker.filterAll);
+      }
+    } else {
+      filePicker.appendFilters(nsIFilePicker.filterAll);
+    }
     callback = (typeof callback === 'function') ? callback : function() {};
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
@@ -360,11 +374,25 @@ FFOSAssistant.prototype = {
     });
   },
 
-  selectMultiFilesFromDisk: function(callback) {
+  selectMultiFilesFromDisk: function(callback, options) {
+    var nsIFilePicker = Ci.nsIFilePicker;
     var filePicker = Cc["@mozilla.org/filepicker;1"]
                        .createInstance(Ci.nsIFilePicker);
-    filePicker.init(this._window, null, Ci.nsIFilePicker.modeOpenMultiple);
-    filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
+    let title = options && options.title ? options.title : null;
+    filePicker.init(this._window, title, Ci.nsIFilePicker.modeOpenMultiple);
+    if (options && options.fileType) {
+      if (options.fileType == 'Image') {
+        filePicker.appendFilters(nsIFilePicker.filterImages);
+      } else if (options.fileType == 'Audio') {
+        filePicker.appendFilters(nsIFilePicker.filterAudio);
+      } else if (options.fileType == 'Video') {
+        filePicker.appendFilters(nsIFilePicker.filterVideo);
+      } else {
+        filePicker.appendFilters(nsIFilePicker.filterAll);
+      }
+    } else {
+      filePicker.appendFilters(nsIFilePicker.filterAll);
+    }
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
         case Ci.nsIFilePicker.returnOK:
