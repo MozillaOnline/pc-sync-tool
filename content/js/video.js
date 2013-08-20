@@ -494,7 +494,10 @@ var Video = (function() {
           }
         };
       }, 0);
-    });
+    }, {
+        title: _('import-video-title'),
+        fileType: 'Video'
+      });
   }
 
   window.addEventListener('load', function wnd_onload(event) {
@@ -642,7 +645,8 @@ var Video = (function() {
           }, 0);
         }
       }, {
-        title: 'Select directory for saving videos'
+        title: _('export-video-title'),
+        fileType: 'Video'
       });
     });
   });
