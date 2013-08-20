@@ -132,7 +132,13 @@ var CMD = (function() {
 
     /***** Videos commands ******/
     Videos: {
-      getAllVideosInfo:  createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getAllVideosInfo)
+      getAllVideosInfo:  createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getAllVideosInfo),
+
+      /*
+       * data:
+       *   video name
+       */
+      getVideoPosterByName: createCommand(CMD_TYPE.video, VIDEO_COMMAND.getVideoPosterByName)
     },
 
     /***** Musics commands ******/

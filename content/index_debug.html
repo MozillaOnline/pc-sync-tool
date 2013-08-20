@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style/sms.css">
   <link rel="stylesheet" href="style/music.css">
   <link rel="stylesheet" href="style/gallery.css">
+  <link rel="stylesheet" href="style/video.css">
   <link rel="resource" type="application/l10n" href="locales/locales.ini">
   <link REL="shortcut icon" HREF="style/icons/favicon.ico">
   <script type="text/javascript" src="js/l10n.js"></script>
@@ -25,6 +26,7 @@
   <script type="text/javascript" src="js/sms_list.js"></script>
   <script type="text/javascript" src="js/music_list.js"></script>
   <script type="text/javascript" src="js/gallery.js"></script>
+  <script type="text/javascript" src="js/video.js"></script>
   <script type="text/javascript" src="js/form.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
   <script type="text/javascript" src="js/view.js"></script>
@@ -67,7 +69,7 @@
                  data-l10n-id="sms">短信</div>
             <div id="videos-tab"
                  class="videos-tab item videos"
-                 data-linked-view="videos-view"
+                 data-linked-view="video-view"
                  data-l10n-id="videos">视频</div>
             <div id="music-tab"
                  class="music-tab item music"
@@ -262,6 +264,29 @@
                 </div>
             </div>
           </section>
+          <section id="video-view" class="view" hidden="true">
+            <h1 class="title" data-l10n-id="videos">视频</h1>
+            <div class="videos-ops-box">
+              <div id="selectAll-videos" data-disabled="false" data-checked="false" class="video-op">
+                <label data-l10n-id="selectall">全选</label>
+              </div>
+              <div id="remove-videos" data-disabled="true" class="video-op">
+                <label data-l10n-id="delete">删除</label>
+              </div>
+              <div id="import-videos" class="video-op">
+                <label data-l10n-id="import">导入</label>
+              </div>
+              <div id="export-videos" data-disabled="true" class="video-op">
+                <label data-l10n-id="export">导出</label>
+              </div>
+              <div id="refresh-videos" class="video-op">
+                <label data-l10n-id="refresh">刷新</label>
+              </div>
+            </div>
+            <div id="video-list-container">
+            </div>
+          </section>
+
           <section id ="music-view" class="view" hidden="true">
             <h1 class="title" data-l10n-id="music">音乐</h1>
             <div class="music-ops-box">

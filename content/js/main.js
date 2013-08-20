@@ -234,6 +234,16 @@ var FFOSAssistant = (function() {
     });
   }
 
+  function getAndShowAllVideos(args) {
+    CMD.Videos.getAllVideosInfo(function onresponse_getAllVideosInfo(message) {
+      console.log('===' + message.data);
+      var dataJSON = JSON.parse(message.data);
+      Video.init(dataJSON);
+    }, function onerror_getAllVideosInfo(message) {
+      log('Error occurs when fetching all videos.');
+    });
+  }
+
   function getAndShowAllMusics() {
     CMD.Musics.getAllMusicsInfo(function onresponse_getAllMusicsInfo(message) {
       // Make sure the 'select-all' box is not checked.
@@ -319,6 +329,7 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('contact-view', 'othershow', getAndShowAllContacts);
     ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSThreads);
     ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
+    ViewManager.addViewEventListener('video-view', 'firstshow', getAndShowAllVideos);
     ViewManager.addViewEventListener('music-view', 'firstshow', getAndShowAllMusics);
     ViewManager.addViewEventListener('gallery-view', 'firstshow', getAndShowGallery);
   }
@@ -357,7 +368,8 @@ var FFOSAssistant = (function() {
 
     getAndShowAllContacts: getAndShowAllContacts,
     getAndShowAllSMSThreads: getAndShowAllSMSThreads,
-    getAndShowAllMusics : getAndShowAllMusics,
+    getAndShowAllVideos: getAndShowAllVideos,
+    getAndShowAllMusics: getAndShowAllMusics,
     getAndShowGallery: getAndShowGallery,
     updateSMSThreads: updateSMSThreads
   };
