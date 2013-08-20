@@ -299,7 +299,6 @@ var ContactList = (function() {
     ids.forEach(function(id) {
       removeContact(id);
     });
-
     ViewManager.showViews('contact-quick-add-view');
   }
 
@@ -795,6 +794,7 @@ var ContactList = (function() {
       if (window.confirm(_('delete-contacts-confirm', {n: ids.length}))) {
         if ($id('selectAll-contacts').dataset.checked == "true") {
           ContactList.clearAllContacts();
+          $id('selectAll-contacts').dataset.checked = false;
         } else {
           ids.forEach(function(item) {
             ContactList.removeContact(item);

@@ -371,10 +371,12 @@ var ContactForm = (function() {
     var fullName = $id('fullName').value.trim();
     var mobile = $id('mobile').value.trim();
     if (fullName == '') {
-      alert('Please input full name');
+      alert(_('EmptyName'));
+      return;
     }
     if (mobile == '') {
-      alert('Please input cell phone number');
+      alert(_('EmptyPhone'));
+      return;
     }
     contact = {
       id: null,
@@ -439,7 +441,14 @@ var ContactForm = (function() {
     }
 
     handlerCancelEditContact = function () {
-      ViewManager.showViews('show-contact-view');
+      var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+      if (selectedItem === 0) {
+        ViewManager.showViews('contact-quick-add-view');
+      } else if(selectedItem === 1){
+        ViewManager.showViews('show-contact-view');
+      } else {
+        ViewManager.showViews('show-multi-contacts');
+      }
     };
     $id('cancel-edit-contact').addEventListener ('click', handlerCancelEditContact,false);
 
