@@ -432,7 +432,14 @@ var ContactForm = (function() {
 
     handlerSaveContact = function () {
       saveContact();
-      ViewManager.showViews('show-contact-view');
+      var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+      if (selectedItem === 0) {
+        ViewManager.showViews('contact-quick-add-view');
+      } else if(selectedItem === 1){
+        ViewManager.showViews('show-contact-view');
+      } else {
+        ViewManager.showViews('show-multi-contacts');
+      }
     };
     $id('save-contact').addEventListener ('click', handlerSaveContact,false);
 
