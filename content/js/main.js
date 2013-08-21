@@ -16,7 +16,18 @@ var FFOSAssistant = (function() {
     $id('device-connected').classList.add('hiddenElement');
     $id('device-unconnected').classList.remove('hiddenElement');
     $id('views').classList.add('hidden-views');
-
+    $id('wifi-arrow').classList.add('hiddenElement');
+    $id('usb-arrow').classList.remove('hiddenElement');
+    $id('wifi-connection-code-input').classList.add('hiddenElement');
+    $id('wifi-connect-button').classList.add('hiddenElement');
+    $id('wifi-connection-button').style.background = 'url("chrome://ffosassistant/content/style/images/wificonnectionbutton.png") no-repeat scroll center center #F4F4F4';
+    $id('usb-connection-button').style.background = 'url("chrome://ffosassistant/content/style/images/usbconnectionbuttonhover.png") no-repeat scroll center center #e86000';
+    $id('step-one').style.background = 'url("chrome://ffosassistant/content/style/images/client.png") no-repeat center center transparent';
+    $id('step-three').style.background = 'url("chrome://ffosassistant/content/style/images/usbconnection.png") no-repeat center center transparent';
+    $id('step-one-span').textContent = _('usb-step-one');
+    $id('step-three-span').textContent = _('usb-step-three');
+    $id('step-one-span').dataset.l10nId = 'usb-step-one';
+    $id('step-three-span').dataset.l10nId = 'usb-step-three'
     if (handlerUsbConnection) {
       $id('usb-connection-button').removeEventListener('click', handlerUsbConnection,false);
     }
@@ -26,9 +37,14 @@ var FFOSAssistant = (function() {
       $id('usb-arrow').classList.remove('hiddenElement');
       $id('wifi-connection-code-input').classList.add('hiddenElement');
       $id('wifi-connect-button').classList.add('hiddenElement');
-      $id('step-one').textContent = _('usb-step-one');
-      $id('step-two').textContent = _('usb-step-two');
-      $id('step-three').textContent = _('usb-step-three');
+      $id('wifi-connection-button').style.background = 'url("chrome://ffosassistant/content/style/images/wificonnectionbutton.png") no-repeat scroll center center #F4F4F4';
+      $id('usb-connection-button').style.background = 'url("chrome://ffosassistant/content/style/images/usbconnectionbuttonhover.png") no-repeat scroll center center #e86000';
+      $id('step-one').style.background = 'url("chrome://ffosassistant/content/style/images/client.png") no-repeat center center transparent';
+      $id('step-three').style.background = 'url("chrome://ffosassistant/content/style/images/usbconnection.png") no-repeat center center transparent';
+      $id('step-one-span').textContent = _('usb-step-one');
+      $id('step-three-span').textContent = _('usb-step-three');
+      $id('step-one-span').dataset.l10nId = 'usb-step-one';
+      $id('step-three-span').dataset.l10nId = 'usb-step-three';
     };
 
     $id('usb-connection-button').addEventListener ('click', handlerUsbConnection,false);
@@ -42,9 +58,14 @@ var FFOSAssistant = (function() {
       $id('wifi-arrow').classList.remove('hiddenElement');
       $id('wifi-connection-code-input').classList.remove('hiddenElement');
       $id('wifi-connect-button').classList.remove('hiddenElement');
-      $id('step-one').textContent = _('wifi-step-one');
-      $id('step-two').textContent = _('wifi-step-two');
-      $id('step-three').textContent = _('wifi-step-three');
+      $id('wifi-connection-button').style.background = 'url("chrome://ffosassistant/content/style/images/wificonnectionbuttonhover.png") no-repeat scroll center center #e86000';
+      $id('usb-connection-button').style.background = 'url("chrome://ffosassistant/content/style/images/usbconnectionbutton.png") no-repeat scroll center center #F4F4F4';
+      $id('step-one').style.background = 'url("chrome://ffosassistant/content/style/images/wificonnection.png") no-repeat center center transparent';
+      $id('step-three').style.background = 'url("chrome://ffosassistant/content/style/images/client.png") no-repeat center center transparent';
+      $id('step-one-span').textContent = _('wifi-step-one');
+      $id('step-three-span').textContent = _('wifi-step-three');
+      $id('step-one-span').dataset.l10nId = 'wifi-step-one';
+      $id('step-three-span').dataset.l10nId = 'wifi-step-three';
     };
 
     $id('wifi-connection-button').addEventListener ('click', handlerWifiConnection,false);

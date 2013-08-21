@@ -165,7 +165,6 @@ input[type="url"], textarea {
   height: 40rem;
 }
 .connection-title {
-  padding: 1rem 3rem;
   text-align: center;
   font-size: 2rem;
 }
@@ -176,63 +175,84 @@ input[type="url"], textarea {
 }
 
 #usb-connection-button{
-  background: url("images/usb.png") no-repeat center center transparent;
+  background: url("images/usbconnectionbutton.png") no-repeat center center transparent;
   float: left;
   height: 15rem;
   width: 15rem;
   text-align: center;
   vertical-align: text-bottom;
   padding: 5px;
-  margin-left: 20rem;
+  margin-left: 22rem;
   margin-right: 10px;
+  margin-top: 5px;
   background-color: #F4F4F4;
-}
-
-#usb-connection-button:hover{
-  background-color: #E0F9FF;
-}
-
-#usb-connection-button span{
-  margin-left: -27px;
-  margin-top: 130px;
-  position: absolute;
+  border-radius: 8px;
 }
 
 #wifi-connection-button{
-  background: url("images/wireless.png") no-repeat center center transparent;
+  background: url("images/wificonnectionbutton.png") no-repeat center center transparent;
   float: left;
   height: 15rem;
   width: 15rem;
   text-align: center;
   vertical-align: text-bottom;
   padding: 5px;
+  margin-top: 5px;
   background-color: #F4F4F4;
-}
-
-#wifi-connection-button:hover{
-  background-color: #E0F9FF;
-}
-
-#wifi-connection-button span{
-  margin-left: -27px;
-  margin-top: 130px;
-  position: absolute;
+  border-radius: 8px;
 }
 
 .connection-step{
-  background-color: #F4F4F4;
-  height: 16rem;
+  background-color: #e7f0f2;
+  height: 22rem;
   text-align: center;
   margin-right: 150px;
-  margin-left: 110px;
-  margin-top: 15px;
+  margin-left: 130px;
+  margin-top: 10px;
+  width: 530px;
+  border-radius: 5px;
 }
 
-.connection-step li{
-  text-align: left;
-  padding-left: 90px;
-  padding-top: 5px;
-  list-style: none outside none;
+#step-one{
+  background: url("images/client.png") no-repeat center center transparent;
+  float: left;
+  height: 15rem;
+  width: 15rem;
+  padding: 5px;
+  background-color: #e7f0f2;
+  margin-left: 15px;
+}
+
+#step-one span{
+  margin-left: -70px;
+  margin-top: 120px;
+  width: 185px;
+  position: absolute;
+}
+
+#step-two{
+  background: url("images/arrowto.png") no-repeat center center transparent;
+  float: left;
+  height: 15rem;
+  width: 15rem;
+  padding: 5px;
+  background-color: #e7f0f2;
+}
+
+#step-three{
+  background: url("images/usbconnection.png") no-repeat center center transparent;
+  float: left;
+  height: 15rem;
+  width: 15rem;
+  padding: 5px;
+  background-color: #e7f0f2;
+}
+
+#step-three span{
+  margin-left: -100px;
+  margin-top: 120px;
+  width: 186px;
+  position: absolute;
 }
 
 .wifi-connection-code-content{
@@ -240,7 +260,7 @@ input[type="url"], textarea {
   width: 22rem;
   float: left;
   margin-left: 90px;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 #wifi-connect-button {
@@ -249,7 +269,7 @@ input[type="url"], textarea {
   float: left;
   font-size: 15px;
   margin-left: 15px;
-  margin-top: 15px;
+  margin-top: 10px;
   text-align: center;
 }
 
@@ -264,7 +284,7 @@ input[type="url"], textarea {
   transform: rotate(112deg);
 }
 .connection-step .usbarrow .side{
-  background-color: #F4F4F4;
+  background-color: #e7f0f2;
   border-left: 1px solid #CACACA;
   height: 20px;
   left: 0;
@@ -285,7 +305,7 @@ input[type="url"], textarea {
   transform: rotate(112deg);
 }
 .connection-step .wifiarrow .side{
-  background-color: #F4F4F4;
+  background-color: #e7f0f2;
   border-left: 1px solid #CACACA;
   height: 20px;
   left: 0;

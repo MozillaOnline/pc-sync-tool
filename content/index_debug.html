@@ -112,10 +112,8 @@
               </div>
               <div class="connection-button">
                 <a id="usb-connection-button">
-                  <span data-l10n-id="usb-connection">USB 连接</span>
                 </a>
                 <a id="wifi-connection-button">
-                  <span data-l10n-id="wifi-connection">Wifi 连接</span>
                 </a>
               </div>
               <div class="connection-step">
@@ -125,9 +123,13 @@
                 <div id="wifi-arrow"  class="wifiarrow hiddenElement">
                   <div class="side"></div>
                 </div>
-                <li id="step-one" data-l10n-id="usb-step-one"></li>
-                <li id="step-two" data-l10n-id="usb-step-two"></li>
-                <li id="step-three" data-l10n-id="usb-step-three"></li>
+                <div id="step-one">
+                  <span id="step-one-span" data-l10n-id="usb-step-one"></span>
+                </div>
+                <div id="step-two"></div>
+                <div id="step-three" data-l10n-id="">
+                  <span id="step-three-span" data-l10n-id="usb-step-three"></span>
+                </div>
                 <textarea id="wifi-connection-code-input" class="wifi-connection-code-content hiddenElement" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></textarea>
                 <div id="wifi-connect-button" class="button hiddenElement" href="javascript: void(0);" data-l10n-id="wifi-connect"></div>
               </div>
