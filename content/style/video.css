@@ -153,3 +153,29 @@
 .videos-group .title > * {
   float: left;
 }
+
+#empty-video-container {
+  display: none;
+}
+
+.empty-videos {
+  background: url('images/empty-videos.png') no-repeat scroll center center transparent;
+  height: 16rem;
+  margin: 10rem 0 2rem;
+}
+
+.empty-videos-prompt {
+  text-align: center;
+}
+
+.import-videos-btn-container {
+  height: 4rem;
+}
+
+.import-videos {
+  float: left;
+  height: 2rem;
+  width: 12rem;
+  margin: 1rem 0 0 31rem;
+  padding: 0.1rem 1rem;
+}

@@ -36,6 +36,11 @@ var Video = (function() {
   }
 
   function showEmptyVideoList(bFlag) {
+    if (bFlag) {
+      $id('empty-video-container').style.display = 'block';
+    } else {
+      $id('empty-video-container').style.display = 'none';
+    }
   }
 
   var dataPool = {
@@ -56,6 +61,7 @@ var Video = (function() {
     var index = 0;
     setTimeout(function getVideoGoups() {
       if (index == dataPool.groupedData.length) {
+        checkVideoListIsEmpty();
         opStateChanged();
         return;
       }
@@ -340,7 +346,7 @@ var Video = (function() {
           }
 
           removeVideosProcess(filesToBeRemoved);
-
+          checkVideoListIsEmpty();
           opStateChanged();
         } else {
           removeVideo();
@@ -366,7 +372,7 @@ var Video = (function() {
           }
 
           removeVideosProcess(filesToBeRemoved);
-
+          checkVideoListIsEmpty();
           opStateChanged();
         } else {
           removeVideo();
@@ -531,7 +537,7 @@ var Video = (function() {
       FFOSAssistant.getAndShowAllVideos();
     });
 
-    //$id('import-videos-btn').addEventListener('click', importVideos);
+    $id('import-videos-btn').addEventListener('click', importVideos);
 
     $id('import-videos').addEventListener('click', importVideos);
 
