@@ -263,3 +263,29 @@
 .content {
   margin: 0 2rem 0 6px;
 }
+
+#empty-picture-container {
+  display: none;
+}
+
+.empty-pictures {
+  background: url('images/empty-pictures.png') no-repeat scroll center center transparent;
+  height: 16rem;
+  margin: 10rem 0 2rem;
+}
+
+.empty-pictures-prompt {
+  text-align: center;
+}
+
+.import-pictures-btn-container {
+  height: 4rem;
+}
+
+.import-pictures {
+  float: left;
+  height: 2rem;
+  width: 12rem;
+  margin: 1rem 0 0 31rem;
+  padding: 0.1rem 1rem;
+}

@@ -50,7 +50,12 @@ var Gallery = (function() {
   }
 
   function showEmptyGallery(bFlag) {
-    //TODO: show empty gallery
+    if (bFlag) {
+      $id('empty-picture-container').style.display = 'block';
+    } else {
+      $id('empty-picture-container').style.display = 'none';
+    }
+
   }
 
   var dataPool = {
@@ -64,6 +69,7 @@ var Gallery = (function() {
   function initList(pictures) {
     var container = getListContainer();
     container.innerHTML = '';
+    showEmptyGallery(false);
     dataPool.dataList = pictures;
     dataPool.groupedData = [];
     makeGroup();
@@ -71,6 +77,7 @@ var Gallery = (function() {
     var index = 0;
     setTimeout(function getGalleryGoups() {
       if (index == dataPool.groupedData.length) {
+        checkGalleryIsEmpty();
         opStateChanged();
         return;
       }
@@ -414,7 +421,7 @@ var Gallery = (function() {
           }
 
           removePicturesProcess(filesToBeRemoved);
-
+          checkGalleryIsEmpty();
           opStateChanged();
         } else {
           removePicture();
@@ -440,7 +447,7 @@ var Gallery = (function() {
           }
 
           removePicturesProcess(filesToBeRemoved);
-
+          checkGalleryIsEmpty();
           opStateChanged();
         } else {
           removePicture();
@@ -605,7 +612,7 @@ var Gallery = (function() {
       FFOSAssistant.getAndShowGallery();
     });
 
-    //$id('import-picturess-btn').addEventListener('click', importPictures);
+    $id('import-pictures-btn').addEventListener('click', importPictures);
 
     $id('import-pictures').addEventListener('click', importPictures);
 
