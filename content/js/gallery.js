@@ -67,6 +67,13 @@ var Gallery = (function() {
   var currentPictureIndex;
 
   function initList(pictures) {
+    if (navigator.mozFFOSAssistant.isWifiConnect) {
+      $id('selectAll-pictures').dataset.disabled = true;
+      new WifiModePromptDialog({title_l10n_id: 'init-pictures-dialog-header',
+                               prompt_l10n_id: 'wifi-mode-init-pictures-promot'});
+      return;
+    }
+
     var container = getListContainer();
     container.innerHTML = '';
     showEmptyGallery(false);
@@ -484,6 +491,12 @@ var Gallery = (function() {
   }
 
   function importPictures() {
+    if (navigator.mozFFOSAssistant.isWifiConnect) {
+      new WifiModePromptDialog({title_l10n_id: 'import-pictures-dialog-header',
+                               prompt_l10n_id: 'wifi-mode-import-pictures-promot'});
+      return;
+    }
+
     navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
       data = data.substr(0,data.length-1);
       var pictures = data.split(';');
@@ -598,6 +611,12 @@ var Gallery = (function() {
         return;
       }
 
+      if (navigator.mozFFOSAssistant.isWifiConnect) {
+        new WifiModePromptDialog({title_l10n_id: 'remove-pictures-dialog-header',
+                                 prompt_l10n_id: 'wifi-mode-remove-pictures-promot'});
+        return;
+      }
+
       var files = [];
       $expr('#picture-list-container .pic-item-div[data-checked="true"]').forEach(function(item) {
         files.push(item.dataset.picUrl);
@@ -618,6 +637,12 @@ var Gallery = (function() {
 
     $id('export-pictures').addEventListener('click', function onclick_exportPictures(event) {
       if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      if (navigator.mozFFOSAssistant.isWifiConnect) {
+        new WifiModePromptDialog({title_l10n_id: 'export-pictures-dialog-header',
+                                 prompt_l10n_id: 'wifi-mode-export-pictures-promot'});
         return;
       }
 

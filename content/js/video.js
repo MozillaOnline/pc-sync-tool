@@ -409,6 +409,12 @@ var Video = (function() {
   }
 
   function importVideos() {
+    if (navigator.mozFFOSAssistant.isWifiConnect) {
+      new WifiModePromptDialog({title_l10n_id: 'import-videos-dialog-header',
+                               prompt_l10n_id: 'wifi-mode-import-videos-promot'});
+      return;
+    }
+
     navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
       data = data.substr(0,data.length-1);
       var videos = data.split(';');
@@ -523,6 +529,12 @@ var Video = (function() {
         return;
       }
 
+      if (navigator.mozFFOSAssistant.isWifiConnect) {
+        new WifiModePromptDialog({title_l10n_id: 'remove-videos-dialog-header',
+                                 prompt_l10n_id: 'wifi-mode-remove-videos-promot'});
+        return;
+      }
+
       var files = [];
       $expr('#video-list-container .video-item-div[data-checked="true"]').forEach(function(item) {
         files.push(item.dataset.videoUrl);
@@ -543,6 +555,12 @@ var Video = (function() {
 
     $id('export-videos').addEventListener('click', function onclick_exportVideos(event) {
       if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      if (navigator.mozFFOSAssistant.isWifiConnect) {
+        new WifiModePromptDialog({title_l10n_id: 'export-videos-dialog-header',
+                                 prompt_l10n_id: 'wifi-mode-export-videos-promot'});
         return;
       }
 

@@ -1310,3 +1310,128 @@ ShowPicDialog.prototype = {
     this.options.onclose();
   }
 };
+
+function WifiModePromptDialog(options) {
+  this.initailize(options);
+}
+
+WifiModePromptDialog.prototype = {
+  initailize: function(options) {
+    this.options = extend({
+      onclose: emptyFunction,
+      title_l10n_id : '',
+      prompt_l10n_id : ''
+    }, options);
+
+    this._modalElement = null;
+    this._mask = null;
+    this._build();
+  },
+
+  closeAll: function() {
+    var evt = document.createEvent('Event');
+    evt.initEvent('WifiModePromptDialog:show', true, true);
+    document.dispatchEvent(evt);
+  },
+
+  _build: function() {
+    this._mask = document.createElement('div');
+    this._mask.className = 'modal-mask';
+    document.body.appendChild(this._mask);
+
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    var html = '';
+    html += '<div class="modal-container">';
+    html += '<div class="select-multi-files-dialog">';
+    html += '  <header class="select-multi-files-dialog-header">';
+    html += '    <div class="select-multi-files-dialog-header-title"';
+    if (this.options.title_l10n_id != '') {
+      html += ' data-l10n-id="' + this.options.title_l10n_id + '"';
+    }
+    html += '    ></div>';
+    html += '    <div class="select-multi-files-dialog-header-x"></div>';
+    html += '  </header>';
+    html += '  <div class="select-multi-files-dialog-body">';
+    html += '    <div class="processbar-prompt"><span';
+    if (this.options.prompt_l10n_id != '') {
+      html += ' data-l10n-id="' + this.options.prompt_l10n_id + '"';
+    }
+    html += '    ></span>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '  <footer class="select-multi-files-dialog-footer">';
+    html += '    <div class="select-multi-files-dialog-footer-button-ctn">';
+    html += '      <button data-l10n-id="cancel" class="button button-cancel"></button>';
+    html += '    </div>';
+    html += '  </footer>';
+    html += '</div></div>';
+
+    this._modalElement.innerHTML = html;
+    document.body.appendChild(this._modalElement);
+    this._adjustModalPosition();
+    this._makeDialogCancelable();
+
+    // Translate l10n value
+    navigator.mozL10n.translate(this._modalElement);
+
+    // Only one modal dialog is shown at a time.
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      // Show a popup dialog at a time.
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+
+      self.close();
+    }
+    document.addEventListener('WifiModePromptDialog:show', this._onModalDialogShown);
+
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('WifiModePromptDialog:show');
+
+    // Tweak modal dialog position when resizing.
+    this._onWindowResize = function(event) {
+      self._adjustModalPosition();
+    };
+    window.addEventListener('resize', this._onWindowResize);
+  },
+
+  _makeDialogCancelable: function() {
+   var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
+   closeBtn.hidden = false;
+   closeBtn.addEventListener('click', this.close.bind(this));
+
+   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+   cancelBtn.hidden = false;
+   cancelBtn.addEventListener('click', this.close.bind(this));
+
+   var self = this;
+  },
+
+  _adjustModalPosition: function() {
+    var container = $expr('.modal-container', this._modalElement)[0];
+    var documentHeight = document.documentElement.clientHeight;
+    var containerHeight = container.clientHeight;
+    container.style.top = (documentHeight > containerHeight ?
+      (documentHeight - containerHeight) / 2 : 0) + 'px';
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  },
+
+  close: function() {
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+    document.removeEventListener('WifiModePromptDialog:show', this._onModalDialogShown);
+    window.removeEventListener('resize', this._onWindowResize)
+    this.options.onclose();
+  }
+};

@@ -203,7 +203,7 @@ var MusicList = (function() {
    * Remove musics
    */
 
-  function removeMusic(files) {
+  function removeMusics(files) {
     var items = files || [];
     if (items.length <= 0) {
       //TODO: prompt select musics to be removed...
@@ -328,6 +328,12 @@ var MusicList = (function() {
   }
 
   function importMusics() {
+    if (navigator.mozFFOSAssistant.isWifiConnect) {
+      new WifiModePromptDialog({title_l10n_id: 'import-musics-dialog-header',
+                               prompt_l10n_id: 'wifi-mode-import-musics-promot'});
+      return;
+    }
+
     navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
       data = data.substr(0,data.length-1);
       var musics = data.split(';');
@@ -443,13 +449,19 @@ var MusicList = (function() {
         return;
       }
 
+    if (navigator.mozFFOSAssistant.isWifiConnect) {
+      new WifiModePromptDialog({title_l10n_id: 'remove-musics-dialog-header',
+                               prompt_l10n_id: 'wifi-mode-remove-musics-promot'});
+      return;
+    }
+
       var files = [];
       $expr('#music-list-container .music-list-item[data-checked="true"]').forEach(function(item) {
         files.push(JSON.parse(item.dataset.music).name);
       });
 
       if (window.confirm(_('delete-musics-confirm', {n: files.length}))) {
-        MusicList.removeMusic(files);
+        MusicList.removeMusics(files);
       }
     });
 
@@ -463,6 +475,12 @@ var MusicList = (function() {
 
     $id('export-musics').addEventListener('click', function onclick_exportMusics(event) {
       if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      if (navigator.mozFFOSAssistant.isWifiConnect) {
+        new WifiModePromptDialog({title_l10n_id: 'export-musics-dialog-header',
+                                 prompt_l10n_id: 'wifi-mode-export-musics-promot'});
         return;
       }
 
@@ -582,6 +600,6 @@ var MusicList = (function() {
     init: initList,
     getMusic: getMusic,
     selectAllMusics: selectAllMusics,
-    removeMusic: removeMusic
+    removeMusics: removeMusics
   };
 })();
