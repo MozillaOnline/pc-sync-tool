@@ -67,10 +67,6 @@
                  class="sms-tab item sms"
                  data-linked-view="sms-view"
                  data-l10n-id="sms">短信</div>
-            <div id="videos-tab"
-                 class="videos-tab item videos"
-                 data-linked-view="video-view"
-                 data-l10n-id="videos">视频</div>
             <div id="music-tab"
                  class="music-tab item music"
                  data-linked-view="music-view"
@@ -79,6 +75,10 @@
                  class="gallery-tab item gallery"
                  data-linked-view="gallery-view"
                  data-l10n-id="gallery">相册图片</div>
+            <div id="videos-tab"
+                 class="videos-tab item videos"
+                 data-linked-view="video-view"
+                 data-l10n-id="videos">视频</div>
             <div id="apps-tab"
                  class="apps-tab item apps"
                  data-linked-view="apps-view"
@@ -266,37 +266,6 @@
                 </div>
             </div>
           </section>
-          <section id="video-view" class="view" hidden="true">
-            <h1 class="title" data-l10n-id="videos">视频</h1>
-            <div class="videos-ops-box">
-              <div id="selectAll-videos" data-disabled="false" data-checked="false" class="video-op">
-                <label data-l10n-id="selectall">全选</label>
-              </div>
-              <div id="remove-videos" data-disabled="true" class="video-op">
-                <label data-l10n-id="delete">删除</label>
-              </div>
-              <div id="import-videos" class="video-op">
-                <label data-l10n-id="import">导入</label>
-              </div>
-              <div id="export-videos" data-disabled="true" class="video-op">
-                <label data-l10n-id="export">导出</label>
-              </div>
-              <div id="refresh-videos" class="video-op">
-                <label data-l10n-id="refresh">刷新</label>
-              </div>
-            </div>
-            <div id="empty-video-container" class="content">
-              <div class="empty-videos"></div>
-              <div class="empty-videos-prompt">
-                <label data-l10n-id="empty-videos">There are no videos.</label>
-              </div>
-              <div class="import-videos-btn-container">
-                <a id="import-videos-btn" class="button import-videos" href="javascript: void(0);" data-l10n-id="import-videos">Import Videos</a>
-              </div>
-            </div>
-            <div id="video-list-container">
-            </div>
-          </section>
           <section id ="music-view" class="view" hidden="true">
             <h1 class="title" data-l10n-id="music">音乐</h1>
             <div class="music-ops-box">
@@ -367,6 +336,37 @@
               </div>
               <div id="picture-list-container">
               </div>
+            </div>
+          </section>
+          <section id="video-view" class="view" hidden="true">
+            <h1 class="title" data-l10n-id="videos">视频</h1>
+            <div class="videos-ops-box">
+              <div id="selectAll-videos" data-disabled="false" data-checked="false" class="video-op">
+                <label data-l10n-id="selectall">全选</label>
+              </div>
+              <div id="remove-videos" data-disabled="true" class="video-op">
+                <label data-l10n-id="delete">删除</label>
+              </div>
+              <div id="import-videos" class="video-op">
+                <label data-l10n-id="import">导入</label>
+              </div>
+              <div id="export-videos" data-disabled="true" class="video-op">
+                <label data-l10n-id="export">导出</label>
+              </div>
+              <div id="refresh-videos" class="video-op">
+                <label data-l10n-id="refresh">刷新</label>
+              </div>
+            </div>
+            <div id="empty-video-container" class="content">
+              <div class="empty-videos"></div>
+              <div class="empty-videos-prompt">
+                <label data-l10n-id="empty-videos">There are no videos.</label>
+              </div>
+              <div class="import-videos-btn-container">
+                <a id="import-videos-btn" class="button import-videos" href="javascript: void(0);" data-l10n-id="import-videos">Import Videos</a>
+              </div>
+            </div>
+            <div id="video-list-container">
             </div>
           </section>
         </div>
