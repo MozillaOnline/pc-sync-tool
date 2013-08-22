@@ -36,19 +36,23 @@ var libadb = (function() {
           ADB_PATH = oldPath.replace('extensions\\ffosassistant@mozillaonline.com\\components\\binary\\win\\adb.exe', 'adb.exe')
           runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinApi.dll') + '/B '+ ADB_PATH.replace('adb.exe', 'AdbWinApi.dll') + '/B');
           runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinUsbApi.dll') + '/B '+ ADB_PATH.replace('adb.exe', 'AdbWinUsbApi.dll') + '/B');
-          return runCmd('cmd.exe /c copy/Y ' + oldPath + '/B '+ ADB_PATH + '/B');
+          runCmd('cmd.exe /c copy/Y ' + oldPath + '/B '+ ADB_PATH + '/B');
         }
       }
-      return null;
+      return;
     },
 
     findDevice: function() {
+      var ret = null;
       if (runCmd != null) {
         if (ADB_PATH != '') {
-          return runCmd(ADB_PATH + ' devices');
+          ret = runCmd(ADB_PATH + ' devices');
+          if(ret) {
+            return ret.readString().trim();
+          }
         }
       }
-      return null;
+      return ret;
     },
 
     setupDevice: function() {
@@ -60,41 +64,61 @@ var libadb = (function() {
           } else {
             ret = runCmd(ADB_PATH + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
           }
+          if(ret) {
+            return ret.readString().trim();
+          }
         }
       }
       return ret;
     },
 
     startAdbServer: function() {
+      var ret =null;
       if (runCmd != null) {
         if (ADB_PATH != '') {
-          return runCmd(ADB_PATH + ' start-server');
+          ret = runCmd(ADB_PATH + ' start-server');
+          if(ret) {
+            return ret.readString().trim();
+          }
         }
       }
-      return null;
+      return ret;
     },
 
     killAdbServer: function() {
-      debug('killAdbServer ' + ADB_PATH);
-      debug('killAdbServer ' + runCmd);
+      var ret =null;
       if (runCmd != null) {
         if (ADB_PATH != '') {
-          return runCmd(ADB_PATH + ' kill-server');
+          ret = runCmd(ADB_PATH + ' kill-server');
+          if(ret) {
+            return ret.readString().trim();
+          }
         }
       }
-      return null;
+      return ret;
     },
 
     listAdbService: function() {
+      var ret =null;
       if (runCmd) {
         var pinfo = runCmd('cmd.exe /c netstat -ano | findstr 5037');
-        var plisten = pinfo.indexOf("LISTENING");
-        if (plisten > 0) {
-          var pid = plisten.substring("LISTENING", "\r\n");
-          return runCmd('cmd.exe /c Tasklist | findstr ' + pid);
+        if(pinfo) {
+          pinfo = pinfo.readString().trim();
+          var listenString = 'LISTENING';
+          var plisten = pinfo.indexOf(listenString);
+          if (plisten > 0) {
+            var pid = pinfo.substring(plisten+listenString.length, pinfo.length);
+            if(pid) {
+              pid = pid.split('\r\n');
+              ret = runCmd('cmd.exe /c Tasklist | findstr ' + pid[0]);
+              if(ret) {
+                return ret.readString().trim();
+              }
+            }
+          }
         }
       }
-      return null;
+      return ret;
     },
 
     runLocalCmd: function(cmd) {
@@ -110,7 +134,10 @@ var libadb = (function() {
             if (device) {
               commands[0] = ADB_PATH + ' -s ' + device;
             }
-            let result = runCmd(commands.join(' ')).readString().trim();
+            let result = runCmd(commands.join(' '));
+            if(result) {
+              result = result.readString().trim();
+            }
             return result;
           }
           return null;
@@ -136,12 +163,12 @@ self.onmessage = function(e) {
   case 'findDevice':
     postMessage({
       id: id,
-      result: libadb.findDevice().readString().trim()
+      result: libadb.findDevice()
     });
     break;
   case 'setupDevice':
     let result;
-    let ret = libadb.setupDevice().readString().trim();
+    let ret = libadb.setupDevice();
     if ((ret.indexOf("error") > 0) || (ret.indexOf("failed") > 0)) result = false;
     else
     result = true;
@@ -219,7 +246,7 @@ function startDetecting(start) {
   if (start) {
     libadb.startAdbServer();
     detectingInterval = setInterval(function checkConnectState() {
-      var devices = libadb.findDevice().readString().trim();
+      var devices = libadb.findDevice();
       // TODO: hard coded for full_unagi only now, try to add other devices
       var sigstr = 'List of devices attached';//in windows need cat ' \r\n',in linux need cat ' \n'
       var devstr = '\tdevice';
@@ -245,7 +272,7 @@ function startDetecting(start) {
       }
       device = devices.substring(0, indexEnd);
       debug(device);
-      var ret = libadb.setupDevice(device).readString().trim();
+      var ret = libadb.setupDevice(device);
       if ((ret.indexOf("error") > 0) || (ret.indexOf("failed") > 0)) {
         setConnected(false);
       } else {

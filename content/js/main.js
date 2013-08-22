@@ -16,18 +16,7 @@ var FFOSAssistant = (function() {
     $id('device-connected').classList.add('hiddenElement');
     $id('device-unconnected').classList.remove('hiddenElement');
     $id('views').classList.add('hidden-views');
-    $id('wifi-arrow').classList.add('hiddenElement');
-    $id('usb-arrow').classList.remove('hiddenElement');
-    $id('wifi-connection-code-input').classList.add('hiddenElement');
-    $id('wifi-connect-button').classList.add('hiddenElement');
-    $id('wifi-connection-button').classList.remove('wifi-connection-button-select');
-    $id('usb-connection-button').classList.add('usb-connection-button-select');
-    $id('step-one').classList.remove('step-one-wifi');
-    $id('step-three').classList.remove('step-three-wifi');
-    $id('step-one-span').textContent = _('usb-step-one');
-    $id('step-three-span').textContent = _('usb-step-three');
-    $id('step-one-span').dataset.l10nId = 'usb-step-one';
-    $id('step-three-span').dataset.l10nId = 'usb-step-three'
+
     if (handlerUsbConnection) {
       $id('usb-connection-button').removeEventListener('click', handlerUsbConnection,false);
     }
