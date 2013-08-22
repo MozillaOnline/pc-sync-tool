@@ -97,6 +97,7 @@ function  debug(s) {
       navigator.mozFFOSAssistant.setAddonInfo(true);
       var otherAdbService = navigator.mozFFOSAssistant.runCmd('listAdbService');
       otherAdbService.onsuccess = function on_success(event) {
+        //TODO:
         debug('output ' + event.target.result);
       }
       AddonManager.addAddonListener(this._addonListener);
