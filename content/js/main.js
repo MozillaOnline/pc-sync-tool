@@ -244,15 +244,6 @@ var FFOSAssistant = (function() {
     });
   }
 
-  function getAndShowAllVideos(args) {
-    CMD.Videos.getAllVideosInfo(function onresponse_getAllVideosInfo(message) {
-      var dataJSON = JSON.parse(message.data);
-      Video.init(dataJSON);
-    }, function onerror_getAllVideosInfo(message) {
-      log('Error occurs when fetching all videos.');
-    });
-  }
-
   function getAndShowAllMusics() {
     CMD.Musics.getAllMusicsInfo(function onresponse_getAllMusicsInfo(message) {
       // Make sure the 'select-all' box is not checked.
@@ -268,6 +259,15 @@ var FFOSAssistant = (function() {
     CMD.Pictures.getAllPicsInfo(function onresponse_getAllPicturesInfo(message) {
       var dataJSON = JSON.parse(message.data);
       Gallery.init(dataJSON);
+    });
+  }
+
+  function getAndShowAllVideos() {
+    CMD.Videos.getAllVideosInfo(function onresponse_getAllVideosInfo(message) {
+      var dataJSON = JSON.parse(message.data);
+      Video.init(dataJSON);
+    }, function onerror_getAllVideosInfo(message) {
+      log('Error occurs when fetching all videos.');
     });
   }
 
@@ -338,9 +338,9 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('contact-view', 'othershow', getAndShowAllContacts);
     ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSThreads);
     ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
-    ViewManager.addViewEventListener('video-view', 'firstshow', getAndShowAllVideos);
     ViewManager.addViewEventListener('music-view', 'firstshow', getAndShowAllMusics);
     ViewManager.addViewEventListener('gallery-view', 'firstshow', getAndShowGallery);
+    ViewManager.addViewEventListener('video-view', 'firstshow', getAndShowAllVideos);
   }
 
   window.addEventListener('load', function window_onload(event) {
