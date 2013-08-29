@@ -12,6 +12,7 @@
   background-image: url("images/checkbox.png");
   margin-left: 2rem;
   padding-left: 2.2rem;
+  font-size: 14px;
 }
 #selectAll-sms[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
@@ -152,9 +153,8 @@
 }
 
 .empty-sms {
-  background: url('images/empty-sms.png') no-repeat scroll 0 0 transparent;
-  height: 16rem;
-  margin: 10rem 15rem 2rem;
+  background: url('images/empty-sms.png') no-repeat scroll ccenter 9rem transparent;
+  height: 25rem;
 }
 
 .empty-sms-prompt {
@@ -241,7 +241,7 @@
 }
 
 .threads-list-item .sms-info {
-  font-size: 1.1rem;
+  font-size: 14px;
   padding-left: 1rem;
   float: left;
   width: 80%;
@@ -264,28 +264,49 @@
 }
 
 .sms-send-view {
-  background: url('images/smslogo.png') no-repeat scroll center bottom transparent;
+  background: url('images/smslogo.png') no-repeat scroll 128px bottom transparent;
   height: 20rem;
-  margin: 1rem 6rem;
+  width: 100%;
   display: -moz-inline-grid;
 }
 
 #sms-send-view-header {
+  color: #A6A6A6;
   padding-left: 1rem;
-  padding-bottom: 2rem;
+  padding-bottom: 10px;
   text-align: center;
-  font-size: 1.6rem
+  font-size: 17px;
+  margin-top: 11px;
 }
 
 #sms-send-view-form > div {
-  height: 2.4rem;
+  height: 2.2rem;
 }
 
 #sms-send-view-form .button {
   float: left;
-  margin: 0 0 0 8rem;
+  margin: 0 0 0 85px;
   text-align: center;
-  font-size: 1.4rem
+  font-size: 1.4rem;
+  padding-top: 1rem;
+  height: 3rem;
+  width: 8rem;
+}
+
+.send-message-modal-container {
+  width: 524px;
+  height: 300px;
+  margin: 0 auto;
+  top: 100px;
+  position: relative;
+}
+
+.send-single-sms-dialog {
+  width: 524px;
+  height: 300px;
+  margin: 0 auto;
+  top: 100px;
+  position: relative;
 }
 
 .sms-ui-window{
@@ -297,10 +318,6 @@
   left:0;
   min-height:140px;
   min-width:360px;
-  position:absolute;
-  top:0;
-  top:200px;
-  left:300px
 }
 
 .sms-ui-window-contact{
@@ -459,12 +476,14 @@
 }
 .sms-message-sender-window .body .input-content{
   height:100px;
-  width:405px;
+  width:407px;
   float: right;
   overflow-y: auto;
 }
 .sms-message-sender-window .monitor{
-  margin-left:85px
+  margin-left:85px;
+  color: #999999;
+  font-size: 12px;
 }
 
 .sms-ui-window-footer-button-ctn .button-send{
@@ -778,9 +797,7 @@
 .sms-message-quick-sender .sender-ctn .count-ctn .button-send{
   width:100%;
   background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
-  border: 1px solid #999999;
   border-radius: 3px 3px 3px 3px;
-  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.2) inset;
   color: white;
   cursor: default;
   display: inline-block;
@@ -999,4 +1016,11 @@
 .sms-ui-menu input[type="radio"]:enabled:hover{
   background:none;
   border:none
+}
+
+#sms-send-incontact {
+  height: 24px;
+  margin-left: 81px;
+  padding-top: 4px;
+  width: 115px;
 }

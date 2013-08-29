@@ -445,8 +445,9 @@ SendSMSDialog.prototype = {
     // TODO using template
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="sms-ui-window draggable">'
-      + '<header class="sms-ui-window-header drag-handel">'
+    this._modalElement.innerHTML = '<div class="send-message-modal-container">'
+      + '<div class="sms-ui-window">'
+      + '<header class="sms-ui-window-header">'
       + '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
       + '<div class="sms-ui-window-header-x" style=""></div>'
       + '</header>'
@@ -478,6 +479,7 @@ SendSMSDialog.prototype = {
       + '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
       + '</div>'
       + '</footer>'
+      + '</div>'
       + '</div>';
 
     var titleElem = $expr('.input-contact', this._modalElement)[0];
@@ -596,6 +598,11 @@ SendSMSDialog.prototype = {
   },
 
   _adjustModalPosition: function() {
+    var container = $expr('.send-message-modal-container', this._modalElement)[0];
+    var documentHeight = document.documentElement.clientHeight;
+    var containerHeight = container.clientHeight;
+    container.style.top = (documentHeight > containerHeight ?
+      (documentHeight - containerHeight) / 2 : 0) + 'px';
   },
 
   _selectContacts: function(data) {
@@ -706,8 +713,9 @@ SendSMSToSingle.prototype = {
 
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="sms-ui-window draggable">'
-      + '<header class="sms-ui-window-header drag-handel">'
+    this._modalElement.innerHTML = '<div class="send-single-sms-dialog">'
+      + '<div class="sms-ui-window">'
+      + '<header class="sms-ui-window-header">'
       + '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
       + '<div class="sms-ui-window-header-x" style=""></div>'
       + '</header>'
@@ -739,6 +747,7 @@ SendSMSToSingle.prototype = {
       + '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
       + '</div>'
       + '</footer>'
+      + '</div>'
       + '</div>';
 
     var titleElem = $expr('.label', this._modalElement)[0];
@@ -746,6 +755,7 @@ SendSMSToSingle.prototype = {
       titleElem.innerHTML = this.options.number[0].value;
     }
     document.body.appendChild(this._modalElement);
+    this._adjustModalPosition();
     this._makeDialogCancelable();
     var header = _('only-text-sms-count', {
       n: 0
@@ -769,6 +779,9 @@ SendSMSToSingle.prototype = {
 
     // Make sure other modal dialog has a chance to close itself.
     this._fireEvent('SendSMSToSingle:show');
+    this._onWindowResize = function(event) {
+      self._adjustModalPosition();
+    };
     window.addEventListener('resize', this._onWindowResize);
 
     $id('select-contact-tel-button').addEventListener('click', function onclick_selectContactTel(event) {
@@ -838,6 +851,15 @@ SendSMSToSingle.prototype = {
     });
    okBtn.focus();
   },
+
+  _adjustModalPosition: function() {
+    var container = $expr('.send-single-sms-dialog', this._modalElement)[0];
+    var documentHeight = document.documentElement.clientHeight;
+    var containerHeight = container.clientHeight;
+    container.style.top = (documentHeight > containerHeight ?
+      (documentHeight - containerHeight) / 2 : 0) + 'px';
+  },
+
 
   _fireEvent: function(name, data) {
     var evt = document.createEvent('Event');

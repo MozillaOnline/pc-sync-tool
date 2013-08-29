@@ -22,13 +22,17 @@ var FFOSAssistant = (function() {
     }
 
     handlerUsbConnection = function () {
+      $id('wifi-connection-button').dataset.checked = false;
+      $id('usb-connection-button').dataset.checked = true;
       $id('wifi-arrow').classList.add('hiddenElement');
       $id('usb-arrow').classList.remove('hiddenElement');
-      $id('wifi-connection-code-input').classList.add('hiddenElement');
+      $id('wifi-connection-code-input').style.display = 'none';
       $id('wifi-connect-button').classList.add('hiddenElement');
       $id('wifi-connection-button').classList.remove('wifi-connection-button-select');
       $id('usb-connection-button').classList.add('usb-connection-button-select');
       $id('step-one').classList.remove('step-one-wifi');
+      $id('step-two').classList.remove('step-two-wifi');
+      $id('step-two').classList.add('step-two-usb');
       $id('step-three').classList.remove('step-three-wifi');
       $id('step-one-span').textContent = _('usb-step-one');
       $id('step-three-span').textContent = _('usb-step-three');
@@ -43,13 +47,17 @@ var FFOSAssistant = (function() {
     }
 
     handlerWifiConnection = function () {
+      $id('wifi-connection-button').dataset.checked = true;
+      $id('usb-connection-button').dataset.checked = false;
       $id('usb-arrow').classList.add('hiddenElement');
       $id('wifi-arrow').classList.remove('hiddenElement');
-      $id('wifi-connection-code-input').classList.remove('hiddenElement');
+      $id('wifi-connection-code-input').style.display = 'block';
       $id('wifi-connect-button').classList.remove('hiddenElement');
       $id('wifi-connection-button').classList.add('wifi-connection-button-select');
       $id('usb-connection-button').classList.remove('usb-connection-button-select');
       $id('step-one').classList.add('step-one-wifi');
+      $id('step-two').classList.remove('step-two-usb');
+      $id('step-two').classList.add('step-two-wifi');
       $id('step-three').classList.add('step-three-wifi');
       $id('step-one-span').textContent = _('wifi-step-one');
       $id('step-three-span').textContent = _('wifi-step-three');

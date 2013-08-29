@@ -142,9 +142,9 @@ var SmsList = (function() {
     var curMonth = today.getMonth() + 1;
     var curDate = today.getDate();
     if (curYear == year && curMonth == month && curDate == date) {
-      html += '    <span style="float: right;" data-l10n-id="today"></span>';
+      html += '    <span style="float: right; color:#6a6a6a; font-size:12px;" data-l10n-id="today"></span>';
     } else {
-      html += '    <span style="float: right;"> ' + year + '-' + month + '-' + date + ' </span>';
+      html += '    <span style="float: right; color:#6a6a6a; font-size:12px;"> ' + year + '-' + month + '-' + date + ' </span>';
     }
     html += '    </div>';
     var body = threadData.body;

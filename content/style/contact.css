@@ -12,6 +12,7 @@
   overflow: hidden;
   height: 6rem;
   line-height: 3rem;
+  font-size: 14px;
 }
 
 .contact-ops-box .contact-op {
@@ -139,8 +140,9 @@
 
 #mobile, #fullName {
   float: right;
-  width: 17.5rem;
+  width: 20.2rem;
   height: 2.5rem;
+  margin-right: 2rem;
 }
 
 #quick-add-contact-header {
@@ -251,8 +253,7 @@
 
 .contact-list-item .avatar {
   width: 3.5rem;
-  height: 3.5rem;  
-  border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;
+  height: 3.5rem;
 }
 
 .contact-list-item .avatar-default {
@@ -262,13 +263,14 @@
 }
 
 .contact-list-item .contact-info {
-  font-size: 1.1rem;
+  font-size: 14px;
   padding-left: 1rem;
 }
 
 .contact-list-item .contact-info .name {
   color: #333333;
-  font-size: 1.5rem;
+  font-size: 14px;
+  height: 2rem;
 }
 
 .contact-list-item .contact-info .tel {
@@ -413,14 +415,14 @@ fieldset + fieldset {
 }
 
 fieldset select {
-  width: 6rem;
+  width: 9rem;
 }
 
 fieldset legend {
   -moz-box-sizing: border-box;
   position: relative;
   float: left;
-  width: 9.5rem;
+  width: 12.5rem;
   height: 4rem;
   padding: 0 0.5rem 0 1.8rem;
   white-space: nowrap;
@@ -457,12 +459,10 @@ fieldset section textarea {
   background: none repeat scroll 0 0 transparent;
   border: medium none;
   border-radius: 0 0 0 0;
-  font-weight: 600;
   height: 2rem;
 }
 
 form p input:valid, form p input:valid:focus {
-  padding-right: 3.5rem;
 }
 
 button.add-new-button {
@@ -480,13 +480,24 @@ button.add-new-button {
 .saveAndCancel {
   height: 3rem;
   padding-left: 25px;
-  padding-top: 10px;
+  margin-top: 12px;
 }
 
-#views h1.title {
+#save-contact {
+  padding: 4px 34px;
+  width: 56px;
+}
+
+#cancel-edit-contact {
+  padding: 3.5px 28px;
+  width: 56px;
+}
+
+#views span.title {
   text-align: center;
   padding: 4rem 0;
-  font-size: 2.1rem;
+  font-size: 25px;
+  display: block;
 }
 
 .show-contact-header {
@@ -513,6 +524,7 @@ button.add-new-button {
 }
 
 #show-contact-full-name {
+  font-size: 16px;
   height: 2rem;
   margin-left: 1rem;
   color: #333333;
@@ -521,10 +533,18 @@ button.add-new-button {
 #show-contact-company {
   height: 2rem;
   margin: 0 0 -0.5rem 1rem;
+  color: #999999;
+  margin-top: 2px;
 }
 
 #edit-contact {
+  display: -moz-inline-box;
+  height: 20px;
   margin-left: 1rem;
+  margin-top: 7px;
+  padding:3px 0 0 23px;
+  width: 54px;
+  text-align: center;
 }
 
 #edit-contact:hover {
