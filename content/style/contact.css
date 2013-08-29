@@ -354,6 +354,7 @@
 
 /********* contact form ********/
 #contact-form {
+  position: relative;
 }
 
 #contact-form .avatar-add-edit {
@@ -378,7 +379,21 @@
 }
 
 #contact-form div {
-  position: relative;
+}
+
+#add-avatar {
+  height: 2rem;
+  background-color: #A6A6A6;
+  width: 67px;
+  position: absolute;
+  top: 53px;
+}
+
+#avatar-label {
+  text-align: center;
+  font-size: 12px;
+  padding-top: 3px;
+  color: white;
 }
 
 #contact-form ul {
