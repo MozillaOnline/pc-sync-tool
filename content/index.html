@@ -102,8 +102,8 @@
         </div>
         <div class="content table-cell">
           <section id="connect-view" class="view">
+            <span class="title" data-l10n-id="pls_connect_device">连接手机</span>
             <div id="welcome-msg">
-              <h3 data-l10n-id="pls_connect_device">连接手机</h3>
               <p data-l10n-id="ffos-description"></p>
             </div>
             <section id="user-guide">
@@ -111,9 +111,9 @@
                 <a data-l10n-id="nodevice-found-msg">您可以通过以下方式连接手机</a>
               </div>
               <div class="connection-button">
-                <a id="usb-connection-button" class="usb-connection-button-unselect usb-connection-button-select">
+                <a id="usb-connection-button" data-checked=true class="usb-connection-button-unselect usb-connection-button-select">
                 </a>
-                <a id="wifi-connection-button" class="wifi-connection-button-unselect">
+                <a id="wifi-connection-button" data-checked=false class="wifi-connection-button-unselect">
                 </a>
               </div>
               <div class="connection-step">
@@ -126,11 +126,11 @@
                 <div id="step-one" class="step-one-usb">
                   <span id="step-one-span" data-l10n-id="usb-step-one"></span>
                 </div>
-                <div id="step-two"></div>
+                <div id="step-two" class="step-two-usb"></div>
                 <div id="step-three" class="step-three-usb">
                   <span id="step-three-span" data-l10n-id="usb-step-three"></span>
                 </div>
-                <textarea id="wifi-connection-code-input" class="wifi-connection-code-content hiddenElement" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></textarea>
+                <input type="text" id="wifi-connection-code-input" style='display: none' class="hiddenElement" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></input>
                 <div id="wifi-connect-button" class="button hiddenElement" href="javascript: void(0);" data-l10n-id="wifi-connect"></div>
               </div>
             </section>
@@ -138,7 +138,7 @@
           <section id="summary-view" class="view" hidden>
             <div class="content-table">
               <div class="content-row">
-                <h1 data-l10n-id="summary" class="title">基本信息</h1>
+                <span data-l10n-id="summary" class="title">基本信息</span>
               </div>
               <div class="content-row">
                 <div id="device-image">
@@ -207,7 +207,7 @@
             </div>
           </section>
           <section id="contact-view" class="view" hidden="true">
-            <h1 class="title" data-l10n-id="contacts">联系人</h1>
+            <span class="title" data-l10n-id="contacts">联系人</span>
             <div class="contact-ops-box">
               <div id="selectAll-contacts" data-disabled="false" data-checked="false" class="contact-op">
                 <label data-l10n-id="selectall">全选</label>
@@ -243,7 +243,7 @@
             </div>
           </section>
           <section id="sms-view" class="view" hidden="true">
-            <h1 class="title" data-l10n-id="sms"></h1>
+            <span class="title" data-l10n-id="sms"></span>
             <div class="sms-ops-box">
               <div id="selectAll-sms" data-disabled="false" class="sms-op" data-checked="false" data-disabled="true">
                 <label data-l10n-id="selectall"></label>
@@ -267,7 +267,7 @@
             </div>
           </section>
           <section id ="music-view" class="view" hidden="true">
-            <h1 class="title" data-l10n-id="music">音乐</h1>
+            <span class="title" data-l10n-id="music">音乐</span>
             <div class="music-ops-box">
               <div id="selectAll-musics" data-disabled="false" data-checked="false" class="music-op">
                 <label data-l10n-id="selectall">全选</label>
@@ -306,7 +306,7 @@
             </div>
           </section>
           <section id ="gallery-view" class="view" hidden="true">
-            <h1 class="title" data-l10n-id="gallery">相册图片</h1>
+            <span class="title" data-l10n-id="gallery">相册图片</span>
             <div id="modal-container">
               <div class="gallery-ops-box">
                 <div id="selectAll-pictures" data-disabled="false" data-checked="false" class="gallery-op">
@@ -339,7 +339,7 @@
             </div>
           </section>
           <section id="video-view" class="view" hidden="true">
-            <h1 class="title" data-l10n-id="videos">视频</h1>
+            <span class="title" data-l10n-id="videos">视频</span>
             <div class="videos-ops-box">
               <div id="selectAll-videos" data-disabled="false" data-checked="false" class="video-op">
                 <label data-l10n-id="selectall">全选</label>
@@ -393,13 +393,16 @@
                 </form>
               </section>
               <section id="contact-edit-view" class="card-view contact-form" hidden="true">
-                <h1 id="add-contact-header" class="title" data-l10n-id="add-contact-header"></h1>
-                <h1 id="edit-contact-header" class="title" data-l10n-id="edit-contact-header"></h1>
+                <span id="add-contact-header" class="title" data-l10n-id="add-contact-header"></span>
+                <span id="edit-contact-header" class="title" data-l10n-id="edit-contact-header"></span>
                 <form id="contact-form" action="#" onsubmit="return false;">
                   <input id="contact-form-id" name="id" type="hidden" value="" />
                   <section>
                     <div>
                       <img id="avatar-add-edit" class="avatar-add-edit avatar-add-edit-default" src="" />
+                      <div id="add-avatar">
+                        <div id="avatar-label" data-l10n-id="avatar-label">添加头像</div>
+                      </div>
                       <input id="avatar-input" type="file" accept="image/*" hidden/>
                     </div>
                     <div class="item-body-exp">
@@ -417,7 +420,7 @@
                 </form>
               </section>
               <section id="show-contact-view" class="card-view" hidden="true">
-                <h1 class="title" data-l10n-id="show-contact-header"></h1>
+                <span class="title" data-l10n-id="show-contact-header"></span>
                 <div class="show-contact-header">
                   <img id="show-avatar" class="avatar-show avatar-show-default"></img>
                   <div class="contact-head">
@@ -441,7 +444,7 @@
                 </div>
               </section>
               <section id="show-multi-contacts" class="card-view" hidden="true">
-                <h1 id="show-contacts-header" class="title"></h1>
+                <span id="show-contacts-header" class="title"></span>
                 <div id="show-contacts-container">
                 </div>
                 <div class="sms-message-quick-sender">
@@ -462,7 +465,7 @@
                 </form>
               </section>
               <section id="sms-select-view" class="card-view sms-form" hidden="true">
-                <h1 id="select-threads-count" class="title"></h1>
+                <span id="select-threads-count" class="title"></span>
                 <div id="show-sms-container">
                 </div>
               </section>
