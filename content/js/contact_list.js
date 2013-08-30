@@ -765,10 +765,10 @@ var ContactList = (function() {
               }
             }
 
-            var escapedValue = Text_escapeHTML(searchInfo.join(' '), true);
+            var escapedValue = Text_escapeHTML(searchInfo.join(' '), true).toLowerCase();
             // search key words
-            var search=self.value;
-            if ((escapedValue.length > 0) && (escapedValue.indexOf(search) >= 0)) {
+            var search = self.value;
+            if ((escapedValue.length > 0) && (escapedValue.indexOf(search.toLowerCase()) >= 0)) {
               contactItem.style.display = 'block';
             } else {
               contactItem.style.display = 'none';
