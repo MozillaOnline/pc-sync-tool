@@ -173,7 +173,7 @@ var Gallery = (function() {
 
             var picture = document.createElement('div');
             picture.classList.add('pic-item');
-            picture.innerHTML = '<img src="' + prePath + galleryCachedDir + group.data[position].name + '">';
+            picture.style.background = 'url("' + prePath + galleryCachedDir + group.data[position].name + '") repeat scroll center center transparent';
             div.appendChild(picture);
             var checkboxDiv = document.createElement('div');
             checkboxDiv.classList.add('pic-unchecked');
@@ -204,16 +204,14 @@ var Gallery = (function() {
 
             picture.onclick = function (event) {
               var target = event.target;
-              if (target instanceof HTMLImageElement) {
-                var picDiv = this.parentNode;
-                currentGroupIndex = picDiv.dataset.groupIndex;
-                currentPictureIndex = picDiv.dataset.position;
-                var dialog = new ShowPicDialog({
-                  picUrl: prePath + galleryCachedDir + picDiv.dataset.picUrl,
-                  showPreviousPic: showPreviousPic,
-                  showNextPic: showNextPic
-                });
-              }
+              var picDiv = this.parentNode;
+              currentGroupIndex = picDiv.dataset.groupIndex;
+              currentPictureIndex = picDiv.dataset.position;
+              var dialog = new ShowPicDialog({
+                picUrl: prePath + galleryCachedDir + picDiv.dataset.picUrl,
+                showPreviousPic: showPreviousPic,
+                showNextPic: showNextPic
+              });
             };
             position++;
             getGoupPictures();

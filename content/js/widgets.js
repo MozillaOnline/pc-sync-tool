@@ -1316,8 +1316,6 @@ ShowPicDialog.prototype = {
       if (event.targetElement == self._modalElement) {
         return;
       }
-
-      self.close();
     }
     document.addEventListener('ShowPicDialog:show', this._onModalDialogShown);
 
