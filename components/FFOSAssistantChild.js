@@ -387,6 +387,8 @@ FFOSAssistant.prototype = {
         filePicker.appendFilters(nsIFilePicker.filterAudio);
       } else if (options.fileType == 'Video') {
         filePicker.appendFilters(nsIFilePicker.filterVideo);
+      } else if (options.fileType == 'VideoTypes') {
+        filePicker.appendFilter('Video Files', '*.webm;*.ogv;*.ogg;*.mp4;*.3gp');
       } else {
         filePicker.appendFilters(nsIFilePicker.filterAll);
       }

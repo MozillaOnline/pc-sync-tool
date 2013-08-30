@@ -508,7 +508,7 @@ var Video = (function() {
       }, 0);
     }, {
         title: _('import-video-title'),
-        fileType: 'Video'
+        fileType: 'VideoTypes'
       });
   }
 
