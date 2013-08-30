@@ -1292,11 +1292,27 @@ ShowPicDialog.prototype = {
     container.appendChild(this._modalElement);
     this._makeDialogCancelable();
 
+    var self = this;
+    document.addEventListener('keypress', function(e) {
+      self._fireEvent('ShowPicDialog:show', e.keyCode);
+    });
+
     $id('gallery-left-arrow').onclick = this.options.showPreviousPic;
     $id('gallery-right-arrow').onclick = this.options.showNextPic;
 
-    var self = this;
     this._onModalDialogShown = function(event) {
+      if (event.data && event.data == 37) {
+        if ($id('gallery-view').dataset.shown == 'true') {
+          self.options.showPreviousPic();
+        }
+        return;
+      }
+      if (event.data && event.data == 39) {
+        if ($id('gallery-view').dataset.shown == 'true') {
+          self.options.showNextPic();
+        }
+        return;
+      }
       if (event.targetElement == self._modalElement) {
         return;
       }
