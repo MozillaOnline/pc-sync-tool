@@ -153,7 +153,7 @@
 }
 
 .empty-sms {
-  background: url('images/empty-sms.png') no-repeat scroll ccenter 9rem transparent;
+  background: url('images/empty-sms.png') no-repeat scroll center 9rem transparent;
   height: 25rem;
 }
 

@@ -7,6 +7,28 @@ var Gallery = (function() {
     return $id('picture-list-container');
   }
 
+  function convertFileName(str) {
+    var obj = {
+      folder: '',
+      file: ''
+    };
+
+    var index = str.lastIndexOf('/');
+    if (index < 0) {
+      obj.file = str;
+      return obj;
+    }
+
+    obj.file = str.substr(index + 1, str.length);
+    str = str.substr(0, index);
+
+    index = str.lastIndexOf('/');
+    if (index >= 0) {
+      obj.folder = str.substring(index + 1, str.length);
+    }
+    return obj;
+  }
+
   // directory for caching pitures
   var galleryCachedDir = 'gallery_tmp';
 
@@ -689,7 +711,8 @@ var Gallery = (function() {
           }
 
           setTimeout(function exportPicture() {
-            var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + pictures[fileIndex].dataset.picUrl + '"';
+            var obj = convertFileName(pictures[fileIndex].dataset.picUrl);
+            var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + '/' + obj.folder + '_' + obj.file + '"';
 
             var req = navigator.mozFFOSAssistant.runCmd(cmd);
             if (!bTimer) {
