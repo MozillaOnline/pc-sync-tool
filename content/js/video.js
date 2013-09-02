@@ -7,6 +7,28 @@ var Video = (function() {
     return $id('video-list-container');
   }
 
+  function convertFileName(str) {
+    var obj = {
+      folder: '',
+      file: ''
+    };
+
+    var index = str.lastIndexOf('/');
+    if (index < 0) {
+      obj.file = str;
+      return obj;
+    }
+
+    obj.file = str.substr(index + 1, str.length);
+    str = str.substr(0, index);
+
+    index = str.lastIndexOf('/');
+    if (index >= 0) {
+      obj.folder = str.substring(index + 1, str.length);
+    }
+    return obj;
+  }
+
   function opStateChanged() {
     if ($expr('#video-list-container .videos-group').length == 0) {
       $id('selectAll-videos').dataset.checked = false;
@@ -609,7 +631,8 @@ var Video = (function() {
           }
 
           setTimeout(function exportVideo() {
-            var cmd = 'adb pull "' + videos[fileIndex].dataset.videoUrl + '" "' + decodeURI(newDir) + videos[fileIndex].dataset.videoUrl + '"';
+            var obj = convertFileName(videos[fileIndex].dataset.videoUrl);
+            var cmd = 'adb pull "' + videos[fileIndex].dataset.videoUrl + '" "' + decodeURI(newDir) + '/' + obj.folder + '_' + obj.file + '"';
 
             var req = navigator.mozFFOSAssistant.runCmd(cmd);
             if (!bTimer) {
