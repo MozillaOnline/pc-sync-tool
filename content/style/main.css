@@ -521,7 +521,7 @@ input[type="url"], textarea {
   float: left;
   width: 50%;
   height: 47rem;
-  margin-top: 5rem;
+  margin-top: 2rem;
 }
 
 #device-image .device-picture {
@@ -542,7 +542,7 @@ input[type="url"], textarea {
 #summary-infos {
   float: left;
   width: 28rem;
-  margin: 7rem 0 0;
+  margin: 4rem 0 0;
 }
 
 #summary-infos > div:first-child{
