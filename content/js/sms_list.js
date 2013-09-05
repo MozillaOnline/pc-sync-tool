@@ -45,7 +45,7 @@ var SmsList = (function() {
 
   function updateThreadAvatar(item) {
     var threadInfo = item;
-    CMD.Contacts.getContactByPhoneNumber(item.participants, function(result) {
+    CMD.Contacts.getContactByPhoneNumber(item.participants[0], function(result) {
       if (result.data != '') {
         var contactData = JSON.parse(result.data);
         var threadItem = $id('id-threads-data-' + threadInfo.id);
