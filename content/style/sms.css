@@ -447,7 +447,6 @@
   letter-spacing: normal;
   word-spacing: normal;
   display: inline-block;
-  margin-left: 4px
 }
 .sms-message-sender-window .header .sms-icon-btn:hover{
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
