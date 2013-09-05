@@ -151,7 +151,7 @@ var SmsList = (function() {
     if (body.length > 36) {
       body = body.substr(0, 36);
     }
-    html += '    <div>' + body + '</div>';
+    html += '    <div class="body">' + body + '</div>';
     html += '  </div>';
     html += '</div>';
     var elem = document.createElement('div');

@@ -246,6 +246,18 @@
   float: left;
   width: 80%;
 }
+
+.threads-list-item .sms-info .name{
+  font-size: 14px;
+}
+
+.threads-list-item .sms-info .body{
+  font-size: 15px;
+  height: 15px;
+  float: left;
+  padding-top: 2px;
+}
+
 .threads-list-item .readflag {
   width: 2rem;
   height: 3.3rem;
