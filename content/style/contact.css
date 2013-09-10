@@ -267,6 +267,13 @@
   padding-left: 1rem;
 }
 
+.contact-list-item .contact-info >div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 320px;
+  white-space: nowrap;
+}
+
 .contact-list-item .contact-info .name {
   color: #333333;
   font-size: 14px;

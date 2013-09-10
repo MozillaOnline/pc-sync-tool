@@ -751,8 +751,11 @@ SendSMSToSingle.prototype = {
       + '</div>';
 
     var titleElem = $expr('.label', this._modalElement)[0];
+    if (this.options.name && this.options.name.length > 0) {
+      titleElem.innerHTML = this.options.name[0];
+    }
     if (this.options.number && this.options.number.length > 0) {
-      titleElem.innerHTML = this.options.number[0].value;
+      titleElem.innerHTML += '(' + this.options.number[0].value + ')';
     }
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
@@ -794,9 +797,19 @@ SendSMSToSingle.prototype = {
           html += '<li>';
           html += '<label class="wc">';
           html += '<input type="radio" name="" value="';
-          html += self.options.number[i].value;
+
+          if (self.options.name && self.options.name.length > 0) {
+            html += self.options.name[0];
+          }
+
+          html += '(' + self.options.number[i].value + ')';
           html += '">';
           html += '<span style="float: left; margin-top: 1px;">'
+
+          if (self.options.name && self.options.name.length > 0) {
+            html += '(' + self.options.name[0] + ')';
+          }
+
           html += self.options.number[i].value;
           html += '</span>';
           html += '</label>';

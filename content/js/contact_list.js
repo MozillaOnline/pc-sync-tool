@@ -44,7 +44,12 @@ var ContactList = (function() {
     html += '    </div>';
     // Only show the first phone number
     if (contact.tel && contact.tel.length > 0) {
-      html += '  <div class="tel">' + contact.tel[0].value +  '</div>';
+      html += '  <div class="tel">';
+      for (var i = 0 ; i < contact.tel.length - 1; i++) {
+        html += contact.tel[i].value + ',';
+      }
+      html += contact.tel[i].value;
+      html += '</div>';
     }
 
     html += '  </div>';
@@ -489,6 +494,7 @@ var ContactList = (function() {
     handlerSend = function () {
       if (contact.tel && contact.tel.length > 0) {
         new SendSMSToSingle({
+          name: contact.name,
           number: contact.tel
         });
       }

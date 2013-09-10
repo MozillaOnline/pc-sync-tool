@@ -442,7 +442,7 @@
   vertical-align: middle;
   font: 12px/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
   text-align: center;
-  cursor: default;
+  cursor: pointer;
   background-color: buttonface;
   letter-spacing: normal;
   word-spacing: normal;
@@ -511,7 +511,7 @@
   vertical-align: middle;
   font: 12px/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
   text-align: center;
-  cursor: default;
+  cursor: pointer;
   background-color: buttonface;
   letter-spacing: normal;
   word-spacing: normal;
@@ -536,7 +536,7 @@
   vertical-align: middle;
   font: 12px/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
   text-align: center;
-  cursor: default;
+  cursor: pointer;
   background-color: buttonface;
   letter-spacing: normal;
   word-spacing: normal;
@@ -810,7 +810,7 @@
   background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
   border-radius: 3px 3px 3px 3px;
   color: white;
-  cursor: default;
+  cursor: pointer;
   display: inline-block;
   height: 26px;
   letter-spacing: normal;

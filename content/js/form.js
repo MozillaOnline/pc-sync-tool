@@ -374,10 +374,11 @@ var ContactForm = (function() {
       alert(_('EmptyName'));
       return;
     }
+    /*
     if (mobile == '') {
       alert(_('EmptyPhone'));
       return;
-    }
+    }*/
     contact = {
       id: null,
       photo: [],
