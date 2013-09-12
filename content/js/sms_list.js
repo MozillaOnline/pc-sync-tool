@@ -18,8 +18,16 @@ var SmsList = (function() {
     messageListContainer = $id('message-list-container');
     messageListContainer.innerHTML = '';
     ViewManager.showViews('sms-send-view');
+    /*smsThreads.sort( function (a,b) {
+      return a.timestamp<b.timestamp?1:-1;
+    });*/
+    var smsThreads_new = [];
+    var threadsCount = smsThreads.length;
+    for (var i=0;i<threadsCount;i++) {
+      smsThreads_new.push(smsThreads.pop());
+    }
     threadList = new GroupedList({
-      dataList: smsThreads,
+      dataList: smsThreads_new,
       dataIndexer: function() {
         return 'threadlist';
       },
@@ -46,7 +54,7 @@ var SmsList = (function() {
   function updateThreadAvatar(item) {
     var threadInfo = item;
     CMD.Contacts.getContactByPhoneNumber(item.participants[0], function(result) {
-      if (result.data != '') {
+      if ((result.data != null) && (result.data != '')) {
         var contactData = JSON.parse(result.data);
         var threadItem = $id('id-threads-data-' + threadInfo.id);
         var name = threadItem.getElementsByTagName('div')[3];

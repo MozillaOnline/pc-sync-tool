@@ -145,45 +145,46 @@ var FFOSAssistant = (function() {
       $expr('.storage-number', elem)[0].textContent =
         formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
       $expr('.storage-graph .used', elem)[0].style.width = usedInP;
-
       if (elemId =='sdcard-storage-summary' ) {
         var subInP = Math.floor(info.picture / info.usedInBytes * 100);
-
         if (subInP == 0) {
           subInP = 1;
         }
-
         $expr('.storage-used', elem)[0].style.width = subInP + '%';
         subInP = Math.floor(info.music / info.usedInBytes * 100);
-
         if (subInP == 0) {
           subInP = 1;
         }
-
         $expr('.storage-used', elem)[1].style.width = subInP + '%';
         subInP = Math.floor(info.video / info.usedInBytes * 100);
-
         if (subInP == 0) {
           subInP = 1;
         }
-
         $expr('.storage-used', elem)[2].style.width = subInP + '%';
         subInP = Math.floor((info.usedInBytes - info.music - info.picture - info.video) / info.usedInBytes * 100);
-
         if (subInP == 0) {
           subInP = 1;
         }
-
         $expr('.storage-used', elem)[3].style.width =  subInP + '%';
       }
     } else {
-        $expr('.storage-number', elem)[0].textContent = formatStorage(info.usedInBytes) + '/' + formatStorage(total);
+      $expr('.storage-number', elem)[0].textContent = formatStorage(info.usedInBytes) + '/' + formatStorage(total);
+      $expr('.storage-graph .used', elem)[0].style.width = 0  + '%';
+      if (elemId =='sdcard-storage-summary' ) {
+        $expr('.storage-used', elem)[0].style.width = 0 + '%';
+        $expr('.storage-used', elem)[1].style.width = 0 + '%';
+        $expr('.storage-used', elem)[2].style.width = 0 + '%';
+        $expr('.storage-used', elem)[3].style.width = 0 + '%';
+      }
     }
   }
 
-  function getAndShowSummaryInfo() {
+  function getAndShowStorageInfo() {
     CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
-      var deviceInfo = {};
+      var deviceInfo = {
+	usedInBytes: 0,
+        freeInBytes: 0
+      };
       var sdcardInfo = {
         usedInBytes: 0,
         freeInBytes: 0,
@@ -193,20 +194,30 @@ var FFOSAssistant = (function() {
       };
 
       var dataJSON = JSON.parse(message.data);
-      deviceInfo.usedInBytes = dataJSON[4].usedSpace;
-      deviceInfo.freeInBytes = dataJSON[4].freeSpace;
-      sdcardInfo.usedInBytes = dataJSON[3].usedSpace;
-      sdcardInfo.freeInBytes = dataJSON[3].freeSpace;
-      sdcardInfo.picture = dataJSON[0].usedSpace;
-      sdcardInfo.music = dataJSON[1].usedSpace;
-      sdcardInfo.video = dataJSON[2].usedSpace;
-
+      for(var i=0;i<dataJSON.length;i++) {
+	if(dataJSON[i].storageName == 'apps') {
+	  deviceInfo.usedInBytes = dataJSON[i].usedSpace;
+	  deviceInfo.freeInBytes = dataJSON[i].freeSpace;
+	} else if (dataJSON[i].storageName == 'sdcard') {
+	  sdcardInfo.usedInBytes = dataJSON[i].usedSpace;
+	  sdcardInfo.freeInBytes = dataJSON[i].freeSpace;
+	} else if (dataJSON[i].storageName == 'pictures') {
+	  sdcardInfo.picture = dataJSON[i].usedSpace;
+	} else if (dataJSON[i].storageName == 'music') {
+	  sdcardInfo.music = dataJSON[i].usedSpace;
+	} else if (dataJSON[i].storageName == 'videos') {
+	  sdcardInfo.video = dataJSON[i].usedSpace;
+	}
+      }
       fillStorageSummaryInfo('device-storage-summary', deviceInfo);
       fillStorageSummaryInfo('sdcard-storage-summary', sdcardInfo);
     }, function onerror_getStorage(message) {
       console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
     });
+  }
 
+  function getAndShowSummaryInfo() {
+    getAndShowStorageInfo();
     CMD.Device.getSettings(function onresponse_getDeviceInfo(message) {
       var dataJSON = JSON.parse(message.data);
       var elem = $id('device-storage-summary');
@@ -218,7 +229,6 @@ var FFOSAssistant = (function() {
       console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
     });
   }
-
   /**
    * Show the contact view, and start fetching the contacts data from device.
    */
@@ -248,7 +258,7 @@ var FFOSAssistant = (function() {
       var dataJSON = JSON.parse(messages.data);
       SmsList.init(dataJSON);
     }, function onerror_getThreads(messages) {
-      log('Error occurs when fetching all messages' + messages.message);  
+      log('Error occurs when fetching all messages' + messages.message);
     });
   }
 
@@ -342,10 +352,11 @@ var FFOSAssistant = (function() {
 
     // Register view event callbacks
     ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
+    ViewManager.addViewEventListener('summary-view', 'othershow', getAndShowStorageInfo);
     ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);
-    ViewManager.addViewEventListener('contact-view', 'othershow', getAndShowAllContacts);
+    //ViewManager.addViewEventListener('contact-view', 'othershow', getAndShowAllContacts);
     ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSThreads);
-    ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
+    //ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
     ViewManager.addViewEventListener('music-view', 'firstshow', getAndShowAllMusics);
     ViewManager.addViewEventListener('gallery-view', 'firstshow', getAndShowGallery);
     ViewManager.addViewEventListener('video-view', 'firstshow', getAndShowAllVideos);

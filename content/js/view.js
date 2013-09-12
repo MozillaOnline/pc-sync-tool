@@ -43,9 +43,12 @@ var ViewManager = (function() {
       if (!linkedView) {
         continue;
       }
+      if(viewId == 'connect-view') {
+        linkedView.dataset.firstshown = false;
+      }
       if (linkedView.dataset.shown == "true") {
         viewOldId = oldId;
-        break;
+        continue;
       } else {
         continue;
       }
