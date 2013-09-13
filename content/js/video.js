@@ -29,25 +29,193 @@ var Video = (function() {
     return obj;
   }
 
+  function parseDate(date) {
+    var dt = new Date(date);
+    var strDate = dt.getFullYear() + '-';
+
+    if (dt.getMonth() < 9) {
+      strDate += '0' + (dt.getMonth() + 1) + '-';
+    } else {
+      strDate += (dt.getMonth() + 1) + '-';
+    }
+    if(dt.getDay() < 9) {
+      strDate += '0' + (dt.getDay() + 1);
+    } else {
+      strDate += dt.getDay() + 1;
+    }
+    return strDate;
+  }
+
+  function parseSize(size) {
+    var retSize = size / 1024 /10.24;
+    return parseInt(retSize) / 100;
+  }
+
+  function init() {
+    getListContainer().innerHTML = '';
+    showEmptyVideoList(false);
+  }
+
+  function addVideo(video) {
+    if (!video) {
+      return;
+    }
+    _addToVideoList(video);
+  }
+
+  function removeVideo(videos) {
+    if (!videos || !videos.length || videos.length < 1) {
+      return;
+    }
+    removeVideosProcess(videos);
+  }
+
+  function updateUI() {
+    var videoList = $expr('#video-list-container li');
+    if (videoList.length == 0) {
+      showEmptyVideoList(true);
+    }
+  }
+
+  function _addToVideoList(video) {
+    var groupId = parseDate(parseInt(video.date));
+    var groupContainer = $id(groupId);
+    var container = getListContainer();
+    if (groupContainer) {
+      var groupBody = groupContainer.getElementsByTagName('ul')[0];
+      groupBody.appendChild(_createVideoListItem(video));
+      groupContainer.dataset.length = 1 + parseInt(groupContainer.dataset.length);
+      var titles = $expr('.title', groupContainer);
+      titles[0].innerHTML = '<span>' + groupId + ' (' + groupContainer.dataset.length + ')</span>';
+    } else {
+      groupContainer = document.createElement('div');
+      groupContainer.setAttribute('id', groupId);
+      groupContainer.classList.add('video-thread');
+      var header = document.createElement('div');
+      header.classList.add('header');
+      groupContainer.appendChild(header);
+
+      var title = document.createElement('label');
+      title.classList.add('title');
+      header.appendChild(title);
+      title.innerHTML = '<span>' + groupId + ' (' + 1 + ')</span>';
+      container.appendChild(groupContainer);
+      title.onclick = function onSelectGroup(e) {
+        var target = e.target;
+        if (target instanceof HTMLLabelElement) {
+          target.classList.toggle('group-checked');
+          var groupContainer = this.parentNode.parentNode;
+          var checkboxes = $expr('.video-unchecked',groupContainer);
+          var videoItems = $expr('li',groupContainer);
+
+          if (target.classList.contains('group-checked')) {
+            groupContainer.dataset.checked = true;
+            checkboxes.forEach(function(item) {
+              item.classList.add('video-checked');
+            });
+
+            videoItems.forEach(function(item) {
+              item.dataset.checked = true;
+            });
+          } else {
+            groupContainer.dataset.checked = false;
+            checkboxes.forEach(function(cb) {
+              cb.classList.remove('video-checked');
+            });
+
+            videoItems.forEach(function(item) {
+              item.dataset.checked = false;
+            });
+          }
+           opStateChanged();
+         }
+      };
+
+      var groupBody = document.createElement('ul');
+      groupBody.classList.add('body');
+      groupContainer.appendChild(groupBody);
+      groupContainer.dataset.length = 1;
+      groupContainer.dataset.checked = false;
+      groupContainer.dataset.groupId = groupId;
+
+      groupBody.appendChild(_createVideoListItem(video));
+    }
+  }
+
+  function _createVideoListItem(video) {
+      var listItem = document.createElement('li');
+      listItem.dataset.checked = 'false';
+      listItem.dataset.videoUrl = video.name;
+      listItem.dataset.title = video.metadata.title;
+      listItem.dataset.date = video.date;
+      listItem.dataset.size = video.size;
+
+      listItem.innerHTML = '<img src="' + video.metadata.poster + '">';
+
+      var itemCheckbox = document.createElement('div');
+      itemCheckbox.classList.add('video-unchecked');
+      listItem.appendChild(itemCheckbox);
+
+      listItem.onclick = function item_click(e) {
+        itemCheckbox.classList.toggle('video-checked');
+
+        if (itemCheckbox.classList.contains('video-checked')) {
+          this.dataset.checked = 'true';
+        } else {
+          this.dataset.checked = 'false';
+        }
+
+        var groupBody = this.parentNode;
+        var groupContainer = groupBody.parentNode;
+        var labels = groupContainer.getElementsByTagName('label');
+        if ($expr('.video-checked', groupBody).length == groupContainer.dataset.length) {
+          labels[0].classList.add('group-checked');
+          groupContainer.dataset.checked = true;
+        } else {
+          labels[0].classList.remove('group-checked');
+          groupContainer.dataset.checked = false;
+        }
+        opStateChanged();
+      };
+      listItem.onmouseover = function(e) {
+        var tip = document.createElement('div');
+        tip.setAttribute('id', 'video-tip');
+        tip.classList.add('video-tip');
+        tip.style.top = (e.target.parentNode.offsetTop + 80) + 'px';
+        tip.style.left = (e.target.parentNode.offsetLeft + 55) + 'px';
+        tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:'
+                         + parseDate(parseInt(this.dataset.date)) + '</div><div>size:'
+                         + parseSize(this.dataset.size) + 'M' + '</div>';
+        $id('video-view').appendChild(tip);
+      };
+      listItem.onmouseout = function(e) {
+        var tip = $id('video-tip');
+        if (tip) {
+          tip.parentNode.removeChild(tip);
+        }
+      };
+      return listItem;
+  }
+
   function opStateChanged() {
-    if ($expr('#video-list-container .videos-group').length == 0) {
+    if ($expr('#video-list-container .video-thread').length == 0) {
       $id('selectAll-videos').dataset.checked = false;
       $id('selectAll-videos').dataset.disabled = true;
     } else {
       $id('selectAll-videos').dataset.checked =
-        $expr('#video-list-container .video-item-div').length ===
-          $expr('#video-list-container .video-item-div[data-checked="true"]').length;
+        $expr('#video-list-container li').length ===
+          $expr('#video-list-container li[data-checked="true"]').length;
       $id('selectAll-videos').dataset.disabled = false;
     }
 
     $id('remove-videos').dataset.disabled =
-      $expr('#video-list-container .video-item-div[data-checked="true"]').length === 0;
+      $expr('#video-list-container li[data-checked="true"]').length === 0;
     $id('export-videos').dataset.disabled =
-      $expr('#video-list-container .video-item-div[data-checked="true"]').length === 0;
+      $expr('#video-list-container li[data-checked="true"]').length === 0;
   }
 
   function checkVideoListIsEmpty() {
-    var isEmpty = $expr('#video-list-container .video-item-div').length === 0 ;
+    var isEmpty = $expr('#video-list-container li').length === 0 ;
     if (isEmpty) {
       $id('selectAll-videos').dataset.disabled = true;
       showEmptyVideoList(true);
@@ -65,210 +233,8 @@ var Video = (function() {
     }
   }
 
-  var dataPool = {
-    dataList:[],
-    groupedData:[]
-  };
-
-  var currentGroupIndex;
-  var currentVideoIndex;
-
-  function initList(videos) {
-    var container = getListContainer();
-    container.innerHTML = '';
-    dataPool.dataList = videos;
-    dataPool.groupedData = [];
-    makeGroup();
-    sortGroup();
-    var index = 0;
-    setTimeout(function getVideoGoups() {
-      if (index == dataPool.groupedData.length) {
-        checkVideoListIsEmpty();
-        opStateChanged();
-        return;
-      }
-
-      var group = dataPool.groupedData[index];
-      var groupItem = document.createElement('div');
-      groupItem.classList.add('videos-group');
-      var titleDiv = document.createElement('div');
-      titleDiv.classList.add('title');
-      groupItem.appendChild(titleDiv);
-
-      var html = '';
-      html += '  <label class="group-unckecked"></label>';
-      html += '  <div class="groupInfo">';
-      html += '  <span>';
-      html += group.id;
-      html += '  </span>';
-      html += '  <span>';
-      html += '(' + group.data.length + ')';
-      html += '  </span>';
-      html += '  </div>';
-      titleDiv.innerHTML += html;
-
-      container.appendChild(groupItem);
-      var groupBody = document.createElement('div');
-      groupBody.classList.add('groupBody');
-      groupItem.appendChild(groupBody);
-      groupItem.dataset.length = group.data.length;
-      groupItem.dataset.checked = false;
-      groupItem.dataset.groupId = group.id;
-
-      var position = 0;
-      setTimeout(function getGoupVideos() {
-        if (position == group.data.length) {
-          titleDiv.onclick = function selectGroup(event) {
-            var target = event.target;
-            if (target instanceof HTMLLabelElement) {
-              target.classList.toggle('group-checked');
-              var groupContainer = this.parentNode;
-              var checkboxes = $expr('.video-unchecked',groupContainer);
-              var videoDivs = $expr('.video-item-div',groupContainer);
-
-              if (target.classList.contains('group-checked')) {
-                groupContainer.dataset.checked = true;
-                checkboxes.forEach(function(item) {
-                  item.classList.add('video-checked');
-                });
-
-                videoDivs.forEach(function(div) {
-                  div.dataset.checked = true;
-                });
-              } else {
-                groupContainer.dataset.checked = false;
-                checkboxes.forEach(function(item) {
-                  item.classList.remove('video-checked');
-                });
-
-                videoDivs.forEach(function(div) {
-                  div.dataset.checked = false;
-                });
-              }
-              opStateChanged();
-            }
-          };
-          index++;
-          getVideoGoups();
-          return;
-        }
-
-        CMD.Videos.getVideoPosterByName(group.data[position].name,
-          function on_getVideoPosterSuccess(result) {
-            var div = document.createElement('div');
-            div.classList.add('video-item-div');
-            div.dataset.checked = 'false';
-            div.dataset.videoUrl = group.data[position].name;
-            div.dataset.groupIndex = index;
-            div.dataset.position = position;
-            groupBody.appendChild(div);
-            var videoDiv = document.createElement('div');
-            videoDiv.classList.add('video-item');
-            videoDiv.innerHTML = '<img src="' + result.data + '">';
-            div.appendChild(videoDiv);
-            var checkboxDiv = document.createElement('div');
-            checkboxDiv.classList.add('video-unchecked');
-            div.appendChild(checkboxDiv);
-
-            checkboxDiv.onclick = function select_video(event) {
-              this.classList.toggle('video-checked');
-              var video = this.parentNode;
-
-              if (this.classList.contains('video-checked')) {
-                video.dataset.checked = 'true';
-              } else {
-                video.dataset.checked = 'false';
-              }
-
-              var groupBody = this.parentNode.parentNode;
-              var groupContainer = groupBody.parentNode;
-              var labels = groupContainer.getElementsByTagName('label');
-              if ($expr('.video-checked', groupBody).length == groupContainer.dataset.length) {
-                labels[0].classList.add('group-checked');
-                groupContainer.dataset.checked = true;
-              } else {
-                labels[0].classList.remove('group-checked');
-                groupContainer.dataset.checked = false;
-              }
-              opStateChanged();
-            };
-            position++;
-            getGoupVideos();
-          },
-          function on_getVideoPosterError(error) {
-            position++;
-            getGoupVideos();
-            alert('get video poster error');
-          }
-        );
-      }, 0 );
-    }, 0);
-  }
-
-  function makeGroup() {
-    dataPool.dataList.forEach(function(item) {
-      var dt = new Date(parseInt(item.date));
-      var groupId = dt.getFullYear() + '-';
-
-      if (dt.getMonth() < 9) {
-        groupId += '0' + (dt.getMonth() + 1) + '-';
-      } else {
-        groupId += (dt.getMonth() + 1) + '-';
-      }
-      if(dt.getDay() < 9) {
-        groupId += '0' + (dt.getDay() + 1);
-      } else {
-        groupId += dt.getDay() + 1;
-      }
-
-      var group = findGroupById(groupId);
-      if (group) {
-        group.data.push(item);
-      } else {
-        group = {id:groupId, data:[]};
-        group.data.push(item);
-        dataPool.groupedData.push(group);
-      }
-    });
-  }
-
-  function sortGroup() {
-    dataPool.groupedData.sort(function(a,b) {
-      var dt1 = new Date(a.id).getTime();
-      var dt2 = new Date(b.id).getTime();
-      if (dt1 == dt2) {
-        return 0;
-      }
-      if (dt1 > dt2) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
-  }
-
-  function findGroupById(groupId) {
-    var group = null;
-    for (var i =0; i < dataPool.groupedData.length; i++) {
-      if (dataPool.groupedData[i].id == groupId) {
-        group = dataPool.groupedData[i];
-        break;
-      }
-    }
-    return group;
-  }
-
-  function removeGroup(group) {
-    for (var i =0; i < dataPool.groupedData.length; i++) {
-      if (dataPool.groupedData[i].id == group.id) {
-        dataPool.groupedData.splice(i, 1);
-        break;
-      }
-    }
-  }
-
   function selectAllVideos(select) {
-    $expr('#video-list-container .videos-group').forEach(function(group) {
+    $expr('#video-list-container .video-thread').forEach(function(group) {
       selectVideosGroup(group, select);
     });
 
@@ -277,22 +243,22 @@ var Video = (function() {
 
   function selectVideosGroup(group, selected) {
     group.dataset.checked = selected;
-    $expr('.video-item-div', group).forEach(function(videoDiv) {
-      videoDiv.dataset.checked = selected;
+    $expr('li', group).forEach(function(videoItem) {
+      videoItem.dataset.checked = selected;
     });
 
-    var groupCheckbox = $expr('.group-unckecked', group)[0];
+    var groupCheckbox = $expr('.title', group)[0];
 
     if (groupCheckbox) {
       if (selected) {
         groupCheckbox.classList.add('group-checked');
-        $expr('.video-unchecked', group).forEach(function(videoCheckbox) {
-          videoCheckbox.classList.add('video-checked');
+        $expr('.video-unchecked', group).forEach(function(cb) {
+          cb.classList.add('video-checked');
         });
       } else {
         groupCheckbox.classList.remove('group-checked');
-        $expr('.video-unchecked', group).forEach(function(videoCheckbox) {
-          videoCheckbox.classList.remove('video-checked');
+        $expr('.video-unchecked', group).forEach(function(cb) {
+          cb.classList.remove('video-checked');
         });
       }
     }
@@ -405,25 +371,13 @@ var Video = (function() {
 
   function removeVideosProcess(filesToBeRemoved) {
     for (var i = 0; i < filesToBeRemoved.length; i++) {
-      var videoDiv = $expr('.video-item-div[data-video-url="' + filesToBeRemoved[i] + '"]')[0];
-      if (videoDiv) {
-        var groupBody = videoDiv.parentNode;
-        groupBody.removeChild(videoDiv);
+      var video = $expr('li[data-video-url="' + filesToBeRemoved[i] + '"]')[0];
+      if (video) {
+        var groupBody = video.parentNode;
+        groupBody.removeChild(video);
         var group = groupBody.parentNode;
-        var groupId = group.dataset.groupId;
-        var groupData = findGroupById(groupId);
-        if (groupData) {
-          for (var j = 0; j < groupData.data.length; j++) {
-            if (groupData.data[j].name  == videoDiv.dataset.videoUrl) {
-              groupData.data.splice(j ,1);
-              if (groupData.data.length == 0) {
-                removeGroup(groupData);
-              }
-              break;
-            }
-          }
-        }
-        if ($expr('.video-item-div', groupBody).length == 0) {
+
+        if ($expr('li', groupBody).length == 0) {
           getListContainer().removeChild(group);
         }
       }
@@ -558,7 +512,7 @@ var Video = (function() {
       }
 
       var files = [];
-      $expr('#video-list-container .video-item-div[data-checked="true"]').forEach(function(item) {
+      $expr('#video-list-container li[data-checked="true"]').forEach(function(item) {
         files.push(item.dataset.videoUrl);
       });
 
@@ -586,7 +540,7 @@ var Video = (function() {
         return;
       }
 
-      var videos = $expr('#video-list-container .video-item-div[data-checked="true"]');
+      var videos = $expr('#video-list-container li[data-checked="true"]');
 
       if (videos.length <= 0 ) {
         return;
@@ -699,7 +653,10 @@ var Video = (function() {
   });
 
   return {
-    init: initList,
+    init: init,
+    addVideo: addVideo,
+    removeVideo: removeVideo,
+    updateUI: updateUI,
     selectAllVideos: selectAllVideos,
     removeVideos: removeVideos
   };

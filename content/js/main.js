@@ -336,24 +336,36 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowAllVideos() {
-    var videoList = [];
+    Video.init();
     CMD.Videos.getOldVideosInfo(function onresponse_getOldVideosInfo(oldVideo) {
       var video = JSON.parse(oldVideo.data);
       if (video.callbackID == 'enumerate') {
-        videoList.push(video.detail);
-        //MusicList.addMusic(music.detail);
+        Video.addVideo(video.detail);
         return;
       }
       if (video.callbackID == 'enumerate-done') {
         CMD.Videos.getChangedVideosInfo(function onresponse_getChangedVideos(changedVideoInfo) {
           var changedVideo = JSON.parse(changedVideoInfo.data);
+          if (changedVideo.callbackID == 'oncreated') {
+            Video.addVideo(changedVideo.detail);
+            return;
+          }
+          if (changedVideo.callbackID == 'ondeleted') {
+            Video.removeVideo(changedVideo.detail);
+            return;
+          }
+          if (changedVideo.callbackID == 'onscanend') {
+             // Make sure the 'select-all' box is not checked.
+            Video.selectAllVideos(false);
+            Video.updateUI();
+            return;
+          }
         }, function onerror_getChangedVideo(e) {
           log('Error occurs when fetching changed videos.');
         });
       }
-      //Video.init(dataJSON);
-    }, function onerror_getAllVideosInfo(message) {
-      log('Error occurs when fetching all videos.');
+    }, function onerror_getOldVideosInfo(e) {
+      log('Error occurs when fetching old videos.');
     });
   }
 

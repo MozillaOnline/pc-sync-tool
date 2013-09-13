@@ -100,27 +100,39 @@
   margin-bottom: 2rem;
 }
 
-.videos-group {
+.video-thread {
   margin-left: 1.8rem;
   height: 12rem;
   clear: both;
 }
 
-.videos-group .title {
-  height: 3rem;
+.video-thread .header {
+  height: 22px;
   width: 100%;
+  margin-top: 4px;
 }
 
-.videos-group .groupInfo {
-  margin: 0.6rem 0 0 0.4rem;
+.video-thread .header .title {
+  background-image: url("images/checkbox.png");
+  background-position: 2px 0;
+  background-repeat: no-repeat;
+  display: inline-block;
 }
 
-.videos-group .groupBody {
+.video-thread .header .group-checked {
+  background-image: url("images/checkbox-checked.png");
+}
+
+.video-thread .header .title >span {
+  margin-left: 24px;
+}
+
+.video-thread .body {
   clear: both;
   margin-left: 0.3rem;
 }
 
-.videos-group .groupBody > div {
+.video-thread .body > div {
   position: relative;
   width: 106px;
   height: 81px;
@@ -142,18 +154,47 @@
   position: absolute;
   left: 83px;
   background-image: url("images/pic-unchecked.png");
+  top: 10px;
 }
 
 .video-checked {
   background-image: url("images/pic-checked.png");
 }
 
-.videos-group .groupBody .video-item > img {
+.video-thread .body >li {
+  position: relative;
+  width: 110px;
+  height: 82px;
+  overflow: hidden;
+  display: inline-block;
+  margin: 3px;
+}
+
+.video-thread .body >li >img {
+  width: 106px;
+  height: 78px;
+  border: 2px white solid;
+}
+
+.video-thread .body img:hover {
+  border: 2px #00c8f0 solid;
+}
+
+.video-thread .body .video-item > img {
   width: 100px;
   height: 75px;
 }
 
-.videos-group .title > * {
+.video-tip {
+  background-color: #000000;
+  color: #FFFFFF;
+  width: 106px;
+  padding: 7px;
+  position: absolute;
+  font-size: 9px;
+}
+
+.video-thread .title > * {
   float: left;
 }
 
