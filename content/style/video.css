@@ -133,6 +133,9 @@
   width: 106px;
 }
 
+.video-item:hover {
+}
+
 .video-unchecked {
   width: 17px;
   height: 17px;

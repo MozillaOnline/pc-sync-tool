@@ -101,6 +101,10 @@
   color: #018CAB;
 }
 
+#empty-music-container {
+  display: none;
+}
+
 #music-list-container {
   max-height: 50rem;
   overflow: auto;
@@ -170,7 +174,7 @@
 }
 
 .music-header .music-type {
-  width:5rem;
+  width:6rem;
 }
 
 .music-header .music-size {

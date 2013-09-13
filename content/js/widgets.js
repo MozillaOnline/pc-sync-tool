@@ -669,7 +669,7 @@ SendSMSDialog.prototype = {
         sender.push(item);
       }
     });
-    CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message.value}),
+    CMD.SMS.sendSMS(JSON.stringify({number:sender, message: message.value}),
       function onSuccess_sendSms(event) {
         if (!event.result) {
           self._mask.parentNode.removeChild(self._mask);
@@ -897,7 +897,7 @@ SendSMSToSingle.prototype = {
     var sender = [tel.textContent];
     var self = this;
     message.readOnly = true;
-    CMD.SMS.sendMessages(JSON.stringify({number:sender, message: message.value}),
+    CMD.SMS.sendSMS(JSON.stringify({number:sender, message: message.value}),
       function onSuccess_sendSms(event) {
         if (!event.result) {
           self._mask.parentNode.removeChild(self._mask);

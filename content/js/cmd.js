@@ -19,10 +19,8 @@ var CMD = (function() {
           type: target,
           command: command,
           result: 0,
-          firstData: data,
-          firstDatalength: data.length,
-          secondData: null,
-          secondDatalength: 0
+          data: data,
+          datalength: data.length
         },
         onresponse: onresponse,
         onerror: onerror
@@ -40,10 +38,8 @@ var CMD = (function() {
           type: target,
           command: command,
           result: 0,
-          firstData: null,
-          firstDatalength: 0,
-          secondData: null,
-          secondDatalength: 0
+          data: null,
+          datalength: 0
         },
         onresponse: onresponse,
         onerror: onerror
@@ -58,10 +54,8 @@ var CMD = (function() {
           type: target,
           command: command,
           result: 0,
-          firstData: null,
-          firstDatalength: 0,
-          secondData: null,
-          secondDatalength: 0
+          data: null,
+          datalength: 0
         },
         onresponse: onresponse,
         onerror: onerror
@@ -127,23 +121,20 @@ var CMD = (function() {
 
     /***** Picture commands ******/
     Pictures: {
-      getAllPicsInfo:  createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getAllPicturesInfo)
+      getOldPicturesInfo:  createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getOldPicturesInfo),
+      getChangedPicturesInfo: createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getChangedPicturesInfo)
     },
 
     /***** Videos commands ******/
     Videos: {
-      getAllVideosInfo:  createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getAllVideosInfo),
-
-      /*
-       * data:
-       *   video name
-       */
-      getVideoPosterByName: createCommand(CMD_TYPE.video, VIDEO_COMMAND.getVideoPosterByName)
+      getOldVideosInfo:  createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getOldVideosInfo),
+      getChangedVideosInfo: createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getChangedVideosInfo)
     },
 
     /***** Musics commands ******/
     Musics: {
-      getAllMusicsInfo:  createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getAllMusicsInfo)
+      getOldMusicsInfo:  createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getOldMusicsInfo),
+      getChangedMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getChangedMusicsInfo)
     },
 
     /***** SMS commands *****/
@@ -154,19 +145,19 @@ var CMD = (function() {
        * data:
        *   SMS Filter
        */
-      getMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.getMessageById),
+      getSMSById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.getSMSById),
 
       /*
        * data:
        *   string like: "number: '10086', message: 'Here is the message content'"
        */
-      sendMessage:  createCommand(CMD_TYPE.sms, SMS_COMMAND.sendMessage),
+      sendSMS:  createCommand(CMD_TYPE.sms, SMS_COMMAND.sendSMS),
 
       /*
        * data:
        *   string like: "number: ['10086','13584651421'], message: 'Here is the message content'"
        */
-      sendMessages:  createCommand(CMD_TYPE.sms, SMS_COMMAND.sendMessages),
+      sendMMS:  createCommand(CMD_TYPE.sms, SMS_COMMAND.sendMMS),
 
       /*
        * data:
@@ -174,6 +165,7 @@ var CMD = (function() {
        */
       deleteMessageById:  createCommand(CMD_TYPE.sms, SMS_COMMAND.deleteMessageById),
 
+      resendMessage:  createCommand(CMD_TYPE.sms, SMS_COMMAND.resendMessage),
       /*
        * data:
        *   message id

@@ -686,6 +686,11 @@
 .sms-message-item-ctn li .content-wrap:hover .actions{
   display:inline-block
 }
+
+.sms-message-item-ctn li .content-wrap .mms > *{
+  width: 100%;
+}
+
 .sms-message-item-ctn li .info{
   display:inline-block;
   vertical-align:bottom;

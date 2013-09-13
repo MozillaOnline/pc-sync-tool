@@ -21,8 +21,6 @@ var MusicList = (function() {
     return str.substr(0, index);
   }
 
-  //function retriveTimeSpan() {}
-
   function retriveType(type) {
     var index = type.lastIndexOf('/');
     if (index < 0) {
@@ -43,23 +41,66 @@ var MusicList = (function() {
     return Math.round(100 * size / 1024 / 1024) / 100;
   }
 
-  function createMusicListItem(music, index) {
+  function init() {
+    getListContainer().innerHTML = '';
+    showEmptyMusics(false);
+  }
+
+  function addMusic(music) {
+    if (!music) {
+      return;
+    }
+    var container = getListContainer();
+    var listItem = _createMusicListItem(music);
+    container.appendChild(listItem);
+  }
+
+  function removeMusic(music) {
+    if (!music || !music.length || music.length < 1) {
+      return;
+    }
+    for (var index = 0; index < music.length; index++) {
+      var item = $id(music[index]);
+      if (item) {
+        getListContainer().removeChild(item);
+      }
+    }
+  }
+
+  function updateUI() {
+    var musicList = $expr('#music-list-container .music-list-item');
+    if (musicList.length == 0) {
+      showEmptyMusics(true);
+    } else {
+      showEmptyMusics(false);
+      for (var index = 0; index < musicList.length; index++) {
+        if (index % 2) {
+          if (musicList[index].classList.contains('even')) {
+            musicList[index].classList.remove('even');
+          }
+          musicList[index].classList.add('odd');
+        } else {
+          if (musicList[index].classList.contains('odd')) {
+            musicList[index].classList.remove('odd');
+          }
+          musicList[index].classList.add('even');
+        }
+      }
+    }
+  }
+
+  function _createMusicListItem(music) {
     var html = '';
     html += '<label class="unchecked"></label>';
-    html += '<div class="music-names item"><span>' + retriveName(music.name) + '</span></div>';
+    html += '<div class="music-names item"><span>' + music.metadata.title + '</span></div>';
     html += '<div class="music-singer item"><span>' + music.metadata.artist + '</span></div>';
     html += '<div class="music-album item"><span>' + music.metadata.album + '</span></div>';
-    html += '<div class="music-type item"><span>' + retriveExtension(music.name) + '</span></div>';
+    html += '<div class="music-type item"><span>' + music.type + '</span></div>';
     html += '<div class="music-size item"><span>' + retriveSize(music.size) + ' MB' + '</span></div>';
 
     var elem = document.createElement('div');
     elem.classList.add('music-header');
     elem.classList.add('music-list-item');
-    if (index % 2) {
-      elem.classList.add('odd');
-    } else {
-      elem.classList.add('even');
-    }
     elem.innerHTML = html;
 
     elem.dataset.music = JSON.stringify(music);
@@ -133,37 +174,12 @@ var MusicList = (function() {
     $id('export-musics').dataset.disabled = false;
   }
 
-  function checkIfMusicListEmpty() {
-    var isEmpty = $expr('#music-list-container .music-list-item').length === 0 ;
-    if (isEmpty) {
-      $id('selectAll-musics').dataset.disabled = true;
-      showEmptyMusics(true);
-    } else {
-      $id('selectAll-musics').dataset.disabled = false;
-      showEmptyMusics(false);
-    }
-  }
-
   function showEmptyMusics(bFlag) {
     if (bFlag) {
       $id('empty-music-container').style.display = 'block';
     } else {
       $id('empty-music-container').style.display = 'none';
     }
-  }
-
-  var groupedList = null;
-
-  function initList(musics) {
-    var container = getListContainer();
-    container.innerHTML = '';
-    var index = 0;
-    musics.forEach(function(music) {
-      var listItem = createMusicListItem(music, index);
-      container.appendChild(listItem);
-      index++;
-    });
-    checkIfMusicListEmpty();
   }
 
   function selectAllMusics(select) {
@@ -232,7 +248,7 @@ var MusicList = (function() {
     var step = range / 50;
     var bTimer = false;
 
-    setTimeout(function removeMusic() {
+    setTimeout(function timer_removeMusic() {
       var cmd = 'adb shell rm "' + items[fileIndex] + '"';
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!bTimer) {
@@ -273,7 +289,7 @@ var MusicList = (function() {
 
           opStateChanged();
         } else {
-          removeMusic();
+          timer_removeMusic();
         }
       };
 
@@ -311,20 +327,7 @@ var MusicList = (function() {
       var music = $id(item);
       container.removeChild(music);
     });
-    var musics = $expr('#music-list-container .music-list-item');
-    for (var index = 0; index < musics.length; index++) {
-      if (index % 2) {
-        if (musics[index].classList.contains('even')) {
-          musics[index].classList.remove('even');
-        }
-        musics[index].classList.add('odd');
-      } else {
-        if (musics[index].classList.contains('odd')) {
-          musics[index].classList.remove('odd');
-        }
-        musics[index].classList.add('even');
-      }
-    }
+    MusicList.updateUI();
   }
 
   function importMusics() {
@@ -597,7 +600,10 @@ var MusicList = (function() {
   });
 
   return {
-    init: initList,
+    init: init,
+    addMusic: addMusic,
+    removeMusic: removeMusic,
+    updateUI: updateUI,
     getMusic: getMusic,
     selectAllMusics: selectAllMusics,
     removeMusics: removeMusics

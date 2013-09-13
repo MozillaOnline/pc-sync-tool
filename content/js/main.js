@@ -263,27 +263,95 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowAllMusics() {
-    CMD.Musics.getAllMusicsInfo(function onresponse_getAllMusicsInfo(message) {
-      // Make sure the 'select-all' box is not checked.
-      MusicList.selectAllMusics(false);
-      var dataJSON = JSON.parse(message.data);
-      MusicList.init(dataJSON);
-    }, function onerror_getAllMusicsInfo(message) {
+    MusicList.init();
+    CMD.Musics.getOldMusicsInfo(function onresponse_getOldMusicsInfo(oldMusic) {
+      var music = JSON.parse(oldMusic.data);
+      if (music.callbackID == 'enumerate') {
+        MusicList.addMusic(music.detail);
+        return;
+      }
+      if (music.callbackID == 'enumerate-done') {
+        CMD.Musics.getChangedMusicsInfo(function onresponse_getChangedMusics(changedMusicInfo) {
+          var changedMusic = JSON.parse(changedMusicInfo.data);
+          if (changedMusic.callbackID == 'oncreated') {
+            MusicList.addMusic(changedMusic.detail);
+            return;
+          }
+          if (changedMusic.callbackID == 'ondeleted') {
+            MusicList.removeMusic(changedMusic.detail);
+            return;
+          }
+          if (changedMusic.callbackID == 'onscanend') {
+             // Make sure the 'select-all' box is not checked.
+            MusicList.selectAllMusics(false);
+            MusicList.updateUI();
+            return;
+          }
+        } , function onerror_getChangedMusics(e) {
+          log('Error occurs when fetching changed musics.');
+        })
+      }
+     }, function onerror_getOldMusicsInfo(e) {
       log('Error occurs when fetching all musics.');
     });
   }
 
   function getAndShowGallery () {
-    CMD.Pictures.getAllPicsInfo(function onresponse_getAllPicturesInfo(message) {
-      var dataJSON = JSON.parse(message.data);
-      Gallery.init(dataJSON);
+    var pictureList = [];
+    CMD.Pictures.getOldPicturesInfo(function onresponse_getOldMusicsInfo(oldPicture) {
+	  var picture = JSON.parse(oldPicture.data);
+      if (picture.callbackID == 'enumerate') {
+        pictureList.push(picture.detail);
+        return;
+      }
+      if (picture.callbackID == 'enumerate-done') {
+        CMD.Pictures.getChangedPicturesInfo(function onresponse_getChangedPictures(changedPictureInfo) {
+          var changedPicture = JSON.parse(changedPictureInfo.data);
+          if (changedPicture.callbackID == 'oncreated') {
+            pictureList.push(changedPicture.detail);
+            //MusicList.addMusic(changedMusic.detail);
+            return;
+          }
+          if (changedPicture.callbackID == 'ondeleted') {
+            //MusicList.removeMusic(changedMusic.detail);
+            return;
+          }
+          if (changedPicture.callbackID == 'onscanend') {
+             // Make sure the 'select-all' box is not checked.
+            //MusicList.selectAllMusics(false);
+            //MusicList.updateUI();
+            Gallery.init(pictureList);
+            return;
+          }
+          pictureList.push(changedPicture.detail);
+        }, function onerror_getChangedPictures (e) {
+          log('Error occurs when fetching changed pictures.');
+        });
+        return;
+      }
+      //Gallery.init(dataJSON);
+    }, function onerror_getOldMusicsInfo(e) {
+      log('Error occurs when fetching pictures.');
     });
   }
 
   function getAndShowAllVideos() {
-    CMD.Videos.getAllVideosInfo(function onresponse_getAllVideosInfo(message) {
-      var dataJSON = JSON.parse(message.data);
-      Video.init(dataJSON);
+    var videoList = [];
+    CMD.Videos.getOldVideosInfo(function onresponse_getOldVideosInfo(oldVideo) {
+      var video = JSON.parse(oldVideo.data);
+      if (video.callbackID == 'enumerate') {
+        videoList.push(video.detail);
+        //MusicList.addMusic(music.detail);
+        return;
+      }
+      if (video.callbackID == 'enumerate-done') {
+        CMD.Videos.getChangedVideosInfo(function onresponse_getChangedVideos(changedVideoInfo) {
+          var changedVideo = JSON.parse(changedVideoInfo.data);
+        }, function onerror_getChangedVideo(e) {
+          log('Error occurs when fetching changed videos.');
+        });
+      }
+      //Video.init(dataJSON);
     }, function onerror_getAllVideosInfo(message) {
       log('Error occurs when fetching all videos.');
     });

@@ -156,6 +156,9 @@ var SmsList = (function() {
     }
     html += '    </div>';
     var body = threadData.body;
+    if(threadData.lastMessageType == 'mms') {
+      body = 'MMS';
+    }
     if (body.length > 36) {
       body = body.substr(0, 36);
     }
@@ -230,11 +233,14 @@ var SmsList = (function() {
 
           html += '  </div>';
           html += '  <div class="body">';
-
-          if (SmsThreadsData.body.length > 12) {
-            html += SmsThreadsData.body.substr(0, 12) + '..';
+          if(SmsThreadsData.lastMessageType == 'mms') {
+            html += 'MMS';
           } else {
-            html += SmsThreadsData.body;
+            if (SmsThreadsData.body.length > 12) {
+              html += SmsThreadsData.body.substr(0, 12) + '..';
+            } else {
+              html += SmsThreadsData.body;
+            }
           }
 
           html += '  </div>';
@@ -350,11 +356,34 @@ var SmsList = (function() {
               if (MessageListData[0].delivery == "received") {
                 num = MessageListData[0].sender;
               } else {
-                num = MessageListData[0].receiver;
+                if (MessageListData[0].type == "mms") {
+                  num = MessageListData[0].receivers;
+                } else {
+                  num = MessageListData[0].receiver;
+                }
               }
+              var resendSMS = {
+                'type': 'sms',
+                'id': smsId[1],
+                'number': num,
+                'body': This.value
+              };
+              CMD.SMS.resendMessage(JSON.stringify(resendSMS), function onSuccess(event) {
+                removeMessage(smsId[1]);
+              }, function onError(e) {
+                alert('Error occured when removing message' + e);
+              });
+              /*var resendMMS = {
+                'type':,
+                'id':,
+                'number':,
+                'subject':,
+                'smil':,
+                'attachments':,
+              };
               CMD.SMS.deleteMessageById(smsId[1], function onSuccess(event) {
                 removeMessage(smsId[1]);
-                CMD.SMS.sendMessage(JSON.stringify({
+                CMD.SMS.sendSMS(JSON.stringify({
                   number: num,
                   message: This.value
                 }), function onSuccess_sendSms(sms) {
@@ -366,7 +395,7 @@ var SmsList = (function() {
                 });
               }, function onError(e) {
                 alert('Error occured when removing message' + e);
-              });
+              });*/
             });
           }
           var deleteBtns = $expr('.button-delete', messageListContainer);
@@ -374,7 +403,10 @@ var SmsList = (function() {
             deleteBtns[j].hidden = false;
             deleteBtns[j].addEventListener('click', function onclick_deleteSms(event) {
               var This = this;
-              CMD.SMS.deleteMessageById(This.value, function onSuccess(event) {
+              var smsId = {
+                'id': This.value
+              };
+              CMD.SMS.deleteMessageById(JSON.stringify(smsId), function onSuccess(event) {
                 removeMessage(This.value);
               }, function onError(e) {
                 alert('Error occured when removing message' + e);
@@ -440,34 +472,79 @@ var SmsList = (function() {
     } else {
       html += '<li class="from-me" ';
     }
+    //mms display
+    if(MessageData.type == 'mms') {
+      html += 'id="mms-id-' + MessageData.id + '"';
+      //html += " value='" + JSON.stringify(MessageData) + "'";
+      html += '>';
+      html += '<div class="content-wrap text-secondary">';
+      html += '<div class="mms">';
+      var dataText = 'data:text/plain;base64,';
+      for (var i=0;i<MessageData.attachments.length;i++) {
+        if(MessageData.attachments[i].content.indexOf(dataText) >= 0) {
+          html += '<text region="Text">';
+          html += decodeBase64(MessageData.attachments[i].content.substring(dataText.length,MessageData.attachments[i].content.length));
+          html += '</text>';
+        } else {
+          html += '<img region="Image" src="';
+          html += MessageData.attachments[i].content;
+          html += '"></img>';
+        }
+      }
+      html += '</div>';
 
-    html += 'id="sms-id-' + MessageData.id + '">';
-    html += '<div class="content-wrap text-secondary">';
-    html += '<span class="content enable-select">';
-    html += MessageData.body;
-    html += '</span>';
-    html += '<div class="arrow">';
-    html += '<div class="side"></div>';
-    html += '</div>';
-    html += '<div class="actions">';
+      html += '<div class="arrow">';
+      html += '<div class="side"></div>';
+      html += '</div>';
+      html += '<div class="actions">';
 
-    if (MessageData.delivery == "error") {
-      html += '<button class="button-resend" title="重发" ';
-      html += 'id="sms-resend-' + MessageData.id + '" ';
+      /*if (MessageData.delivery == "error") {
+        html += '<button class="button-resend" title="重发" ';
+        html += 'id="sms-resend-' + MessageData.id + '" ';
+        html += 'value="' + MessageData.body + '">';
+        html += '</button>';
+      }
+
+      html += '<button class="button-forward" title="转发" ';
+      html += 'id="sms-reply-' + MessageData.id + '" ';
+      html += 'value="' + MessageData.body + '">';
+      html += '</button>';*/
+      html += '<button class="button-delete" title="删除" ';
+      html += 'id="sms-delete-' + MessageData.id + '" ';
+      html += 'value="' + MessageData.id + '">';
+      html += '</button>';
+      html += '</div>';
+      html += '</div>';
+    } else {
+      html += 'id="sms-id-' + MessageData.id + '">';
+      html += '<div class="content-wrap text-secondary">';
+      html += '<span class="content enable-select">';
+      html += MessageData.body;
+      html += '</span>';
+      html += '<div class="arrow">';
+      html += '<div class="side"></div>';
+      html += '</div>';
+      html += '<div class="actions">';
+
+      if (MessageData.delivery == "error") {
+        html += '<button class="button-resend" title="重发" ';
+        html += 'id="sms-resend-' + MessageData.id + '" ';
+        html += 'value="' + MessageData.body + '">';
+        html += '</button>';
+      }
+
+      html += '<button class="button-forward" title="转发" ';
+      html += 'id="sms-reply-' + MessageData.id + '" ';
       html += 'value="' + MessageData.body + '">';
       html += '</button>';
+      html += '<button class="button-delete" title="删除" ';
+      html += 'id="sms-delete-' + MessageData.id + '" ';
+      html += 'value="' + MessageData.id + '">';
+      html += '</button>';
+      html += '</div>';
+      html += '</div>';
     }
 
-    html += '<button class="button-forward" title="转发" ';
-    html += 'id="sms-reply-' + MessageData.id + '" ';
-    html += 'value="' + MessageData.body + '">';
-    html += '</button>';
-    html += '<button class="button-delete" title="删除" ';
-    html += 'id="sms-delete-' + MessageData.id + '" ';
-    html += 'value="' + MessageData.id + '">';
-    html += '</button>';
-    html += '</div>';
-    html += '</div>';
     html += '<div class="info text-thirdly">';
     html += '<date>';
     if (hour < 10) {
@@ -584,10 +661,6 @@ var SmsList = (function() {
     opStateChanged();
   }
 
-  /**
-   * Get sms received just now
-   */
-
   function onMessage(sms) {
     if (threadList) {
       if (sms == 'updateAvatar') {
@@ -632,7 +705,11 @@ var SmsList = (function() {
           tempparticipants = sms.sender;
           unreadCount = 1;
         } else {
-          tempparticipants = sms.receiver;
+          if (sms.type == "mms") {
+            tempparticipants = sms.receivers;
+          } else {
+            tempparticipants = sms.receiver;
+          }
           unreadCount = 0;
         }
         var tempthreadListData = {
@@ -650,9 +727,6 @@ var SmsList = (function() {
     }
   }
 
-  /**
-   * Remove sms
-   */
   function removeThreads(item) {
     SmsList.selectAllSms(false);
     var groupedData = threadList.getGroupedData();
@@ -662,7 +736,10 @@ var SmsList = (function() {
       var result = [];
       var Sms = JSON.parse(messages.data);
       for (var i = 0; i < Sms.length; i++) {
-        CMD.SMS.deleteMessageById(JSON.stringify(Sms[i].id), function onSuccess(event) {
+        var smsId = {
+          'id': Sms[i].id
+        };
+        CMD.SMS.deleteMessageById(JSON.stringify(smsId), function onSuccess(event) {
           result.push(event.result);
           if (result.length == Sms.length) {
             for(var j = 0; j < groupedData.length; j++) {
@@ -690,13 +767,37 @@ var SmsList = (function() {
         var Sms = JSON.parse(messages.data);
         threadnum++;
         for (var i = 0; i < Sms.length; i++) {
-          content += Sms[i].type + ',';
-          content += Sms[i].delivery + ',';
-          content += Sms[i].sender + ',';
-          content += Sms[i].receiver + ',';
-          content += Sms[i].body + ',';
-          content += Sms[i].timestamp + ',';
-          content += Sms[i].read + '\n';
+          if(result.type == 'sms') {
+            content += Sms[i].type + ',';
+            content += Sms[i].id + ',';
+            content += Sms[i].threadId + ',';
+            content += Sms[i].delivery + ',';
+            content += Sms[i].deliveryStatus + ',';
+            content += Sms[i].sender + ',';
+            content += Sms[i].receiver + ',';
+            content += Sms[i].body + ',';
+            content += Sms[i].messageClass + ',';
+            content += Sms[i].timestamp + ',';
+            content += Sms[i].read + '\n';
+          } else if (result.type == 'mms') {
+            content += Sms[i].type + ',';
+            content += Sms[i].id + ',';
+            content += Sms[i].threadId + ',';
+            content += Sms[i].delivery + ',';
+            content += Sms[i].deliveryStatus + ',';
+            content += Sms[i].sender + ',';
+            content += Sms[i].receivers + ',';
+            content += Sms[i].subject + ',';
+            content += Sms[i].smil + ',';
+            content += Sms[i].expiryDate + ',';
+            for (var i=0; i<Sms[i].attachments.length; i++){
+              content += Sms[i].attachments[i].id + ',';
+              content += Sms[i].attachments[i].location + ',';
+              content += Sms[i].attachments[i].content + ',';
+            }
+            content += Sms[i].timestamp + ',';
+            content += Sms[i].read + '\n';
+          }
         }
         if (threadnum == ids.length) {
           navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
@@ -835,10 +936,14 @@ var SmsList = (function() {
           if (MessageListData[0].delivery == "received") {
             num = MessageListData[0].sender;
           } else {
-            num = MessageListData[0].receiver;
+            if (MessageListData[0].type == "mms") {
+              num = MessageListData[0].receivers;
+            } else {
+              num = MessageListData[0].receiver;
+            }
           }
           var body = $id('sender-ctn-input');
-          CMD.SMS.sendMessage(JSON.stringify({
+          CMD.SMS.sendSMS(JSON.stringify({
             number: num,
             message: body.value
           }), function onSuccess_sendSms(sms) {

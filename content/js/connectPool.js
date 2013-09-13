@@ -128,36 +128,51 @@ TCPConnectionPool.prototype = {
    * The callback function to be called in the wrapper
    * @see TCPSocketWrapper
    */
-  _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd, sendCallback, recvList) {
+  _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd, sendCallback, recvData) {
     try {
-      this.log('Receive msg: ' + JSON.stringify(jsonCmd));
       var wrapper = this._getWrapperBySocket(socket);
       if (!wrapper) {
         return;
       }
       var callback = this._fetchRequestCallback(jsonCmd.id);
-      // TODO parse the result of the jsonCmd, if failed, to call onerror
-      var dataList = wrapper.recvList;
-      // reset the recvList of the wrapper which is really important.
-      wrapper.recvList = [];
-      if (callback.json) {
-        // Parse the result as the object
-        callback.onresponse({
-          result: jsonCmd.result,
-          data: JSON.parse(dataList.join(''))
-        });
+      if(jsonCmd.result != RS_MIDDLE) {
+        this._deleteRequestCallback(jsonCmd.id);
+        if (callback.json) {
+          // Parse the result as the object
+          callback.onresponse({
+            result: jsonCmd.result,
+            data: JSON.parse(recvData)
+          });
+        } else {
+          // Pass back the raw result
+          callback.onresponse({
+            result: jsonCmd.result,
+            data: recvData
+          });
+        }
+        // Reset socket state
+        this._setSocketWrapperIdle(wrapper);
       } else {
-        // Pass back the raw result
-        callback.onresponse({
-          result: jsonCmd.result,
-          data: dataList.join('')
-        });
+        jsonCmd.result = RS_OK;
+        if (callback.json) {
+          // Parse the result as the object
+          callback.onresponse({
+            result: jsonCmd.result,
+            data: JSON.parse(recvData)
+          });
+        } else {
+          // Pass back the raw result
+          callback.onresponse({
+            result: jsonCmd.result,
+            data: recvData
+          });
+        }
       }
     } catch (e) {
       callback.onerror(e);
     }
     // Reset socket state
-    this._setSocketWrapperIdle(wrapper);
+    //this._setSocketWrapperIdle(wrapper);
   },
 
   _getAvailableSocketWrapper: function tc_getAvailableSocketWrapper() {
@@ -180,11 +195,15 @@ TCPConnectionPool.prototype = {
 
   _fetchRequestCallback: function tc_getRequestCallback(id) {
     if (this._callbacks[id]) {
-      var tmp = this._callbacks[id];
-      delete this._callbacks[id];
-      return tmp;
+      return this._callbacks[id];
     }
     return null;
+  },
+
+  _deleteRequestCallback: function tc_deleteRequestCallback(id) {
+    if (this._callbacks[id]) {
+      delete this._callbacks[id];
+    }
   },
 
   _getNextId: function tc_getNextId() {
@@ -204,14 +223,13 @@ TCPConnectionPool.prototype = {
 
   _doSend: function tc_doSend(wrapper, obj) {
     this._setSocketWrapperBusy(wrapper);
-    wrapper.send(obj.cmd, obj.cmd.firstData, obj.cmd.secondData);
+    wrapper.send(obj.cmd, obj.cmd.data);
   },
 
   /*
    * obj = {
    *   cmd: { id: 1, command: 1, type: 1},
-   *   firstData: null,
-   *   secondData: null,
+   *   data: null,
    *   onresponse: onresponse,
    *   onerror: onerror,
    *   json: true
@@ -220,10 +238,8 @@ TCPConnectionPool.prototype = {
   send: function tc_send(obj) {
     obj.cmd = extend({
       cmd: null,
-      firstData: null,
-      secondData: null,
-      firstDatalength: 0,
-      secondDatalength: 0,
+      data: null,
+      datalength: 0,
       json: false // Indicates if the reulst is an JSON string
     }, obj.cmd);
 
@@ -251,8 +267,6 @@ TCPListenConnectionPool.prototype = {
       onListening: emptyFunction
     }, options);
     this.wrapper = null;
-    this._messageQueue = [];
-    this._messageRecvingTimer = null;
     var socket = navigator.mozTCPSocket.open(this.options.host, this.options.port, {
       binaryType: 'arraybuffer'
     });
@@ -261,14 +275,9 @@ TCPListenConnectionPool.prototype = {
 
   finalize: function tc_finalize() {
     this.options = null;
-    this._messageQueue = null;
     if(this.wrapper) {
       this.wrapper.socket.close();
       this.wrapper = null;
-    }
-    if(this._messageRecvingTimer){
-      window.clearInterval(this._messageRecvingTimer);
-      this._messageRecvingTimer = null;
     }
   },
 
@@ -283,49 +292,30 @@ TCPListenConnectionPool.prototype = {
     CMD.Listen.listenMessage(function() {}, function(e) {
       alert(e);
     });
-    this._recvQueuedMsg();
-    if (!this._messageRecvingTimer) {
-      this._messageRecvingTimer = window.setInterval(
-      this._recvQueuedMsg.bind(this), 500);
-    }
   },
 
   _onSocketClosed: function tc_onSocketClosed(event) {
     this.wrapper = null;
   },
 
-  _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd, sendCallback, recvList) {
-    console.log('-*- TCPListenConnectionPool -*-Receive msg: ' + JSON.stringify(jsonCmd));
+  _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd, sendCallback, recvData) {
     if (this.wrapper == null) {
       return;
     }
-    // TODO parse the result of the jsonCmd, if failed, to call onerror
-    var dataList = this.wrapper.recvList;
-    // reset the recvList of the wrapper which is really important.
-    this.wrapper.recvList = [];
-    this._messageQueue.push(dataList);
-  },
-
-  _recvQueuedMsg: function tc_recvQueuedMsg() {
-    if (this._messageQueue.length > 0) {
-      var message = this._messageQueue.shift();
-      this.options.onListening(JSON.parse(message.join('')));
-    }
+    this.options.onListening(JSON.parse(recvData));
   },
 
   send: function tc_send(obj) {
     obj.cmd = extend({
       cmd: null,
-      firstData: null,
-      secondData: null,
-      firstDatalength: 0,
-      secondDatalength: 0,
+      data: null,
+      datalength: 0,
       json: false // Indicates if the reulst is an JSON string
     }, obj.cmd);
 
     obj.cmd.id = 1;
     if (this.wrapper) {
-      this.wrapper.send(obj.cmd, obj.cmd.firstData, obj.cmd.secondData);
+      this.wrapper.send(obj.cmd, obj.cmd.data);
     }
   }
 };
