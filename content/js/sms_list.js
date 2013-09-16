@@ -483,7 +483,8 @@ var SmsList = (function() {
       for (var i=0;i<MessageData.attachments.length;i++) {
         if(MessageData.attachments[i].content.indexOf(dataText) >= 0) {
           html += '<text region="Text">';
-          html += decodeBase64(MessageData.attachments[i].content.substring(dataText.length,MessageData.attachments[i].content.length));
+          var base64 = new Base64();
+          html += base64.decode(MessageData.attachments[i].content.substring(dataText.length,MessageData.attachments[i].content.length));
           html += '</text>';
         } else {
           html += '<img region="Image" src="';

@@ -526,13 +526,14 @@ var MusicList = (function() {
             };
           })();
 
-          var newDir = dir;
+          var newDir = decodeURI(dir);
           if (os.isWindows) {
-            newDir = dir.substring(1, dir.length);
+            newDir = newDir.substring(1, newDir.length);
+	    newDir = UrlEncode(newDir);
           }
 
           setTimeout(function exportMusic() {
-            var cmd = 'adb pull "' + musics[fileIndex].dataset.id + '" "' + decodeURI(newDir) + '/'
+            var cmd = 'adb pull "' + musics[fileIndex].dataset.id + '" "' + newDir + '/'
                       + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type + '"';
 
             var req = navigator.mozFFOSAssistant.runCmd(cmd);
