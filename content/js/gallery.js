@@ -102,7 +102,7 @@ var Gallery = (function() {
 
   function _addToPictureList(picture) {
     var threadId = parseDate(parseInt(picture.date));
-    var threadContainer = $id(threadId);
+    var threadContainer = $id('pic-' + threadId);
     var container = getListContainer();
     if (threadContainer) {
       var threadBody = threadContainer.getElementsByTagName('ul')[0];
@@ -112,7 +112,7 @@ var Gallery = (function() {
       titles[0].innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
     } else {
       threadContainer = document.createElement('div');
-      threadContainer.setAttribute('id', threadId);
+      threadContainer.setAttribute('id', 'pic-' + threadId);
       threadContainer.classList.add('picture-thread');
       var header = document.createElement('div');
       header.classList.add('header');

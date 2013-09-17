@@ -79,7 +79,7 @@ var Video = (function() {
 
   function _addToVideoList(video) {
     var groupId = parseDate(parseInt(video.date));
-    var groupContainer = $id(groupId);
+    var groupContainer = $id('video-' + groupId);
     var container = getListContainer();
     if (groupContainer) {
       var groupBody = groupContainer.getElementsByTagName('ul')[0];
@@ -89,7 +89,7 @@ var Video = (function() {
       titles[0].innerHTML = '<span>' + groupId + ' (' + groupContainer.dataset.length + ')</span>';
     } else {
       groupContainer = document.createElement('div');
-      groupContainer.setAttribute('id', groupId);
+      groupContainer.setAttribute('id', 'video-' + groupId);
       groupContainer.classList.add('video-thread');
       var header = document.createElement('div');
       header.classList.add('header');
