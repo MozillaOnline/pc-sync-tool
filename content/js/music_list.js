@@ -366,7 +366,7 @@ var MusicList = (function() {
       var bTimer = false;
 
       setTimeout(function importMusic() {
-        var cmd = 'adb push "' + musics[fileIndex] + '" /sdcard/Music/';
+        var cmd = 'adb push "' + musics[fileIndex] + '" /sdcard/Music';
         var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
         if (!bTimer) {
@@ -527,15 +527,15 @@ var MusicList = (function() {
           })();
 
           var newDir = decodeURI(dir);
+          var oldDir = musics[fileIndex].dataset.id;
+          newDir = newDir + '/' + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type;
           if (os.isWindows) {
             newDir = newDir.substring(1, newDir.length);
 	    newDir = UrlEncode(newDir);
           }
 
           setTimeout(function exportMusic() {
-            var cmd = 'adb pull "' + musics[fileIndex].dataset.id + '" "' + newDir + '/'
-                      + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type + '"';
-
+            var cmd = 'adb pull "' + oldDir + '" "' + newDir + '"';
             var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
             if (!bTimer) {
