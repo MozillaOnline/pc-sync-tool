@@ -297,41 +297,36 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowGallery () {
-    var pictureList = [];
+    Gallery.init();
     CMD.Pictures.getOldPicturesInfo(function onresponse_getOldMusicsInfo(oldPicture) {
-	  var picture = JSON.parse(oldPicture.data);
+      var picture = JSON.parse(oldPicture.data);
       if (picture.callbackID == 'enumerate') {
-        pictureList.push(picture.detail);
+        Gallery.addPicture(picture.detail);
         return;
       }
       if (picture.callbackID == 'enumerate-done') {
         CMD.Pictures.getChangedPicturesInfo(function onresponse_getChangedPictures(changedPictureInfo) {
           var changedPicture = JSON.parse(changedPictureInfo.data);
           if (changedPicture.callbackID == 'oncreated') {
-            pictureList.push(changedPicture.detail);
-            //MusicList.addMusic(changedMusic.detail);
+            Gallery.addPicture(changedMusic.detail);
             return;
           }
           if (changedPicture.callbackID == 'ondeleted') {
-            //MusicList.removeMusic(changedMusic.detail);
+            Gallery.removePicture(changedMusic.detail);
             return;
           }
           if (changedPicture.callbackID == 'onscanend') {
-             // Make sure the 'select-all' box is not checked.
-            //MusicList.selectAllMusics(false);
-            //MusicList.updateUI();
-            Gallery.init(pictureList);
+            Gallery.selectAllMusics(false);
+            Gallery.updateUI();
             return;
           }
-          pictureList.push(changedPicture.detail);
         }, function onerror_getChangedPictures (e) {
           log('Error occurs when fetching changed pictures.');
         });
         return;
       }
-      //Gallery.init(dataJSON);
     }, function onerror_getOldMusicsInfo(e) {
-      log('Error occurs when fetching pictures.');
+      log('Error occurs when fetching old pictures.');
     });
   }
 

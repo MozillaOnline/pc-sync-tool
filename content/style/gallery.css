@@ -100,37 +100,44 @@
   margin-bottom: 2rem;
 }
 
-.pictures-group {
+.picture-thread {
   margin-left: 1.8rem;
-  height: 12rem;
   clear: both;
 }
 
-.pictures-group .title {
-  height: 3rem;
+.picture-thread .header {
+  height: 22px;
   width: 100%;
+  margin-top: 4px;
 }
 
-.pictures-group .groupInfo {
-  margin: 0.6rem 0 0 0.4rem;
+.picture-thread .header .title {
+  background-image: url("images/checkbox.png");
+  background-position: 2px 0;
+  background-repeat: no-repeat;
+  display: inline-block;
 }
 
-.pictures-group .groupBody {
+.picture-thread .header .thread-checked {
+  background-image: url("images/checkbox-checked.png");  
+}
+
+.picture-thread .header .title >span {
+  margin-left: 24px;
+}
+
+.picture-thread .body {
   clear: both;
   margin-left: 0.3rem;
 }
 
-.pictures-group .groupBody > div {
+.picture-thread .body >li {
   position: relative;
-  width: 106px;
-  height: 81px;
-  float: left;
-}
-
-.pic-item {
-  float: left;
-  height: 78px;
-  width: 106px;
+  width: 110px;
+  height: 82px;
+  overflow: hidden;
+  display: inline-block;
+  margin: 3px;
 }
 
 .pic-unchecked {
@@ -139,6 +146,7 @@
   position: absolute;
   left: 83px;
   background-image: url("images/pic-unchecked.png");
+  top: 10px;
 }
 
 .pic-checked {
@@ -154,21 +162,13 @@
   height: 75px;
 }
 
-.group-unckecked {
-  background-image: url("images/checkbox.png");
-  background-position: center center;
-  background-repeat: no-repeat;
-  height: 3.3rem;
-  width: 2rem;
-  display: block;
-}
-
-.group-checked {
-  background-image: url("images/checkbox-checked.png");  
-}
-
-.pictures-group .title > * {
-  float: left;
+.pic-tip {
+  background-color: #000000;
+  color: #FFFFFF;
+  width: 106px;
+  padding: 7px;
+  position: absolute;
+  font-size: 9px;
 }
 
 #modal-container {

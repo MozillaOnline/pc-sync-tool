@@ -1296,8 +1296,9 @@ ShowPicDialog.prototype = {
       + '</div>'
       + '<div class="column-middle">'
       + '<img id="pic-content" src='
-      + this.options.picUrl
-      + '></div>'
+      + this.options.cachedUrl
+      + ' data-pic-Url=' + this.options.picUrl
+      + ' ></div>'
       + '<div class="column-right">'
       + '<div id="gallery-right-arrow" class="gallery-right-arrow"></div>'
       + '</div>';
