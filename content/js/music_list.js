@@ -366,7 +366,8 @@ var MusicList = (function() {
       var bTimer = false;
 
       setTimeout(function importMusic() {
-        var cmd = 'adb push "' + musics[fileIndex] + '" /sdcard/Music';
+        var newDir = UrlEncode(musics[fileIndex]);
+        var cmd = 'adb push "' + newDir + '" /sdcard/Music';
         var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
         if (!bTimer) {
