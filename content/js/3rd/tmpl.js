@@ -25,8 +25,8 @@
 
         // escape < >
         "function _q(s){if(typeof __NOESCAPING__!='undefined'&&__NOESCAPING__)" +
-        " return s; if(!s || !isNaN(s))return s; " +
-        " return s.replace(/</g, '&lt;').replace(/>/g, '&gt;'); };" +
+        " return s; if(!s) return s; " +
+        " return s.toString().replace(/</g, '&lt;').replace(/>/g, '&gt;'); };" +
 
         "p.push('" +
 
