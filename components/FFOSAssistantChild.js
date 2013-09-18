@@ -139,9 +139,6 @@ FFOSAssistant.prototype = {
         }
         Services.DOMRequest.fireError(request, "Failed to excute async command");
         break;
-      case 'DriverDownloader:message':
-        this._onRevDriverDownloaderMessage(msg.data);
-        break;
       case 'ADBService:RunCmd:Return:OK':
         request = this.takeRequest(msg.rid);
         if (!request) {
@@ -162,14 +159,6 @@ FFOSAssistant.prototype = {
     this.dispatchEvent(e);
   },
 
-  _onRevDriverDownloaderMessage: function(message) {
-    let e = this._createEvent('driverdownloadermessage');
-    if (this._onDriverDownloaderMessage) {
-      this._onDriverDownloaderMessage.handleEvent(e);
-    }
-    this.dispatchEvent(e);
-  },
-
   /* Implementations */
   get adbConnected() {
     return cpmm.sendSyncMessage('ADBService:connected')[0];
@@ -181,10 +170,6 @@ FFOSAssistant.prototype = {
 
   set onadbstatechange(callback) {
     this._onADBStateChange = callback;
-  },
-
-  set ondriverdownloadermessage(callback) {
-    this._onDriverDownloaderMessage = callback;
   },
 
   get isDriverManagerRunning() {

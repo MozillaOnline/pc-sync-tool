@@ -27,12 +27,6 @@ interface nsIFFOSAssistant : nsISupports
   attribute nsIDOMEventListener onadbstatechange;
 
   /**
-   * Fired when received any message from Driver Downloader, including:
-   *  download state change, progress etc.
-   */
-  attribute nsIDOMEventListener ondriverdownloadermessage;
-
-  /**
    * select directory for exporting pictures, musics and videos
    */
   boolean selectDirectory(in jsval callback, in jsval options);
