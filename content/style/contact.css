@@ -186,6 +186,9 @@
 
 .contact-list-item {
   margin-top: .5rem;
+  overflow: hidden;
+  cursor: pointer;
+  padding: .5rem 0 .5rem 1rem;
 }
 
 .contact-list-item:hover {
@@ -200,17 +203,11 @@
   background-color: #DEF3F8;
 }
 
-.contact-list-item > div {
-  overflow: hidden;
-  cursor: pointer;
-  padding: .5rem 0 .5rem 1rem;
-}
-
-.contact-list-item > div > * {
+.contact-list-item > * {
   float: left;
 }
 
-.contact-list-item >div input.checkbox[type="checkbox"] + label.selectAll {
+.contact-list-item input.checkbox[type="checkbox"] + label.selectAll {
   background-image: url("images/checkbox.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -218,7 +215,7 @@
   width: 2rem;
 }
 
-.contact-list-item >div input.checkbox[type="checkbox"]:checked + label.selectAll {
+.contact-list-item input.checkbox[type="checkbox"]:checked + label.selectAll {
   background-image: url("images/checkbox-checked.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -226,7 +223,7 @@
   width: 2rem;
 }
 
-.contact-list-item >div > label.unchecked {
+.contact-list-item > label.unchecked {
   background-image: url("images/checkbox.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -234,7 +231,7 @@
   width: 2rem;
 }
 
-.contact-list-item >div  > label.checked {
+.contact-list-item > label.checked {
   background-image: url("images/checkbox-checked.png");
 }
 
@@ -247,7 +244,7 @@
   background-position: center center;
 }
 
-#contact-list-container div.favorite .bookmark {
+#contact-list-container .favorite .bookmark {
   background-image: url("images/bookmarked.png");
 }
 
@@ -666,3 +663,4 @@ button.add-new-button {
     margin-right: 1.0rem;
     width: 35.0rem;
 }
+

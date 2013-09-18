@@ -29,7 +29,7 @@ var ContactList = (function() {
   }
 
   function createContactListItem(contact) {
-    var elem = document.createElement('div');
+    var elem = document.createElement('ul');
     elem.classList.add('contact-list-item');
 
     if (contact.category && contact.category.indexOf('favorite') > -1) {
