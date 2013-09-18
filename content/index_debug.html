@@ -19,10 +19,11 @@
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/widgets.js"></script>
   <script type="text/javascript" src="js/3rd/pinyin.js"></script>
+  <script type="text/javascript" src="js/3rd/tmpl.js"></script>
   <script type="text/javascript" src="js/cmd.js"></script>
   <script type="text/javascript" src="js/connectPool.js"></script>
   <script type="text/javascript" src="js/vcard.js"></script>
-  <script type="text/javascript" src="js/contact_list.js"></script>
+  <script type="text/javascript" src="js/contactList.js"></script>
   <script type="text/javascript" src="js/sms_list.js"></script>
   <script type="text/javascript" src="js/music_list.js"></script>
   <script type="text/javascript" src="js/gallery.js"></script>
@@ -489,6 +490,52 @@
       </div>
     </div>
   </div>
+
+  <!-- templates for contact list view -->
+  <script type="text/html" id="tmpl_contact_list_item">
+    <div>
+      <label class="unchecked"></label>
+      <div class="bookmark"></div>
+      <img class="avatar avatar-default"></img>
+      <div class="contact-info">
+         <div class="name"><%=fullName%></div>
+         <div class="tel"><%=tel%></div>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_contact_vcard_info_element">
+    <div class="contact-way-name" data-l10n-id="<%=type%>"><%=localizedType%></div>
+    <div><%=value</div>
+  </script>
+  <script type="text/html" id="tmpl_contact_vcard_multi_info">
+  <%if (avatar) {%>
+    <img class="multi-avatar-show" src="<%=avatar%>" />
+  <%} else {%>
+    <img class="multi-avatar-show multi-avatar-show-default"></img>
+  <%}%>
+    <div class="show-multi-contact-content">
+      <div class="name"><%=name%></div>
+      <div class="tel"><%=tel%></div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_contact_tel_digest">
+    <%if (['Mobile', 'Home', 'Work', 'Personal', 'FaxHome', 'FaxOffice', 'FaxOther', 'Another'].indexOf(type) > -1) {%>
+      <div class="title"><label data-l10n-id="<%=type%>Tel"></label></div>
+      <div class="value"><label><%=value%></label></div>
+    <%} else {%>
+      <div class="title"><label><%=type%></label></div>
+      <div class="value"><label><%=value%></label></div>
+    <%}%>
+  </script>
+  <script type="text/html" id="tmpl_contact_email_digest">
+    <%if (['Personal', 'Work', 'Home'].indexOf(type) > -1) {%>
+      <div class="title"><label data-l10n-id="<%=type%>Email"></label></div>
+      <div class="value"><label><%=value%></label></div>
+    <%} else {%>
+      <div class="title"><label><%=type%></label></div>
+      <div class="value"><label><%=value%></label></div>
+    <%}%>
+  </script>
 </body>
 </html>
 

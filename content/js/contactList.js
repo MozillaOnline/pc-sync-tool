@@ -29,32 +29,6 @@ var ContactList = (function() {
   }
 
   function createContactListItem(contact) {
-    var html = '';
-    html += '<div>';
-    html += '  <label class="unchecked"></label>';
-    html += '  <div class="bookmark"></div>';
-    html += '  <img class="avatar avatar-default"></img>';
-    html += '  <div class="contact-info">';
-    html += '     <div class="name">';
-
-    if (contact.name) {
-      html += contact.name.join(' ');
-    }
-
-    html += '    </div>';
-    // Only show the first phone number
-    if (contact.tel && contact.tel.length > 0) {
-      html += '  <div class="tel">';
-      for (var i = 0 ; i < contact.tel.length - 1; i++) {
-        html += contact.tel[i].value + ',';
-      }
-      html += contact.tel[i].value;
-      html += '</div>';
-    }
-
-    html += '  </div>';
-    html += '</div>';
-
     var elem = document.createElement('div');
     elem.classList.add('contact-list-item');
 
@@ -62,7 +36,18 @@ var ContactList = (function() {
       elem.classList.add('favorite');
     }
 
-    elem.innerHTML = html;
+    var templateData = {
+      fullName: contact.name ? contact.name.join(' ') : '',
+      tel: ''
+    };
+
+    if (contact.tel) {
+      contact.tel.forEach(function(value, index) {
+        templateData.tel += (index == 0 ? '' : ',') + value.value;
+      });
+    }
+
+    elem.innerHTML = tmpl('tmpl_contact_list_item', templateData);
 
     elem.dataset.contact = JSON.stringify(contact);
     elem.dataset.contactId = contact.id;
@@ -160,10 +145,11 @@ var ContactList = (function() {
 
     function _createInfoElem(type, value) {
       var elem = document.createElement('div');
-      var html = '';
-      html += '  <div class="contact-way-name" data-l10n-id="' + type + '">' + _(type) + '</div>';
-      html += '  <div>' + value + '</div>';
-      elem.innerHTML = html;
+      elem.innerHTML = tmpl('tmpl_contact_vcard_info_element', {
+        type: type,
+        localizedType: _(type),
+        value: value
+      });
       return elem;
     }
 
@@ -417,35 +403,11 @@ var ContactList = (function() {
     if (contact.tel && contact.tel.length > 0) {
       contact.tel.forEach(function(item) {
         var div = document.createElement('div');
-        switch (item.type[0]) {
-          case 'Mobile':
-            div.innerHTML = '<div class="title"><label data-l10n-id="MobileTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          case 'Home':
-            div.innerHTML = '<div class="title"><label data-l10n-id="HomeTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          case 'Work':
-            div.innerHTML = '<div class="title"><label data-l10n-id="WorkTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          case 'Personal':
-            div.innerHTML = '<div class="title"><label data-l10n-id="PersonalTel"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          case 'FaxHome':
-            div.innerHTML = '<div class="title"><label data-l10n-id="FaxHome"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          case 'FaxOffice':
-            div.innerHTML = '<div class="title"><label data-l10n-id="FaxOffice"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          case 'FaxOther':
-            div.innerHTML = '<div class="title"><label data-l10n-id="FaxOther"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          case 'Another':
-            div.innerHTML = '<div class="title"><label data-l10n-id="Other"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          default:
-            div.innerHTML = '<div class="title"><label>' + item.type[0] + '</label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-        }
+        div.innerHTML = tmpl('tmpl_contact_tel_digest', {
+          type: item.type[0],
+          value: item.value
+        });
+
         div.classList.add('contact-item');
         container.appendChild(div);
         navigator.mozL10n.translate(div);
@@ -458,20 +420,11 @@ var ContactList = (function() {
     if (contact.email && contact.email.length > 0) {
       contact.email.forEach(function(item) {
         var div = document.createElement('div');
-        switch (item.type[0]) {
-          case 'Personal':
-            div.innerHTML = '<div class="title"><label data-l10n-id="PersonalEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          case 'Work':
-            div.innerHTML = '<div class="title"><label data-l10n-id="WorkEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          case 'Home':
-            div.innerHTML = '<div class="title"><label data-l10n-id="HomeEmail"></label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-          default:
-            div.innerHTML = '<div class="title"><label>' + item.type[0] + '</label></div><div class="value"><label>' + item.value + '</label></div>';
-            break;
-        }
+        div.innerHTML = tmpl('tmpl_contact_email_digest', {
+          type: item.type[0],
+          value: item.value
+        });
+
         div.classList.add('contact-item');
         navigator.mozL10n.translate(div);
         container.appendChild(div);
@@ -520,34 +473,17 @@ var ContactList = (function() {
     container.innerHTML = '';
     var header = _('contacts-selected', {n:selectedContacts.length});
     $id('show-contacts-header').innerHTML = header;
-    selectedContacts.forEach(function(item) {
+    selectedContacts.forEach(function (item) {
       var contact = JSON.parse(item.dataset.contact);
+      var templateData = {
+        avatar: item.dataset.avatar,
+        name: contact.name.join(' '),
+        tel: contact.tel.length > 0 ? contact.tel[0].value : ''
+      };
+
       var div = document.createElement('div');
-      var html = '';
+      div.innerHTML = tmpl('tmpl_contact_vcard_multi_info', templateData);
 
-      if (item.dataset.avatar) {
-        html = '<img class="multi-avatar-show" src= ';
-        html += item.dataset.avatar;
-        html += '></img>';
-      } else {
-        html = '<img class="multi-avatar-show multi-avatar-show-default"></img>';
-      }
-
-      html += '<div class="show-multi-contact-content">';
-      html += '  <div class="name">';
-      html += contact.name.join(' ');
-      html += '  </div>';
-      html += '  <div class="tel">';
-
-      if (contact.tel.length > 0) {
-        html += contact.tel[0].value;
-      } else {
-        html += '';
-      }
-
-      html += '  </div>';
-      html += '</div>';
-      div.innerHTML = html;
       div.classList.add('show-contacts-item');
       container.appendChild(div);
 
