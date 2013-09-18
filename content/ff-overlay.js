@@ -16,6 +16,8 @@ function  debug(s) {
 }
   
 (function() {
+  const MANAGER_DMHOME  = 'resource://ffosassistant-dmhome';
+  const MANAGER_INI_FILE_NAME = 'driver_manager.ini';
   var isDisabled = false;
 
   var modules = {};
@@ -190,6 +192,24 @@ function  debug(s) {
     }
   }
 
+  function getDriverManagerPort() {
+    // Read port number from driver_manager.ini
+    try {
+      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
+      file.append(MANAGER_INI_FILE_NAME);
+      if (!file.exists()) {
+        debug('No ini file is found');
+        return 0;
+      }
+
+      return parseInt(utils.getIniValue(file, 'socket', 'port'));
+    } catch (e) {
+      debug(e);
+      return 0;
+    }
+    return 0;
+  }
+
   // Copy from Firefox4
   if (!window["switchToTabHavingURI"]) {
     window["isTabEmpty"] = function(aTab) {
@@ -276,10 +296,11 @@ function  debug(s) {
   var client = null;
 
   function connectToDriverManager() {
-    if (navigator.mozFFOSAssistant.driverManagerPort) {
+    var port = getDriverManagerPort();
+    if (port) {
       client = new TelnetClient({
         host: '127.0.0.1',
-        port: navigator.mozFFOSAssistant.driverManagerPort,
+        port: port,
         onmessage: handleMessage,
         onopen: onopen,
         onclose: onclose

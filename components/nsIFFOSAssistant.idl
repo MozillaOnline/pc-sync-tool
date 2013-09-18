@@ -19,12 +19,6 @@ interface nsIFFOSAssistant : nsISupports
   readonly attribute boolean isWifiConnect;
 
   /**
-   * Get the port listened by the Driver Manager.
-   * It should be great than 1024, or the Driver Manager failed to start.
-   */
-  readonly attribute long driverManagerPort;
-
-  /**
    * State of FFOS device driver manager
    */
   readonly attribute boolean isDriverManagerRunning;

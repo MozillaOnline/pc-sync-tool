@@ -17,8 +17,6 @@ const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 const ADBSERVICE_CONTRACT_ID = '@mozilla.org/adbservice;1';
 const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
 const MANAGER_BINHOME = 'resource://ffosassistant-binhome';
-const MANAGER_DMHOME  = 'resource://ffosassistant-dmhome';
-const MANAGER_INI_FILE_NAME = 'driver_manager.ini';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
@@ -179,25 +177,6 @@ FFOSAssistant.prototype = {
 
   get adbffosDeviceName() {
     return cpmm.sendSyncMessage('ADBService:ffosDeviceName')[0];
-  },
-
-  get driverManagerPort() {
-    // Read port number from driver_manager.ini
-    try {
-      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
-      file.append(MANAGER_INI_FILE_NAME);
-      if (!file.exists()) {
-        debug('No ini file is found');
-        return 0;
-      }
-
-      return parseInt(utils.getIniValue(file, 'socket', 'port'));
-    } catch (e) {
-      debug(e);
-      return 0;
-    }
-
-    return 0;
   },
 
   set onadbstatechange(callback) {
