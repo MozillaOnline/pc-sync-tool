@@ -53,7 +53,12 @@ var SmsList = (function() {
 
   function updateThreadAvatar(item) {
     var threadInfo = item;
-    CMD.Contacts.getContactByPhoneNumber(item.participants[0], function(result) {
+    var phoneNum = item.participants[0];
+    if((item.participants[0].indexOf('(') >= 0)
+       &&(item.participants[0].indexOf(')') > item.participants[0].indexOf('('))) {
+      phoneNum = item.participants[0].substring(item.participants[0].indexOf('(')+1,item.participants[0].indexOf(')'));
+    }
+    CMD.Contacts.getContactByPhoneNumber(phoneNum, function(result) {
       if ((result.data != null) && (result.data != '')) {
         var contactData = JSON.parse(result.data);
         var threadItem = $id('id-threads-data-' + threadInfo.id);
@@ -373,29 +378,6 @@ var SmsList = (function() {
               }, function onError(e) {
                 alert('Error occured when removing message' + e);
               });
-              /*var resendMMS = {
-                'type':,
-                'id':,
-                'number':,
-                'subject':,
-                'smil':,
-                'attachments':,
-              };
-              CMD.SMS.deleteMessageById(smsId[1], function onSuccess(event) {
-                removeMessage(smsId[1]);
-                CMD.SMS.sendSMS(JSON.stringify({
-                  number: num,
-                  message: This.value
-                }), function onSuccess_sendSms(sms) {
-                  if (!sms.result) {
-                    updateAvatar();
-                  }
-                }, function onError_sendSms(e) {
-                  alert(e);
-                });
-              }, function onError(e) {
-                alert('Error occured when removing message' + e);
-              });*/
             });
           }
           var deleteBtns = $expr('.button-delete', messageListContainer);
@@ -423,9 +405,6 @@ var SmsList = (function() {
 
   function createGroupMessageList(MessageData) {
     CMD.SMS.markReadMessageById(JSON.stringify(MessageData.id), function(response) {
-      if (!response.result) {
-        //TODO: mark message read state
-      }
     }, function(e) {
       alert(e);
     });
@@ -499,17 +478,6 @@ var SmsList = (function() {
       html += '</div>';
       html += '<div class="actions">';
 
-      /*if (MessageData.delivery == "error") {
-        html += '<button class="button-resend" title="重发" ';
-        html += 'id="sms-resend-' + MessageData.id + '" ';
-        html += 'value="' + MessageData.body + '">';
-        html += '</button>';
-      }
-
-      html += '<button class="button-forward" title="转发" ';
-      html += 'id="sms-reply-' + MessageData.id + '" ';
-      html += 'value="' + MessageData.body + '">';
-      html += '</button>';*/
       html += '<button class="button-delete" title="删除" ';
       html += 'id="sms-delete-' + MessageData.id + '" ';
       html += 'value="' + MessageData.id + '">';
