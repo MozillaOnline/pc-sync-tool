@@ -85,26 +85,5 @@ interface nsIFFOSAssistant : nsISupports
   void startDriverManager();
 
   void wifiConnected(in boolean isConnected);
-
-  /**
-   * These functions related to EventTarget are temporary hacks:
-   *   - addEventListener
-   *   - removeEventListener
-   *   - handleEvent
-   *
-   * These will be removed by inheriting from nsIJSDOMEventTarget,
-   * see bug 731746.
-   */
-  [optional_argc] void addEventListener(in DOMString type,
-                                        in nsIDOMEventListener listener,
-                                        [optional] in boolean useCapture,
-                                        [optional] in boolean wantsUntrusted);
-
-  void  removeEventListener(in DOMString type,
-                            in nsIDOMEventListener listener,
-                            [optional] in boolean useCapture);
-
-  boolean dispatchEvent(in nsIDOMEvent evt) raises(DOMException);
-
 };
 
