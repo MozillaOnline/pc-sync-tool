@@ -111,11 +111,11 @@
 }
 
 .content {
-  margin: 0 2rem 0 6px;
+  margin: 0 2rem 0 0.6rem;
 }
 
 .empty-musics {
-  background: url('images/empty-musics.png') no-repeat scroll 292px center transparent;
+  background: url('images/empty-musics.png') no-repeat scroll 29.2rem center transparent;
   height: 16rem;
   margin: 4rem 0 1rem;
   opacity: 0.4;
@@ -124,7 +124,7 @@
 .empty-musics-prompt {
   text-align: center;
   color: #a6a6a6;
-  font-size: 17px;
+  font-size: 1.7rem;
 }
 
 .import-musics-btn-container {
@@ -135,25 +135,25 @@
   float: left;
   height: 2rem;
   width: 12rem;
-  margin: 12px 0 0 31rem;
+  margin: 1.2rem 0 0 31rem;
   padding: 1rem 1rem;
 }
 
 .music-header{
   height: 3rem;
   background-color: #E7E7E7;
-  margin: 0 2rem 0 6px;
+  margin: 0 2rem 0 0.6rem;
   cursor: default;
 }
 
 .music-header div {
-  font-size: 12px;
+  font-size: 1.2rem;
   float:left;
   padding: 0.5rem 0 0  2.5rem;
 }
 
 .music-header div >label {
-  font-size: 14px;
+  font-size: 1.4rem;
 }
 
 .music-header .music-names {

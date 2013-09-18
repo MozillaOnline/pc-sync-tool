@@ -106,14 +106,14 @@
 }
 
 .picture-thread .header {
-  height: 22px;
+  height: 2.2rem;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 0.4rem;
 }
 
 .picture-thread .header .title {
   background-image: url("images/checkbox.png");
-  background-position: 2px 0;
+  background-position: 0.2rem 0;
   background-repeat: no-repeat;
   display: inline-block;
 }
@@ -123,7 +123,7 @@
 }
 
 .picture-thread .header .title >span {
-  margin-left: 24px;
+  margin-left: 2.4rem;
 }
 
 .picture-thread .body {
@@ -133,20 +133,20 @@
 
 .picture-thread .body >li {
   position: relative;
-  width: 110px;
-  height: 82px;
+  width: 11.0rem;
+  height: 8.2rem;
   overflow: hidden;
   display: inline-block;
-  margin: 3px;
+  margin: 0.3rem;
 }
 
 .pic-unchecked {
-  width: 17px;
-  height: 17px;
+  width: 1.7rem;
+  height: 1.7rem;
   position: absolute;
-  left: 83px;
+  left: 8.3rem;
   background-image: url("images/pic-unchecked.png");
-  top: 10px;
+  top: 1.0rem;
 }
 
 .pic-checked {
@@ -154,20 +154,20 @@
 }
 
 .pic-selected {
-  border: 2px solid #00CAF4;
+  border: 0.2rem solid #00CAF4;
 }
 
 .pictures-group .groupBody .pic-item > img {
-  width: 100px;
-  height: 75px;
+  width: 10.0rem;
+  height: 7.5rem;
 }
 
 .pic-tip {
   background-color: #000000;
   color: #FFFFFF;
-  padding: 7px;
+  padding: 0.7rem;
   position: absolute;
-  font-size: 9px;
+  font-size: 0.9rem;
 }
 
 #modal-container {
@@ -179,20 +179,20 @@
   background-color: #000000;
   opacity: 0.7;
   height: 100%;
-  width: calc(100% - 7px);
+  width: calc(100% - 0.7rem);
   position: absolute;
   top: 0;
   z-index: 1;
-  margin-left: 7px;
+  margin-left: 0.7rem;
 }
 
 .dialog {
   position: absolute;
   top: 0;
   z-index: 2;
-  width: calc(100% - 7px);
+  width: calc(100% - 0.7rem);
   height: 100%;
-  margin-left: 7px;
+  margin-left: 0.7rem;
 }
 
 .dialog .bar {
@@ -260,7 +260,7 @@
 }
 
 .content {
-  margin: 0 2rem 0 6px;
+  margin: 0 2rem 0 0.6rem;
 }
 
 #empty-picture-container {

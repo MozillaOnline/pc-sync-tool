@@ -12,7 +12,7 @@
   overflow: hidden;
   height: 6rem;
   line-height: 3rem;
-  font-size: 14px;
+  font-size: 1.4rem;
 }
 
 .contact-ops-box .contact-op {
@@ -263,20 +263,20 @@
 }
 
 .contact-list-item .contact-info {
-  font-size: 14px;
+  font-size: 1.4rem;
   padding-left: 1rem;
 }
 
 .contact-list-item .contact-info >div {
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 320px;
+  width: 32.0rem;
   white-space: nowrap;
 }
 
 .contact-list-item .contact-info .name {
   color: #333333;
-  font-size: 14px;
+  font-size: 1.4rem;
   height: 2rem;
 }
 
@@ -391,15 +391,15 @@
 #add-avatar {
   height: 2rem;
   background-color: #A6A6A6;
-  width: 67px;
+  width: 6.7rem;
   position: absolute;
-  top: 53px;
+  top: 5.3rem;
 }
 
 #avatar-label {
   text-align: center;
-  font-size: 12px;
-  padding-top: 3px;
+  font-size: 1.2rem;
+  padding-top: 0.3rem;
   color: white;
 }
 
@@ -501,24 +501,24 @@ button.add-new-button {
 
 .saveAndCancel {
   height: 3rem;
-  padding-left: 25px;
-  margin-top: 12px;
+  padding-left: 2.5rem;
+  margin-top: 1.2rem;
 }
 
 #save-contact {
-  padding: 4px 34px;
-  width: 56px;
+  padding: 0.4rem 3.4rem;
+  width: 5.6rem;
 }
 
 #cancel-edit-contact {
-  padding: 3.5px 28px;
-  width: 56px;
+  padding: 3.5rem 2.8rem;
+  width: 5.6rem;
 }
 
 #views span.title {
   text-align: center;
   padding: 4rem 0;
-  font-size: 25px;
+  font-size: 2.5rem;
   display: block;
 }
 
@@ -546,7 +546,7 @@ button.add-new-button {
 }
 
 #show-contact-full-name {
-  font-size: 16px;
+  font-size: 1.6rem;
   height: 2rem;
   margin-left: 1rem;
   color: #333333;
@@ -556,16 +556,16 @@ button.add-new-button {
   height: 2rem;
   margin: 0 0 -0.5rem 1rem;
   color: #999999;
-  margin-top: 2px;
+  margin-top: 0.2rem;
 }
 
 #edit-contact {
   display: -moz-inline-box;
-  height: 20px;
+  height: 2.0rem;
   margin-left: 1rem;
-  margin-top: 7px;
-  padding:3px 0 0 23px;
-  width: 54px;
+  margin-top: 0.7rem;
+  padding:0.3rem 0 0 2.3rem;
+  width: 5.4rem;
   text-align: center;
 }
 
@@ -654,15 +654,15 @@ button.add-new-button {
 
 .contact-ops-box .search-input {
     display: block;
-    line-height: 25px;
-    width: 400px;
-    padding-left: 20px;
-    padding-top: 25px;
+    line-height: 2.5rem;
+    width: 40.0rem;
+    padding-left: 2.0rem;
+    padding-top: 2.5rem;
 }
 
 .contact-ops-box .search-input .input-content {
     display: block;
-    line-height: 25px;
-    margin-right: 10px;
-    width: 350px;
+    line-height: 2.5rem;
+    margin-right: 1.0rem;
+    width: 35.0rem;
 }
