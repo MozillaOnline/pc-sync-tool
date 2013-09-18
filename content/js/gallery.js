@@ -66,7 +66,7 @@ var Gallery = (function() {
 
   // Modify addonDir to the place on your PC
   // and set debug = 1 for debugging in html with firebug
-  var debug = 1;
+  var debug = 0;
 
   if (debug) {
     var prePath = '';
