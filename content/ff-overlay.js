@@ -20,6 +20,7 @@ function  debug(s) {
 
   var modules = {};
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
+  XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 
   function init() {
     // Import ADB Service module
@@ -94,7 +95,7 @@ function  debug(s) {
           }
         }
       };
-      navigator.mozFFOSAssistant.setAddonInfo(true);
+      setAddonInfo(true);
       var otherAdbService = navigator.mozFFOSAssistant.runCmd('listAdbService');
       otherAdbService.onsuccess = function on_success(event) {
         //TODO:
@@ -168,6 +169,24 @@ function  debug(s) {
     var pinPref = 'extensions.ffosassistant@mozillaonline.com.pinnedOnOpen';
     if (Services.prefs.getBoolPref(pinPref, true)) {
       gBrowser.pinTab(tab);
+    }
+  }
+
+  function getFirefoxPath() {
+    return Services.dirsvc.get('XREExeF', Ci.nsIFile).path;
+  }
+
+  function setAddonInfo(isRun) {
+    try {
+      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
+      file.append(MANAGER_INI_FILE_NAME);
+      if (!file.exists()) {
+        file.create(Ci.nsIFile.NORMAL_FILE_TYPE, '0644');
+      }
+      utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
+      utils.saveIniValue(file, 'status', 'isRun', isRun);
+    } catch (e) {
+      debug(e);
     }
   }
 
@@ -389,7 +408,7 @@ function  debug(s) {
       };
     })();
     if (os.isWindows) {
-      navigator.mozFFOSAssistant.setAddonInfo(false);
+      setAddonInfo(false);
     }
   });
 })();

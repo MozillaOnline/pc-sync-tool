@@ -219,21 +219,6 @@ FFOSAssistant.prototype = {
     this._callDriverManager('start', null);
   },
 
-  setAddonInfo: function(isRun) {
-    // Write firefox path to the ini file
-    try {
-      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
-      file.append(MANAGER_INI_FILE_NAME);
-      if (!file.exists()) {
-        file.create(Ci.nsIFile.NORMAL_FILE_TYPE, '0644');
-      }
-      utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
-      utils.saveIniValue(file, 'status', 'isRun', isRun);
-    } catch (e) {
-      debug(e);
-    }
-  },
-
   wifiConnected: function(isConnected) {
     // Write firefox path to the ini file
     try {
@@ -496,11 +481,6 @@ FFOSAssistant.prototype = {
     }
   }
 };
-
-function getFirefoxPath() {
-  var firefoxPath = Services.dirsvc.get('XREExeF', Ci.nsIFile);
-  return firefoxPath.path;
-}
 
 this.NSGetFactory = XPCOMUtils.generateNSGetFactory([FFOSAssistant]);
 

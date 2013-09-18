@@ -96,8 +96,6 @@ interface nsIFFOSAssistant : nsISupports
    */
   void startDriverManager();
 
-  void setAddonInfo(in boolean isRun);
-
   void wifiConnected(in boolean isConnected);
 
   /**
