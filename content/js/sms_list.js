@@ -53,7 +53,12 @@ var SmsList = (function() {
 
   function updateThreadAvatar(item) {
     var threadInfo = item;
-    CMD.Contacts.getContactByPhoneNumber(item.participants[0], function(result) {
+    var phoneNum = item.participants[0];
+    if((item.participants[0].indexOf('(') >= 0)
+       &&(item.participants[0].indexOf(')') > item.participants[0].indexOf('('))) {
+      phoneNum = item.participants[0].substring(item.participants[0].indexOf('(')+1,item.participants[0].indexOf(')'));
+    }
+    CMD.Contacts.getContactByPhoneNumber(phoneNum, function(result) {
       if ((result.data != null) && (result.data != '')) {
         var contactData = JSON.parse(result.data);
         var threadItem = $id('id-threads-data-' + threadInfo.id);
