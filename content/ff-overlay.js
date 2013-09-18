@@ -16,10 +16,13 @@ function  debug(s) {
 }
   
 (function() {
+  const MANAGER_DMHOME  = 'resource://ffosassistant-dmhome';
+  const MANAGER_INI_FILE_NAME = 'driver_manager.ini';
   var isDisabled = false;
 
   var modules = {};
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
+  XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 
   function init() {
     // Import ADB Service module
@@ -94,7 +97,7 @@ function  debug(s) {
           }
         }
       };
-      navigator.mozFFOSAssistant.setAddonInfo(true);
+      setAddonInfo(true);
       var otherAdbService = navigator.mozFFOSAssistant.runCmd('listAdbService');
       otherAdbService.onsuccess = function on_success(event) {
         //TODO:
@@ -169,6 +172,42 @@ function  debug(s) {
     if (Services.prefs.getBoolPref(pinPref, true)) {
       gBrowser.pinTab(tab);
     }
+  }
+
+  function getFirefoxPath() {
+    return Services.dirsvc.get('XREExeF', Ci.nsIFile).path;
+  }
+
+  function setAddonInfo(isRun) {
+    try {
+      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
+      file.append(MANAGER_INI_FILE_NAME);
+      if (!file.exists()) {
+        file.create(Ci.nsIFile.NORMAL_FILE_TYPE, '0644');
+      }
+      utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
+      utils.saveIniValue(file, 'status', 'isRun', isRun);
+    } catch (e) {
+      debug(e);
+    }
+  }
+
+  function getDriverManagerPort() {
+    // Read port number from driver_manager.ini
+    try {
+      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
+      file.append(MANAGER_INI_FILE_NAME);
+      if (!file.exists()) {
+        debug('No ini file is found');
+        return 0;
+      }
+
+      return parseInt(utils.getIniValue(file, 'socket', 'port'));
+    } catch (e) {
+      debug(e);
+      return 0;
+    }
+    return 0;
   }
 
   // Copy from Firefox4
@@ -257,10 +296,11 @@ function  debug(s) {
   var client = null;
 
   function connectToDriverManager() {
-    if (navigator.mozFFOSAssistant.driverManagerPort) {
+    var port = getDriverManagerPort();
+    if (port) {
       client = new TelnetClient({
         host: '127.0.0.1',
-        port: navigator.mozFFOSAssistant.driverManagerPort,
+        port: port,
         onmessage: handleMessage,
         onopen: onopen,
         onclose: onclose
@@ -389,7 +429,7 @@ function  debug(s) {
       };
     })();
     if (os.isWindows) {
-      navigator.mozFFOSAssistant.setAddonInfo(false);
+      setAddonInfo(false);
     }
   });
 })();
