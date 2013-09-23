@@ -387,10 +387,7 @@ function  debug(s) {
         return;
       }
       var instanceId = message.data[0].deviceInstanceId;
-      var driverPath = navigator.mozFFOSAssistant.sendCmdToDriverDownloader({
-        command: 'getInstallerPath',
-        deviceInstanceId: instanceId
-      });
+      var driverPath = DriverDownloader.getInstallerPath(instanceId);
       client.sendCommand('install', instanceId, driverPath, function(message) {
         debug('Receive install message: ' + JSON.stringify(message));
       });

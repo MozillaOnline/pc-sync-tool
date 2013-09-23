@@ -72,10 +72,6 @@ FFOSAssistant.prototype = {
     return this._callMessage("ADBService", name, arg);
   },
 
-  _callDriverDownloader: function(name, arg) {
-    return this._callMessage("DriverDownloader", name, arg);
-  },
-
   _callMessage: function(moduleName, msgName, arg) {
     var request = this.createRequest();
     this._sendMessageForRequest(moduleName + ":" + msgName, arg, request);
@@ -185,16 +181,6 @@ FFOSAssistant.prototype = {
 
   get isWifiConnect() {
     return this._isWifiConnect;
-  },
-  /**
-   * If it's an async command, a request object will be returned.
-   */
-  sendCmdToDriverDownloader: function(cmd, async) {
-    if (async) {
-      return this._callDriverDownloader('asyncCommand', cmd);
-    } else {
-      return cpmm.sendSyncMessage('DriverDownloader:syncCommand', cmd)[0];
-    }
   },
 
   selectDirectory: function (callback, options) {

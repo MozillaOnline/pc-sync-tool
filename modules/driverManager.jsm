@@ -19,7 +19,6 @@ const { classes: Cc, interfaces: Ci, utils: Cu, results: Cr } = Components;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, "ParentModule", "resource://ffosassistant/parentModule.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "WinMutex", "resource://ffosassistant/WinMutex.jsm");
 
 var driverManager = {

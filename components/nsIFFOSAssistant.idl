@@ -59,26 +59,6 @@ interface nsIFFOSAssistant : nsISupports
    */
   nsIDOMDOMRequest runCmd(in DOMString cmd);
 
-  /**
-   * To make the page debuggable by using Firebug, we should not use any privileged
-   * interfaces, instead, we open such an interface to support the communication
-   * between the page and the Driver Downloader
-   *
-   * Send Command To Driver Manager, and receive response immediately.
-   * cmd = {
-   *   command: 'addDownload' | 'cancelDownload' | 'resumeDownload' | 'getDownload',
-   *   data: {
-   *     ...
-   *   }
-   * }
-   */
-  jsval sendCmdToDriverDownloader(in jsval cmd, [optional] in boolean async);
-
-  /**
-   * Start the USB Monitor Daemon
-   */
-  void startDriverManager();
-
   void wifiConnected(in boolean isConnected);
 };
 
