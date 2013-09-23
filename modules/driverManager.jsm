@@ -21,7 +21,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, "WinMutex", "resource://ffosassistant/WinMutex.jsm");
 
-var driverManager = {
+var DriverManager = {
   managerExe: 'resource://ffosassistant-drivermanager',
   dmMutexName: 'FirefoxOS USB Daemon',
   process: null,
