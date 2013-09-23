@@ -77,8 +77,8 @@ function  debug(s) {
             isDisabled = false;
             ADBService.startAdbServer();
             ADBService.startDeviceDetecting(true);
-            if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
-              navigator.mozFFOSAssistant.startDriverManager();
+            if (!DriverManager.isDriverManagerRunning()) {
+              DriverManager.startDriverManager();
             }
             window.setTimeout(connectToDriverManager, 1000);
           }
@@ -89,8 +89,8 @@ function  debug(s) {
               isDisabled = false;
               ADBService.startAdbServer();
               ADBService.startDeviceDetecting(true);
-              if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
-                navigator.mozFFOSAssistant.startDriverManager();
+              if (!DriverManager.isDriverManagerRunning()) {
+                DriverManager.startDriverManager();
               }
               window.setTimeout(connectToDriverManager, 1000);
             }
@@ -104,8 +104,8 @@ function  debug(s) {
         debug('output ' + event.target.result);
       }
       AddonManager.addAddonListener(this._addonListener);
-      if (!navigator.mozFFOSAssistant.isDriverManagerRunning) {
-        navigator.mozFFOSAssistant.startDriverManager();
+      if (!DriverManager.isDriverManagerRunning()) {
+        DriverManager.startDriverManager();
       }
       window.setTimeout(connectToDriverManager, 2000);
     }

@@ -18,11 +18,6 @@ interface nsIFFOSAssistant : nsISupports
 
   readonly attribute boolean isWifiConnect;
 
-  /**
-   * State of FFOS device driver manager
-   */
-  readonly attribute boolean isDriverManagerRunning;
-
   /* Fired when USB cable or ADB forward disconnected */
   attribute nsIDOMEventListener onadbstatechange;
 

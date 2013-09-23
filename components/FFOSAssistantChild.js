@@ -76,10 +76,6 @@ FFOSAssistant.prototype = {
     return this._callMessage("DriverDownloader", name, arg);
   },
 
-  _callDriverManager: function(name, arg) {
-    return this._callMessage("DriverManager", name, arg);
-  },
-
   _callMessage: function(moduleName, msgName, arg) {
     var request = this.createRequest();
     this._sendMessageForRequest(moduleName + ":" + msgName, arg, request);
@@ -170,17 +166,6 @@ FFOSAssistant.prototype = {
 
   set onadbstatechange(callback) {
     this._onADBStateChange = callback;
-  },
-
-  get isDriverManagerRunning() {
-    return cpmm.sendSyncMessage('DriverManager:isRunning')[0];
-  },
-
-  startDriverManager: function() {
-    if (this.isDriverManagerRunning) {
-      return;
-    }
-    this._callDriverManager('start', null);
   },
 
   wifiConnected: function(isConnected) {
