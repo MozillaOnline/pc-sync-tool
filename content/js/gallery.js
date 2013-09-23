@@ -60,19 +60,13 @@ var Gallery = (function() {
     return strDate;
   }
 
-  // directory for caching pitures
-  var galleryCachedDir = 'gallery_tmp';
-  var addonDir = '/home/tiger/work/ffosassistant/'
+  const CACH_FOLDER_NAME = 'gallery_tmp';
+  const PRE_PATH = 'chrome://ffosassistant/content/';
+  const DEBUG_ADDON_DIR = '/home/tiger/work/ffosassistant/'
 
-  // Modify addonDir to the place on your PC
+  // Modify DEBUG_ADDON_DIR to the place on your PC
   // and set debug = 1 for debugging in html with firebug
-  var debug = 0;
-
-  if (debug) {
-    var prePath = '';
-  } else {
-    var prePath = 'chrome://ffosassistant/content/';
-  }
+  var debug = 1;
 
   function init() {
     getListContainer().innerHTML = '';
@@ -206,33 +200,34 @@ var Gallery = (function() {
           tip.parentNode.removeChild(tip);
         }
         var self = this;
-        navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-          if (debug) {
-            var cmd = 'adb pull "' + self.dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + self.dataset.picUrl + '"';
-          } else {
-            var cmd = 'adb pull "' + self.dataset.picUrl + '" "' + path + self.dataset.picUrl + '"';
-          }
-          var req = navigator.mozFFOSAssistant.runCmd(cmd);
+        var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]); 
+        if (debug) {
+          var cmd = 'adb pull "' + self.dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + self.dataset.picUrl + '"';
+          var cachedUrl = CACH_FOLDER_NAME + self.dataset.picUrl;
+        } else {
+          var cmd = 'adb pull "' + self.dataset.picUrl + '" "' + path + self.dataset.picUrl + '"';
+          var cachedUrl = PRE_PATH + CACH_FOLDER_NAME + self.dataset.picUrl;
+        }
+        var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
-          req.onsuccess = function on_success(result) {
-            var dialog = new ShowPicDialog({
-              cachedUrl: prePath + galleryCachedDir + self.dataset.picUrl,
-              picUrl: self.dataset.picUrl,
-              showPreviousPic: showPreviousPic,
-              showNextPic: showNextPic
-            });
-          };
-          req.onerror = function on_error(e) {
-            alert("Can't pull picture to cache");
-          };
-        });
+        req.onsuccess = function on_success(result) {
+          var dialog = new ShowPicDialog({
+            cachedUrl: cachedUrl,
+            picUrl: self.dataset.picUrl,
+            showPreviousPic: showPreviousPic,
+            showNextPic: showNextPic
+          });
+        };
+        req.onerror = function on_error(e) {
+          alert("Can't pull picture to cache");
+        };
       };
       listItem.onmouseover = function(e) {
         var tip = document.createElement('div');
         tip.setAttribute('id', 'pic-tip');
         tip.classList.add('pic-tip');
         tip.style.top = (e.target.parentNode.offsetTop + 247 - $id('picture-list-container').scrollTop) + 'px';
-        tip.style.left = (e.target.parentNode.offsetLeft + 595) + 'px';
+        tip.style.left = (e.target.parentNode.offsetLeft + 445) + 'px';
         tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:'
                          + parseDate(parseInt(this.dataset.date)) + '</div><div>size:'
                          + parseSize(this.dataset.size) + 'M' + '</div>';
@@ -291,43 +286,43 @@ var Gallery = (function() {
     for (var i = 0; i < picList.length; i++) {
       if (picList[i].dataset.picUrl == pic.dataset.picUrl) {
         if (i == 0) {
-          var previouseUrl = prePath + galleryCachedDir + picList[picList.length -1].dataset.picUrl;
           pic.dataset.picUrl = picList[picList.length -1].dataset.picUrl;
           //TODO: check if picture cached
-          navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-            if (debug) {
-              var cmd = 'adb pull "' + picList[picList.length -1].dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + picList[picList.length -1].dataset.picUrl + '"';
-            } else {
-              var cmd = 'adb pull "' + picList[picList.length -1].dataset.picUrl + '" "' + path + picList[picList.length -1].dataset.picUrl + '"';
-            }
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
+          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]);
+          if (debug) {
+            var cmd = 'adb pull "' + picList[picList.length -1].dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + picList[picList.length -1].dataset.picUrl + '"';
+            var previouseUrl = CACH_FOLDER_NAME + picList[picList.length -1].dataset.picUrl;
+          } else {
+            var cmd = 'adb pull "' + picList[picList.length -1].dataset.picUrl + '" "' + path + picList[picList.length -1].dataset.picUrl + '"';
+            var previouseUrl = PRE_PATH + CACH_FOLDER_NAME + picList[picList.length -1].dataset.picUrl;
+          }
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
-            req.onsuccess = function on_success(result) {
-              pic.setAttribute('src', previouseUrl);
-            };
-            req.onerror = function on_error(e) {
-              alert("Can't pull picture to cache");
-            };
-          });
+          req.onsuccess = function on_success(result) {
+            pic.setAttribute('src', previouseUrl);
+          };
+          req.onerror = function on_error(e) {
+            alert("Can't pull picture to cache");
+          };
         } else {
-          var previouseUrl = prePath + galleryCachedDir + picList[i-1].dataset.picUrl;
-          pic.dataset.picUrl = picList[i -1].dataset.picUrl;
+          pic.dataset.picUrl = picList[i-1].dataset.picUrl;
           //TODO: check if picture cached
-          navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-            if (debug) {
-              var cmd = 'adb pull "' + picList[i -1].dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + picList[i -1].dataset.picUrl + '"';
-            } else {
-              var cmd = 'adb pull "' + picList[i -1].dataset.picUrl + '" "' + path + picList[i -1].dataset.picUrl + '"';
-            }
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
+          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]);
+          if (debug) {
+            var cmd = 'adb pull "' + picList[i-1].dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + picList[i-1].dataset.picUrl + '"';
+            var previouseUrl = CACH_FOLDER_NAME + picList[i-1].dataset.picUrl;
+          } else {
+            var cmd = 'adb pull "' + picList[i -1].dataset.picUrl + '" "' + path + picList[i-1].dataset.picUrl + '"';
+            var previouseUrl = PRE_PATH + CACH_FOLDER_NAME + picList[i-1].dataset.picUrl;
+          }
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
-            req.onsuccess = function on_success(result) {
-              pic.setAttribute('src', previouseUrl);
-            };
-            req.onerror = function on_error(e) {
-              alert("Can't pull picture to cache");
-            };
-          });
+          req.onsuccess = function on_success(result) {
+            pic.setAttribute('src', previouseUrl);
+          };
+          req.onerror = function on_error(e) {
+            alert("Can't pull picture to cache");
+          };
         }
         break;
       }
@@ -341,43 +336,43 @@ var Gallery = (function() {
     for (var i = 0; i < picList.length; i++) {
       if (picList[i].dataset.picUrl == pic.dataset.picUrl) {
         if (i == picList.length -1) {
-          var nextUrl = prePath + galleryCachedDir + picList[0].dataset.picUrl;
           pic.dataset.picUrl = picList[0].dataset.picUrl;
           //TODO: check if picture cached
-          navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-            if (debug) {
-              var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + picList[0].dataset.picUrl + '"';
-            } else {
-              var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + path + picList[0].dataset.picUrl + '"';
-            }
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
+          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]);
+          if (debug) {
+            var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + picList[0].dataset.picUrl + '"';
+            var nextUrl = CACH_FOLDER_NAME + picList[0].dataset.picUrl;
+          } else {
+            var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + path + picList[0].dataset.picUrl + '"';
+            var nextUrl = PRE_PATH + CACH_FOLDER_NAME + picList[0].dataset.picUrl;
+          }
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
-            req.onsuccess = function on_success(result) {
-              pic.setAttribute('src', nextUrl);
-            };
-            req.onerror = function on_error(e) {
-              alert("Can't pull picture to cache");
-            };
-          });
+          req.onsuccess = function on_success(result) {
+            pic.setAttribute('src', nextUrl);
+          };
+          req.onerror = function on_error(e) {
+            alert("Can't pull picture to cache");
+          };
         } else {
-          var nextUrl = prePath + galleryCachedDir + picList[i+1].dataset.picUrl;
           pic.dataset.picUrl = picList[i+1].dataset.picUrl;
           //TODO: check if picture cached
-          navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-            if (debug) {
-              var cmd = 'adb pull "' + picList[i+1].dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + picList[i+1].dataset.picUrl + '"';
-            } else {
-              var cmd = 'adb pull "' + picList[i+1].dataset.picUrl + '" "' + path + picList[i+1].dataset.picUrl + '"';
-            }
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
+          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]);
+          if (debug) {
+            var cmd = 'adb pull "' + picList[i+1].dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + picList[i+1].dataset.picUrl + '"';
+            var nextUrl = CACH_FOLDER_NAME + picList[i+1].dataset.picUrl;
+          } else {
+            var cmd = 'adb pull "' + picList[i+1].dataset.picUrl + '" "' + path + picList[i+1].dataset.picUrl + '"';
+            var nextUrl = PRE_PATH + CACH_FOLDER_NAME + picList[i+1].dataset.picUrl;
+          }
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
-            req.onsuccess = function on_success(result) {
-              pic.setAttribute('src', nextUrl);
-            };
-            req.onerror = function on_error(e) {
-              alert("Can't pull picture to cache");
-            };
-          });
+          req.onsuccess = function on_success(result) {
+            pic.setAttribute('src', nextUrl);
+          };
+          req.onerror = function on_error(e) {
+            alert("Can't pull picture to cache");
+          };
         }
         break;
       }

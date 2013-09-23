@@ -334,9 +334,9 @@ FFOSAssistant.prototype = {
     });
   },
 
-  getDirInTmp: function (path, callback) {
-    var file = FileUtils.getDir("ProfD", path, false);
-    callback(file.path);
+  getGalleryCachedDir: function (pathArray) {
+    var file = FileUtils.getDir("ProfD", pathArray, false);
+    return file.path;
   },
 
   runCmd: function(cmd) {
