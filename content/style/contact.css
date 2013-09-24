@@ -512,13 +512,6 @@ button.add-new-button {
   width: 5.6rem;
 }
 
-#views span.title {
-  text-align: center;
-  padding: 4rem 0;
-  font-size: 2.5rem;
-  display: block;
-}
-
 .show-contact-header {
   height: 9rem;
 }

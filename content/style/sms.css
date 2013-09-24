@@ -14,15 +14,19 @@
   padding-left: 2.2rem;
   font-size: 1.4rem;
 }
+
 #selectAll-sms[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
 }
+
 #selectAll-sms[data-disabled=true] {
   color: #CCCCCC;
 }
+
 #selectAll-sms[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #selectAll-sms[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -30,6 +34,7 @@
 #remove-sms[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #remove-sms[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -37,6 +42,7 @@
 #export-sms[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #export-sms[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -44,6 +50,7 @@
 #refresh-sms[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #refresh-sms[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -52,6 +59,7 @@
 #add-new-sms[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #add-new-sms[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -74,19 +82,24 @@
 #remove-sms {
   background-image: url("images/remove-default.png");
 }
+
 #remove-sms[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
   cursor: default;
 }
+
 #remove-sms[data-disabled=true] > label {
   cursor: default;
 }
+
 #remove-sms[data-disabled=false]:hover {
   background-image: url("images/remove-highlighted.png");
 }
+
 #remove-sms[data-disabled=false]:active {
   background-image: url("images/remove-selected.png");
 }
+
 #remove-sms[data-disabled=false]:visited {
   background-image: url("images/remove-default.png");
 }
@@ -94,15 +107,19 @@
 #export-sms[data-disabled=true] {
   background-image: url("images/export-disabled.png");
 }
+
 #export-sms[data-disabled=false] {
   background-image: url("images/export-default.png");
 }
+
 #export-sms[data-disabled=false]:hover {
   background-image: url("images/export-highlighted.png");
 }
+
 #export-sms[data-disabled=false]:active {
   background-image: url("images/export-selected.png");
 }
+
 #export-sms[data-disabled=false]:visited {
   background-image: url("images/export-default.png");
 }
@@ -110,12 +127,15 @@
 #import-sms {
   background-image: url("images/import-default.png");
 }
+
 #import-sms:hover {
   background-image: url("images/import-highlighted.png");
 }
+
 #import-sms:active {
   background-image: url("images/import-selected.png");
 }
+
 #import-sms:visited {
   background-image: url("images/import-default.png");
 }
@@ -123,12 +143,15 @@
 #refresh-sms {
   background-image: url("images/refresh-default.png");
 }
+
 #refresh-sms:hover {
   background-image: url("images/refresh-highlighted.png");
 }
+
 #refresh-sms:active {
   background-image: url("images/refresh-selected.png");
 }
+
 #refresh-sms:visited {
   background-image: url("images/refresh-default.png");
 }
@@ -136,12 +159,15 @@
 #add-new-sms {
   background-image: url("images/add-default.png");
 }
+
 #add-new-sms:hover {
   background-image: url("images/add-highlighted.png");
 }
+
 #add-new-sms:active {
   background-image: url("images/add-selected.png");
 }
+
 #add-new-sms:visited {
   background-image: url("images/add-default.png");
 }
@@ -163,7 +189,7 @@
 }
 
 .threads-list-item {
-  margin-top: .5rem;
+  height: 4.5rem;
 }
 
 .threads-list-item:hover {
@@ -179,19 +205,14 @@
   background-color: #DEF3F8;
 }
 
-.threads-list-item > div {
-  overflow: hidden;
-  cursor: pointer;
-  padding: .5rem 0 .5rem 1rem;
-}
-
-.threads-list-item > div > * {
+.threads-list-item > * {
+  margin-top: .5rem;
   float: left;
   height: 3.5rem;
   width: 3.5rem;
 }
 
-.threads-list-item >div input.checkbox[type="checkbox"] + label.selectAll {
+.threads-list-item > label.unchecked {
   background-image: url("images/checkbox.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -199,23 +220,7 @@
   width: 2rem;
 }
 
-.threads-list-item >div input.checkbox[type="checkbox"]:checked + label.selectAll {
-  background-image: url("images/checkbox-checked.png");
-  background-position: center center;
-  background-repeat: no-repeat;
-  height: 3.3rem;
-  width: 2rem;
-}
-
-.threads-list-item >div > label.unchecked {
-  background-image: url("images/checkbox.png");
-  background-position: center center;
-  background-repeat: no-repeat;
-  height: 3.3rem;
-  width: 2rem;
-}
-
-.threads-list-item >div  > label.checked {
+.threads-list-item > label.checked {
   background-image: url("images/checkbox-checked.png");
 }
 
@@ -247,15 +252,22 @@
   width: 80%;
 }
 
-.threads-list-item .sms-info .name{
+.threads-list-item .sms-info > *{
   font-size: 1.4rem;
+  float: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.threads-list-item .sms-info .date{
+  float: right;
 }
 
 .threads-list-item .sms-info .body{
-  font-size: 1.5rem;
   height: 1.5rem;
-  float: left;
   padding-top: 0.2rem;
+  white-space: nowrap;
+  width: 36rem;
 }
 
 .threads-list-item .readflag {
@@ -266,10 +278,9 @@
   background-position: center center;
 }
 
-#threads-list-container div.unread .readflag {
+#threads-list-container .unread .readflag {
   background-image: url("images/unread.png");
 }
-
 
 .threads-list-item .odd {
   background-color: #EEEEEE;
@@ -347,7 +358,6 @@
   left:38.0rem
 }
 
-
 .sms-ui-window-header{
   border-radius:0.5rem 0.5rem 0 0;
   border-bottom:0.1rem #E86000 solid;
@@ -357,9 +367,11 @@
   background-color: #E86000;
   color: #FFFFFF;
 }
+
 .sms-ui-window-header-title{
   float: left
 }
+
 .sms-ui-window-header-x{
   cursor:default;
   height:1.6rem;
@@ -367,37 +379,47 @@
   float: right;
   background: url("images/sms-cancel.png");
 }
+
 .sms-ui-window-header-x:hover{
   background: url("images/sms-cancel-hover.png");
 }
+
 .sms-ui-window-header-x:active{
   background: url("images/sms-cancel-active.png");
 }
+
 .sms-ui-window-body{
   min-height:2em;
   padding:1.5rem 1.5rem 1.0rem;
 }
+
 .sms-ui-window-body p+p{
   margin-top:1em
 }
+
 .sms-ui-window-footer{
   border-radius:0 0 0.5rem 0.5rem;
   padding:0 1.5rem 1.5rem
 }
+
 .sms-ui-window-footer label{
   display:block
 }
+
 .sms-ui-window-footer label input[type="checkbox"]{
   margin-right:3rem
 }
+
 .sms-ui-window.w-ui-alert{
   min-height:14.8rem;
   width:36.0rem
 }
+
 .sms-ui-window-footer-monitor{
   line-height:2.5rem;
   -moz-box-flex:1
 }
+
 .sms-ui-window-footer-button-ctn{
   text-align:right
 }
@@ -406,6 +428,7 @@
   margin-bottom:1.0rem;
   overflow: hidden
 }
+
 .sms-message-sender-window .header label{
   line-height:2.5rem;
   margin-right:0.5rem;
@@ -413,6 +436,7 @@
   min-width:8.0rem;
   float: left
 }
+
 .sms-message-sender-window .header .address{
   border:0.1rem #cacaca solid;
   cursor:text;
@@ -424,9 +448,11 @@
   float: left;
   width: 27.0rem;
 }
+
 .sms-message-sender-window .header .sms-icon-btn{
   float: right
 }
+
 .sms-message-sender-window .header .sms-icon-btn{
   background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
   border-color:#2c8e00;
@@ -447,9 +473,11 @@
   word-spacing: normal;
   display: inline-block;
 }
+
 .sms-message-sender-window .header .sms-icon-btn:hover{
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
+
 .sms-message-sender-window .header .sms-icon-btn .icon{
   background: url("images/sms-select-contact.png");
   display: inline-block;
@@ -458,25 +486,31 @@
   vertical-align: middle;
   width: 1.6rem
 }
+
 .sms-message-sender-window .header .address.focus,.sms-message-sender-window .header .address.focus:hover{
   border-color:#6db800;
   box-shadow:inset 0 0.1rem 0.1rem rgba(0,0,0,0.075),0 0 0.4rem #6db800
 }
+
 .sms-message-sender-window .header .address:hover{
   border-color:rgba(109,184,0,0.5)
 }
+
 .sms-message-sender-window .header .input-contact{
   border:none;
   height:1.8rem;
   line-height:1.8rem;
   width:100%
 }
+
 .sms-message-sender-window .header .input-contact:focus,.sms-message-sender-window .header .input-contact:focus:hover{
   box-shadow:none
 }
+
 .sms-message-sender-window .body{
   overflow: hidden
 }
+
 .sms-message-sender-window .body label{
   line-height:2.5rem;
   margin-right:0.5rem;
@@ -484,12 +518,14 @@
   width:8.0rem;
   float: left
 }
+
 .sms-message-sender-window .body .input-content{
   height:10.0rem;
   width:40.7rem;
   float: right;
   overflow-y: auto;
 }
+
 .sms-message-sender-window .monitor{
   margin-left:8.rem;
   color: #999999;
@@ -543,28 +579,26 @@
   margin-left: 0.4rem
 }
 
-.sms-thread-header{
-  margin: auto;
-  width:100%;
-  overflow: hidden;
-}
-
 .sms-message-thread .date-ctn{
   margin:1.5rem auto;
   width:100%;
 }
+
 .sms-message-thread .date-ctn date{
   text-shadow:0 0.1rem 0 #fff;
 }
+
 .sms-message-thread .date-ctn hr{
   box-shadow:0 0.1rem 0 #fff;
   height:0;
 }
+
 .sms-message-thread .button-previous,.sms-message-thread .button-next{
   padding:0.9rem 0;
   text-align:center;
   text-shadow:0 0.1rem 0 #fff
 }
+
 .sms-message-thread .button-previous:hover,.sms-message-thread .button-next:hover{
   cursor:pointer
 }
@@ -574,14 +608,178 @@
   text-align:center;
   text-shadow:0 0.1rem 0 #fff
 }
+
 .sms-message-thread .button-previous:hover,.sms-message-thread .button-next:hover{
   cursor:pointer
 }
 
-.sms-message-item-ctn li{
-  padding: 0 1.0rem 2.0rem;
+.messages-list-item{
+  padding: 0 1rem 2rem;
+  position: relative;
 }
-.sms-message-item-ctn li .content-wrap{
+
+.messages-list-item .arrow{
+  border-bottom: 0.1rem #cacaca solid;
+  bottom: 1rem;
+  height: 0.9rem;
+  overflow: hidden;
+  left: -0.9rem;
+  position: relative;
+  width: 1.5rem;
+}
+
+.messages-list-item .arrow .side{
+  background-color: #E0F9FF;
+  border-left: 0.1rem #cacaca solid;
+  height: 2.0rem;
+  left: 0;
+  position: relative;
+  top: 0.3rem;
+  width: 2.0rem;
+  -moz-transform: rotate(45deg);
+}
+
+.messages-list-item .actions{
+  bottom: 1rem;
+  display: none;
+  left: 0;
+  padding-top: 0.5rem;
+  position: absolute;
+  right: 0;
+}
+
+.messages-list-item .actions button{
+  border: none;
+  box-shadow: none;
+  display: inline-block;
+  height: 1.6rem;
+  min-width: 1.6rem;
+  padding: 0.3rem 0.3rem;
+  width: 1.6rem;
+}
+.messages-list-item .actions button.button-delete{
+  background: url("images/sms-delete.png");
+  background-size: cover;
+}
+
+.messages-list-item .actions button.button-delete:hover{
+  background: url("images/sms-delete-hover.png");
+  background-size: cover;
+}
+
+.messages-list-item .actions button.button-delete:active{
+  background: url("images/sms-delete-active.png");
+  background-size: cover;
+}
+
+.messages-list-item .actions button.button-forward{
+  background: url("images/sms-reply.png");
+  background-size: cover;
+}
+
+.messages-list-item .actions button.button-forward:hover{
+  background: url("images/sms-reply-hover.png");
+  background-size: cover;
+}
+
+.messages-list-item .actions button.button-forward:active{
+  background: url("images/sms-reply-active.png");
+  background-size: cover;
+}
+
+.messages-list-item .actions button.button-resend{
+  background: url("images/sms-resend.png");
+  background-size: cover;
+}
+
+.messages-list-item .actions button.button-resend:hover{
+  background: url("images/sms-resend-hover.png");
+  background-size: cover;
+}
+
+.messages-list-item .actions button.button-resend:active{
+  background: url("images/sms-resend-active.png");
+  background-size: cover;
+}
+
+.messages-list-item.from-me{
+  direction:rtl;
+}
+
+.messages-list-item.from-me .sms-body{
+  border-color:#84c93f;
+  direction:ltr;
+  text-shadow:0 0.1rem 0 rgba(255,255,255,0.6);
+  background-color: #97E647;
+}
+
+.messages-list-item.from-me .sms-body .actions{
+  direction:rtl;
+}
+
+.messages-list-item.from-me .sms-body .actions button+button{
+  margin:0 0.4rem 0 0;
+}
+
+.messages-list-item.from-me .sms-time{
+  direction:ltr;
+  margin:0 1.0rem 0 0;
+}
+
+.messages-list-item.from-me .arrow{
+  border-bottom:0.1rem #84c93f solid;
+  left:auto;
+  right:-0.9rem;
+}
+
+.messages-list-item.from-me .arrow .side{
+  background-color:#97e647;
+  border-left:none;
+  border-top:0.1rem #cacaca solid;
+  left:auto;
+  right:0;
+}
+
+.messages-list-item.from-me-error{
+  direction:rtl;
+}
+
+.messages-list-item.from-me-error .sms-body{
+  direction:ltr;
+  text-shadow:0 0.1rem 0 rgba(255,255,255,0.6);
+  background-color: #F6F6F6;
+  border-color:#E86000;
+}
+
+.messages-list-item.from-me-error .sms-body .actions{
+  direction:rtl;
+}
+
+.messages-list-item.from-me .sms-body .actions button+button{
+  margin:0 0.4rem 0 0;
+}
+
+.messages-list-item.from-me-error .sms-time{
+  direction:ltr;
+  margin:0 1.0rem 0 0;
+}
+
+.messages-list-item.from-me-error .arrow{
+  border-bottom:0.1rem #E86000 solid;
+  left:auto;
+  right: -0.9rem;
+}
+
+.messages-list-item.from-me-error .arrow .side{
+  background-color: #F6F6F6;
+  border-left: none;
+  border-top: 0.1rem #E86000 solid;
+  left: auto;
+  right: 0;
+  border-color: #E86000;
+}
+
+.messages-list-item .sms-body{
   border:#cacaca 0.1rem solid;
   border-radius:0.5rem;
   box-shadow:0 0.1rem 0 white inset,0 0 0.5rem rgba(0,0,0,0.1);
@@ -590,186 +788,32 @@
   min-width:5.8rem;
   min-height: 2.0rem;
   padding:0.7rem 1.3rem;
-  position:relative;
+  position: relative;
   text-shadow:0 0.1rem 0 #fff;
   background-color: #E0F9FF;
-}
-
-.sms-message-item-ctn li .content-wrap .content{
   word-break:break-all;
 }
-.sms-message-item-ctn li .content-wrap .content em{
-  background-color:#f1ea00;
-  border-radius:0.4rem;
-  box-shadow:rgba(0,0,0,0.5) 0.3rem 0.3rem 0.4rem;
-  color:#000;
-  padding:0.2rem 0.2rem 0.2rem 0.3rem;
-  margin:-0.2rem -0.2rem -0.2rem -0.3rem;
-  opacity:.8;
-}
-.sms-message-item-ctn li .content-wrap .button-toggle{
-  display:inline-block
-}
-.sms-message-item-ctn li .content-wrap .arrow{
-  border-bottom:0.1rem #cacaca solid;
-  bottom:-0.1rem;
-  height:0.9rem;
-  left:-1.0rem;
-  overflow:hidden;
-  position:absolute;
-  width:1.5rem
-}
-.sms-message-item-ctn li .content-wrap .arrow .side{
-  background-color:#E0F9FF;
-  border-left:0.1rem #cacaca solid;
-  height:2.0rem;
-  left:0;
-  position:absolute;
-  top:0.3rem;
-  width:2.0rem;
-  -moz-transform:rotate(45deg)
-}
-.sms-message-item-ctn li .content-wrap .actions{
-  bottom:-2.0rem;
-  display:none;
-  left:0;
-  padding-top:0.5rem;
-  position:absolute;
-  right:0
-}
-.sms-message-item-ctn li .content-wrap .actions button{
-  border:none;
-  box-shadow:none;
-  display:inline-block;
-  height:1.6rem;
-  min-width:1.6rem;
-  padding:0.3rem 0.3rem;
-  width:1.6rem
-}
-.sms-message-item-ctn li .content-wrap .actions button.button-delete{
-  background: url("images/sms-delete.png");
-  background-size: cover
-}
-.sms-message-item-ctn li .content-wrap .actions button.button-delete:hover{
-  background: url("images/sms-delete-hover.png");
-  background-size: cover
-}
-.sms-message-item-ctn li .content-wrap .actions button.button-delete:active{
-  background: url("images/sms-delete-active.png");
-  background-size: cover
-}
-.sms-message-item-ctn li .content-wrap .actions button.button-forward{
-  background: url("images/sms-reply.png");
-  background-size: cover
-}
-.sms-message-item-ctn li .content-wrap .actions button.button-forward:hover{
-  background: url("images/sms-reply-hover.png");
-  background-size: cover
-}
-.sms-message-item-ctn li .content-wrap .actions button.button-forward:active{
-  background: url("images/sms-reply-active.png");
-  background-size: cover
-}
-.sms-message-item-ctn li .content-wrap .actions button.button-resend{
-  background: url("images/sms-resend.png");
-  background-size: cover
-}
-.sms-message-item-ctn li .content-wrap .actions button.button-resend:hover{
-  background: url("images/sms-resend-hover.png");
-  background-size: cover
-}
-.sms-message-item-ctn li .content-wrap .actions button.button-resend:active{
-  background: url("images/sms-resend-active.png");
-  background-size: cover
-}
-.sms-message-item-ctn li .content-wrap:hover .actions{
+
+.messages-list-item:hover .actions{
   display:inline-block
 }
 
-.sms-message-item-ctn li .content-wrap .mms > *{
+.messages-list-item .sms-body .mms > *{
   width: 100%;
 }
 
-.sms-message-item-ctn li .info{
+.messages-list-item .sms-date{
+  margin: 0.5rem auto;
+  width: 100%;
+  float: left;
+  text-align: left;
+}
+
+.messages-list-item .sms-time{
   display:inline-block;
   vertical-align:bottom;
   margin:0 0 0 1.0rem;
   text-shadow:0 0.1rem 0 #fff
-}
-.sms-message-item-ctn li .info .icon{
-  display:inline-block;
-  height:1.6rem;
-  margin:-0.2rem 0 0;
-  vertical-align:middle;
-  width:1.6rem
-}
-.sms-message-item-ctn li .info .icon.faild{
-  margin-right:0.3rem
-}
-
-.sms-message-item-ctn li.from-me{
-  direction:rtl
-}
-.sms-message-item-ctn li.from-me .content-wrap{
-  border-color:#84c93f;
-  direction:ltr;
-  text-shadow:0 0.1rem 0 rgba(255,255,255,0.6);
-  background-color: #97E647;
-}
-.sms-message-item-ctn li.from-me .content-wrap .actions{
-  direction:rtl
-}
-.sms-message-item-ctn li.from-me .content-wrap .actions button+button{
-  margin:0 0.4rem 0 0
-}
-.sms-message-item-ctn li.from-me .info{
-  direction:ltr;
-  margin:0 1.0rem 0 0
-}
-.sms-message-item-ctn li.from-me .arrow{
-  border-bottom:0.1rem #84c93f solid;
-  left:auto;
-  right:-1.0rem
-}
-.sms-message-item-ctn li.from-me .arrow .side{
-  background-color:#97e647;
-  border-left:none;
-  border-top:0.1rem #cacaca solid;
-  left:auto;
-  right:0
-}
-
-.sms-message-item-ctn li.from-me-error{
-  direction:rtl
-}
-.sms-message-item-ctn li.from-me-error .content-wrap{
-  direction:ltr;
-  text-shadow:0 0.1rem 0 rgba(255,255,255,0.6);
-  background-color: #F6F6F6;
-  border-color:#E86000;
-}
-.sms-message-item-ctn li.from-me-error .content-wrap .actions{
-  direction:rtl
-}
-.sms-message-item-ctn li.from-me .content-wrap .actions button+button{
-  margin:0 0.4rem 0 0
-}
-.sms-message-item-ctn li.from-me-error .info{
-  direction:ltr;
-  margin:0 1.0rem 0 0
-}
-.sms-message-item-ctn li.from-me-error .arrow{
-  border-bottom:0.1rem #E86000 solid;
-  left:auto;
-  right:-1.0rem;
-}
-.sms-message-item-ctn li.from-me-error .arrow .side{
-  background-color:#F6F6F6;
-  border-left:none;
-  border-top:0.1rem #E86000 solid;
-  left:auto;
-  right:0;
-  border-color:#E86000;
 }
 
 .sms-select-view-header{
@@ -779,22 +823,27 @@
   padding: 4rem 0;
   text-align: center;
 }
+
 .sms-message-threads-ctn{
   height: 38.0rem;
   overflow-x: hidden;
   overflow-y: auto;
   padding-top: 0.5rem;
 }
+
 .sms-message-quick-sender{
   background-color:#f9f9f9;
   padding:1.0rem;
 }
+
 .sms-message-quick-sender .selector-ctn{
   margin-bottom:0.5rem;
 }
+
 .sms-message-quick-sender .sender-ctn{
   min-height:2.6rem;
 }
+
 .sms-message-quick-sender .sender-ctn .input-content{
   display:block;
   line-height:1.9rem;
@@ -803,9 +852,11 @@
   overflow-x: hidden;
   overflow-y: auto;
 }
+
 .sms-message-quick-sender .sender-ctn .count-ctn{
   min-width:7.8rem
 }
+
 .sms-message-quick-sender .sender-ctn .count-ctn .button-send{
   width:100%;
   background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
@@ -820,13 +871,14 @@
   word-spacing: normal;
 }
 
-
 .sms-message-quick-sender .sender-ctn .count-ctn .button-send:hover {
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
+
 .sms-message-quick-sender .sender-ctn .count-ctn .button-send:active {
   background-color: #018CAB;
 }
+
 .sms-message-quick-sender .sender-ctn .count-ctn .button-send:visited {
   background-color: #00CAF2;
 }
@@ -844,8 +896,56 @@
   width: 23rem;
 }
 
+.show-sms-item > * {
+  margin-top: .5rem;
+  float: left;
+  height: 3.5rem;
+  width: 3.5rem;
+}
 
-.show-multi-sms-content .number {
+.show-sms-item .avatar-default {
+  background-image: url("images/avatar.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.show-sms-item .avatar-small {
+  width: 3.2rem;
+  height: 3.2rem;
+}
+
+.show-sms-item .profilePic {
+  width: 9rem;
+}
+
+.show-sms-item .avatar-small[data-noavatar=true] {
+  background: url("images/avatar.png") no-repeat scroll center center  transparent;
+}
+
+.show-sms-item .select-sms-info {
+  font-size: 1.4rem;
+  padding-left: 1rem;
+  float: left;
+  width: 80%;
+}
+
+.show-sms-item .select-sms-info > *{
+  font-size: 1.4rem;
+  float: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.show-sms-item .select-sms-info .body{
+  height: 1.5rem;
+  padding-top: 0.2rem;
+  white-space: nowrap;
+  width: 36rem;
+}
+
+.show-multi-sms-content .name {
   color: #333333;
   height: 2rem;
   margin-left: 1rem;
@@ -863,6 +963,7 @@
 .sms-message-contact-selector-body .searchbox{
   width:100%
 }
+
 .sms-message-contact-selector-body .selector-ctrl{
   border:0.1rem #cacaca solid;
   border-bottom:none;
@@ -877,39 +978,49 @@
   box-shadow:none;
   color:#555555
 }
+
 .sms-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary):enabled:hover:not(.active):not(:active),.sms-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary):enabled:focus{
   background:transparent;
   color:#3c7800
 }
+
 .sms-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary):enabled:active,.sms-message-contact-selector-body .selector-ctrl .selector-ctn button:not(.primary).active{
   background:transparent;
   box-shadow:none;
   color:#2c5300
 }
+
 .sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton{
   max-width:10.5rem;
   padding-left:0.5rem;
   padding-right:0.5rem
 }
+
 .sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton .arrow-ctn{
   opacity:1
 }
+
 .sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton .arrow-ctn .arrow{
   border-color:#999 transparent transparent transparent
 }
+
 .sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton:enabled:hover .arrow-ctn .arrow{
   border-top-color:#6db800
 }
+
 .sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton:enabled:active .arrow-ctn .arrow,.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton.active .arrow-ctn .arrow,.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton.active:hover .arrow-ctn .arrow{
   border-top-color:#2c5300
 }
+
 .sms-message-contact-selector-body .selector-footer .button-clear-all{
   float:right
 }
+
 .sms-message-contact-selector-body .list-ctn{
   border:0.1rem #cacaca solid;
   height:35.0rem
 }
+
 .sms-message-contact-selector-body .selector-monitor{
   border:0.1rem #cacaca solid;
   height:7.5rem;
@@ -942,6 +1053,7 @@
   text-align:left;
   float: left
 }
+
 .sms-ui-button.sms-ui-menubutton .label+.arrow-ctn{
   margin-left:0.5rem;
   float: left;
@@ -954,33 +1066,38 @@
   border-width:0.4rem 0.4rem 0;
   opacity:.7
 }
+
 .sms-ui-button.sms-ui-menubutton:enabled:hover .arrow-ctn .arrow{
   opacity:1
 }
+
 .sms-ui-button.sms-ui-menubutton:enabled:active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.active:hover .arrow-ctn .arrow{
   opacity:1
 }
 .sms-ui-button.sms-ui-menubutton.primary .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary .arrow-ctn .arrow{
   border-top-color:#fff
 }
+
 .sms-ui-button.sms-ui-menubutton.primary:enabled:hover .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary:enabled:hover .arrow-ctn .arrow{
   border-top-color:#fff
 }
+
 .sms-ui-button.sms-ui-menubutton.primary:enabled:active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.primary.active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.primary.active:hover .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary:enabled:active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary.active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary.active:hover .arrow-ctn .arrow{
   border-top-color:#fff
 }
 .sms-ui-button.sms-ui-menubutton.primary .arrow-ctn,.sms-ui-button.sms-ui-menubutton.secondary .arrow-ctn{
   border-color:#fff
 }
+
 .sms-ui-button.sms-ui-menubutton.toggle{
   min-width:2.2rem;
   padding-left:0.8rem;
   padding-right:0.8rem
 }
+
 .sms-ui-button.sms-ui-menubutton.toggle .label{
   display:none
 }
-
 
 .sms-ui-menu{
   background:#fff;
@@ -992,18 +1109,22 @@
   position:absolute;
   margin-left: 8.5rem;
 }
+
 .sms-ui-menu li{
   height:3.0rem;
   line-height:2.2rem;
   padding:0 1.5rem 0 0.5rem
 }
+
 .sms-ui-menu li:hover:not([disabled]){
   background:-moz-linear-gradient(center top , #5bb70d, #4eaa00) repeat scroll 0 0 transparent;
   color:#fff
 }
+
 .sms-ui-menu li[disabled]{
   opacity:0.4
 }
+
 .sms-ui-menu li.disabled:hover{
   background:#fff
 }
@@ -1013,6 +1134,7 @@
   max-width:15.0rem;
   min-width:8.0rem;
 }
+
 .sms-ui-menu input[type="radio"]{
   background:none;
   background-color:transparent;
@@ -1023,6 +1145,7 @@
   float: left;
   display: none;
 }
+
 .sms-ui-menu input[type="radio"]:enabled:hover{
   background:none;
   border:none
@@ -1033,4 +1156,39 @@
   margin-left: 8.1rem;
   padding-top: 0.4rem;
   width: 11.5rem;
+}
+
+.sms-thread-header{
+  margin: auto;
+  width:100%;
+  overflow: hidden;
+}
+
+.sms-thread-header .avatar-default {
+    background-image: url("images/avatar.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 5.5rem;
+    width: 5.5rem;
+}
+
+#sms-thread-header-img {
+  height:5.5rem;
+  width:5.5rem;
+  padding-top: 2rem;
+  float: left;
+}
+
+#sms-thread-header-name {
+  float: left;
+  margin-top: 2.2rem;
+  margin-left: 1rem;
+  font-size: 2.2rem;
+}
+
+#sms-thread-header-button {
+  margin-left: 65px;
+  height: 21px;
+  margin-top: 50px;
+  width: 106px;
 }
