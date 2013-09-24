@@ -21,16 +21,16 @@
   <script type="text/javascript" src="chrome://ffosassistant/content/js/3rd/pinyin.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/3rd/tmpl.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/cmd.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/connectPool.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/connectionPool.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/vcard.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/contactList.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/sms_list.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/smsList.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/music_list.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/gallery.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/video.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/form.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/contactForm.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/main.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/view.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/viewManager.js"></script>
 </head>
 <body hidden="true">
   <div id="container">
@@ -472,6 +472,9 @@
               </section>
               <section id="sms-thread-view" class="card-view sms-form" hidden="true">
                 <div class="sms-thread-header" id="sms-thread-header">
+                  <img id="sms-thread-header-img" class="avatar avatar-default"></img>
+                  <span id="sms-thread-header-name" class="title"></span>
+                  <div id="sms-thread-header-button" class="button" data-l10n-id="add-to-contacts-from-sms"></div>
                 </div>
                 <div id='message-list-container' class="sms-message-threads-ctn">
                 </div>
@@ -533,6 +536,47 @@
       <div class="title"><label><%=type%></label></div>
       <div class="value"><label><%=value%></label></div>
     <%}%>
+  </script>
+
+  <!-- templates for sms list view -->
+  <script type="text/html" id="tmpl_sms_list_item">
+    <label class="unchecked"></label>
+    <div class="readflag"></div>
+    <img class="avatar avatar-default"></img>
+    <div class="sms-info">
+       <div class="name"><%=name%></div>
+       <div class="unread"><%=unread%></div>
+       <div class="date"><%=date%></div>
+       <div class="body"><%=body%></div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_sms_select_item">
+    <img class="avatar avatar-default"></img>
+    <div class="select-sms-info">
+       <div class="name"><%=name%></div>
+       <div class="body"><%=body%></div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_sms_display_item">
+    <date class="sms-date"><%=date%></date>
+    <div class="sms-body">
+      <%for (var i=0; i<body.length; i++) {%>
+        <%if (type[i] == 'img') {%>
+          <img region="Image" src="<%=body[i]%>"></img>
+        <%} else {%>
+          <text region="Text"><%=body[i]%></text>
+        <%}%>
+      <%}%>
+    </div>
+    <date class="sms-time"><%=time%></date>
+    <div class="arrow">
+      <div class="side"></div>
+    </div>
+    <div class="actions">
+      <button id="sms-resend-<%=id%>" display="<%=resendDisplay%>" value="<%=resendValue%>" class="button-resend" title="重发"></button>
+      <button id="sms-reply-<%=id%>" display="<%=replyDisplay%>" value="<%=replyValue%>" class="button-forward" title="转发"></button>
+      <button id="sms-delete-<%=id%>" display="<%=deleteDisplay%>" value="<%=deleteValue%>" class="button-delete" title="删除"></button>
+    </div>
   </script>
 </body>
 </html>

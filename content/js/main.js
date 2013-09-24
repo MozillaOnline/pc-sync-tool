@@ -5,7 +5,7 @@
 
 var FFOSAssistant = (function() {
   var connPool = null;
-  var connListenPool = null;
+  var connListenSocket = null;
   var handlerUsbConnection = null;
   var handlerWifiConnection = null;
   var handlerWifiConnect = null;
@@ -101,28 +101,44 @@ var FFOSAssistant = (function() {
   }
 
   function showSummaryView(serverIP) {
-    if (connListenPool) {
-      connListenPool.finalize();
-      connListenPool = null;
+    if (connListenSocket) {
+      connListenSocket.socket.close();
+      connListenSocket = null;
     }
 
-    connListenPool = new TCPListenConnectionPool({
-      host: serverIP,
-      onListening: function onListening(message) {
-        if (message.type == 'sms') {
-          SmsList.onMessage(message);
-        } else if (message.type == 'contact') {
-          ContactList.onMessage(message);
-          SmsList.onMessage('updateAvatar');
-        }
-      }
+    var socket = navigator.mozTCPSocket.open(serverIP, 10010, {
+      binaryType: 'arraybuffer'
     });
+    socket.onopen = function tc_onSocketOpened(event) {
+      var socketWrapper = new TCPSocketWrapper({
+	socket: event.target,
+	onmessage: function (socket, jsonCmd, sendCallback, recvData) {
+	  if (connListenSocket == null) {
+	    return;
+	  }
+	  var message = JSON.parse(recvData);
+	  if (message.type == 'sms') {
+	    SmsList.onMessage(message);
+	  } else if (message.type == 'contact') {
+	    ContactList.onMessage(message);
+	    SmsList.onMessage('updateAvatar');
+	  }
+	},
+	onclose: function () {
+	  connListenSocket = null;
+	}
+      });
+      connListenSocket = socketWrapper;
+      CMD.Listen.listenMessage(function() {}, function(e) {
+	alert(e);
+      });
+    };
 
     $id('device-connected').classList.remove('hiddenElement');
     $id('device-unconnected').classList.add('hiddenElement');
     ViewManager.showContent('summary-view');
   }
-
+  
   /**
    * Format storage size.
    */
@@ -464,8 +480,15 @@ var FFOSAssistant = (function() {
     },
 
     sendListenRequest: function(obj) {
-      if (connListenPool) {
-        connListenPool.send(obj);
+      if (connListenSocket) {
+	obj.cmd = extend({
+	  cmd: null,
+	  data: null,
+	  datalength: 0,
+	  json: false // Indicates if the reulst is an JSON string
+	}, obj.cmd);
+	obj.cmd.id = 1;
+	connListenSocket.send(obj.cmd, obj.cmd.data);
       }
     },
 
