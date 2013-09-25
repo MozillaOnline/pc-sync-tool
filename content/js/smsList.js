@@ -110,7 +110,7 @@ var SmsList = (function() {
         }
       }
     }, function(e) {
-      alert('get getContactByPhoneNumber error:' + e);
+      alert(e);
     });
   }
 
@@ -373,7 +373,7 @@ var SmsList = (function() {
               CMD.SMS.resendMessage(JSON.stringify(resendSMS), function onSuccess(event) {
                 removeMessage(smsId[1]);
               }, function onError(e) {
-                alert('Error occured when removing message' + e);
+                alert(e);
               });
             });
           }
@@ -388,7 +388,7 @@ var SmsList = (function() {
               CMD.SMS.deleteMessageById(JSON.stringify(smsId), function onSuccess(event) {
                 removeMessage(This.value);
               }, function onError(e) {
-                alert('Error occured when removing message' + e);
+                alert(e);
               });
             });
           }
@@ -628,7 +628,7 @@ var SmsList = (function() {
               threadListData[i].timestamp = sms.timestamp;
               threadListData[i].lastMessageType = sms.type;
               threadList.add(threadListData[i]);
-              updateAvatar();
+              updateThreadAvatar(threadListData[i]);
               return;
             }
           }
@@ -658,7 +658,7 @@ var SmsList = (function() {
         };
         tempthreadListData['threadIndex'] = sms.threadId;
         threadList.add(tempthreadListData);
-        updateAvatar();
+        updateThreadAvatar(tempthreadListData);
       }
     }
   }
@@ -685,7 +685,7 @@ var SmsList = (function() {
             }
           }
         }, function onError(e) {
-          alert('Error occured when removing messae' + e);
+          alert(e);
         });
       }
     }, function onerror_getThreadMessagesById(messages) {
@@ -773,7 +773,7 @@ var SmsList = (function() {
                 threadListData[j].timestamp = messageListData[i].timestamp;
                 threadListData[j].lastMessageType = messageListData[i].type;
                 threadList.add(threadListData[j]);
-                updateAvatar();
+                updateThreadAvatar(threadListData[j]);
                 break;
               }
             }
@@ -886,7 +886,6 @@ var SmsList = (function() {
             message: body.value
           }), function onSuccess_sendSms(sms) {
             if (!sms.result) {
-              updateAvatar();
             }
           }, function onError_sendSms(e) {
             alert(e);
