@@ -26,7 +26,6 @@ XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
                                    "nsISyncMessageSender");
 XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils',        'resource://gre/modules/FileUtils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil',          'resource://gre/modules/NetUtil.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'ctypes',           'resource://gre/modules/ctypes.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Services',         'resource://gre/modules/Services.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'utils',            'resource://ffosassistant/utils.jsm');

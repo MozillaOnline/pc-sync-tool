@@ -7,7 +7,7 @@
   const DRIVER_MANAGER_INI_FILE_NAME = 'driver_manager.ini';
   const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
   const ADB_FILE_URL = 'resource://ffosassistant-adb';
-
+  const ADDON_ID = 'ffosassistant@mozillaonline.com';
   let DEBUG = 0;
 
   function  debug(s) {
@@ -23,6 +23,21 @@
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
   XPCOMUtils.defineLazyServiceGetter(modules, "xulRuntime", '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
   XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
+
+  function  startADBService() {
+    isDisabled = false;
+    ADBService.startAdbServer();
+    ADBService.startDeviceDetecting(true);
+    DriverManager.startDriverManager();
+    connectToDriverManager();
+  }
+
+  function  stopADBService() {
+    isDisabled = true;
+    if (client != null && client.isConnected()) client.sendCommand('shutdown', function() {});
+    ADBService.startDeviceDetecting(false);
+    ADBService.killAdbServer();
+  }
 
   function init() {
     // Import ADB Service module
@@ -45,46 +60,23 @@
     if (modules.xulRuntime.OS == 'WINNT') {
       this._addonListener = {
         onUninstalling: function(addon) {
-          if (addon.id == "ffosassistant@mozillaonline.com") {
-            isDisabled = true;
-            if (client != null && client.isConnected()) client.sendCommand('shutdown', function() {});
-            ADBService.startDeviceDetecting(false);
-            ADBService.killAdbServer();
+          if (addon.id == ADDON_ID) {
+            stopADBService();
           }
         },
         onDisabling: function(addon, needsRestart) {
-          debug('onDisabled ' + addon.id);
-          if (addon.id == "ffosassistant@mozillaonline.com") {
-            isDisabled = true;
-            debug('onDisabled ' + client.isConnected());
-            if (client != null && client.isConnected()) client.sendCommand('shutdown', function() {});
-            ADBService.startDeviceDetecting(false);
-            ADBService.killAdbServer();
+          if (addon.id == ADDON_ID) {
+            stopADBService();
           }
         },
         onEnabling: function(addon, needsRestart) {
-          if (addon.id == "ffosassistant@mozillaonline.com") {
-            debug('onEnabling ' + addon.id);
-            isDisabled = false;
-            ADBService.startAdbServer();
-            ADBService.startDeviceDetecting(true);
-            if (!DriverManager.isDriverManagerRunning()) {
-              DriverManager.startDriverManager();
-            }
-            window.setTimeout(connectToDriverManager, 1000);
+          if (addon.id == ADDON_ID) {
+            startADBService();
           }
         },
         onOperationCancelled: function(addon, needsRestart) {
-          if (addon.id == "ffosassistant@mozillaonline.com") {
-            if (isDisabled == true) {
-              isDisabled = false;
-              ADBService.startAdbServer();
-              ADBService.startDeviceDetecting(true);
-              if (!DriverManager.isDriverManagerRunning()) {
-                DriverManager.startDriverManager();
-              }
-              window.setTimeout(connectToDriverManager, 1000);
-            }
+          if (addon.id == ADDON_ID && isDisabled == true) {
+            startADBService();
           }
         }
       };
@@ -95,10 +87,8 @@
         debug('output ' + event.target.result);
       }
       AddonManager.addAddonListener(this._addonListener);
-      if (!DriverManager.isDriverManagerRunning()) {
-        DriverManager.startDriverManager();
-      }
-      window.setTimeout(connectToDriverManager, 2000);
+      DriverManager.startDriverManager();
+      connectToDriverManager();
     }
     checkFirstRun();
     if (isDisabled == false) {
@@ -107,7 +97,7 @@
   }
 
   function checkFirstRun() {
-    var firstRunPref = 'extensions.ffosassistant@mozillaonline.com.firstrun';
+    var firstRunPref = 'extensions.' + ADDON_ID + '.firstrun';
     if (Services.prefs.getBoolPref(firstRunPref, true)) {
       Services.prefs.setBoolPref(firstRunPref, false);
       openFFOSInAPinnedTab();
@@ -122,7 +112,7 @@
     var buttonId = 'ffosassistant-button';
     if (currentSet.indexOf(buttonId) == -1) {
       var set = navBar.currentSet + '';
-      var MANULLAY_REMOVE_PREF = 'extensions.ffosassistant@mozillaonline.com.manuallyRemovedButton';
+      var MANULLAY_REMOVE_PREF = 'extensions.' + ADDON_ID + '.manuallyRemovedButton';
       var manuallyRemovedButton = Services.prefs.getBoolPref(MANULLAY_REMOVE_PREF, false);
 
       if (manuallyRemovedButton) {
@@ -159,7 +149,7 @@
       });
     }
 
-    var pinPref = 'extensions.ffosassistant@mozillaonline.com.pinnedOnOpen';
+    var pinPref = 'extensions.' + ADDON_ID + '.pinnedOnOpen';
     if (Services.prefs.getBoolPref(pinPref, true)) {
       gBrowser.pinTab(tab);
     }
