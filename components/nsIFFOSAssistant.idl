@@ -52,7 +52,7 @@ interface nsIFFOSAssistant : nsISupports
   /**
    *
    */
-  void getGalleryCachedDir(in jsval pathArray);
+  string getGalleryCachedDir(in jsval pathArray);
 
   /**
    * Run command from local host

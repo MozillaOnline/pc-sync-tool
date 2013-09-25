@@ -330,7 +330,7 @@ var FFOSAssistant = (function() {
             return;
           }
           if (changedPicture.callbackID == 'ondeleted') {
-            Gallery.removePicture(changedMusic.detail);
+            Gallery.updateRemovedPictures(changedMusic.detail);
             return;
           }
           if (changedPicture.callbackID == 'onscanend') {

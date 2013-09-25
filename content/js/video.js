@@ -7,50 +7,6 @@ var Video = (function() {
     return $id('video-list-container');
   }
 
-  function convertFileName(str) {
-    var obj = {
-      folder: '',
-      file: ''
-    };
-
-    var index = str.lastIndexOf('/');
-    if (index < 0) {
-      obj.file = str;
-      return obj;
-    }
-
-    obj.file = str.substr(index + 1, str.length);
-    str = str.substr(0, index);
-
-    index = str.lastIndexOf('/');
-    if (index >= 0) {
-      obj.folder = str.substring(index + 1, str.length);
-    }
-    return obj;
-  }
-
-  function parseDate(date) {
-    var dt = new Date(date);
-    var strDate = dt.getFullYear() + '-';
-
-    if (dt.getMonth() < 9) {
-      strDate += '0' + (dt.getMonth() + 1) + '-';
-    } else {
-      strDate += (dt.getMonth() + 1) + '-';
-    }
-    if (dt.getDay() < 9) {
-      strDate += '0' + (dt.getDay() + 1);
-    } else {
-      strDate += dt.getDay() + 1;
-    }
-    return strDate;
-  }
-
-  function parseSize(size) {
-    var retSize = size / 1024 / 10.24;
-    return parseInt(retSize) / 100;
-  }
-
   function init() {
     getListContainer().innerHTML = '';
     showEmptyVideoList(false);
@@ -591,8 +547,7 @@ var Video = (function() {
           }
 
           setTimeout(function exportVideo() {
-            var obj = convertFileName(videos[fileIndex].dataset.videoUrl);
-            var cmd = 'adb pull "' + videos[fileIndex].dataset.videoUrl + '" "' + decodeURI(newDir) + '/' + obj.folder + '_' + obj.file + '"';
+            var cmd = 'adb pull "' + videos[fileIndex].dataset.videoUrl + '" "' + decodeURI(newDir) + '/' + convertToOutputFileName(videos[fileIndex].dataset.videoUrl) + '"';
 
             var req = navigator.mozFFOSAssistant.runCmd(cmd);
             if (!bTimer) {

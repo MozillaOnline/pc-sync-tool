@@ -37,10 +37,6 @@ var MusicList = (function() {
     return str.substr(index + 1, str.length);
   }
 
-  function retriveSize(size) {
-    return Math.round(100 * size / 1024 / 1024) / 100;
-  }
-
   function init() {
     getListContainer().innerHTML = '';
     showEmptyMusics(false);
@@ -96,7 +92,7 @@ var MusicList = (function() {
     html += '<div class="music-singer item"><span>' + music.metadata.artist + '</span></div>';
     html += '<div class="music-album item"><span>' + music.metadata.album + '</span></div>';
     html += '<div class="music-type item"><span>' + music.type + '</span></div>';
-    html += '<div class="music-size item"><span>' + retriveSize(music.size) + ' MB' + '</span></div>';
+    html += '<div class="music-size item"><span>' + toSizeInMB(music.size) + ' MB' + '</span></div>';
 
     var elem = document.createElement('div');
     elem.classList.add('music-header');

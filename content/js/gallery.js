@@ -7,66 +7,8 @@ var Gallery = (function() {
     return $id('picture-list-container');
   }
 
-  function convertFileName(str) {
-    var obj = {
-      folder: '',
-      file: ''
-    };
-
-    var index = str.lastIndexOf('/');
-    if (index < 0) {
-      obj.file = str;
-      return obj;
-    }
-
-    obj.file = str.substr(index + 1);
-    str = str.substr(0, index);
-
-    index = str.lastIndexOf('/');
-    if (index >= 0) {
-      obj.folder = str.substr(index + 1);
-    }
-    return obj;
-  }
-
-  function parseName(str) {
-    var s = '';
-    var index = str.lastIndexOf('/');
-    if (index != -1) {
-      s = str.substr(index + 1);
-    }
-    return s;
-  }
-
-  function parseSize(size) {
-    var retSize = size / 1024 / 10.24;
-    return parseInt(retSize) / 100;
-  }
-
-  function parseDate(date) {
-    var dt = new Date(date);
-    var strDate = dt.getFullYear() + '-';
-
-    if (dt.getMonth() < 9) {
-      strDate += '0' + (dt.getMonth() + 1) + '-';
-    } else {
-      strDate += (dt.getMonth() + 1) + '-';
-    }
-    if (dt.getDay() < 9) {
-      strDate += '0' + (dt.getDay() + 1);
-    } else {
-      strDate += dt.getDay() + 1;
-    }
-    return strDate;
-  }
-
-  const CACH_FOLDER_NAME = 'gallery_tmp';
+  const CACHE_FOLDER_NAME = 'gallery_tmp';
   const PRE_PATH = 'chrome://ffosassistant/content/';
-  const DEBUG_ADDON_DIR = '/home/tiger/work/ffosassistant/'
-
-  // Modify DEBUG_ADDON_DIR to the place on your PC
-  // and set debug = 1 for debugging in html with firebug
-  var debug = 1;
 
   function init() {
     getListContainer().innerHTML = '';
@@ -77,24 +19,6 @@ var Gallery = (function() {
     if (!picture) {
       return;
     }
-    _addToPictureList(picture);
-  }
-
-  function removePicture(pictures) {
-    if (!pictures || !pictures.length || pictures.length < 1) {
-      return;
-    }
-    removePicturesProcess(pictures);
-  }
-
-  function updateUI() {
-    var pictureList = $expr('#picture-list-container li');
-    if (pictureList.length == 0) {
-      showEmptyGallery(true);
-    }
-  }
-
-  function _addToPictureList(picture) {
     var threadId = parseDate(parseInt(picture.date));
     var threadContainer = $id('pic-' + threadId);
     var container = getListContainer();
@@ -159,11 +83,36 @@ var Gallery = (function() {
     }
   }
 
+  function updateRemovedPictures(pictures) {
+    if (!pictures || !pictures.length || pictures.length < 1) {
+      return;
+    }
+    for (var i = 0; i < pictures.length; i++) {
+      var pic = $expr('li[data-pic-url="' + pictures[i] + '"]')[0];
+      if (pic) {
+        var threadBody = pic.parentNode;
+        threadBody.removeChild(pic);
+        var thread = threadBody.parentNode;
+
+        if ($expr('li', threadBody).length == 0) {
+          getListContainer().removeChild(thread);
+        }
+      }
+    }
+  }
+
+  function updateUI() {
+    var pictureList = $expr('#picture-list-container li');
+    if (pictureList.length == 0) {
+      showEmptyGallery(true);
+    }
+  }
+
   function _createPictureListItem(picture) {
     var listItem = document.createElement('li');
     listItem.dataset.checked = 'false';
     listItem.dataset.picUrl = picture.name;
-    listItem.dataset.title = parseName(picture.name);
+    listItem.dataset.title = getFileName(picture.name);
     listItem.dataset.date = picture.date;
     listItem.dataset.size = picture.size;
 
@@ -200,44 +149,41 @@ var Gallery = (function() {
         tip.parentNode.removeChild(tip);
       }
       var self = this;
-      var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]);
-      if (debug) {
-        var cmd = 'adb pull "' + self.dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + self.dataset.picUrl + '"';
-        var cachedUrl = CACH_FOLDER_NAME + self.dataset.picUrl;
-      } else {
+      var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
         var cmd = 'adb pull "' + self.dataset.picUrl + '" "' + path + self.dataset.picUrl + '"';
-        var cachedUrl = PRE_PATH + CACH_FOLDER_NAME + self.dataset.picUrl;
-      }
-      var req = navigator.mozFFOSAssistant.runCmd(cmd);
+        var cachedUrl = PRE_PATH + CACHE_FOLDER_NAME + self.dataset.picUrl;
+        var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
-      req.onsuccess = function on_success(result) {
-        var dialog = new ShowPicDialog({
-          cachedUrl: cachedUrl,
-          picUrl: self.dataset.picUrl,
-          showPreviousPic: showPreviousPic,
-          showNextPic: showNextPic
-        });
+        req.onsuccess = function on_success(result) {
+          var dialog = new ShowPicDialog({
+            cachedUrl: cachedUrl,
+            picUrl: self.dataset.picUrl,
+            showPreviousPic: showPreviousPic,
+            showNextPic: showNextPic
+          });
+        };
+        req.onerror = function on_error(e) {
+          alert("Can't pull picture to cache");
+        };
       };
-      req.onerror = function on_error(e) {
-        alert("Can't pull picture to cache");
+      listItem.onmouseover = function(e) {
+        var tip = document.createElement('div');
+        tip.setAttribute('id', 'pic-tip');
+        tip.classList.add('pic-tip');
+        tip.style.top = (e.target.parentNode.offsetTop + 187 - $id('picture-list-container').scrollTop) + 'px';
+        tip.style.left = (e.target.parentNode.offsetLeft + 515) + 'px';
+        tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:'
+                         + parseDate(parseInt(this.dataset.date)) + '</div><div>size:'
+                         + toSizeInMB(this.dataset.size) + 'M' + '</div>';
+        $id('gallery-view').appendChild(tip);
       };
-    };
-    listItem.onmouseover = function(e) {
-      var tip = document.createElement('div');
-      tip.setAttribute('id', 'pic-tip');
-      tip.classList.add('pic-tip');
-      tip.style.top = (e.target.parentNode.offsetTop + 247 - $id('picture-list-container').scrollTop) + 'px';
-      tip.style.left = (e.target.parentNode.offsetLeft + 445) + 'px';
-      tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:' + parseDate(parseInt(this.dataset.date)) + '</div><div>size:' + parseSize(this.dataset.size) + 'M' + '</div>';
-      $id('gallery-view').appendChild(tip);
-    };
-    listItem.onmouseout = function(e) {
-      var tip = $id('pic-tip');
-      if (tip) {
-        tip.parentNode.removeChild(tip);
-      }
-    };
-    return listItem;
+      listItem.onmouseout = function(e) {
+        var tip = $id('pic-tip');
+        if (tip) {
+          tip.parentNode.removeChild(tip);
+        }
+      };
+      return listItem;
   }
 
   function opStateChanged() {
@@ -251,13 +197,13 @@ var Gallery = (function() {
     }
 
     $id('remove-pictures').dataset.disabled =
-    $expr('#picture-list-container li[data-checked="true"]').length === 0;
+      $expr('#picture-list-container li[data-checked="true"]').length === 0;
     $id('export-pictures').dataset.disabled =
-    $expr('#picture-list-container li[data-checked="true"]').length === 0;
+      $expr('#picture-list-container li[data-checked="true"]').length === 0;
   }
 
   function checkGalleryIsEmpty() {
-    var isEmpty = $expr('#picture-list-container li').length === 0;
+    var isEmpty = $expr('#picture-list-container li').length === 0 ;
     if (isEmpty) {
       $id('selectAll-pictures').dataset.disabled = true;
       showEmptyGallery(true);
@@ -273,7 +219,6 @@ var Gallery = (function() {
     } else {
       $id('empty-picture-container').hidden = true;
     }
-
   }
 
   function showPreviousPic() {
@@ -283,16 +228,11 @@ var Gallery = (function() {
     for (var i = 0; i < picList.length; i++) {
       if (picList[i].dataset.picUrl == pic.dataset.picUrl) {
         if (i == 0) {
-          pic.dataset.picUrl = picList[picList.length - 1].dataset.picUrl;
+          pic.dataset.picUrl = picList[picList.length -1].dataset.picUrl;
           //TODO: check if picture cached
-          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]);
-          if (debug) {
-            var cmd = 'adb pull "' + picList[picList.length - 1].dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + picList[picList.length - 1].dataset.picUrl + '"';
-            var previouseUrl = CACH_FOLDER_NAME + picList[picList.length - 1].dataset.picUrl;
-          } else {
-            var cmd = 'adb pull "' + picList[picList.length - 1].dataset.picUrl + '" "' + path + picList[picList.length - 1].dataset.picUrl + '"';
-            var previouseUrl = PRE_PATH + CACH_FOLDER_NAME + picList[picList.length - 1].dataset.picUrl;
-          }
+          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
+          var cmd = 'adb pull "' + picList[picList.length -1].dataset.picUrl + '" "' + path + picList[picList.length -1].dataset.picUrl + '"';
+          var previouseUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[picList.length -1].dataset.picUrl;
           var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
           req.onsuccess = function on_success(result) {
@@ -302,16 +242,11 @@ var Gallery = (function() {
             alert("Can't pull picture to cache");
           };
         } else {
-          pic.dataset.picUrl = picList[i - 1].dataset.picUrl;
+          pic.dataset.picUrl = picList[i-1].dataset.picUrl;
           //TODO: check if picture cached
-          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]);
-          if (debug) {
-            var cmd = 'adb pull "' + picList[i - 1].dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + picList[i - 1].dataset.picUrl + '"';
-            var previouseUrl = CACH_FOLDER_NAME + picList[i - 1].dataset.picUrl;
-          } else {
-            var cmd = 'adb pull "' + picList[i - 1].dataset.picUrl + '" "' + path + picList[i - 1].dataset.picUrl + '"';
-            var previouseUrl = PRE_PATH + CACH_FOLDER_NAME + picList[i - 1].dataset.picUrl;
-          }
+          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
+          var cmd = 'adb pull "' + picList[i -1].dataset.picUrl + '" "' + path + picList[i-1].dataset.picUrl + '"';
+          var previouseUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[i-1].dataset.picUrl;
           var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
           req.onsuccess = function on_success(result) {
@@ -332,17 +267,12 @@ var Gallery = (function() {
 
     for (var i = 0; i < picList.length; i++) {
       if (picList[i].dataset.picUrl == pic.dataset.picUrl) {
-        if (i == picList.length - 1) {
+        if (i == picList.length -1) {
           pic.dataset.picUrl = picList[0].dataset.picUrl;
           //TODO: check if picture cached
-          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]);
-          if (debug) {
-            var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + picList[0].dataset.picUrl + '"';
-            var nextUrl = CACH_FOLDER_NAME + picList[0].dataset.picUrl;
-          } else {
-            var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + path + picList[0].dataset.picUrl + '"';
-            var nextUrl = PRE_PATH + CACH_FOLDER_NAME + picList[0].dataset.picUrl;
-          }
+          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
+          var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + path + picList[0].dataset.picUrl + '"';
+          var nextUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[0].dataset.picUrl;
           var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
           req.onsuccess = function on_success(result) {
@@ -352,16 +282,11 @@ var Gallery = (function() {
             alert("Can't pull picture to cache");
           };
         } else {
-          pic.dataset.picUrl = picList[i + 1].dataset.picUrl;
+          pic.dataset.picUrl = picList[i+1].dataset.picUrl;
           //TODO: check if picture cached
-          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACH_FOLDER_NAME]);
-          if (debug) {
-            var cmd = 'adb pull "' + picList[i + 1].dataset.picUrl + '" "' + DEBUG_ADDON_DIR + 'content/' + CACH_FOLDER_NAME + picList[i + 1].dataset.picUrl + '"';
-            var nextUrl = CACH_FOLDER_NAME + picList[i + 1].dataset.picUrl;
-          } else {
-            var cmd = 'adb pull "' + picList[i + 1].dataset.picUrl + '" "' + path + picList[i + 1].dataset.picUrl + '"';
-            var nextUrl = PRE_PATH + CACH_FOLDER_NAME + picList[i + 1].dataset.picUrl;
-          }
+          var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
+          var cmd = 'adb pull "' + picList[i+1].dataset.picUrl + '" "' + path + picList[i+1].dataset.picUrl + '"';
+          var nextUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[i+1].dataset.picUrl;
           var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
           req.onsuccess = function on_success(result) {
@@ -374,7 +299,6 @@ var Gallery = (function() {
         break;
       }
     }
-
   }
 
   function selectAllPictures(select) {
@@ -428,7 +352,7 @@ var Gallery = (function() {
 
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-pictures-dialog-header',
-      processbar_l10n_id: 'processbar-remove-pictures-promot'
+      processbar_l10n_id: 'processbar-remove-pictures-prompt'
     });
 
     var filesIndicator = $id('files-indicator');
@@ -478,11 +402,9 @@ var Gallery = (function() {
             alert(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
-          removePicturesProcess(filesToBeRemoved);
+          updateRemovedPictures(filesToBeRemoved);
           checkGalleryIsEmpty();
           opStateChanged();
-        } else {
-          removePicture();
         }
       };
 
@@ -504,29 +426,12 @@ var Gallery = (function() {
             alert(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
-          removePicturesProcess(filesToBeRemoved);
+          updateRemovedPictures(filesToBeRemoved);
           checkGalleryIsEmpty();
           opStateChanged();
-        } else {
-          removePicture();
         }
       };
     }, 0);
-  }
-
-  function removePicturesProcess(filesToBeRemoved) {
-    for (var i = 0; i < filesToBeRemoved.length; i++) {
-      var pic = $expr('li[data-pic-url="' + filesToBeRemoved[i] + '"]')[0];
-      if (pic) {
-        var threadBody = pic.parentNode;
-        threadBody.removeChild(pic);
-        var thread = threadBody.parentNode;
-
-        if ($expr('li', threadBody).length == 0) {
-          getListContainer().removeChild(thread);
-        }
-      }
-    }
   }
 
   function importPictures() {
@@ -738,8 +643,7 @@ var Gallery = (function() {
           }
 
           setTimeout(function exportPicture() {
-            var obj = convertFileName(pictures[fileIndex].dataset.picUrl);
-            var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + '/' + obj.folder + '_' + obj.file + '"';
+            var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + '/' + convertToOutputFileName(pictures[fileIndex].dataset.picUrl) + '"';
 
             var req = navigator.mozFFOSAssistant.runCmd(cmd);
             if (!bTimer) {
@@ -808,7 +712,7 @@ var Gallery = (function() {
   return {
     init: init,
     addPicture: addPicture,
-    removePicture: removePicture,
+    updateRemovedPictures: updateRemovedPictures,
     updateUI: updateUI,
     selectAllPictures: selectAllPictures,
     removePictures: removePictures

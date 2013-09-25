@@ -84,3 +84,44 @@ function removeFromArray(objOrFunc, array) {
 
   return newArray;
 }
+
+function convertToOutputFileName(path) {
+  var arrayPath = path.split('/');
+  var length = arrayPath.length;
+
+  if (length <= 1) {
+    return path;
+  } else {
+    return arrayPath[length - 2] + '_' + arrayPath[length - 1];
+  }
+}
+
+function getFileName(path) {
+  var arrayPath = path.split('/');
+  return arrayPath[arrayPath.length - 1];
+}
+
+function toSizeInMB(sizeInByte) {
+  if (isNaN(sizeInByte)) {
+    return 0.00;
+  } else {
+    return parseInt(sizeInByte / 1024 /10.24) / 100;
+  }
+}
+
+function parseDate(date) {
+  var dt = new Date(date);
+  var strDate = dt.getFullYear() + '-';
+
+  if (dt.getMonth() < 9) {
+    strDate += '0' + (dt.getMonth() + 1) + '-';
+  } else {
+    strDate += (dt.getMonth() + 1) + '-';
+  }
+  if(dt.getDay() < 9) {
+    strDate += '0' + (dt.getDay() + 1);
+  } else {
+    strDate += dt.getDay() + 1;
+  }
+  return strDate;
+}
