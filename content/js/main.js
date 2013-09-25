@@ -26,7 +26,7 @@ var FFOSAssistant = (function() {
       $id('usb-connection-button').dataset.checked = true;
       $id('wifi-arrow').classList.add('hiddenElement');
       $id('usb-arrow').classList.remove('hiddenElement');
-      $id('wifi-connection-code-input').style.display = 'none';
+      $id('wifi-connection-code-input').hidden = true;
       $id('wifi-connect-button').classList.add('hiddenElement');
       $id('wifi-connection-button').classList.remove('wifi-connection-button-select');
       $id('usb-connection-button').classList.add('usb-connection-button-select');
@@ -51,7 +51,7 @@ var FFOSAssistant = (function() {
       $id('usb-connection-button').dataset.checked = false;
       $id('usb-arrow').classList.add('hiddenElement');
       $id('wifi-arrow').classList.remove('hiddenElement');
-      $id('wifi-connection-code-input').style.display = 'block';
+      $id('wifi-connection-code-input').hidden = false;
       $id('wifi-connect-button').classList.remove('hiddenElement');
       $id('wifi-connection-button').classList.add('wifi-connection-button-select');
       $id('usb-connection-button').classList.remove('usb-connection-button-select');

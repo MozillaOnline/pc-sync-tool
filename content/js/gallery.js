@@ -272,9 +272,9 @@ var Gallery = (function() {
 
   function showEmptyGallery(bFlag) {
     if (bFlag) {
-      $id('empty-picture-container').style.display = 'block';
+      $id('empty-picture-container').hidden = false;
     } else {
-      $id('empty-picture-container').style.display = 'none';
+      $id('empty-picture-container').hidden = true;
     }
 
   }

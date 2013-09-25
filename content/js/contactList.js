@@ -97,12 +97,12 @@ var ContactList = (function() {
       var search = searchContent.value;
 
       if ((escapedValue.length > 0) && (escapedValue.indexOf(search) >= 0)) {
-        elem.style.display = 'block';
+        elem.hidden = false;
       } else {
-        elem.style.display = 'none';
+        elem.hidden = true;
       }
     } else {
-      elem.style.display = 'block';
+      elem.hidden = false;
     }
     return elem;
   }
@@ -187,9 +187,9 @@ var ContactList = (function() {
         if (groupIndexItem) {
           var child = groupIndexItem.childNodes[0];
           if (searchContent.value.length > 0) {
-            child.style.display = 'none';
+            child.hidden = true;
           } else {
-            child.style.display = 'block';
+            child.hidden = false;
           }
         }
       });
@@ -273,9 +273,9 @@ var ContactList = (function() {
 
   function showEmptyContacts(bFlag) {
     if (bFlag) {
-      $id('empty-contact-container').style.display = 'block';
+      $id('empty-contact-container').hidden = false;
     } else {
-      $id('empty-contact-container').style.display = 'none';
+      $id('empty-contact-container').hidden = true;
     }
   }
 
@@ -412,9 +412,9 @@ var ContactList = (function() {
         container.appendChild(div);
         navigator.mozL10n.translate(div);
       });
-      $id('sms-send-incontact').style.display = 'block';
+      $id('sms-send-incontact').hidden = false;
     } else {
-      $id('sms-send-incontact').style.display = 'none';
+      $id('sms-send-incontact').hidden = true;
     }
 
     if (contact.email && contact.email.length > 0) {
@@ -675,9 +675,9 @@ var ContactList = (function() {
         if (groupIndexItem) {
           var child = groupIndexItem.childNodes[0];
           if (self.value.length > 0) {
-            child.style.display = 'none';
+            child.hidden = true;
           } else {
-            child.style.display = 'block';
+            child.hidden = false;
           }
         }
 
@@ -713,12 +713,12 @@ var ContactList = (function() {
             // search key words
             var search = self.value;
             if ((escapedValue.length > 0) && (escapedValue.indexOf(search.toLowerCase()) >= 0)) {
-              contactItem.style.display = 'block';
+              contactItem.hidden = false;
             } else {
-              contactItem.style.display = 'none';
+              contactItem.hidden = true;
             }
           } else {
-            contactItem.style.display = 'block';
+            contactItem.hidden = false;
           }
         });
       });

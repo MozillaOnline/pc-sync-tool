@@ -176,9 +176,9 @@ var MusicList = (function() {
 
   function showEmptyMusics(bFlag) {
     if (bFlag) {
-      $id('empty-music-container').style.display = 'block';
+      $id('empty-music-container').hidden = false;
     } else {
-      $id('empty-music-container').style.display = 'none';
+      $id('empty-music-container').hidden = true;
     }
   }
 

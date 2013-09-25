@@ -77,7 +77,7 @@ var SmsList = (function() {
           messageViewName.textContent = contactData.name;
           var titleElem = $id('add-to-contact-' + threadInfo.id);
           if (titleElem) {
-            titleElem.style.display = 'none';
+            titleElem.hidden = true;
           }
         }
 
@@ -292,7 +292,7 @@ var SmsList = (function() {
         var headerButton = $id('sms-thread-header-button');
         if (headerButton) {
           if (threadname.childNodes[0].type != 'contact') {
-            headerButton.style.display = 'block';
+            headerButton.hidden = false;
             if (handlerHeaderButton) {
               headerButton.removeEventListener('click', handlerHeaderButton,false);
             }
@@ -305,7 +305,7 @@ var SmsList = (function() {
             };
             headerButton.addEventListener ('click', handlerHeaderButton,false);
           } else {
-            headerButton.style.display = 'none';
+            headerButton.hidden = true;
             if (handlerHeaderButton) {
               headerButton.removeEventListener('click', handlerHeaderButton,false);
             }
@@ -478,22 +478,22 @@ var SmsList = (function() {
         }
       }
 
-      templateData.resendDisplay = 'none';
-      templateData.replyDisplay = 'none';
+      templateData.resendDisplay = 'true';
+      templateData.replyDisplay = 'true';
     } else {
       templateData.type.push('text');
       templateData.body.push(MessageData.body);
       if (MessageData.delivery == 'error') {
-        templateData.resendDisplay = 'block';
+        templateData.resendDisplay = 'false';
         templateData.resendValue = MessageData.body;
       } else {
-        templateData.resendDisplay = 'none';
+        templateData.resendDisplay = 'true';
       }
-      templateData.replyDisplay = 'block';
+      templateData.replyDisplay = 'false';
       templateData.replyValue = MessageData.body;
       
     }
-    templateData.deleteDisplay = 'block';
+    templateData.deleteDisplay = 'false';
     templateData.deleteValue = MessageData.id;
     try {
       elem.innerHTML = tmpl('tmpl_sms_display_item', templateData);

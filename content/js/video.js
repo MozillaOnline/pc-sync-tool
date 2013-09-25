@@ -227,9 +227,9 @@ var Video = (function() {
 
   function showEmptyVideoList(bFlag) {
     if (bFlag) {
-      $id('empty-video-container').style.display = 'block';
+      $id('empty-video-container').hidden = false;
     } else {
-      $id('empty-video-container').style.display = 'none';
+      $id('empty-video-container').hidden = true;
     }
   }
 
