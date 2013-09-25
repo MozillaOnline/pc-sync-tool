@@ -446,7 +446,8 @@ var ContactList = (function() {
 
     handlerSend = function () {
       if (contact.tel && contact.tel.length > 0) {
-        new SendSMSToSingle({
+        new SendSMSDialog({
+          type: 'single',
           name: contact.name,
           number: contact.tel
         });
@@ -500,7 +501,8 @@ var ContactList = (function() {
 
     handler = function () {
       new SendSMSDialog({
-        number: num,
+        type: 'multi',
+        number: [num],
         bodyText: null
       });
     };

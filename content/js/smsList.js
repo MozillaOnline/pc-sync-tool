@@ -342,6 +342,7 @@ var SmsList = (function() {
             forwardBtns[j].addEventListener('click', function onclick_replySms(event) {
               var This = this;
               new SendSMSDialog({
+                type: 'multi',
                 number: null,
                 bodyText: This.value
               });
@@ -819,6 +820,7 @@ var SmsList = (function() {
 
     $id('add-new-sms').addEventListener('click', function onclick_addNewSms(event) {
       new SendSMSDialog({
+        type: 'multi',
         number: null,
         bodyText: null
       });
@@ -826,6 +828,7 @@ var SmsList = (function() {
 
     $id('sms-send-button').addEventListener('click', function onclick_addNewSms(event) {
       new SendSMSDialog({
+        type: 'multi',
         number: null,
         bodyText: null
       });

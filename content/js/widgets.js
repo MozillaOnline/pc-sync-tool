@@ -261,161 +261,6 @@ GroupedList.prototype = {
   }
 };
 
-function ModalDialog(options) {
-  this.initailize(options);
-}
-
-ModalDialog.closeAll = function() {
-  var evt = document.createEvent('Event');
-  evt.initEvent('ModalDialog:show', true, true);
-  document.dispatchEvent(evt);
-};
-
-ModalDialog.prototype = {
-  initailize: function(options) {
-    this.options = extend({
-      title: 'Modal Title',
-      titleL10n: null,
-      bodyElement: null,
-      bodyText: null,
-      bodyTextL10n: null,
-      cancelable: true,
-      onclose: emptyFunction
-    }, options);
-
-    if (!this.options.bodyElement && !this.options.bodyText) {
-      throw Error('bodyElement or bodyText should be specified');
-    }
-
-    this._modalElement = null;
-    this._mask = null;
-    this._build();
-  },
-
-  _build: function() {
-    this._mask = document.createElement('div');
-    this._mask.className = 'modal-mask';
-    document.body.appendChild(this._mask);
-
-    // TODO using template
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="modal-container">'
-      + '  <div class="modal-close-btn" hidden="true">X</div>'
-      + '  <div class="modal-title">'
-      + this.options.title
-      + '  </div>'
-      + '  <div class="modal-body">'
-      + '  </div>'
-      + '  <div class="modal-btn-container">'
-      + '    <input hidden="true" class="modal-btn modal-btn-ok" type="button" data-l10n-id="OK" value="OK" />'
-      + '  </div>'
-      + '</div>';
-
-    var titleElem = $expr('.modal-title', this._modalElement)[0];
-    if (this.options.titleL10n) {
-      titleElem.dataset.l10nId = this.options.titleL10n;
-    }
-
-    var bodyContainer = $expr('.modal-body', this._modalElement)[0];
-    if (this.options.bodyElement) {
-      bodyContainer.appendChild(this.options.bodyElement);
-    } else {
-      bodyContainer.textContent = this.options.bodyText;
-      if (this.options.bodyTextL10n) {
-        bodyContainer.dataset.l10nId = this.options.bodyTextL10n;
-      }
-    }
-
-    document.body.appendChild(this._modalElement);
-    this._adjustModalPosition();
-
-    if (this.options.cancelable) {
-      this._makeDialogCancelable();
-    }
-
-    // Translate l10n value
-    navigator.mozL10n.translate(this._modalElement);
-
-    // Only one modal dialog is shown at a time.
-    var self = this;
-    this._onModalDialogShown = function(event) {
-      // Show a popup dialog at a time.
-      if (event.targetElement == self._modalElement) {
-        return;
-      }
-
-      self.close();
-    }
-    document.addEventListener('ModalDialog:show', this._onModalDialogShown);
-
-    // Make sure other modal dialog has a chance to close itself.
-    this._fireEvent('ModalDialog:show');
-
-    // Tweak modal dialog position when resizing.
-    this._onWindowResize = function(event) {
-      self._adjustModalPosition();
-    };
-    window.addEventListener('resize', this._onWindowResize);
-  },
-
-  _makeDialogCancelable: function() {
-   var closeBtn = $expr('.modal-close-btn', this._modalElement)[0];
-
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
-
-   var okBtn = $expr('.modal-btn-ok', this._modalElement)[0];
-   okBtn.hidden = false;
-   okBtn.addEventListener('click', this.close.bind(this));
-
-   var self = this;
-   okBtn.addEventListener('keydown', function(event) {
-     if (event.keyCode == 27) {
-       self.close();
-     }
-   });
-
-   // Make sure we can close the dialog by hitting ENTER or ESC
-   okBtn.focus();
-
-   // Close modal dialog when mousedown on the realestate outside.
-   this._modalElement.addEventListener('mousedown', this.close.bind(this));
-   var container = $expr('.modal-container', this._modalElement)[0];
-   container.addEventListener('mousedown', function(event) {
-     event.stopPropagation();
-   }, true); 
-  },
-
-  _adjustModalPosition: function() {
-    var container = $expr('.modal-container', this._modalElement)[0];
-    var documentHeight = document.documentElement.clientHeight;
-    var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
-  },
-
-  _fireEvent: function(name, data) {
-    var evt = document.createEvent('Event');
-    evt.initEvent(name, true, true);
-    evt.data = data;
-    evt.targetElement = this._modalElement;
-    document.dispatchEvent(evt);
-  },
-
-  close: function() {
-    this._mask.parentNode.removeChild(this._mask);
-    this._modalElement.parentNode.removeChild(this._modalElement);
-    this._mask = null;
-    this._modalElement = null;
-
-    document.removeEventListener('ModalDialog:show', this._onModalDialogShown);
-    window.removeEventListener('resize', this._onWindowResize)
-
-    this.options.onclose();
-  }
-};
-
 function SendSMSDialog(options) {
   this.initailize(options);
 }
@@ -438,100 +283,75 @@ SendSMSDialog.prototype = {
   },
 
   _build: function() {
+    var self = this;
     this._mask = document.createElement('div');
     this._mask.className = 'modal-mask';
     document.body.appendChild(this._mask);
-
-    // TODO using template
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="send-message-modal-container">'
-      + '<div class="sms-ui-window">'
-      + '<header class="sms-ui-window-header">'
-      + '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
-      + '<div class="sms-ui-window-header-x" style=""></div>'
-      + '</header>'
-      + '<div class="sms-ui-window-body">'
-      + '<div class="sms-message-sender-window">'
-      + '<div class="header">'
-      + '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
-      + '<div class="address">'
-      + '<input id="address" type="text" class="input-contact searchbox">'
-      + '</div>'
-      + '<button data-l10n-id="sms-add-contact" class="sms-icon-btn button-add-contact">'
-      + '<span class="icon add-grey"></span>'
-      + '</button>'
-      + '</div>'
-      + '<div class="body">'
-      + '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
-      + '<textarea id="content" class="input-content" autofocus="true"></textarea>'
-      + '</div>'
-      + '<div class="monitor text-secondary">'
-      + '<span id="text-count" class="content-count"></span>'
-      + '<span id="sender-count" class="contacts-count"></span>'
-      + '</div>'
-      + '</div>'
-      + '</div>'
-      + '<footer class="sms-ui-window-footer" style="">'
-      + '<div class="sms-ui-window-footer-monitor"></div>'
-      + '<div class="sms-ui-window-footer-button-ctn">'
-      + '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
-      + '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
-      + '</div>'
-      + '</footer>'
-      + '</div>'
-      + '</div>';
-
-    var titleElem = $expr('.input-contact', this._modalElement)[0];
-    if (this.options.number) {
-      titleElem.value = this.options.number;
+    var templateData = {
+      type: this.options.type,
+      number: [],
+      body: '',
+      textCount: '',
+      senderCount: ''
+    };
+    var defaultName = '';
+    if (this.options.type == 'single') {
+      if (this.options.name && this.options.name.length > 0) {
+        defaultName = this.options.name[0];
+      }
+      if (this.options.number && this.options.number.length > 0) {
+        defaultName += '(' + this.options.number[0].value + ')';
+      }
+      templateData.number.push(defaultName);
+    } else {
+      if (this.options.number) {
+        templateData.number.push(this.options.number);
+      }
+      var senderNum = 0;
+      if (this.options.number) {
+        var senders = this.options.number.split(';');
+        senderNum = senders.length;
+        for(var i = 0; i < senders.length; i++) {
+          if (senders[i] == "") {
+            senderNum--;
+          }
+        }
+      }
+      header = _('send-sms-count', {
+        n: senderNum
+      });
+      templateData.senderCount = header;
     }
-
-    var bodyContainer = $expr('.input-content', this._modalElement)[0];
-    if (this.options.bodyText) {
-      bodyContainer.textContent = this.options.bodyText;
-    }
-    document.body.appendChild(this._modalElement);
-    this._adjustModalPosition();
-    this._makeDialogCancelable();
-
     var header = _('text-sms-count', {
       n: 0
     });
-    $id('text-count').innerHTML = header;
-    var senderNum = 0;
-    if (this.options.number) {
-      var senders = this.options.number.split(';');
-      senderNum = senders.length;
-      for(var i = 0; i < senders.length; i++) {
-        if (senders[i] == "") {
-          senderNum--;
-        }
-      }
+    templateData.textCount = header;
+    if (this.options.bodyText) {
+      templateData.body = this.options.bodyText;
     }
-    header = _('send-sms-count', {
-      n: senderNum
-    });
-    $id('sender-count').innerHTML = header;
+
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    this._modalElement.innerHTML = tmpl('tmpl_sendSms_dialog', templateData);
+    document.body.appendChild(this._modalElement);
+
+    this._adjustModalPosition();
+    this._makeDialogCancelable();
 
     // Translate l10n value
     navigator.mozL10n.translate(this._modalElement);
 
     // Only one modal dialog is shown at a time.
-    var self = this;
     this._onModalDialogShown = function(event) {
       // Show a popup dialog at a time.
       if (event.targetElement == self._modalElement) {
         return;
       }
-
       self.close();
     }
     document.addEventListener('SendSMSDialog:show', this._onModalDialogShown);
-
     // Make sure other modal dialog has a chance to close itself.
     this._fireEvent('SendSMSDialog:show');
-
     // Tweak modal dialog position when resizing.
     this._onWindowResize = function(event) {
       self._adjustModalPosition();
@@ -540,65 +360,100 @@ SendSMSDialog.prototype = {
   },
 
   _makeDialogCancelable: function() {
-   var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
+    var self = this;
+    var closeBtn = $expr('.sendSms-dialog-header-x', self._modalElement)[0];
+    closeBtn.hidden = false;
+    closeBtn.addEventListener('click', self.close.bind(self));
+    var okBtn = $expr('.button-send', self._modalElement)[0];
+    okBtn.hidden = false;
+    if (self.options.type == 'single') {
+      okBtn.addEventListener('click', self.sendSingle.bind(self));
+    } else {
+      okBtn.addEventListener('click', self.send.bind(self));
+    }
 
-   var okBtn = $expr('.button-send', this._modalElement)[0];
-   okBtn.hidden = false;
-   okBtn.addEventListener('click', this.send.bind(this));
-   var self = this;
-   okBtn.addEventListener('keydown', function(event) {
-     if (event.keyCode == 27) {
-       self.close();
-     }
-   });
-
-   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-   cancelBtn.hidden = false;
-   cancelBtn.addEventListener('click', this.close.bind(this));
-
-   var self = this;
-   var selectBtn = $expr('.button-add-contact', this._modalElement)[0];
-   selectBtn.hidden = false;
-   selectBtn.addEventListener('click', function(event) {
-    CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
-      var dataJSON = JSON.parse(message.data);
-      new SelectContactsDialog({
-        contactList: dataJSON,
-        onok: self._selectContacts
-      });
-    }, function onerror_getAllContacts(message) {
-      log('Error occurs when fetching all contacts.');
-    });
-   });
-
-   $id('content').addEventListener('keyup', function onclick_addNewSms(event) {
-      var header = _('text-sms-count', {
-        n: this.value.length
-      });
-      $id('text-count').innerHTML = header;
-    });
-
-   $id('address').addEventListener('keydown', function onclick_addNewSms(event) {
-      var senders = this.value.split(';');
-      var senderNum = senders.length;
-      for(var i=0;i<senders.length;i++){
-        if (senders[i] == "") {
-          senderNum--;
-        }
+    okBtn.addEventListener('keydown', function(event) {
+      if (event.keyCode == 27) {
+        self.close();
       }
-      var header = _('send-sms-count', {
-        n: senderNum
-      });
-      $id('sender-count').innerHTML = header;
     });
-   // Make sure we can close the dialog by hitting ENTER or ESC
-   okBtn.focus();
+    var cancelBtn = $expr('.button-cancel', self._modalElement)[0];
+    cancelBtn.hidden = false;
+    cancelBtn.addEventListener('click', self.close.bind(self));
+
+    $id('content').addEventListener('keyup', function onclick_addNewSms(event) {
+        var header = _('text-sms-count', {
+          n: this.value.length
+        });
+        $id('text-count').innerHTML = header;
+    });
+
+    if (self.options.type == 'single') {
+      if (self.options.number.length > 1) {
+        $id('select-contact-tel-button').addEventListener('click', function onclick_selectContactTel(event) {
+          var titleElem = $id('select-contact-tel-header');
+          var elem = document.createElement('div');
+          var templateData = {
+            name: '',
+            number: self.options.number
+          };
+          if (self.options.name && self.options.name.length > 0) {
+            templateData.name = self.options.name[0];
+          }
+          try {
+            elem.innerHTML = tmpl('tmpl_select_contact', templateData);
+          } catch (e) {
+            alert(e);
+          }
+          elem.onclick = function onclick_sms_list(event) {
+            var target = event.target;
+            if (target.textContent!='') {
+              var titleElem = $expr('.label', self._modalElement)[0];
+              if (titleElem != null) {
+                titleElem.innerHTML = target.textContent;
+              }
+              titleElem = $id('select-contact-tel-header');
+              var child = titleElem.childNodes[5];
+              if (child) {
+                child.parentNode.removeChild(child);
+              }
+            }
+          };
+          titleElem.appendChild(elem);
+        });
+      }
+    } else {
+      $id('address').addEventListener('keydown', function onclick_addNewSms(event) {
+        var senders = this.value.split(';');
+        var senderNum = senders.length;
+        for(var i=0;i<senders.length;i++){
+          if (senders[i] == "") {
+            senderNum--;
+          }
+        }
+        var header = _('send-sms-count', {
+          n: senderNum
+        });
+        $id('sender-count').innerHTML = header;
+      });
+      $id('button-add-contact').addEventListener('click', function(event) {
+        CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
+          var dataJSON = JSON.parse(message.data);
+          new SelectContactsDialog({
+            contactList: dataJSON,
+            onok: self._selectContacts
+          });
+        }, function onerror_getAllContacts(message) {
+          log('Error occurs when fetching all contacts.');
+        });
+      });
+    }
+    // Make sure we can close the dialog by hitting ENTER or ESC
+    okBtn.focus();
   },
 
   _adjustModalPosition: function() {
-    var container = $expr('.send-message-modal-container', this._modalElement)[0];
+    var container = $expr('.sendSms-dialog', this._modalElement)[0];
     var documentHeight = document.documentElement.clientHeight;
     var containerHeight = container.clientHeight;
     container.style.top = (documentHeight > containerHeight ?
@@ -654,6 +509,29 @@ SendSMSDialog.prototype = {
     window.removeEventListener('resize', this._onWindowResize)
     this.options.onclose();
   },
+
+  sendSingle: function() {
+    var tel = $id('selected-contact-tel');
+    var message = $id('content');
+    var sender = [tel.textContent];
+    var self = this;
+    message.readOnly = true;
+    CMD.SMS.sendSMS(JSON.stringify({number:sender, message: message.value}),
+      function onSuccess_sendSms(event) {
+        if (!event.result) {
+          self._mask.parentNode.removeChild(self._mask);
+          self._modalElement.parentNode.removeChild(self._modalElement);
+          self._mask = null;
+          self._modalElement = null;
+          document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
+          window.removeEventListener('resize', self._onWindowResize)
+          self.options.onclose();
+        }
+      }, function onError_sendSms(e) {
+        alert(e);
+      });
+  },
+
   send: function() {
     var number = $id('address').value.split(';');
     var message = $id('content');
@@ -686,234 +564,6 @@ SendSMSDialog.prototype = {
   }
 };
 
-function SendSMSToSingle(options) {
-  this.initailize(options);
-}
-
-SendSMSToSingle.closeAll = function() {
-  var evt = document.createEvent('Event');
-  evt.initEvent('SendSMSToSingle:show', true, true);
-  document.dispatchEvent(evt);
-};
-
-SendSMSToSingle.prototype = {
-  initailize: function(options) {
-    this.options = extend({
-      onclose: emptyFunction
-    }, options);
-    this._modalElement = null;
-    this._mask = null;
-    this._build();
-  },
-
-  _build: function() {
-    this._mask = document.createElement('div');
-    this._mask.className = 'modal-mask';
-    document.body.appendChild(this._mask);
-
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="send-single-sms-dialog">'
-      + '<div class="sms-ui-window">'
-      + '<header class="sms-ui-window-header">'
-      + '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
-      + '<div class="sms-ui-window-header-x" style=""></div>'
-      + '</header>'
-      + '<div class="sms-ui-window-body">'
-      + '<div class="sms-message-sender-window">'
-      + '<div class="header" id="select-contact-tel-header">'
-      + '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
-      + '<button class="sms-ui-button sms-ui-menubutton" id="select-contact-tel-button">'
-      + '<div class="label wc" id="selected-contact-tel"></div>'
-      + '<div class="arrow-ctn">'
-      + '<div class="arrow"></div>'
-      + '</div>'
-      + '</button>'
-      + '</div>'
-      + '<div class="body">'
-      + '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
-      + '<textarea id="content" class="input-content" autofocus="true"></textarea>'
-      + '</div>'
-      + '<div class="monitor text-secondary">'
-      + '<span id="text-count" class="content-count"></span>'
-      + '<span id="sender-count" class="contacts-count"></span>'
-      + '</div>'
-      + '</div>'
-      + '</div>'
-      + '<footer class="sms-ui-window-footer" style="">'
-      + '<div class="sms-ui-window-footer-monitor"></div>'
-      + '<div class="sms-ui-window-footer-button-ctn">'
-      + '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
-      + '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
-      + '</div>'
-      + '</footer>'
-      + '</div>'
-      + '</div>';
-
-    var titleElem = $expr('.label', this._modalElement)[0];
-    if (this.options.name && this.options.name.length > 0) {
-      titleElem.innerHTML = this.options.name[0];
-    }
-    if (this.options.number && this.options.number.length > 0) {
-      titleElem.innerHTML += '(' + this.options.number[0].value + ')';
-    }
-    document.body.appendChild(this._modalElement);
-    this._adjustModalPosition();
-    this._makeDialogCancelable();
-    var header = _('only-text-sms-count', {
-      n: 0
-    });
-    $id('text-count').innerHTML = header;
-
-    // Translate l10n value
-    navigator.mozL10n.translate(this._modalElement);
-
-    // Only one modal dialog is shown at a time.
-    var self = this;
-    this._onModalDialogShown = function(event) {
-      // Show a popup dialog at a time.
-      if (event.targetElement == self._modalElement) {
-        return;
-      }
-
-      self.close();
-    }
-    document.addEventListener('SendSMSToSingle:show', this._onModalDialogShown);
-
-    // Make sure other modal dialog has a chance to close itself.
-    this._fireEvent('SendSMSToSingle:show');
-    this._onWindowResize = function(event) {
-      self._adjustModalPosition();
-    };
-    window.addEventListener('resize', this._onWindowResize);
-
-    $id('select-contact-tel-button').addEventListener('click', function onclick_selectContactTel(event) {
-      var titleElem = $id('select-contact-tel-header');
-      var div = document.createElement('div');
-      var html = '';
-      html += '<menu class="sms-ui-menu">';
-      if (self.options.number && self.options.number.length > 0) {
-        for(var i=0;i<self.options.number.length;i++){
-          html += '<li>';
-          html += '<label class="wc">';
-          html += '<input type="radio" name="" value="';
-
-          if (self.options.name && self.options.name.length > 0) {
-            html += self.options.name[0];
-          }
-
-          html += '(' + self.options.number[i].value + ')';
-          html += '">';
-          html += '<span style="float: left; margin-top: 1px;">'
-
-          if (self.options.name && self.options.name.length > 0) {
-            html += '(' + self.options.name[0] + ')';
-          }
-
-          html += self.options.number[i].value;
-          html += '</span>';
-          html += '</label>';
-          html += '</li>';
-        }
-      }
-      html += '</menu>';
-
-      div.onclick = function onclick_sms_list(event) {
-        var target = event.target;
-        if (target.textContent!='') {
-          var titleElem = $expr('.label', self._modalElement)[0];
-          if (titleElem != null) {
-            titleElem.innerHTML = target.textContent;
-          }
-          titleElem = $id('select-contact-tel-header');
-          var child = titleElem.childNodes[2];
-          if (child) {
-            child.parentNode.removeChild(child);
-          }
-        }
-      };
-      div.innerHTML = html;
-      titleElem.appendChild(div);
-    });
-  },
-
-  _makeDialogCancelable: function() {
-   var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
-   var okBtn = $expr('.button-send', this._modalElement)[0];
-   okBtn.hidden = false;
-   okBtn.addEventListener('click', this.send.bind(this));
-   var self = this;
-
-   okBtn.addEventListener('keydown', function(event) {
-     if (event.keyCode == 27) {
-       self.close();
-     }
-   });
-
-   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-   cancelBtn.hidden = false;
-   cancelBtn.addEventListener('click', this.close.bind(this));
-
-   $id('content').addEventListener('keyup', function onclick_addNewSms(event) {
-      var header = _('only-text-sms-count', {
-        n: this.value.length
-      });
-      $id('text-count').innerHTML = header;
-    });
-   okBtn.focus();
-  },
-
-  _adjustModalPosition: function() {
-    var container = $expr('.send-single-sms-dialog', this._modalElement)[0];
-    var documentHeight = document.documentElement.clientHeight;
-    var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
-  },
-
-
-  _fireEvent: function(name, data) {
-    var evt = document.createEvent('Event');
-    evt.initEvent(name, true, true);
-    evt.data = data;
-    evt.targetElement = this._modalElement;
-    document.dispatchEvent(evt);
-  },
-
-  close: function() {
-    this._mask.parentNode.removeChild(this._mask);
-    this._modalElement.parentNode.removeChild(this._modalElement);
-    this._mask = null;
-    this._modalElement = null;
-    document.removeEventListener('SendSMSToSingle:show', this._onModalDialogShown);
-    window.removeEventListener('resize', this._onWindowResize)
-    this.options.onclose();
-  },
-  send: function() {
-    var tel = $id('selected-contact-tel');
-    var message = $id('content');
-    var sender = [tel.textContent];
-    var self = this;
-    message.readOnly = true;
-    CMD.SMS.sendSMS(JSON.stringify({number:sender, message: message.value}),
-      function onSuccess_sendSms(event) {
-        if (!event.result) {
-          self._mask.parentNode.removeChild(self._mask);
-          self._modalElement.parentNode.removeChild(self._modalElement);
-          self._mask = null;
-          self._modalElement = null;
-          document.removeEventListener('SendSMSToSingle:show', self._onModalDialogShown);
-          window.removeEventListener('resize', self._onWindowResize)
-          self.options.onclose();
-        }
-      }, function onError_sendSms(e) {
-        alert(e);
-      });
-  }
-};
-
 function SelectContactsDialog(options) {
   this.initailize(options);
 }
@@ -933,37 +583,18 @@ SelectContactsDialog.prototype = {
     this._mask = document.createElement('div');
     this._mask.className = 'modal-mask';
     document.body.appendChild(this._mask);
-    // TODO using template
+    var templateData = {
+    };
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    var html = '<div class="sms-ui-window-contact">'
-      + '<header class="sms-ui-window-header">'
-      + '<div data-l10n-id="sms-add-contact" class="sms-ui-window-header-title"></div>'
-      + '<div class="sms-ui-window-header-x" style=""></div>'
-      + '</header>'
-      + '<div class="sms-ui-window-body">'
-      + '<div class="sms-message-contact-selector-body">'
-      + '<div class="list-ctn">'
-      + '<div class="sms-ui-smartlist" id="sms-ui-smartlist-container">'
-      + '</div>'
-      + '</div>'
-      + '</div>'
-      + '<footer class="sms-ui-window-footer" style="">'
-      + '<div class="sms-ui-window-footer-monitor">'
-      + '<div>'
-      + '<span id="select-contact-count" class="text-secondary count"></span>'
-      + '</div>'
-      + '</div>'
-      + '<div class="sms-ui-window-footer-button-ctn">'
-      + '<button data-l10n-id="OK" class="button-send primary"></button>'
-      + '<button data-l10n-id="cancel" class="button-cancel"></button>'
-      + '</div>'
-      + '</footer>'
-      + '</div>'
-      + '</div>';
-    this._modalElement.innerHTML = html;
+    try {
+      this._modalElement.innerHTML = tmpl('tmpl_select_contact_dialog', templateData);
+    } catch (e) {
+      alert(e);
+    }
+
     document.body.appendChild(this._modalElement);
-    var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
+    var closeBtn = $expr('.sendSms-dialog-header-x', this._modalElement)[0];
     closeBtn.hidden = false;
     closeBtn.addEventListener('click', this.close.bind(this));
 
@@ -995,7 +626,7 @@ SelectContactsDialog.prototype = {
     // Make sure other modal dialog has a chance to close itself.
     this._fireEvent('SelectContactsDialog:show');
 
-    var contactSmallListContainer = $id('sms-ui-smartlist-container');
+    var contactSmallListContainer = $id('sendSms-smartlist-container');
     contactSmallListContainer.innerHTML = '';
     contactSmallList = new GroupedList({
       dataList: this.options.contactList,
@@ -1026,7 +657,7 @@ SelectContactsDialog.prototype = {
         }
       });
     });
-    var itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+    var itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;
     var header = _('contacts-selected', {
       n: itemNum
     });
@@ -1034,27 +665,22 @@ SelectContactsDialog.prototype = {
   },
 
   _createContactListItem: function(contact) {
-    var html = '';
-    html += '<div>';
-    html += '  <label class="unchecked"></label>';
-    html += '    <img class="avatar avatar-default"></img>';
-    html += '      <div class="contact-info">';
-    html += '        <div class="name">';
+    var templateData = {
+      name: '',
+      tel: ''
+    };
     if (contact.name) {
-      html += contact.name.join(' ');
+      templateData.name = contact.name.join(' ');
     }
-    html += '</div>';
     if (contact.tel && contact.tel.length > 0) {
-      html += '        <div class="tel">' + contact.tel[0].value +  '</div>';
+      templateData.tel = contact.tel[0].value;
     }
-    html += '      </div>';
-    html += '    </div>';
     var elem = document.createElement('div');
     elem.classList.add('contact-list-item');
     if (contact.category && contact.category.indexOf('favorite') > -1) {
       elem.classList.add('favorite');
     }
-    elem.innerHTML = html;
+    elem.innerHTML = tmpl('tmpl_select_contact_item', templateData);
     elem.dataset.contact = JSON.stringify(contact);
     elem.dataset.contactId = contact.id;
     elem.id = 'smartlist-contact-' + contact.id;
@@ -1076,7 +702,7 @@ SelectContactsDialog.prototype = {
           elem.dataset.checked = false;
           elem.dataset.focused = false;
         }
-        itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+        itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;
         header = _('contacts-selected', {
           n: itemNum
         });
@@ -1088,7 +714,7 @@ SelectContactsDialog.prototype = {
         }
         elem.dataset.checked = true;
         elem.dataset.focused = true;
-        itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+        itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;
         header = _('contacts-selected', {
           n: itemNum
         });
@@ -1116,7 +742,7 @@ SelectContactsDialog.prototype = {
   },
   select: function() {
     var ids = [];
-    $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').forEach(function(item) {
+    $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').forEach(function(item) {
       ids.push(item.dataset.contact);
     });
     this.options.onok(ids);
@@ -1154,37 +780,23 @@ FilesOPDialog.prototype = {
 
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    var html = '';
-    html += '<div class="modal-container">';
-    html += '<div class="select-multi-files-dialog">';
-    html += '  <header class="select-multi-files-dialog-header">';
-    html += '    <div class="select-multi-files-dialog-header-title"';
+    var templateData = {
+      title_l10n_id: '',
+      processbar_l10n_id: ''
+    };
     if (this.options.title_l10n_id != '') {
-      html += ' data-l10n-id="' + this.options.title_l10n_id + '"';
+      templateData.title_l10n_id = this.options.title_l10n_id;
     }
-    html += '    ></div>';
-    html += '    <div class="select-multi-files-dialog-header-x"></div>';
-    html += '  </header>';
-    html += '  <div class="select-multi-files-dialog-body">';
-    html += '    <div class="processbar-prompt"><span';
     if (this.options.processbar_l10n_id != '') {
-      html += ' data-l10n-id="' + this.options.processbar_l10n_id + '"';
+      templateData.processbar_l10n_id = this.options.processbar_l10n_id;
     }
-    html += '    ></span>';
-    html += '      <div><span id="files-indicator"></span></div>';
-    html += '    </div>';
-    html += '    <div id="processbar-container" class="processbar-container">';
-    html += '      <div id="processbar" class="processbar"></div>';
-    html += '    </div>';
-    html += '  </div>';
-    html += '  <footer class="select-multi-files-dialog-footer">';
-    html += '    <div class="select-multi-files-dialog-footer-button-ctn">';
-    html += '      <button data-l10n-id="cancel" class="button button-cancel"></button>';
-    html += '    </div>';
-    html += '  </footer>';
-    html += '</div></div>';
 
-    this._modalElement.innerHTML = html;
+    try {
+      this._modalElement.innerHTML = tmpl('tmpl_fileOP_dialog', templateData);
+    } catch (e) {
+      alert(e);
+    }
+
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
     this._makeDialogCancelable();
@@ -1289,20 +901,17 @@ ShowPicDialog.prototype = {
 
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'dialog';
-    this._modalElement.innerHTML = '<div class="bar">'
-      + '<div class="closeX"></div></div>'
-      + '<div class="column-left">'
-      + '<div id="gallery-left-arrow" class="gallery-left-arrow"></div>'
-      + '</div>'
-      + '<div class="column-middle">'
-      + '<img id="pic-content" src='
-      + this.options.cachedUrl
-      + ' data-pic-Url=' + this.options.picUrl
-      + ' ></div>'
-      + '<div class="column-right">'
-      + '<div id="gallery-right-arrow" class="gallery-right-arrow"></div>'
-      + '</div>';
 
+    var templateData = {
+      cachedUrl: this.options.cachedUrl,
+      picUrl: this.options.picUrl
+    };
+
+    try {
+      this._modalElement.innerHTML = tmpl('tmpl_showPic_dialog', templateData);
+    } catch (e) {
+      alert(e);
+    }
     container.appendChild(this._modalElement);
     this._makeDialogCancelable();
 
@@ -1391,33 +1000,21 @@ WifiModePromptDialog.prototype = {
 
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    var html = '';
-    html += '<div class="modal-container">';
-    html += '<div class="select-multi-files-dialog">';
-    html += '  <header class="select-multi-files-dialog-header">';
-    html += '    <div class="select-multi-files-dialog-header-title"';
+    var templateData = {
+      title_l10n_id: '',
+      prompt_l10n_id: ''
+    };
     if (this.options.title_l10n_id != '') {
-      html += ' data-l10n-id="' + this.options.title_l10n_id + '"';
+      templateData.title_l10n_id = this.options.title_l10n_id;
     }
-    html += '    ></div>';
-    html += '    <div class="select-multi-files-dialog-header-x"></div>';
-    html += '  </header>';
-    html += '  <div class="select-multi-files-dialog-body">';
-    html += '    <div class="processbar-prompt"><span';
     if (this.options.prompt_l10n_id != '') {
-      html += ' data-l10n-id="' + this.options.prompt_l10n_id + '"';
+      templateData.prompt_l10n_id = this.options.prompt_l10n_id;
     }
-    html += '    ></span>';
-    html += '    </div>';
-    html += '  </div>';
-    html += '  <footer class="select-multi-files-dialog-footer">';
-    html += '    <div class="select-multi-files-dialog-footer-button-ctn">';
-    html += '      <button data-l10n-id="cancel" class="button button-cancel"></button>';
-    html += '    </div>';
-    html += '  </footer>';
-    html += '</div></div>';
-
-    this._modalElement.innerHTML = html;
+    try {
+      this._modalElement.innerHTML = tmpl('tmpl_wifiMode_dialog', templateData);
+    } catch (e) {
+      alert(e);
+    }
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
     this._makeDialogCancelable();

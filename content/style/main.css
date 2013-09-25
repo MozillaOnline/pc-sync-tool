@@ -98,7 +98,7 @@ input[type="url"], textarea {
 
 #container {
   width: 96rem;
-  margin: 6rem auto;
+  margin: auto;
   overflow: hidden;
   background-color: #FFF;
   box-shadow: 0 0 1.9rem 0 #5F5F5F;
@@ -589,14 +589,14 @@ input[type="url"], textarea {
   height: 3rem;
 }
 
-#summary-infos .device-info > div:first-child {
+#summary-infos .device-info > span:first-child {
   font-size: 1.4rem;
   color: #868686;
   float: left;
   margin-top: 1rem;
 }
 
-#summary-infos .device-info  > div:last-child  {
+#summary-infos .device-info  > span:last-child  {
   float: left;
   margin-left: 0.8rem;
   margin-top: 1rem;
@@ -608,7 +608,7 @@ input[type="url"], textarea {
   height: 3rem;
 }
 
-#summary-infos .storage-detail > div:first-child {
+#summary-infos .storage-detail > span {
   font-size: 1.4rem;
   color: #868686;
   float: left;

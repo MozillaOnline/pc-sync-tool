@@ -132,74 +132,74 @@
                   <span id="step-three-span" data-l10n-id="usb-step-three"></span>
                 </div>
                 <input type="text" id="wifi-connection-code-input" style='display: none' class="hiddenElement" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></input>
-                <div id="wifi-connect-button" class="button hiddenElement" href="javascript: void(0);" data-l10n-id="wifi-connect"></div>
+                <div id="wifi-connect-button" class="button hiddenElement" data-l10n-id="wifi-connect"></div>
               </div>
             </section>
           </section>
           <section id="summary-view" class="view" hidden>
-            <div class="content-table">
-              <div class="content-row">
+            <div>
+              <div>
                 <span data-l10n-id="summary" class="title">基本信息</span>
               </div>
-              <div class="content-row">
-                <div id="device-image">
-              <div class="device-picture"></div>
-              <div class="device-connect"></div>
+              <div id="device-image">
+                <div class="device-picture"></div>
+                <div class="device-connect"></div>
+              </div>
             </div>
             <div id="summary-infos">
               <div id="device-storage-summary">
                 <div class="storage-totle">
-                  <div class="storage-name" data-l10n-id="handset">手机</div>
-                  <div class="storage-number"></div>
+                  <span class="storage-name" data-l10n-id="handset">手机</span>
+                  <span class="storage-number"></span>
                 </div>
                 <div class="storage-graph">
                   <div class="used"></div>
                 </div>
                 <div class="device-info">
-                  <div class="device-os-version" data-l10n-id="osversion">OS version</div>
-                  <div class="device-os-version-number"></div>
+                  <span class="device-os-version" data-l10n-id="osversion">OS version</span>
+                  <span class="device-os-version-number"></span>
                 </div>
                 <div class="device-info">
-                  <div class="device-hardware-revision" data-l10n-id="hardwarerevision">Hardware revision</div>
-                  <div class="device-hardware-revision-number"></div>
+                  <span class="device-hardware-revision" data-l10n-id="hardwarerevision">Hardware revision</span>
+                  <span class="device-hardware-revision-number"></span>
                 </div>
                 <div class="device-info">
-                  <div class="device-platform-version" data-l10n-id="platformversion">Platform version</div>
-                  <div class="device-platform-version-number"></div>
+                  <span class="device-platform-version" data-l10n-id="platformversion">Platform version</span>
+                  <span class="device-platform-version-number"></span>
                 </div>
                 <div class="device-info">
-                  <div class="device-build-identifier" data-l10n-id="buildidentifier">Build identifier</div>
-                  <div class="device-build-identifier-number"></div>
+                  <span class="device-build-identifier" data-l10n-id="buildidentifier">Build identifier</span>
+                  <span class="device-build-identifier-number"></span>
                 </div>
               </div>
               <div id="sdcard-storage-summary">
                 <div class="storage-totle">
-                  <div class="storage-name" data-l10n-id="sdcard">SD卡</div>
-                  <div class="storage-number"></div>
+                  <span class="storage-name" data-l10n-id="sdcard">SD卡</span>
+                  <span class="storage-number"></span>
                 </div>
                 <div class="storage-graph">
                   <div class="used"></div>
                 </div>
                 <div class="storage-detail">
-                  <div class="storage-name" data-l10n-id="sdcard-music">音乐</div>
+                  <span class="storage-name" data-l10n-id="sdcard-music">音乐</span>
                   <div class="storage-detailgraph">
                     <div class="storage-used"></div>
                   </div>
                 </div>
                 <div class="storage-detail">
-                  <div class="storage-name" data-l10n-id="sdcard-picture">图片</div>
+                  <span class="storage-name" data-l10n-id="sdcard-picture">图片</span>
                   <div class="storage-detailgraph">
                     <div class="storage-used"></div>
                   </div>
                 </div>
                 <div class="storage-detail">
-                  <div class="storage-name" data-l10n-id="sdcard-video">视频</div>
+                  <span class="storage-name" data-l10n-id="sdcard-video">视频</span>
                   <div class="storage-detailgraph">
                     <div class="storage-used"></div>
                   </div>
                 </div>
                 <div class="storage-detail">
-                  <div class="storage-name" data-l10n-id="sdcard-other">其它</div>
+                  <span class="storage-name" data-l10n-id="sdcard-other">其它</span>
                   <div class="storage-detailgraph">
                     <div class="storage-used"></div>
                   </div>
@@ -390,7 +390,7 @@
                    </div>
                     <input id="mobile" class="quick-input" type="tel" value="" data-l10n-id="mobile"></input>
                   </div>
-                  <div><a id="quick-save-contact" class="button" href="javascript: void(0);" data-l10n-id="save">保存</a></div>
+                  <div><a id="quick-save-contact" class="button" data-l10n-id="save">保存</a></div>
                 </form>
               </section>
               <section id="contact-edit-view" class="card-view contact-form" hidden="true">
@@ -415,8 +415,8 @@
                   <!-- Contact field containter -->
                   <ul></ul>
                   <div class="saveAndCancel">
-                  <a id="save-contact" class="button" href="javascript: void(0);" data-l10n-id="save">保存</a>
-                  <a id="cancel-edit-contact" class="button-cancel" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
+                  <a id="save-contact" class="button" data-l10n-id="save">保存</a>
+                  <a id="cancel-edit-contact" class="button-cancel" data-l10n-id="cancel">取消</a>
                   </div>
                 </form>
               </section>
@@ -462,7 +462,7 @@
                 <div class="sms-send-view"></div>
                 <div id="sms-send-view-header" data-l10n-id="sms-send-view-header"></div>
                 <form id="sms-send-view-form" action="#" onsubmit="return false;">
-                  <div id="sms-send-button" class="button" href="javascript: void(0);" data-l10n-id="sms-send"></div>
+                  <div id="sms-send-button" class="button" data-l10n-id="sms-send"></div>
                 </form>
               </section>
               <section id="sms-select-view" class="card-view sms-form" hidden="true">
@@ -576,6 +576,159 @@
       <button id="sms-resend-<%=id%>" display="<%=resendDisplay%>" value="<%=resendValue%>" class="button-resend" title="重发"></button>
       <button id="sms-reply-<%=id%>" display="<%=replyDisplay%>" value="<%=replyValue%>" class="button-forward" title="转发"></button>
       <button id="sms-delete-<%=id%>" display="<%=deleteDisplay%>" value="<%=deleteValue%>" class="button-delete" title="删除"></button>
+    </div>
+  </script>
+
+  <!-- templates for widgets list view -->
+  <script type="text/html" id="tmpl_sendSms_dialog">
+    <div class="sendSms-dialog">
+      <header class="sendSms-dialog-header">
+        <div class="sendSms-dialog-header-title" data-l10n-id="sms-send-sms"></div>
+        <div class="sendSms-dialog-header-x" style=""></div>
+      </header>
+      <div class="sendSms-dialog-body">
+        <%if (type == 'single') {%>
+          <div class="header" id="select-contact-tel-header">
+            <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
+            <button class="sendSms-button sendSms-menubutton" id="select-contact-tel-button">
+              <div class="label wc" id="selected-contact-tel"><%=number[0]%></div>
+              <%if (number.length > 1) {%>
+                <div class="arrow-ctn">
+                  <div class="arrow"></div>
+                </div>
+              <%}%>
+            </button>
+          </div>
+        <%} else {%>
+          <div class="header">
+            <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
+            <div class="address">
+              <input id="address" type="text" class="input-contact searchbox" value="<%=number%>">
+            </div>
+            <button id="button-add-contact" data-l10n-id="sms-add-contact" class="sms-icon-btn">
+              <span class="icon add-grey"></span>
+            </button>
+          </div>
+        <%}%>
+        <div class="body">
+          <label data-l10n-id="sms-send-content" class="cf" for="content"></label>
+          <textarea id="content" class="input-content" autofocus="true"><%=body%></textarea>
+        </div>
+        <div class="monitor text-secondary">
+          <span id="text-count" class="content-count"><%=textCount%></span>
+          <span id="sender-count" class="contacts-count"><%=senderCount%></span>
+        </div>
+      </div>
+      <footer class="sendSms-dialog-footer" style="">
+        <div class="sendSms-dialog-footer-monitor"></div>
+        <div class="sendSms-dialog-footer-button-ctn">
+          <button data-l10n-id="sms-send-button" class="button-send primary"></button>
+          <button data-l10n-id="cancel" class="button-cancel primary"></button>
+        </div>
+      </footer>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_select_contact">
+    <menu class="sendSms-menu">
+      <%for (var i=0; i<number.length; i++) {%>
+        <li>
+          <label class="wc"><input type="radio" name="" value="<%=name%>"></input><span style="float: left; margin-top: 1px;"><%=name%>(<%=number[i].value%>)</span></label>
+        </li>
+      <%}%>
+    </menu>
+  </script>
+  <script type="text/html" id="tmpl_select_contact_dialog">
+    <div class="sendSms-dialog-contact">
+      <header class="sendSms-dialog-header">
+        <div data-l10n-id="sms-add-contact" class="sendSms-dialog-header-title"></div>
+        <div class="sendSms-dialog-header-x" style=""></div>
+      </header>
+      <div class="sendSms-dialog-body">
+        <div class="sms-message-contact-selector-body">
+          <div class="list-ctn">
+            <div class="sendSms-smartlist" id="sendSms-smartlist-container">
+            </div>
+          </div>
+        </div>
+        <footer class="sendSms-dialog-footer" style="">
+          <div class="sendSms-dialog-footer-monitor">
+            <div>
+              <span id="select-contact-count" class="text-secondary count"></span>
+            </div>
+          </div>
+          <div class="sendSms-dialog-footer-button-ctn">
+            <button data-l10n-id="OK" class="button-send primary"></button>
+            <button data-l10n-id="cancel" class="button-cancel"></button>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_select_contact_item">
+      <label class="unchecked"></label>
+      <img class="avatar avatar-default"></img>
+      <div class="contact-info">
+        <div class="name"><%=name%></div>
+        <div class="tel"><%=tel%></div>
+      </div>
+  </script>
+  <script type="text/html" id="tmpl_fileOP_dialog">
+    <div class="modal-container">
+      <div class="select-multi-files-dialog">
+        <header class="select-multi-files-dialog-header">
+          <div class="select-multi-files-dialog-header-title" data-l10n-id="<%=title_l10n_id%>"></div>
+          <div class="select-multi-files-dialog-header-x"></div>
+        </header>
+        <div class="select-multi-files-dialog-body">
+          <div class="processbar-prompt">
+            <span data-l10n-id="<%=processbar_l10n_id%>"></span>
+            <div>
+              <span id="files-indicator"></span>
+            </div>
+          </div>
+          <div id="processbar-container" class="processbar-container">
+            <div id="processbar" class="processbar"></div>
+          </div>
+        </div>
+        <footer class="select-multi-files-dialog-footer">
+          <div class="select-multi-files-dialog-footer-button-ctn">
+            <button data-l10n-id="cancel" class="button button-cancel"></button>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_showPic_dialog">
+    <div class="bar">
+      <div class="closeX"></div>
+    </div>
+    <div class="column-left">
+      <div id="gallery-left-arrow" class="gallery-left-arrow"></div>
+    </div>
+    <div class="column-middle">
+      <img id="pic-content" src="<%=cachedUrl%>" data-pic-Url="<%=picUrl%>"></div>
+      <div class="column-right">
+      <div id="gallery-right-arrow" class="gallery-right-arrow"></div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_wifiMode_dialog">
+    <div class="modal-container">
+      <div class="select-multi-files-dialog">
+        <header class="select-multi-files-dialog-header">
+          <div class="select-multi-files-dialog-header-title" data-l10n-id="<%=title_l10n_id%>"></div>
+          <div class="select-multi-files-dialog-header-x"></div>
+        </header>
+        <div class="select-multi-files-dialog-body">
+          <div class="processbar-prompt">
+            <span data-l10n-id="<%=prompt_l10n_id%>"></span>
+          </div>
+        </div>
+        <footer class="select-multi-files-dialog-footer">
+          <div class="select-multi-files-dialog-footer-button-ctn">
+            <button data-l10n-id="cancel" class="button button-cancel"></button>
+          </div>
+        </footer>
+      </div>
     </div>
   </script>
 </body>

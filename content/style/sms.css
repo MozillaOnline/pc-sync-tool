@@ -316,14 +316,6 @@
   width: 8rem;
 }
 
-.send-message-modal-container {
-  width: 52.4rem;
-  height: 30.0rem;
-  margin: 0 auto;
-  top: 10.0rem;
-  position: relative;
-}
-
 .send-single-sms-dialog {
   width: 52.4rem;
   height: 30.0rem;
@@ -332,7 +324,7 @@
   position: relative;
 }
 
-.sms-ui-window{
+.sendSms-dialog{
   background:#fff;
   border:0.1rem #aaaaaa solid;
   border-radius:0.5rem;
@@ -341,9 +333,13 @@
   left:0;
   min-height:14.0rem;
   min-width:36.0rem;
+  width: 52.4rem;
+  margin: 0 auto;
+  top: 10.0rem;
+  position: relative;
 }
 
-.sms-ui-window-contact{
+.sendSms-dialog-contact{
   background:#fff;
   border:0.1rem #aaaaaa solid;
   border-radius:0.5rem;
@@ -358,7 +354,7 @@
   left:38.0rem
 }
 
-.sms-ui-window-header{
+.sendSms-dialog-header{
   border-radius:0.5rem 0.5rem 0 0;
   border-bottom:0.1rem #E86000 solid;
   box-shadow:0 0.1rem 0 #E86000 inset;
@@ -368,11 +364,11 @@
   color: #FFFFFF;
 }
 
-.sms-ui-window-header-title{
+.sendSms-dialog-header-title{
   float: left
 }
 
-.sms-ui-window-header-x{
+.sendSms-dialog-header-x{
   cursor:default;
   height:1.6rem;
   width:1.6rem;
@@ -380,159 +376,51 @@
   background: url("images/sms-cancel.png");
 }
 
-.sms-ui-window-header-x:hover{
+.sendSms-dialog-header-x:hover{
   background: url("images/sms-cancel-hover.png");
 }
 
-.sms-ui-window-header-x:active{
+.sendSms-dialog-header-x:active{
   background: url("images/sms-cancel-active.png");
 }
 
-.sms-ui-window-body{
+.sendSms-dialog-body{
   min-height:2em;
   padding:1.5rem 1.5rem 1.0rem;
 }
 
-.sms-ui-window-body p+p{
+.sendSms-dialog-body p+p{
   margin-top:1em
 }
 
-.sms-ui-window-footer{
+.sendSms-dialog-footer{
   border-radius:0 0 0.5rem 0.5rem;
   padding:0 1.5rem 1.5rem
 }
 
-.sms-ui-window-footer label{
+.sendSms-dialog-footer label{
   display:block
 }
 
-.sms-ui-window-footer label input[type="checkbox"]{
+.sendSms-dialog-footer label input[type="checkbox"]{
   margin-right:3rem
 }
 
-.sms-ui-window.w-ui-alert{
+.sendSms-dialog.w-ui-alert{
   min-height:14.8rem;
   width:36.0rem
 }
 
-.sms-ui-window-footer-monitor{
+.sendSms-dialog-footer-monitor{
   line-height:2.5rem;
   -moz-box-flex:1
 }
 
-.sms-ui-window-footer-button-ctn{
+.sendSms-dialog-footer-button-ctn{
   text-align:right
 }
 
-.sms-message-sender-window .header{
-  margin-bottom:1.0rem;
-  overflow: hidden
-}
-
-.sms-message-sender-window .header label{
-  line-height:2.5rem;
-  margin-right:0.5rem;
-  text-align:right;
-  min-width:8.0rem;
-  float: left
-}
-
-.sms-message-sender-window .header .address{
-  border:0.1rem #cacaca solid;
-  cursor:text;
-  margin-right:1.0rem;
-  max-height:6.3rem;
-  min-height:2.1rem;
-  overflow-y:auto;
-  padding:0.1rem;
-  float: left;
-  width: 27.0rem;
-}
-
-.sms-message-sender-window .header .sms-icon-btn{
-  float: right
-}
-
-.sms-message-sender-window .header .sms-icon-btn{
-  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
-  border-color:#2c8e00;
-  box-shadow:inset 0 0.1rem 0 0 rgba(255,255,255,0.2);
-  color: white;
-  text-shadow:0 0.1rem 0 rgba(0,0,0,0.2);
-  border: 0.1rem #999999 solid;
-  border-radius: 0.3rem;
-  height: 2.6rem;
-  min-width: 6.0rem;
-  padding: 0.3rem 1.0rem;
-  vertical-align: middle;
-  font: 1.2rem/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
-  text-align: center;
-  cursor: pointer;
-  background-color: buttonface;
-  letter-spacing: normal;
-  word-spacing: normal;
-  display: inline-block;
-}
-
-.sms-message-sender-window .header .sms-icon-btn:hover{
-  background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
-}
-
-.sms-message-sender-window .header .sms-icon-btn .icon{
-  background: url("images/sms-select-contact.png");
-  display: inline-block;
-  height: 1.6rem;
-  margin: -0.2rem 0.3rem 0 0;
-  vertical-align: middle;
-  width: 1.6rem
-}
-
-.sms-message-sender-window .header .address.focus,.sms-message-sender-window .header .address.focus:hover{
-  border-color:#6db800;
-  box-shadow:inset 0 0.1rem 0.1rem rgba(0,0,0,0.075),0 0 0.4rem #6db800
-}
-
-.sms-message-sender-window .header .address:hover{
-  border-color:rgba(109,184,0,0.5)
-}
-
-.sms-message-sender-window .header .input-contact{
-  border:none;
-  height:1.8rem;
-  line-height:1.8rem;
-  width:100%
-}
-
-.sms-message-sender-window .header .input-contact:focus,.sms-message-sender-window .header .input-contact:focus:hover{
-  box-shadow:none
-}
-
-.sms-message-sender-window .body{
-  overflow: hidden
-}
-
-.sms-message-sender-window .body label{
-  line-height:2.5rem;
-  margin-right:0.5rem;
-  text-align:right;
-  width:8.0rem;
-  float: left
-}
-
-.sms-message-sender-window .body .input-content{
-  height:10.0rem;
-  width:40.7rem;
-  float: right;
-  overflow-y: auto;
-}
-
-.sms-message-sender-window .monitor{
-  margin-left:8.rem;
-  color: #999999;
-  font-size: 1.2rem;
-}
-
-.sms-ui-window-footer-button-ctn .button-send{
+.sendSms-dialog-footer-button-ctn .button-send{
   background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
   border-color:#2c8e00;
   box-shadow:inset 0 0.1rem 0 0 rgba(255,255,255,0.2);
@@ -553,11 +441,11 @@
   display: inline-block
 }
 
-.sms-ui-window-footer-button-ctn .button-send:hover{
+.sendSms-dialog-footer-button-ctn .button-send:hover{
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
 
-.sms-ui-window-footer-button-ctn .button-cancel{
+.sendSms-dialog-footer-button-ctn .button-cancel{
   background: -moz-linear-gradient(center top , #f3f3f3, #e9e9e9) repeat scroll 0 0 transparent;
   border-color:#2c8e00;
   box-shadow:inset 0 0.1rem 0 0 rgba(255,255,255,0.2);
@@ -577,6 +465,114 @@
   word-spacing: normal;
   display: inline-block;
   margin-left: 0.4rem
+}
+
+.sendSms-dialog-body .header{
+  margin-bottom:1.0rem;
+  overflow: hidden
+}
+
+.sendSms-dialog-body .header label{
+  line-height:2.5rem;
+  margin-right:0.5rem;
+  text-align:right;
+  min-width:8.0rem;
+  float: left
+}
+
+.sendSms-dialog-body .header .address{
+  border:0.1rem #cacaca solid;
+  cursor:text;
+  margin-right:1.0rem;
+  max-height:6.3rem;
+  min-height:2.1rem;
+  overflow-y:auto;
+  padding:0.1rem;
+  float: left;
+  width: 27.0rem;
+}
+
+.sendSms-dialog-body .header .sms-icon-btn{
+  float: right
+}
+
+.sendSms-dialog-body .header .sms-icon-btn{
+  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
+  border-color:#2c8e00;
+  box-shadow:inset 0 0.1rem 0 0 rgba(255,255,255,0.2);
+  color: white;
+  text-shadow:0 0.1rem 0 rgba(0,0,0,0.2);
+  border: 0.1rem #999999 solid;
+  border-radius: 0.3rem;
+  height: 2.6rem;
+  min-width: 6.0rem;
+  padding: 0.3rem 1.0rem;
+  vertical-align: middle;
+  font: 1.2rem/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
+  text-align: center;
+  cursor: pointer;
+  background-color: buttonface;
+  letter-spacing: normal;
+  word-spacing: normal;
+  display: inline-block;
+}
+
+.sendSms-dialog-body .header .sms-icon-btn:hover{
+  background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
+}
+
+.sendSms-dialog-body .header .sms-icon-btn .icon{
+  background: url("images/sms-select-contact.png");
+  display: inline-block;
+  height: 1.6rem;
+  margin: -0.2rem 0.3rem 0 0;
+  vertical-align: middle;
+  width: 1.6rem
+}
+
+.sendSms-dialog-body .header .address.focus,.sendSms-dialog-body .header .address.focus:hover{
+  border-color:#6db800;
+  box-shadow:inset 0 0.1rem 0.1rem rgba(0,0,0,0.075),0 0 0.4rem #6db800
+}
+
+.sendSms-dialog-body .header .address:hover{
+  border-color:rgba(109,184,0,0.5)
+}
+
+.sendSms-dialog-body .header .input-contact{
+  border:none;
+  height:1.8rem;
+  line-height:1.8rem;
+  width:100%
+}
+
+.sendSms-dialog-body .header .input-contact:focus,.sendSms-dialog-body .header .input-contact:focus:hover{
+  box-shadow:none
+}
+
+.sendSms-dialog-body .body{
+  overflow: hidden
+}
+
+.sendSms-dialog-body .body label{
+  line-height:2.5rem;
+  margin-right:0.5rem;
+  text-align:right;
+  width:8.0rem;
+  float: left
+}
+
+.sendSms-dialog-body .body .input-content{
+  height:10.0rem;
+  width:40.7rem;
+  float: right;
+  overflow-y: auto;
+}
+
+.sendSms-dialog-body .monitor{
+  margin-left: 9rem;
+  color: #999999;
+  font-size: 1.2rem;
 }
 
 .sms-message-thread .date-ctn{
@@ -990,25 +986,25 @@
   color:#2c5300
 }
 
-.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton{
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sendSms-button.sendSms-menubutton{
   max-width:10.5rem;
   padding-left:0.5rem;
   padding-right:0.5rem
 }
 
-.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton .arrow-ctn{
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sendSms-button.sendSms-menubutton .arrow-ctn{
   opacity:1
 }
 
-.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton .arrow-ctn .arrow{
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sendSms-button.sendSms-menubutton .arrow-ctn .arrow{
   border-color:#999 transparent transparent transparent
 }
 
-.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton:enabled:hover .arrow-ctn .arrow{
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sendSms-button.sendSms-menubutton:enabled:hover .arrow-ctn .arrow{
   border-top-color:#6db800
 }
 
-.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton:enabled:active .arrow-ctn .arrow,.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton.active .arrow-ctn .arrow,.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sms-ui-button.sms-ui-menubutton.active:hover .arrow-ctn .arrow{
+.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sendSms-button.sendSms-menubutton:enabled:active .arrow-ctn .arrow,.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sendSms-button.sendSms-menubutton.active .arrow-ctn .arrow,.sms-message-contact-selector-body .selector-ctrl .selector-ctn .sendSms-button.sendSms-menubutton.active:hover .arrow-ctn .arrow{
   border-top-color:#2c5300
 }
 
@@ -1029,77 +1025,78 @@
   padding:0.3rem
 }
 
-#sms-ui-smartlist-container {
-    max-height: 35rem;
-    overflow: auto;
-    padding-left: 1rem;
+#sendSms-smartlist-container {
+  max-height: 35rem;
+  overflow: auto;
+  padding-left: 1rem;
+  width: 42rem;
 }
 
 #threads-list-container
 {
-    max-height: 46rem;
-    overflow: auto;
-    padding-left: 1rem;
+  max-height: 46rem;
+  overflow: auto;
+  padding-left: 1rem;
 }
 
 #show-sms-container
 {
-    max-height: 40rem;
-    overflow: auto;
-    padding-left: 1rem;
+  max-height: 40rem;
+  overflow: auto;
+  padding-left: 1rem;
 }
 
-.sms-ui-button.sms-ui-menubutton .label{
+.sendSms-button.sendSms-menubutton .label{
   text-align:left;
   float: left
 }
 
-.sms-ui-button.sms-ui-menubutton .label+.arrow-ctn{
+.sendSms-button.sendSms-menubutton .label+.arrow-ctn{
   margin-left:0.5rem;
   float: left;
   padding-top: 0.5rem;
 }
 
-.sms-ui-button.sms-ui-menubutton .arrow-ctn .arrow{
+.sendSms-button.sendSms-menubutton .arrow-ctn .arrow{
   border-color:#000 transparent transparent transparent;
   border-style:solid;
   border-width:0.4rem 0.4rem 0;
   opacity:.7
 }
 
-.sms-ui-button.sms-ui-menubutton:enabled:hover .arrow-ctn .arrow{
+.sendSms-button.sendSms-menubutton:enabled:hover .arrow-ctn .arrow{
   opacity:1
 }
 
-.sms-ui-button.sms-ui-menubutton:enabled:active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.active:hover .arrow-ctn .arrow{
+.sendSms-button.sendSms-menubutton:enabled:active .arrow-ctn .arrow,.sendSms-button.sendSms-menubutton.active .arrow-ctn .arrow,.sendSms-button.sendSms-menubutton.active:hover .arrow-ctn .arrow{
   opacity:1
 }
-.sms-ui-button.sms-ui-menubutton.primary .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary .arrow-ctn .arrow{
+.sendSms-button.sendSms-menubutton.primary .arrow-ctn .arrow,.sendSms-button.sendSms-menubutton.secondary .arrow-ctn .arrow{
   border-top-color:#fff
 }
 
-.sms-ui-button.sms-ui-menubutton.primary:enabled:hover .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary:enabled:hover .arrow-ctn .arrow{
+.sendSms-button.sendSms-menubutton.primary:enabled:hover .arrow-ctn .arrow,.sendSms-button.sendSms-menubutton.secondary:enabled:hover .arrow-ctn .arrow{
   border-top-color:#fff
 }
 
-.sms-ui-button.sms-ui-menubutton.primary:enabled:active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.primary.active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.primary.active:hover .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary:enabled:active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary.active .arrow-ctn .arrow,.sms-ui-button.sms-ui-menubutton.secondary.active:hover .arrow-ctn .arrow{
+.sendSms-button.sendSms-menubutton.primary:enabled:active .arrow-ctn .arrow,.sendSms-button.sendSms-menubutton.primary.active .arrow-ctn .arrow,.sendSms-button.sendSms-menubutton.primary.active:hover .arrow-ctn .arrow,.sendSms-button.sendSms-menubutton.secondary:enabled:active .arrow-ctn .arrow,.sendSms-button.sendSms-menubutton.secondary.active .arrow-ctn .arrow,.sendSms-button.sendSms-menubutton.secondary.active:hover .arrow-ctn .arrow{
   border-top-color:#fff
 }
-.sms-ui-button.sms-ui-menubutton.primary .arrow-ctn,.sms-ui-button.sms-ui-menubutton.secondary .arrow-ctn{
+.sendSms-button.sendSms-menubutton.primary .arrow-ctn,.sendSms-button.sendSms-menubutton.secondary .arrow-ctn{
   border-color:#fff
 }
 
-.sms-ui-button.sms-ui-menubutton.toggle{
+.sendSms-button.sendSms-menubutton.toggle{
   min-width:2.2rem;
   padding-left:0.8rem;
   padding-right:0.8rem
 }
 
-.sms-ui-button.sms-ui-menubutton.toggle .label{
+.sendSms-button.sendSms-menubutton.toggle .label{
   display:none
 }
 
-.sms-ui-menu{
+.sendSms-menu{
   background:#fff;
   border:0.1rem #bbb solid;
   border-radius:0.3rem;
@@ -1110,32 +1107,32 @@
   margin-left: 8.5rem;
 }
 
-.sms-ui-menu li{
+.sendSms-menu li{
   height:3.0rem;
   line-height:2.2rem;
   padding:0 1.5rem 0 0.5rem
 }
 
-.sms-ui-menu li:hover:not([disabled]){
+.sendSms-menu li:hover:not([disabled]){
   background:-moz-linear-gradient(center top , #5bb70d, #4eaa00) repeat scroll 0 0 transparent;
   color:#fff
 }
 
-.sms-ui-menu li[disabled]{
+.sendSms-menu li[disabled]{
   opacity:0.4
 }
 
-.sms-ui-menu li.disabled:hover{
+.sendSms-menu li.disabled:hover{
   background:#fff
 }
 
-.sms-ui-menu li label{
+.sendSms-menu li label{
   display:block;
   max-width:15.0rem;
   min-width:8.0rem;
 }
 
-.sms-ui-menu input[type="radio"]{
+.sendSms-menu input[type="radio"]{
   background:none;
   background-color:transparent;
   border:none;
@@ -1146,7 +1143,7 @@
   display: none;
 }
 
-.sms-ui-menu input[type="radio"]:enabled:hover{
+.sendSms-menu input[type="radio"]:enabled:hover{
   background:none;
   border:none
 }
@@ -1165,11 +1162,11 @@
 }
 
 .sms-thread-header .avatar-default {
-    background-image: url("images/avatar.png");
-    background-position: center center;
-    background-repeat: no-repeat;
-    height: 5.5rem;
-    width: 5.5rem;
+  background-image: url("images/avatar.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  height: 5.5rem;
+  width: 5.5rem;
 }
 
 #sms-thread-header-img {
