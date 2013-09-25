@@ -43,7 +43,7 @@ TCPConnectionPool.prototype = {
     this._currentId = null;
     this._callbacks = null;
     this._messageQueue = null;
-    if(this._messageSendingTimer){
+    if (this._messageSendingTimer) {
       window.clearInterval(this._messageSendingTimer);
       this._messageSendingTimer = null;
     }
@@ -120,7 +120,7 @@ TCPConnectionPool.prototype = {
     }
   },
 
-  /*
+/*
    * The callback function to be called in the wrapper
    * @see TCPSocketWrapper
    */
@@ -131,7 +131,7 @@ TCPConnectionPool.prototype = {
         return;
       }
       var callback = this._fetchRequestCallback(jsonCmd.id);
-      if(jsonCmd.result != RS_MIDDLE) {
+      if (jsonCmd.result != RS_MIDDLE) {
         this._deleteRequestCallback(jsonCmd.id);
         if (callback.json) {
           // Parse the result as the object
@@ -222,7 +222,7 @@ TCPConnectionPool.prototype = {
     wrapper.send(obj.cmd, obj.cmd.data);
   },
 
-  /*
+/*
    * obj = {
    *   cmd: { id: 1, command: 1, type: 1},
    *   data: null,

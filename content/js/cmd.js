@@ -3,7 +3,7 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var CMD = (function() {
-  /*
+/*
    * Return function with three parameters:
    *  - data
    *    the data object will be sent
@@ -12,6 +12,7 @@ var CMD = (function() {
    *  - onerror
    *    the callback function when error occurs
    */
+
   function createCommand(target, command) {
     return function(data, onresponse, onerror) {
       FFOSAssistant.sendRequest({
@@ -28,11 +29,12 @@ var CMD = (function() {
     };
   }
 
-  /*
+/*
    * Return function only with onresponse and onerror callbacks
    */
-  function createCommandWithNonData (target, command) {
-    return function (onresponse, onerror) {
+
+  function createCommandWithNonData(target, command) {
+    return function(onresponse, onerror) {
       FFOSAssistant.sendRequest({
         cmd: {
           type: target,
@@ -47,7 +49,7 @@ var CMD = (function() {
     };
   }
 
-  function createListenCommand (target, command) {
+  function createListenCommand(target, command) {
     return function(onresponse, onerror) {
       FFOSAssistant.sendListenRequest({
         cmd: {
@@ -63,7 +65,7 @@ var CMD = (function() {
     };
   }
 
-  /*
+/*
    * All the available commands grouped by targets.
    */
   return {
@@ -80,25 +82,25 @@ var CMD = (function() {
     Contacts: {
       getAllContacts: createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.getAllContacts),
 
-      /*
+/*
        * data:
        *   contact ID
        * */
       getContactProfilePic: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactPicById),
 
-      /*
+/*
        * data:
        *   contact object
        */
       updateContact: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.updateContactById),
 
-      /*
+/*
        * data:
        *   contact array
        */
       addContact: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.addContact),
 
-      /*
+/*
        * data:
        *   contact id array
        */
@@ -106,13 +108,13 @@ var CMD = (function() {
 
       clearAllContacts: createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.clearAllContacts),
 
-      /*
+/*
        * data:
        *   phone number
        */
       getContactByPhoneNumber: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactByPhoneNumber),
 
-      /*
+/*
        * data:
        *   contact id
        */
@@ -121,7 +123,7 @@ var CMD = (function() {
 
     /***** Picture commands ******/
     Pictures: {
-      getOldPicturesInfo:  createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getOldPicturesInfo),
+      getOldPicturesInfo: createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getOldPicturesInfo),
       getChangedPicturesInfo: createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getChangedPicturesInfo)
     },
 
@@ -141,32 +143,32 @@ var CMD = (function() {
     SMS: {
       getAllMessages: createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.getAllMessages),
 
-      /*
+/*
        * data:
        *   SMS Filter
        */
       getSMSById: createCommand(CMD_TYPE.sms, SMS_COMMAND.getSMSById),
 
-      /*
+/*
        * data:
        *   string like: "number: '10086', message: 'Here is the message content'"
        */
       sendSMS: createCommand(CMD_TYPE.sms, SMS_COMMAND.sendSMS),
 
-      /*
+/*
        * data:
        *   string like: "number: ['10086','13584651421'], message: 'Here is the message content'"
        */
       sendMMS: createCommand(CMD_TYPE.sms, SMS_COMMAND.sendMMS),
 
-      /*
+/*
        * data:
        *   message id
        */
       deleteMessageById: createCommand(CMD_TYPE.sms, SMS_COMMAND.deleteMessageById),
 
       resendMessage: createCommand(CMD_TYPE.sms, SMS_COMMAND.resendMessage),
-      /*
+/*
        * data:
        *   message id
        */
@@ -174,7 +176,7 @@ var CMD = (function() {
 
       getThreads: createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.getThreads),
 
-      /*
+/*
        * data:
        *   message thread id
        */
@@ -187,4 +189,3 @@ var CMD = (function() {
     }
   };
 })();
-

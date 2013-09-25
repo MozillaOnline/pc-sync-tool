@@ -18,10 +18,10 @@ var FFOSAssistant = (function() {
     $id('views').classList.add('hidden-views');
 
     if (handlerUsbConnection) {
-      $id('usb-connection-button').removeEventListener('click', handlerUsbConnection,false);
+      $id('usb-connection-button').removeEventListener('click', handlerUsbConnection, false);
     }
 
-    handlerUsbConnection = function () {
+    handlerUsbConnection = function() {
       $id('wifi-connection-button').dataset.checked = false;
       $id('usb-connection-button').dataset.checked = true;
       $id('wifi-arrow').classList.add('hiddenElement');
@@ -40,13 +40,13 @@ var FFOSAssistant = (function() {
       $id('step-three-span').dataset.l10nId = 'usb-step-three';
     };
 
-    $id('usb-connection-button').addEventListener ('click', handlerUsbConnection,false);
+    $id('usb-connection-button').addEventListener('click', handlerUsbConnection, false);
 
     if (handlerWifiConnection) {
-      $id('wifi-connection-button').removeEventListener('click', handlerWifiConnection,false);
+      $id('wifi-connection-button').removeEventListener('click', handlerWifiConnection, false);
     }
 
-    handlerWifiConnection = function () {
+    handlerWifiConnection = function() {
       $id('wifi-connection-button').dataset.checked = true;
       $id('usb-connection-button').dataset.checked = false;
       $id('usb-arrow').classList.add('hiddenElement');
@@ -65,13 +65,13 @@ var FFOSAssistant = (function() {
       $id('step-three-span').dataset.l10nId = 'wifi-step-three';
     };
 
-    $id('wifi-connection-button').addEventListener ('click', handlerWifiConnection,false);
+    $id('wifi-connection-button').addEventListener('click', handlerWifiConnection, false);
 
     if (handlerWifiConnect) {
-      $id('wifi-connect-button').removeEventListener('click', handlerWifiConnect,false);
+      $id('wifi-connect-button').removeEventListener('click', handlerWifiConnect, false);
     }
 
-    handlerWifiConnect = function () {
+    handlerWifiConnect = function() {
       var wifiCode = $id('wifi-connection-code-input');
       if (wifiCode && wifiCode.value && wifiCode.value.length > 0) {
         var ip = '';
@@ -95,7 +95,7 @@ var FFOSAssistant = (function() {
         connectToDevice(ip);
       }
     };
-    $id('wifi-connect-button').addEventListener ('click', handlerWifiConnect,false);
+    $id('wifi-connect-button').addEventListener('click', handlerWifiConnect, false);
 
     ViewManager.showContent('connect-view');
   }
@@ -111,26 +111,26 @@ var FFOSAssistant = (function() {
     });
     socket.onopen = function tc_onSocketOpened(event) {
       var socketWrapper = new TCPSocketWrapper({
-	socket: event.target,
-	onmessage: function (socket, jsonCmd, sendCallback, recvData) {
-	  if (connListenSocket == null) {
-	    return;
-	  }
-	  var message = JSON.parse(recvData);
-	  if (message.type == 'sms') {
-	    SmsList.onMessage(message);
-	  } else if (message.type == 'contact') {
-	    ContactList.onMessage(message);
-	    SmsList.onMessage('updateAvatar');
-	  }
-	},
-	onclose: function () {
-	  connListenSocket = null;
-	}
+        socket: event.target,
+        onmessage: function(socket, jsonCmd, sendCallback, recvData) {
+          if (connListenSocket == null) {
+            return;
+          }
+          var message = JSON.parse(recvData);
+          if (message.type == 'sms') {
+            SmsList.onMessage(message);
+          } else if (message.type == 'contact') {
+            ContactList.onMessage(message);
+            SmsList.onMessage('updateAvatar');
+          }
+        },
+        onclose: function() {
+          connListenSocket = null;
+        }
       });
       connListenSocket = socketWrapper;
       CMD.Listen.listenMessage(function() {}, function(e) {
-	alert(e);
+        alert(e);
       });
     };
 
@@ -138,10 +138,11 @@ var FFOSAssistant = (function() {
     $id('device-unconnected').classList.add('hiddenElement');
     ViewManager.showContent('summary-view');
   }
-  
+
   /**
    * Format storage size.
    */
+
   function formatStorage(sizeInBytes) {
     var sizeInMega = sizeInBytes / 1024 / 1024;
 
@@ -156,12 +157,12 @@ var FFOSAssistant = (function() {
   function fillStorageSummaryInfo(elemId, info) {
     var elem = $id(elemId);
     var total = info.usedInBytes + info.freeInBytes;
-    if (total > 0 ) {
+    if (total > 0) {
       var usedInP = Math.floor(info.usedInBytes / total * 100) + '%';
       $expr('.storage-number', elem)[0].textContent =
-        formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
+      formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
       $expr('.storage-graph .used', elem)[0].style.width = usedInP;
-      if (elemId =='sdcard-storage-summary' ) {
+      if (elemId == 'sdcard-storage-summary') {
         var subInP = Math.floor(info.picture / info.usedInBytes * 100);
         if (subInP == 0) {
           subInP = 1;
@@ -181,12 +182,12 @@ var FFOSAssistant = (function() {
         if (subInP == 0) {
           subInP = 1;
         }
-        $expr('.storage-used', elem)[3].style.width =  subInP + '%';
+        $expr('.storage-used', elem)[3].style.width = subInP + '%';
       }
     } else {
       $expr('.storage-number', elem)[0].textContent = formatStorage(info.usedInBytes) + '/' + formatStorage(total);
-      $expr('.storage-graph .used', elem)[0].style.width = 0  + '%';
-      if (elemId =='sdcard-storage-summary' ) {
+      $expr('.storage-graph .used', elem)[0].style.width = 0 + '%';
+      if (elemId == 'sdcard-storage-summary') {
         $expr('.storage-used', elem)[0].style.width = 0 + '%';
         $expr('.storage-used', elem)[1].style.width = 0 + '%';
         $expr('.storage-used', elem)[2].style.width = 0 + '%';
@@ -198,7 +199,7 @@ var FFOSAssistant = (function() {
   function getAndShowStorageInfo() {
     CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
       var deviceInfo = {
-	usedInBytes: 0,
+        usedInBytes: 0,
         freeInBytes: 0
       };
       var sdcardInfo = {
@@ -206,24 +207,24 @@ var FFOSAssistant = (function() {
         freeInBytes: 0,
         picture: 0,
         music: 0,
-        video:0
+        video: 0
       };
 
       var dataJSON = JSON.parse(message.data);
-      for(var i=0;i<dataJSON.length;i++) {
-	if(dataJSON[i].storageName == 'apps') {
-	  deviceInfo.usedInBytes = dataJSON[i].usedSpace;
-	  deviceInfo.freeInBytes = dataJSON[i].freeSpace;
-	} else if (dataJSON[i].storageName == 'sdcard') {
-	  sdcardInfo.usedInBytes = dataJSON[i].usedSpace;
-	  sdcardInfo.freeInBytes = dataJSON[i].freeSpace;
-	} else if (dataJSON[i].storageName == 'pictures') {
-	  sdcardInfo.picture = dataJSON[i].usedSpace;
-	} else if (dataJSON[i].storageName == 'music') {
-	  sdcardInfo.music = dataJSON[i].usedSpace;
-	} else if (dataJSON[i].storageName == 'videos') {
-	  sdcardInfo.video = dataJSON[i].usedSpace;
-	}
+      for (var i = 0; i < dataJSON.length; i++) {
+        if (dataJSON[i].storageName == 'apps') {
+          deviceInfo.usedInBytes = dataJSON[i].usedSpace;
+          deviceInfo.freeInBytes = dataJSON[i].freeSpace;
+        } else if (dataJSON[i].storageName == 'sdcard') {
+          sdcardInfo.usedInBytes = dataJSON[i].usedSpace;
+          sdcardInfo.freeInBytes = dataJSON[i].freeSpace;
+        } else if (dataJSON[i].storageName == 'pictures') {
+          sdcardInfo.picture = dataJSON[i].usedSpace;
+        } else if (dataJSON[i].storageName == 'music') {
+          sdcardInfo.music = dataJSON[i].usedSpace;
+        } else if (dataJSON[i].storageName == 'videos') {
+          sdcardInfo.video = dataJSON[i].usedSpace;
+        }
       }
       fillStorageSummaryInfo('device-storage-summary', deviceInfo);
       fillStorageSummaryInfo('sdcard-storage-summary', sdcardInfo);
@@ -248,6 +249,7 @@ var FFOSAssistant = (function() {
   /**
    * Show the contact view, and start fetching the contacts data from device.
    */
+
   function showContactView() {
     ViewManager.showContent('contact-view');
   }
@@ -257,7 +259,7 @@ var FFOSAssistant = (function() {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
       var dataJSON = JSON.parse(message.data);
-      ContactList.init(dataJSON,viewData);
+      ContactList.init(dataJSON, viewData);
     }, function onerror_getAllContacts(message) {
       log('getAndShowAllContacts Error occurs when fetching all contacts.');
     });
@@ -270,7 +272,7 @@ var FFOSAssistant = (function() {
   function updateSMSThreads() {
     CMD.SMS.getThreads(function onresponse_getThreads(messages) {
       // Make sure the 'select-all' box is not checked.  
-      SmsList.selectAllSms(false); 
+      SmsList.selectAllSms(false);
       var dataJSON = JSON.parse(messages.data);
       SmsList.init(dataJSON);
     }, function onerror_getThreads(messages) {
@@ -298,21 +300,21 @@ var FFOSAssistant = (function() {
             return;
           }
           if (changedMusic.callbackID == 'onscanend') {
-             // Make sure the 'select-all' box is not checked.
+            // Make sure the 'select-all' box is not checked.
             MusicList.selectAllMusics(false);
             MusicList.updateUI();
             return;
           }
-        } , function onerror_getChangedMusics(e) {
+        }, function onerror_getChangedMusics(e) {
           log('Error occurs when fetching changed musics.');
         })
       }
-     }, function onerror_getOldMusicsInfo(e) {
+    }, function onerror_getOldMusicsInfo(e) {
       log('Error occurs when fetching all musics.');
     });
   }
 
-  function getAndShowGallery () {
+  function getAndShowGallery() {
     Gallery.init();
     CMD.Pictures.getOldPicturesInfo(function onresponse_getOldMusicsInfo(oldPicture) {
       var picture = JSON.parse(oldPicture.data);
@@ -336,7 +338,7 @@ var FFOSAssistant = (function() {
             Gallery.updateUI();
             return;
           }
-        }, function onerror_getChangedPictures (e) {
+        }, function onerror_getChangedPictures(e) {
           log('Error occurs when fetching changed pictures.');
         });
         return;
@@ -366,7 +368,7 @@ var FFOSAssistant = (function() {
             return;
           }
           if (changedVideo.callbackID == 'onscanend') {
-             // Make sure the 'select-all' box is not checked.
+            // Make sure the 'select-all' box is not checked.
             Video.selectAllVideos(false);
             Video.updateUI();
             return;
@@ -481,14 +483,14 @@ var FFOSAssistant = (function() {
 
     sendListenRequest: function(obj) {
       if (connListenSocket) {
-	obj.cmd = extend({
-	  cmd: null,
-	  data: null,
-	  datalength: 0,
-	  json: false // Indicates if the reulst is an JSON string
-	}, obj.cmd);
-	obj.cmd.id = 1;
-	connListenSocket.send(obj.cmd, obj.cmd.data);
+        obj.cmd = extend({
+          cmd: null,
+          data: null,
+          datalength: 0,
+          json: false // Indicates if the reulst is an JSON string
+        }, obj.cmd);
+        obj.cmd.id = 1;
+        connListenSocket.send(obj.cmd, obj.cmd.data);
       }
     },
 
@@ -500,4 +502,3 @@ var FFOSAssistant = (function() {
     updateSMSThreads: updateSMSThreads
   };
 })();
-

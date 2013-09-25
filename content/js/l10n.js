@@ -29,7 +29,6 @@
    */
 
   var gAsyncResourceLoading = true; // read-only
-
   /**
    * Debug helpers
    *
@@ -123,14 +122,12 @@
 
     // handle escaped characters (backslashes) in a string
 
-
     function evalString(text) {
       if (text.lastIndexOf('\\') < 0) return text;
       return text.replace(/\\\\/g, '\\').replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\b/g, '\b').replace(/\\f/g, '\f').replace(/\\{/g, '{').replace(/\\}/g, '}').replace(/\\"/g, '"').replace(/\\'/g, "'");
     }
 
     // parse *.properties text data into an l10n dictionary
-
 
     function parseProperties(text) {
       var dictionary = [];
@@ -142,7 +139,6 @@
       var reImport = /^\s*@import\s+url\((.*)\)\s*$/i;
       var reSplit = /^([^=\s]*)\s*=\s*(.+)$/; // TODO: escape EOLs with '\'
       // parse the *.properties file into an associative array
-
 
       function parseRawLines(rawText, extendedSyntax) {
         var entries = rawText.replace(reBlank, '').split(/[\r\n]+/);
@@ -183,7 +179,6 @@
 
       // import another *.properties file
 
-
       function loadImport(url) {
         loadResource(url, function(content) {
           parseRawLines(content, false); // don't allow recursive imports
@@ -196,7 +191,6 @@
     }
 
     // load the specified resource file
-
 
     function loadResource(url, onSuccess, onFailure, asynchronous) {
       onSuccess = onSuccess ||
@@ -262,7 +256,6 @@
 
   // load and parse all resources for the specified locale
 
-
   function loadLocale(lang, callback) {
     clear();
     gLanguage = lang;
@@ -294,7 +287,6 @@
 
     // load all resource files
 
-
     function l10nResourceLink(link) {
       var href = link.href;
       var type = link.type;
@@ -319,7 +311,6 @@
   }
 
   // clear all l10n data
-
 
   function clear() {
     gL10nData = {};
@@ -521,7 +512,6 @@
 
     // utility functions for plural rules methods
 
-
     function isIn(n, list) {
       return list.indexOf(n) !== -1;
     }
@@ -717,7 +707,6 @@
 
   // fetch an l10n object, warn if not found, apply `args' if possible
 
-
   function getL10nData(key, args) {
     var data = gL10nData[key];
     if (!data) {
@@ -740,7 +729,6 @@
   }
 
   // replace {[macros]} with their values
-
 
   function substIndexes(str, args, key, prop) {
     var reIndex = /\{\[\s*([a-zA-Z]+)\(([a-zA-Z]+)\)\s*\]\}/;
@@ -768,7 +756,6 @@
 
   // replace {{arguments}} with their values
 
-
   function substArguments(str, args, key) {
     var reArgs = /\{\{\s*([a-zA-Z\.:-]+)\s*\}\}/;
     var match = reArgs.exec(str);
@@ -792,7 +779,6 @@
   }
 
   // translate an HTML element
-
 
   function translateElement(element) {
     var l10n = getL10nAttributes(element);
@@ -843,7 +829,6 @@
 
   // translate an HTML subtree
 
-
   function translateFragment(element) {
     element = element || document.documentElement;
 
@@ -864,7 +849,6 @@
    */
 
   // load the default locale on startup
-
 
   function l10nStartup() {
     gReadyState = 'interactive';

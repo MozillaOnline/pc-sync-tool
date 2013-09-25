@@ -122,7 +122,6 @@ var utils = {
 
     // return the two-digit hexadecimal code for a byte
 
-
     function toHexString(charCode) {
       return ("0" + charCode.toString(16)).slice(-2);
     }

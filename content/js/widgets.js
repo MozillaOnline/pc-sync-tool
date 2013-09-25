@@ -118,8 +118,7 @@ GroupedList.prototype = {
       return null;
     }
     var newDataList = removeFromArray(function(obj) {
-      return self.options.dataIdentifier(obj) ===
-               self.options.dataIdentifier(dataObj);
+      return self.options.dataIdentifier(obj) === self.options.dataIdentifier(dataObj);
     }, group.dataList);
 
     group.dataList = newDataList;
@@ -186,7 +185,7 @@ GroupedList.prototype = {
   },
 
   _getGroupElem: function gl_getGroupElem(index) {
-      return $id(this._getGroupElemId(index));
+    return $id(this._getGroupElemId(index));
   },
 
   render: function gl_render() {
@@ -217,8 +216,7 @@ GroupedList.prototype = {
       this.options.container.appendChild(groupElem);
     } else {
       var groupAfter = this._groupedData[position + 1];
-      this.options.container.insertBefore(groupElem,
-        this._getGroupElem(groupAfter.index));
+      this.options.container.insertBefore(groupElem, this._getGroupElem(groupAfter.index));
     }
     this.options.ondatachange();
   },
@@ -311,7 +309,7 @@ SendSMSDialog.prototype = {
       if (this.options.number) {
         var senders = this.options.number.split(';');
         senderNum = senders.length;
-        for(var i = 0; i < senders.length; i++) {
+        for (var i = 0; i < senders.length; i++) {
           if (senders[i] == "") {
             senderNum--;
           }
@@ -382,10 +380,10 @@ SendSMSDialog.prototype = {
     cancelBtn.addEventListener('click', self.close.bind(self));
 
     $id('content').addEventListener('keyup', function onclick_addNewSms(event) {
-        var header = _('text-sms-count', {
-          n: this.value.length
-        });
-        $id('text-count').innerHTML = header;
+      var header = _('text-sms-count', {
+        n: this.value.length
+      });
+      $id('text-count').innerHTML = header;
     });
 
     if (self.options.type == 'single') {
@@ -407,9 +405,9 @@ SendSMSDialog.prototype = {
           }
           elem.onclick = function onclick_sms_list(event) {
             var target = event.target;
-            if (target.textContent!='') {
+            if (target.textContent != '') {
               var titleElem = $expr('.label', self._modalElement)[0];
-              if (titleElem != null) {
+              if ( !! titleElem) {
                 titleElem.innerHTML = target.textContent;
               }
               titleElem = $id('select-contact-tel-header');
@@ -426,7 +424,7 @@ SendSMSDialog.prototype = {
       $id('address').addEventListener('keydown', function onclick_addNewSms(event) {
         var senders = this.value.split(';');
         var senderNum = senders.length;
-        for(var i=0;i<senders.length;i++){
+        for (var i = 0; i < senders.length; i++) {
           if (senders[i] == "") {
             senderNum--;
           }
@@ -456,13 +454,12 @@ SendSMSDialog.prototype = {
     var container = $expr('.sendSms-dialog', this._modalElement)[0];
     var documentHeight = document.documentElement.clientHeight;
     var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
+    container.style.top = (documentHeight > containerHeight ? (documentHeight - containerHeight) / 2 : 0) + 'px';
   },
 
   _selectContacts: function(data) {
     var titleElem = $expr('.input-contact', this._modalElement)[0];
-    if ((titleElem.value.length > 0) && (titleElem.value[titleElem.value.length-1] != ";")) {
+    if ((titleElem.value.length > 0) && (titleElem.value[titleElem.value.length - 1] != ";")) {
       titleElem.value += ';';
     }
     for (var i = 0; i < data.length; i++) {
@@ -470,10 +467,10 @@ SendSMSDialog.prototype = {
       if (contact.tel && contact.tel.length > 0) {
         var sendStr = contact.name + "(" + contact.tel[0].value + ");";
         var searchStr = contact.tel[0].value + ";";
-        if (titleElem.value.indexOf(searchStr) >= 0) {
+        if (titleElem.value.contains(searchStr)) {
           titleElem.value = titleElem.value.replace(searchStr, sendStr);
         } else {
-          if (titleElem.value.indexOf("(" + contact.tel[0].value+")") < 0 ) {
+          if (!titleElem.value.contains("(" + contact.tel[0].value + ")")) {
             titleElem.value += sendStr;
           }
         }
@@ -516,51 +513,55 @@ SendSMSDialog.prototype = {
     var sender = [tel.textContent];
     var self = this;
     message.readOnly = true;
-    CMD.SMS.sendSMS(JSON.stringify({number:sender, message: message.value}),
-      function onSuccess_sendSms(event) {
-        if (!event.result) {
-          self._mask.parentNode.removeChild(self._mask);
-          self._modalElement.parentNode.removeChild(self._modalElement);
-          self._mask = null;
-          self._modalElement = null;
-          document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
-          window.removeEventListener('resize', self._onWindowResize)
-          self.options.onclose();
-        }
-      }, function onError_sendSms(e) {
-        alert(e);
-      });
+    CMD.SMS.sendSMS(JSON.stringify({
+      number: sender,
+      message: message.value
+    }), function onSuccess_sendSms(event) {
+      if (!event.result) {
+        self._mask.parentNode.removeChild(self._mask);
+        self._modalElement.parentNode.removeChild(self._modalElement);
+        self._mask = null;
+        self._modalElement = null;
+        document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
+        window.removeEventListener('resize', self._onWindowResize)
+        self.options.onclose();
+      }
+    }, function onError_sendSms(e) {
+      alert(e);
+    });
   },
 
   send: function() {
     var number = $id('address').value.split(';');
     var message = $id('content');
     var sender = [];
-    var self=this;
+    var self = this;
     message.readOnly = true;
     number.forEach(function(item) {
       var start = item.indexOf("(");
       var end = item.indexOf(")");
-      if (start >= 0 &&  end > 0) {
-        sender.push(item.slice(start+1,end));
+      if (start >= 0 && end > 0) {
+        sender.push(item.slice(start + 1, end));
       } else if (item != "") {
         sender.push(item);
       }
     });
-    CMD.SMS.sendSMS(JSON.stringify({number:sender, message: message.value}),
-      function onSuccess_sendSms(event) {
-        if (!event.result) {
-          self._mask.parentNode.removeChild(self._mask);
-          self._modalElement.parentNode.removeChild(self._modalElement);
-          self._mask = null;
-          self._modalElement = null;
-          document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
-          window.removeEventListener('resize', self._onWindowResize)
-          self.options.onclose();
-        }
-      }, function onError_sendSms(e) {
-        alert(e);
-      });
+    CMD.SMS.sendSMS(JSON.stringify({
+      number: sender,
+      message: message.value
+    }), function onSuccess_sendSms(event) {
+      if (!event.result) {
+        self._mask.parentNode.removeChild(self._mask);
+        self._modalElement.parentNode.removeChild(self._modalElement);
+        self._mask = null;
+        self._modalElement = null;
+        document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
+        window.removeEventListener('resize', self._onWindowResize)
+        self.options.onclose();
+      }
+    }, function onError_sendSms(e) {
+      alert(e);
+    });
   }
 };
 
@@ -583,8 +584,7 @@ SelectContactsDialog.prototype = {
     this._mask = document.createElement('div');
     this._mask.className = 'modal-mask';
     document.body.appendChild(this._mask);
-    var templateData = {
-    };
+    var templateData = {};
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
     try {
@@ -643,16 +643,14 @@ SelectContactsDialog.prototype = {
     });
     contactSmallList.render();
     contactSmallList.getGroupedData().forEach(function(group) {
-      group.dataList.forEach( function (contact) {
-        if ((contact.photo != null) && (contact.photo.length > 0)) {
+      group.dataList.forEach(function(contact) {
+        if (( !! contact.photo) && (contact.photo.length > 0)) {
           var item = $id('smartlist-contact-' + contact.id);
-          if (item != null) {
+          if ( !! item) {
             var img = item.getElementsByTagName('img')[0];
             img.src = contact.photo;
             item.dataset.avatar = contact.photo;
-            if (img.classList.contains('avatar-default')) {
-              img.classList.remove('avatar-default');
-            }
+            img.classList.remove('avatar-default');
           }
         }
       });
@@ -758,8 +756,8 @@ FilesOPDialog.prototype = {
   initailize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
-      title_l10n_id : '',
-      processbar_l10n_id : ''
+      title_l10n_id: '',
+      processbar_l10n_id: ''
     }, options);
 
     this._modalElement = null;
@@ -827,23 +825,22 @@ FilesOPDialog.prototype = {
   },
 
   _makeDialogCancelable: function() {
-   var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
+    var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
+    closeBtn.hidden = false;
+    closeBtn.addEventListener('click', this.close.bind(this));
 
-   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-   cancelBtn.hidden = false;
-   cancelBtn.addEventListener('click', this.close.bind(this));
+    var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+    cancelBtn.hidden = false;
+    cancelBtn.addEventListener('click', this.close.bind(this));
 
-   var self = this;
+    var self = this;
   },
 
   _adjustModalPosition: function() {
     var container = $expr('.modal-container', this._modalElement)[0];
     var documentHeight = document.documentElement.clientHeight;
     var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
+    container.style.top = (documentHeight > containerHeight ? (documentHeight - containerHeight) / 2 : 0) + 'px';
   },
 
   _fireEvent: function(name, data) {
@@ -947,9 +944,9 @@ ShowPicDialog.prototype = {
   },
 
   _makeDialogCancelable: function() {
-   var closeBtn = $expr('.closeX', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
+    var closeBtn = $expr('.closeX', this._modalElement)[0];
+    closeBtn.hidden = false;
+    closeBtn.addEventListener('click', this.close.bind(this));
   },
 
   _fireEvent: function(name, data) {
@@ -978,8 +975,8 @@ WifiModePromptDialog.prototype = {
   initailize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
-      title_l10n_id : '',
-      prompt_l10n_id : ''
+      title_l10n_id: '',
+      prompt_l10n_id: ''
     }, options);
 
     this._modalElement = null;
@@ -1045,23 +1042,22 @@ WifiModePromptDialog.prototype = {
   },
 
   _makeDialogCancelable: function() {
-   var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
+    var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
+    closeBtn.hidden = false;
+    closeBtn.addEventListener('click', this.close.bind(this));
 
-   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-   cancelBtn.hidden = false;
-   cancelBtn.addEventListener('click', this.close.bind(this));
+    var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+    cancelBtn.hidden = false;
+    cancelBtn.addEventListener('click', this.close.bind(this));
 
-   var self = this;
+    var self = this;
   },
 
   _adjustModalPosition: function() {
     var container = $expr('.modal-container', this._modalElement)[0];
     var documentHeight = document.documentElement.clientHeight;
     var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
+    container.style.top = (documentHeight > containerHeight ? (documentHeight - containerHeight) / 2 : 0) + 'px';
   },
 
   _fireEvent: function(name, data) {

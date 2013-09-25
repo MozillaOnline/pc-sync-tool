@@ -39,7 +39,7 @@ var ViewManager = (function() {
       if (!linkedView) {
         continue;
       }
-      if(viewId == 'connect-view') {
+      if (viewId == 'connect-view') {
         linkedView.dataset.firstshown = false;
       }
       if (linkedView.dataset.shown == "true") {
@@ -50,7 +50,7 @@ var ViewManager = (function() {
       }
     }
     var isChangeView = false;
-    if (viewOldId != null) {
+    if ( !! viewOldId) {
       if (viewOldId == viewId) {
         return;
       }
@@ -75,8 +75,7 @@ var ViewManager = (function() {
     }
     if (isChangeView == true) {
       viewElem.dataset.shown = true;
-      if (viewId == "summary-view" || viewId == "connect-view" || viewId == "music-view"
-          || viewId == "gallery-view" || viewId == "video-view") {
+      if (viewId == "summary-view" || viewId == "connect-view" || viewId == "music-view" || viewId == "gallery-view" || viewId == "video-view") {
         $id('views').classList.add('hidden-views');
       } else {
         $id('views').classList.remove('hidden-views');

@@ -32,7 +32,7 @@ let DEBUG = 1;
 
 function debug(s) {
   if (DEBUG) {
-  dump("-*- WinMutex: " + s + "\n");
+    dump("-*- WinMutex: " + s + "\n");
   }
 }
 

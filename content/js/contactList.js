@@ -18,8 +18,7 @@ var ContactList = (function() {
     }
 
     // Update contact
-    CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {}, function onerror_updateContact() {
-    });
+    CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {}, function onerror_updateContact() {});
   }
 
   function createContactListItem(contact) {
@@ -118,7 +117,7 @@ var ContactList = (function() {
     if ($id('contact-' + contact.id).dataset.avatar != '' && $id('contact-' + contact.id).dataset.avatar != DEFAULT_AVATAR) {
       $id('avatar-s').src = $id('contact-' + contact.id).dataset.avatar;
     } else {
-      if ((contact.photo != null) && (contact.photo.length > 0)) {
+      if (( !! contact.photo) && (contact.photo.length > 0)) {
         $id('avatar-s').src = contact.photo;
         $id('contact-' + contact.id).dataset.avatar = contact.photo;
       } else {
@@ -198,15 +197,13 @@ var ContactList = (function() {
   }
 
   function updateAvatar(contact) {
-    if ((contact.photo != null) && (contact.photo.length > 0)) {
+    if (( !! contact.photo) && (contact.photo.length > 0)) {
       var item = $id('contact-' + contact.id);
-      if (item != null) {
+      if ( !! item) {
         var img = item.getElementsByTagName('img')[0];
         img.src = contact.photo;
         item.dataset.avatar = contact.photo;
-        if (img.classList.contains('avatar-default')) {
-          img.classList.remove('avatar-default');
-        }
+        img.classList.remove('avatar-default');
       }
     }
   }
@@ -281,8 +278,7 @@ var ContactList = (function() {
    */
 
   function removeContact(id) {
-    CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {}, function onerror_removeContact(message) {
-    });
+    CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {}, function onerror_removeContact(message) {});
   }
 
   function selectAllContacts(select) {
@@ -339,9 +335,10 @@ var ContactList = (function() {
 
   function toggleContactItem(elem) {
     var item = $expr('label.unchecked', elem)[0];
-    if (item) {
-      item.classList.toggle('checked');
+    if (!item) {
+      return;
     }
+    item.classList.toggle('checked');
     if (item.classList.contains('checked')) {
       elem.dataset.checked = true;
       elem.dataset.focused = true;
@@ -520,15 +517,13 @@ var ContactList = (function() {
     groupedList.remove(existingContact);
     groupedList.add(contact);
 
-    if ((contact.photo != null) && (contact.photo.length > 0)) {
+    if (( !! contact.photo) && (contact.photo.length > 0)) {
       var item = $id('contact-' + contact.id);
-      if (item != null) {
+      if ( !! item) {
         var img = item.getElementsByTagName('img')[0];
         img.src = contact.photo;
         item.dataset.avatar = contact.photo;
-        if (img.classList.contains('avatar-default')) {
-          img.classList.remove('avatar-default');
-        }
+        img.classList.remove('avatar-default');
       }
     }
   }

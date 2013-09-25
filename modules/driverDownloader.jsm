@@ -14,7 +14,12 @@ debug = function(s) {
 
 var EXPORTED_SYMBOLS = ['DriverDownloader'];
 
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu,
+  results: Cr
+} = Components;
 
 const DRIVER_HOME = "USBDrivers";
 const DRIVER_LIST_URI = "resource://ffosassistant-driverlist";
@@ -39,7 +44,7 @@ var DriverDownloader = {
         if (typeof downloadURL == 'object' && !! downloadURL['32'] && !! downloadURL['64']) {
           var oscpu = Cc["@mozilla.org/network/protocol;1?name=http"].getService(Ci.nsIHttpProtocolHandler).oscpu;
           dump('oscpu: ' + oscpu + '\n');
-          if (oscpu.indexOf('64') > 0) {
+          if (oscpu.contains('64')) {
             downloadURL = downloadURL['64'];
           } else {
             downloadURL = downloadURL['32'];

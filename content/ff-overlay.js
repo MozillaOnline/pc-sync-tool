@@ -3,14 +3,14 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 (function() {
-  const DRIVER_MANAGER_HOME  = 'resource://ffosassistant-dmhome';
+  const DRIVER_MANAGER_HOME = 'resource://ffosassistant-dmhome';
   const DRIVER_MANAGER_INI_FILE_NAME = 'driver_manager.ini';
   const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
   const ADB_FILE_URL = 'resource://ffosassistant-adb';
   const ADDON_ID = 'ffosassistant@mozillaonline.com';
   let DEBUG = 0;
 
-  function  debug(s) {
+  function debug(s) {
     if (DEBUG) {
       this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
       this.console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
@@ -24,7 +24,7 @@
   XPCOMUtils.defineLazyServiceGetter(modules, "xulRuntime", '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
   XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 
-  function  startADBService() {
+  function startADBService() {
     isDisabled = false;
     ADBService.startAdbServer();
     ADBService.startDeviceDetecting(true);
@@ -32,9 +32,9 @@
     connectToDriverManager();
   }
 
-  function  stopADBService() {
+  function stopADBService() {
     isDisabled = true;
-    if (client != null && client.isConnected()) client.sendCommand('shutdown', function() {});
+    if ( !! client && client.isConnected()) client.sendCommand('shutdown', function() {});
     ADBService.startDeviceDetecting(false);
     ADBService.killAdbServer();
   }
@@ -110,7 +110,7 @@
     var currentSet = navBar.currentSet;
 
     var buttonId = 'ffosassistant-button';
-    if (currentSet.indexOf(buttonId) == -1) {
+    if (!currentSet.contains(buttonId)) {
       var set = navBar.currentSet + '';
       var MANULLAY_REMOVE_PREF = 'extensions.' + ADDON_ID + '.manuallyRemovedButton';
       var manuallyRemovedButton = Services.prefs.getBoolPref(MANULLAY_REMOVE_PREF, false);
@@ -131,7 +131,7 @@
     // Check whether user has manually removed the toolbar button
     navBar.addEventListener('DOMAttrModified', function(event) {
       if (event.type == 'DOMAttrModified' && event.attrName == 'currentset') {
-        if (event.newValue.indexOf('ffosassistant-button') == -1) {
+        if (!event.newValue.contains('ffosassistant-button')) {
           Services.prefs.setBoolPref(MANULLAY_REMOVE_PREF, true);
         }
       }
@@ -341,7 +341,7 @@
       // Windows need to load the driver when USB connected, so sometimes
       // the message told us it's not installed, we need wait for seconds
       // and query again to double check the status.
-      if(_doubleCheckTimeout){
+      if (_doubleCheckTimeout) {
         window.clearTimeout(_doubleCheckTimeout);
       }
       _doubleCheckTimeout = window.setTimeout(doCheckAndInstallDrivers, 5000);
@@ -555,5 +555,3 @@
     }
   };
 })();
-
-

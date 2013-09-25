@@ -156,10 +156,9 @@ self.onmessage = function(e) {
   case 'setupDevice':
     let result;
     let ret = libadb.setupDevice();
-    if ((ret.indexOf("error") > 0) || (ret.indexOf("failed") > 0)) {
+    if (ret.contains("error") || ret.contains("failed")) {
       result = false;
-    }
-    else {
+    } else {
       result = true;
     }
     postMessage({
@@ -199,6 +198,7 @@ self.onmessage = function(e) {
 /**
  * Change connected state, and send 'statechange' message if changed.
  */
+
 function setConnected(newState) {
   let oldState = connected;
   connected = newState;
@@ -261,7 +261,7 @@ function startDetecting(start) {
       device = devices.substring(0, indexEnd);
       debug(device);
       var ret = libadb.setupDevice(device);
-      if ((ret.indexOf("error") > 0) || (ret.indexOf("failed") > 0)) {
+      if (ret.contains("error") || ret.contains("failed")) {
         setConnected(false);
       } else {
         setConnected(true);

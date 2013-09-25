@@ -139,14 +139,13 @@ var MusicList = (function() {
       $id('selectAll-musics').dataset.disabled = true;
     } else {
       $id('selectAll-musics').dataset.checked =
-        $expr('#music-list-container .music-list-item').length ===
-          $expr('#music-list-container .music-list-item[data-checked="true"]').length;
+      $expr('#music-list-container .music-list-item').length === $expr('#music-list-container .music-list-item[data-checked="true"]').length;
       $id('selectAll-musics').dataset.disabled = false;
     }
     $id('remove-musics').dataset.disabled =
-      $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
+    $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
     $id('export-musics').dataset.disabled =
-      $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
+    $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
   }
 
   function musicItemClicked(elem) {
@@ -257,7 +256,7 @@ var MusicList = (function() {
           if (oldFileIndex == fileIndex) {
             if (steps < 50) {
               steps++;
-              ratio+= step;
+              ratio += step;
               pb.style.width = ratio + '%';
             }
           } else {
@@ -293,7 +292,7 @@ var MusicList = (function() {
         }
       };
 
-      req.onerror = function (e) {
+      req.onerror = function(e) {
         filesCanNotBeRemoved.push(items[fileIndex]);
         fileIndex++;
         ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
@@ -332,13 +331,15 @@ var MusicList = (function() {
 
   function importMusics() {
     if (navigator.mozFFOSAssistant.isWifiConnect) {
-      new WifiModePromptDialog({title_l10n_id: 'import-musics-dialog-header',
-                               prompt_l10n_id: 'wifi-mode-import-musics-promot'});
+      new WifiModePromptDialog({
+        title_l10n_id: 'import-musics-dialog-header',
+        prompt_l10n_id: 'wifi-mode-import-musics-promot'
+      });
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
-      data = data.substr(0,data.length-1);
+    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(state, data) {
+      data = data.substr(0, data.length - 1);
       var musics = data.split(';');
 
       if (musics.length <= 0) {
@@ -409,7 +410,7 @@ var MusicList = (function() {
           }
         };
 
-        req.onerror = function (e) {
+        req.onerror = function(e) {
           filesCanNotBeImported.push(musics[fileIndex]);
           fileIndex++;
 
@@ -430,9 +431,9 @@ var MusicList = (function() {
         };
       }, 0);
     }, {
-        title: _('import-music-title'),
-        fileType: 'Audio'
-      });
+      title: _('import-music-title'),
+      fileType: 'Audio'
+    });
   }
 
   window.addEventListener('load', function wnd_onload(event) {
@@ -453,18 +454,22 @@ var MusicList = (function() {
         return;
       }
 
-    if (navigator.mozFFOSAssistant.isWifiConnect) {
-      new WifiModePromptDialog({title_l10n_id: 'remove-musics-dialog-header',
-                               prompt_l10n_id: 'wifi-mode-remove-musics-promot'});
-      return;
-    }
+      if (navigator.mozFFOSAssistant.isWifiConnect) {
+        new WifiModePromptDialog({
+          title_l10n_id: 'remove-musics-dialog-header',
+          prompt_l10n_id: 'wifi-mode-remove-musics-promot'
+        });
+        return;
+      }
 
       var files = [];
       $expr('#music-list-container .music-list-item[data-checked="true"]').forEach(function(item) {
         files.push(JSON.parse(item.dataset.music).name);
       });
 
-      if (window.confirm(_('delete-musics-confirm', {n: files.length}))) {
+      if (window.confirm(_('delete-musics-confirm', {
+        n: files.length
+      }))) {
         MusicList.removeMusics(files);
       }
     });
@@ -483,14 +488,16 @@ var MusicList = (function() {
       }
 
       if (navigator.mozFFOSAssistant.isWifiConnect) {
-        new WifiModePromptDialog({title_l10n_id: 'export-musics-dialog-header',
-                                 prompt_l10n_id: 'wifi-mode-export-musics-promot'});
+        new WifiModePromptDialog({
+          title_l10n_id: 'export-musics-dialog-header',
+          prompt_l10n_id: 'wifi-mode-export-musics-promot'
+        });
         return;
       }
 
       var musics = $expr('#music-list-container .music-list-item[data-checked="true"]');
 
-      if (musics.length <= 0 ) {
+      if (musics.length <= 0) {
         return;
       }
 
@@ -532,7 +539,7 @@ var MusicList = (function() {
           newDir = newDir + '/' + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type;
           if (os.isWindows) {
             newDir = newDir.substring(1, newDir.length);
-	    newDir = UrlEncode(newDir);
+            newDir = UrlEncode(newDir);
           }
 
           setTimeout(function exportMusic() {
@@ -576,7 +583,7 @@ var MusicList = (function() {
               }
             };
 
-            req.onerror = function (e) {
+            req.onerror = function(e) {
               filesCanNotBeExported.push(musics[fileIndex]);
               fileIndex++;
               if (fileIndex == musics.length) {

@@ -1,7 +1,3 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- License, v. 2.0. If a copy of the MPL was not distributed with this
- file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 var SmsList = (function() {
   var threadList = null;
   var threadListContainer = null;
@@ -10,7 +6,7 @@ var SmsList = (function() {
   var messageList = null;
   var messageListContainer = null;
   var handlerHeaderButton = null;
-  
+
   function initSmsPage(smsThreads) {
     threadListContainer = $id('threads-list-container');
     threadListContainer.innerHTML = '';
@@ -19,12 +15,9 @@ var SmsList = (function() {
     messageListContainer = $id('message-list-container');
     messageListContainer.innerHTML = '';
     ViewManager.showViews('sms-send-view');
-    /*smsThreads.sort( function (a,b) {
-      return a.timestamp<b.timestamp?1:-1;
-    });*/
     var smsThreads_new = [];
     var threadsCount = smsThreads.length;
-    for (var i=0;i<threadsCount;i++) {
+    for (var i = 0; i < threadsCount; i++) {
       smsThreads_new.push(smsThreads.pop());
     }
     threadList = new GroupedList({
@@ -55,25 +48,23 @@ var SmsList = (function() {
   function updateThreadAvatar(item) {
     var threadInfo = item;
     var phoneNum = item.participants[0];
-    if((item.participants[0].indexOf('(') >= 0)
-       &&(item.participants[0].indexOf(')') > item.participants[0].indexOf('('))) {
-      phoneNum = item.participants[0].substring(item.participants[0].indexOf('(')+1,item.participants[0].indexOf(')'));
+    if ((item.participants[0].indexOf('(') >= 0) && (item.participants[0].indexOf(')') > item.participants[0].indexOf('('))) {
+      phoneNum = item.participants[0].substring(item.participants[0].indexOf('(') + 1, item.participants[0].indexOf(')'));
     }
     CMD.Contacts.getContactByPhoneNumber(phoneNum, function(result) {
-      if ((result.data != null) && (result.data != '')) {
+      if ( !! result.data) {
         var contactData = JSON.parse(result.data);
         var threadItem = $id('id-threads-data-' + threadInfo.id);
         var name = threadItem.getElementsByTagName('div')[2];
-        //name.childNodes[0].nodeValue = contactData.name;
         name.childNodes[0].type = 'contact';
 
         var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
-        if (selectViewName != null) {
+        if ( !! selectViewName) {
           selectViewName.childNodes[0].nodeValue = contactData.name;
         }
 
         var messageViewName = $id('sms-thread-header-name');
-        if (messageViewName != null) {
+        if ( !! messageViewName) {
           messageViewName.textContent = contactData.name;
           var titleElem = $id('add-to-contact-' + threadInfo.id);
           if (titleElem) {
@@ -81,31 +72,25 @@ var SmsList = (function() {
           }
         }
 
-        if ((contactData.photo != null) && (contactData.photo.length > 0)) {
+        if (( !! contactData.photo) && (contactData.photo.length > 0)) {
           var threadItem = $id('id-threads-data-' + threadInfo.id);
           var img = threadItem.getElementsByTagName('img')[0];
           img.src = contactData.photo;
           threadItem.dataset.avatar = contactData.photo;
-          if (img.classList.contains('avatar-default')) {
-            img.classList.remove('avatar-default');
-          }
+          img.classList.remove('avatar-default');
 
           var selectItem = $id('show-multi-sms-' + threadInfo.id);
-          if (selectItem != null) {
+          if ( !! selectItem) {
             img = selectItem.getElementsByTagName('img')[0];
             img.src = contactData.photo;;
             selectItem.dataset.avatar = contactData.photo;;
-            if (img.classList.contains('avatar-default')) {
-              img.classList.remove('avatar-default');
-            }
+            img.classList.remove('avatar-default');
           }
 
           var messageViewimg = $id('sms-thread-header-img');
-          if (messageViewimg != null && messageViewimg.value == threadInfo.id) {
+          if ( !! messageViewimg && messageViewimg.value == threadInfo.id) {
             messageViewimg.src = contactData.photo;
-            if (messageViewimg.classList.contains('avatar-default')) {
-              messageViewimg.classList.remove('avatar-default');
-            }
+            messageViewimg.classList.remove('avatar-default');
           }
         }
       }
@@ -116,21 +101,21 @@ var SmsList = (function() {
 
   function showThreadList() {
     var isEmpty = threadList.count() == 0;
-    if (isEmpty) {
-      threadListContainer.innerHTML = '';
-      $id('selectAll-sms').dataset.disabled = true;
-      var div = document.createElement('div');
-      div.classList.add('empty-sms');
-      threadListContainer.appendChild(div);
-      div = document.createElement('div');
-      html = '<label data-l10n-id="empty-sms"> </label>';
-      div.innerHTML = html;
-      div.classList.add('empty-sms-prompt');
-      navigator.mozL10n.translate(div)
-      threadListContainer.appendChild(div);
-    } else {
+    if (!isEmpty) {
       $id('selectAll-sms').dataset.disabled = false;
+      return;
     }
+    threadListContainer.innerHTML = '';
+    $id('selectAll-sms').dataset.disabled = true;
+    var div = document.createElement('div');
+    div.classList.add('empty-sms');
+    threadListContainer.appendChild(div);
+    div = document.createElement('div');
+    html = '<label data-l10n-id="empty-sms"> </label>';
+    div.innerHTML = html;
+    div.classList.add('empty-sms-prompt');
+    navigator.mozL10n.translate(div)
+    threadListContainer.appendChild(div);
   }
 
   function createGroupThreadList(threadData) {
@@ -145,10 +130,12 @@ var SmsList = (function() {
       name: threadData.participants[0],
       unread: '',
       date: '',
-      body: '' 
+      body: ''
     };
     if (threadData.unreadCount > 0) {
-      templateData.unread = '(' + threadData.unreadCount + _('sms-unread') + ')';
+      templateData.unread = _('sms-unread-count', {
+        n: threadData.unreadCount
+      });
     }
     var dt = new Date(threadData.timestamp);
     var year = dt.getFullYear();
@@ -163,7 +150,7 @@ var SmsList = (function() {
     } else {
       templateData.date = year + '-' + month + '-' + date;
     }
-    if(threadData.lastMessageType == 'mms') {
+    if (threadData.lastMessageType == 'mms') {
       templateData.body = 'MMS';
     } else {
       if (threadData.body.length > 36) {
@@ -209,7 +196,7 @@ var SmsList = (function() {
       var SmsThreadsData = threadList.getGroupedData();
       SmsThreadsData = SmsThreadsData[0].dataList;
 
-      for(var j = 0; j < SmsThreadsData.length; j++) {
+      for (var j = 0; j < SmsThreadsData.length; j++) {
         if (index == SmsThreadsData[j].id) {
           SmsThreadsData = SmsThreadsData[j];
           var threadItem = $id('id-threads-data-' + SmsThreadsData.id);
@@ -223,8 +210,8 @@ var SmsList = (function() {
             });
             name += header;
           }
-          var body ;
-          if(SmsThreadsData.lastMessageType == 'mms') {
+          var body;
+          if (SmsThreadsData.lastMessageType == 'mms') {
             body = 'MMS';
           } else {
             if (SmsThreadsData.body.length > 12) {
@@ -246,14 +233,12 @@ var SmsList = (function() {
           navigator.mozL10n.translate(elem);
           selectedListContainer.appendChild(elem);
 
-          if(threadimg.src && threadimg.src != '') {
+          if (threadimg.src && threadimg.src != '') {
             var selectItem = $id('show-multi-sms-' + SmsThreadsData.id);
             var img = selectItem.getElementsByTagName('img')[0];
             img.src = threadimg.src;
             selectItem.dataset.avatar = threadimg.src;
-            if (img.classList.contains('avatar-default')) {
-              img.classList.remove('avatar-default');
-            }
+            img.classList.remove('avatar-default');
           }
           break;
         }
@@ -280,12 +265,10 @@ var SmsList = (function() {
 
         $id('sms-thread-header').value = SmsThreadsData.id;
         var headerImg = $id('sms-thread-header-img');
-        if(threadimg.src && threadimg.src != '') {
+        if (threadimg.src && threadimg.src != '') {
           headerImg.src = threadimg.src;
           headerImg.dataset.avatar = threadimg.src;
-          if (headerImg.classList.contains('avatar-default')) {
-            headerImg.classList.remove('avatar-default');
-          }
+          headerImg.classList.remove('avatar-default');
         }
         var headerName = $id('sms-thread-header-name');
         headerName.value = threadname.childNodes[0].nodeValue;
@@ -294,20 +277,20 @@ var SmsList = (function() {
           if (threadname.childNodes[0].type != 'contact') {
             headerButton.hidden = false;
             if (handlerHeaderButton) {
-              headerButton.removeEventListener('click', handlerHeaderButton,false);
+              headerButton.removeEventListener('click', handlerHeaderButton, false);
             }
-            handlerHeaderButton = function () {
+            handlerHeaderButton = function() {
               var addContactData = {
                 type: 'add',
                 number: threadname.childNodes[0].nodeValue
               }
-              ViewManager.showContent('contact-view',addContactData);
+              ViewManager.showContent('contact-view', addContactData);
             };
-            headerButton.addEventListener ('click', handlerHeaderButton,false);
+            headerButton.addEventListener('click', handlerHeaderButton, false);
           } else {
             headerButton.hidden = true;
             if (handlerHeaderButton) {
-              headerButton.removeEventListener('click', handlerHeaderButton,false);
+              headerButton.removeEventListener('click', handlerHeaderButton, false);
             }
           }
         }
@@ -316,7 +299,7 @@ var SmsList = (function() {
           for (var i = 0; i < MessageListData.length; i++) {
             var nearDate = null;
             if (i > 0) {
-              MessageListData[i]['nearDate'] = MessageListData[i-1].timestamp;
+              MessageListData[i]['nearDate'] = MessageListData[i - 1].timestamp;
             } else {
               MessageListData[i]['nearDate'] = 0;
             }
@@ -327,11 +310,11 @@ var SmsList = (function() {
               return 'messagelist';
             },
             disableDataIndexer: true,
-            renderFunc: createGroupMessageList,
+            renderFunc: createThreadDialogView,
             container: messageListContainer,
             ondatachange: function() {
-              if (messageListContainer != null) {
-                messageListContainer.scrollTop=messageListContainer.scrollTopMax;
+              if ( !! messageListContainer) {
+                messageListContainer.scrollTop = messageListContainer.scrollTopMax;
               }
             }
           });
@@ -400,9 +383,8 @@ var SmsList = (function() {
     ViewManager.showViews('sms-thread-view');
   }
 
-  function createGroupMessageList(MessageData) {
-    CMD.SMS.markReadMessageById(JSON.stringify(MessageData.id), function(response) {
-    }, function(e) {
+  function createThreadDialogView(messageData) {
+    CMD.SMS.markReadMessageById(JSON.stringify(messageData.id), function(response) {}, function(e) {
       alert(e);
     });
     var elem = document.createElement('div');
@@ -413,15 +395,15 @@ var SmsList = (function() {
       body: [],
       time: '',
       type: [],
-      id: MessageData.id,
-      resendDisplay: '',
-      replyDisplay: '',
-      deleteDisplay: '',
+      id: messageData.id,
+      showResendButton: '',
+      showReplyButton: '',
+      showDeleteButton: '',
       resendValue: '',
       replyValue: '',
       deleteValue: ''
     };
-    var dt = new Date(MessageData.timestamp);
+    var dt = new Date(messageData.timestamp);
     var year = dt.getFullYear();
     var month = dt.getMonth() + 1;
     var date = dt.getDate();
@@ -431,8 +413,8 @@ var SmsList = (function() {
     var curYear = today.getFullYear();
     var curMonth = today.getMonth() + 1;
     var curDate = today.getDate();
-    if (MessageData.nearDate) {
-      var olddt = new Date(MessageData.nearDate);
+    if (messageData.nearDate) {
+      var olddt = new Date(messageData.nearDate);
       if (olddt.getFullYear() != year || (olddt.getMonth() + 1) != month || olddt.getDate() != date) {
         if (curYear == year && curMonth == month && curDate == date) {
           templateData.date = _('today');
@@ -447,9 +429,9 @@ var SmsList = (function() {
         templateData.date = year + '-' + month + '-' + date;
       }
     }
-    if (MessageData.delivery == "received") {
+    if (messageData.delivery == "received") {
       //elem.classList.add('to-me');
-    } else if (MessageData.delivery == "error") {
+    } else if (messageData.delivery == "error") {
       elem.classList.add('from-me-error');
     } else {
       elem.classList.add('from-me');
@@ -464,44 +446,44 @@ var SmsList = (function() {
     templateData.time += minutes;
 
     //mms display
-    if(MessageData.type == 'mms') {
+    if (messageData.type == 'mms') {
       var html = '';
       var dataText = 'data:text/plain;base64,';
-      for (var i=0;i<MessageData.attachments.length;i++) {
-        if(MessageData.attachments[i].content.indexOf(dataText) >= 0) {
+      for (var i = 0; i < messageData.attachments.length; i++) {
+        if (messageData.attachments[i].content.contains(dataText)) {
           templateData.type.push('text');
           var base64 = new Base64();
-          templateData.body.push(base64.decode(MessageData.attachments[i].content.substring(dataText.length,MessageData.attachments[i].content.length)));
+          templateData.body.push(base64.decode(messageData.attachments[i].content.substring(dataText.length, messageData.attachments[i].content.length)));
         } else {
           templateData.type.push('img');
-          templateData.body.push(MessageData.attachments[i].content);
+          templateData.body.push(messageData.attachments[i].content);
         }
       }
 
-      templateData.resendDisplay = 'true';
-      templateData.replyDisplay = 'true';
+      templateData.showResendButton = 'true';
+      templateData.showReplyButton = 'true';
     } else {
       templateData.type.push('text');
-      templateData.body.push(MessageData.body);
-      if (MessageData.delivery == 'error') {
-        templateData.resendDisplay = 'false';
-        templateData.resendValue = MessageData.body;
+      templateData.body.push(messageData.body);
+      if (messageData.delivery == 'error') {
+        templateData.showResendButton = 'false';
+        templateData.resendValue = messageData.body;
       } else {
-        templateData.resendDisplay = 'true';
+        templateData.showResendButton = 'true';
       }
-      templateData.replyDisplay = 'false';
-      templateData.replyValue = MessageData.body;
-      
+      templateData.showReplyButton = 'false';
+      templateData.replyValue = messageData.body;
+
     }
-    templateData.deleteDisplay = 'false';
-    templateData.deleteValue = MessageData.id;
+    templateData.showDeleteButton = 'false';
+    templateData.deleteValue = messageData.id;
     try {
       elem.innerHTML = tmpl('tmpl_sms_display_item', templateData);
     } catch (e) {
       alert(e);
     }
-    elem.dataset.groupId = MessageData.threadId;
-    elem.id = 'id-message-data-' + MessageData.threadId;
+    elem.dataset.groupId = messageData.threadId;
+    elem.id = 'id-message-data-' + messageData.threadId;
     navigator.mozL10n.translate(elem);
     return elem;
   }
@@ -535,9 +517,10 @@ var SmsList = (function() {
 
   function toggleSmsItem(elem) {
     var item = $expr('label.unchecked', elem)[0];
-    if (item) {
-      item.classList.toggle('checked');
+    if (!item) {
+      return;
     }
+    item.classList.toggle('checked');
     if (item.classList.contains('checked')) {
       elem.dataset.checked = true;
       elem.dataset.focused = true;
@@ -605,7 +588,7 @@ var SmsList = (function() {
         var threadListData = threadList.getGroupedData();
         if (threadListData.length > 0) {
           threadListData = threadListData[0].dataList;
-          for(var i = 0; i < threadListData.length; i++) {
+          for (var i = 0; i < threadListData.length; i++) {
             if (threadListData[i].id == sms.threadId) {
               threadList.remove(threadListData[i]);
               if (sms.delivery == "received") {
@@ -616,7 +599,7 @@ var SmsList = (function() {
                 messageListData = messageListData[0].dataList;
                 if (messageListData.length > 0) {
                   if (sms.threadId == messageListData[0].threadId) {
-                    sms['nearDate'] = messageListData[messageListData.length-1].timestamp;
+                    sms['nearDate'] = messageListData[messageListData.length - 1].timestamp;
                     messageList.add(sms);
                     if (sms.delivery == "received") {
                       threadListData[i].unreadCount = 0;
@@ -632,7 +615,7 @@ var SmsList = (function() {
               return;
             }
           }
-        }else{
+        } else {
           threadListContainer.innerHTML = '';
         }
         var tempparticipants;
@@ -678,7 +661,7 @@ var SmsList = (function() {
         CMD.SMS.deleteMessageById(JSON.stringify(smsId), function onSuccess(event) {
           result.push(event.result);
           if (result.length == Sms.length) {
-            for(var j = 0; j < groupedData.length; j++) {
+            for (var j = 0; j < groupedData.length; j++) {
               if (threadId == groupedData[j].id) {
                 threadList.remove(groupedData[j]);
               }
@@ -703,7 +686,7 @@ var SmsList = (function() {
         var Sms = JSON.parse(messages.data);
         threadnum++;
         for (var i = 0; i < Sms.length; i++) {
-          if(result.type == 'sms') {
+          if (result.type == 'sms') {
             content += Sms[i].type + ',';
             content += Sms[i].id + ',';
             content += Sms[i].threadId + ',';
@@ -726,7 +709,7 @@ var SmsList = (function() {
             content += Sms[i].subject + ',';
             content += Sms[i].smil + ',';
             content += Sms[i].expiryDate + ',';
-            for (var i=0; i<Sms[i].attachments.length; i++){
+            for (var i = 0; i < Sms[i].attachments.length; i++) {
               content += Sms[i].attachments[i].id + ',';
               content += Sms[i].attachments[i].location + ',';
               content += Sms[i].attachments[i].content + ',';
@@ -757,10 +740,10 @@ var SmsList = (function() {
     messageListData = messageListData[0].dataList;
     for (var i = 0; i < messageListData.length; i++) {
       if (messageListData[i].id == messageId) {
-        if ((i+1) == messageListData.length) {
+        if ((i + 1) == messageListData.length) {
           var threadListData = threadList.getGroupedData();
           threadListData = threadListData[0].dataList;
-          for(var j = 0; j < threadListData.length; j++) {
+          for (var j = 0; j < threadListData.length; j++) {
             if (threadListData[j].id == messageListData[i].threadId) {
               if (messageListData.length == 1) {
                 SmsList.selectAllSms(false);
@@ -885,12 +868,11 @@ var SmsList = (function() {
             number: num,
             message: body.value
           }), function onSuccess_sendSms(sms) {
-            if (!sms.result) {
-            }
+            if (!sms.result) {}
           }, function onError_sendSms(e) {
             alert(e);
           });
-          body.value='';
+          body.value = '';
         }
       }
     });

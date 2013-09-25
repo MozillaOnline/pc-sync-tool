@@ -38,7 +38,7 @@ var Video = (function() {
     } else {
       strDate += (dt.getMonth() + 1) + '-';
     }
-    if(dt.getDay() < 9) {
+    if (dt.getDay() < 9) {
       strDate += '0' + (dt.getDay() + 1);
     } else {
       strDate += dt.getDay() + 1;
@@ -47,7 +47,7 @@ var Video = (function() {
   }
 
   function parseSize(size) {
-    var retSize = size / 1024 /10.24;
+    var retSize = size / 1024 / 10.24;
     return parseInt(retSize) / 100;
   }
 
@@ -105,8 +105,8 @@ var Video = (function() {
         if (target instanceof HTMLLabelElement) {
           target.classList.toggle('group-checked');
           var groupContainer = this.parentNode.parentNode;
-          var checkboxes = $expr('.video-unchecked',groupContainer);
-          var videoItems = $expr('li',groupContainer);
+          var checkboxes = $expr('.video-unchecked', groupContainer);
+          var videoItems = $expr('li', groupContainer);
 
           if (target.classList.contains('group-checked')) {
             groupContainer.dataset.checked = true;
@@ -127,8 +127,8 @@ var Video = (function() {
               item.dataset.checked = false;
             });
           }
-           opStateChanged();
-         }
+          opStateChanged();
+        }
       };
 
       var groupBody = document.createElement('ul');
@@ -143,58 +143,56 @@ var Video = (function() {
   }
 
   function _createVideoListItem(video) {
-      var listItem = document.createElement('li');
-      listItem.dataset.checked = 'false';
-      listItem.dataset.videoUrl = video.name;
-      listItem.dataset.title = video.metadata.title;
-      listItem.dataset.date = video.date;
-      listItem.dataset.size = video.size;
+    var listItem = document.createElement('li');
+    listItem.dataset.checked = 'false';
+    listItem.dataset.videoUrl = video.name;
+    listItem.dataset.title = video.metadata.title;
+    listItem.dataset.date = video.date;
+    listItem.dataset.size = video.size;
 
-      listItem.innerHTML = '<img src="' + video.metadata.poster + '">';
+    listItem.innerHTML = '<img src="' + video.metadata.poster + '">';
 
-      var itemCheckbox = document.createElement('div');
-      itemCheckbox.classList.add('video-unchecked');
-      listItem.appendChild(itemCheckbox);
+    var itemCheckbox = document.createElement('div');
+    itemCheckbox.classList.add('video-unchecked');
+    listItem.appendChild(itemCheckbox);
 
-      listItem.onclick = function item_click(e) {
-        itemCheckbox.classList.toggle('video-checked');
+    listItem.onclick = function item_click(e) {
+      itemCheckbox.classList.toggle('video-checked');
 
-        if (itemCheckbox.classList.contains('video-checked')) {
-          this.dataset.checked = 'true';
-        } else {
-          this.dataset.checked = 'false';
-        }
+      if (itemCheckbox.classList.contains('video-checked')) {
+        this.dataset.checked = 'true';
+      } else {
+        this.dataset.checked = 'false';
+      }
 
-        var groupBody = this.parentNode;
-        var groupContainer = groupBody.parentNode;
-        var labels = groupContainer.getElementsByTagName('label');
-        if ($expr('.video-checked', groupBody).length == groupContainer.dataset.length) {
-          labels[0].classList.add('group-checked');
-          groupContainer.dataset.checked = true;
-        } else {
-          labels[0].classList.remove('group-checked');
-          groupContainer.dataset.checked = false;
-        }
-        opStateChanged();
-      };
-      listItem.onmouseover = function(e) {
-        var tip = document.createElement('div');
-        tip.setAttribute('id', 'video-tip');
-        tip.classList.add('video-tip');
-        tip.style.top = (e.target.parentNode.offsetTop + 80) + 'px';
-        tip.style.left = (e.target.parentNode.offsetLeft + 55) + 'px';
-        tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:'
-                         + parseDate(parseInt(this.dataset.date)) + '</div><div>size:'
-                         + parseSize(this.dataset.size) + 'M' + '</div>';
-        $id('video-view').appendChild(tip);
-      };
-      listItem.onmouseout = function(e) {
-        var tip = $id('video-tip');
-        if (tip) {
-          tip.parentNode.removeChild(tip);
-        }
-      };
-      return listItem;
+      var groupBody = this.parentNode;
+      var groupContainer = groupBody.parentNode;
+      var labels = groupContainer.getElementsByTagName('label');
+      if ($expr('.video-checked', groupBody).length == groupContainer.dataset.length) {
+        labels[0].classList.add('group-checked');
+        groupContainer.dataset.checked = true;
+      } else {
+        labels[0].classList.remove('group-checked');
+        groupContainer.dataset.checked = false;
+      }
+      opStateChanged();
+    };
+    listItem.onmouseover = function(e) {
+      var tip = document.createElement('div');
+      tip.setAttribute('id', 'video-tip');
+      tip.classList.add('video-tip');
+      tip.style.top = (e.target.parentNode.offsetTop + 80) + 'px';
+      tip.style.left = (e.target.parentNode.offsetLeft + 55) + 'px';
+      tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:' + parseDate(parseInt(this.dataset.date)) + '</div><div>size:' + parseSize(this.dataset.size) + 'M' + '</div>';
+      $id('video-view').appendChild(tip);
+    };
+    listItem.onmouseout = function(e) {
+      var tip = $id('video-tip');
+      if (tip) {
+        tip.parentNode.removeChild(tip);
+      }
+    };
+    return listItem;
   }
 
   function opStateChanged() {
@@ -203,19 +201,18 @@ var Video = (function() {
       $id('selectAll-videos').dataset.disabled = true;
     } else {
       $id('selectAll-videos').dataset.checked =
-        $expr('#video-list-container li').length ===
-          $expr('#video-list-container li[data-checked="true"]').length;
+      $expr('#video-list-container li').length === $expr('#video-list-container li[data-checked="true"]').length;
       $id('selectAll-videos').dataset.disabled = false;
     }
 
     $id('remove-videos').dataset.disabled =
-      $expr('#video-list-container li[data-checked="true"]').length === 0;
+    $expr('#video-list-container li[data-checked="true"]').length === 0;
     $id('export-videos').dataset.disabled =
-      $expr('#video-list-container li[data-checked="true"]').length === 0;
+    $expr('#video-list-container li[data-checked="true"]').length === 0;
   }
 
   function checkVideoListIsEmpty() {
-    var isEmpty = $expr('#video-list-container li').length === 0 ;
+    var isEmpty = $expr('#video-list-container li').length === 0;
     if (isEmpty) {
       $id('selectAll-videos').dataset.disabled = true;
       showEmptyVideoList(true);
@@ -267,6 +264,7 @@ var Video = (function() {
   /**
    * Remove videos
    */
+
   function removeVideos(files) {
     var items = files || [];
     if (items.length <= 0) {
@@ -283,7 +281,7 @@ var Video = (function() {
 
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-videos-dialog-header',
-      processbar_l10n_id: 'processbar-remove-videos-promot' 
+      processbar_l10n_id: 'processbar-remove-videos-promot'
     });
 
     var filesIndicator = $id('files-indicator');
@@ -305,7 +303,7 @@ var Video = (function() {
           if (oldFileIndex == fileIndex) {
             if (steps < 50) {
               steps++;
-              ratio+= step;
+              ratio += step;
               pb.style.width = ratio + '%';
             }
           } else {
@@ -341,7 +339,7 @@ var Video = (function() {
         }
       };
 
-      req.onerror = function (e) {
+      req.onerror = function(e) {
         filesCanNotBeRemoved.push(items[fileIndex]);
         fileIndex++;
         ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
@@ -386,13 +384,15 @@ var Video = (function() {
 
   function importVideos() {
     if (navigator.mozFFOSAssistant.isWifiConnect) {
-      new WifiModePromptDialog({title_l10n_id: 'import-videos-dialog-header',
-                               prompt_l10n_id: 'wifi-mode-import-videos-promot'});
+      new WifiModePromptDialog({
+        title_l10n_id: 'import-videos-dialog-header',
+        prompt_l10n_id: 'wifi-mode-import-videos-promot'
+      });
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
-      data = data.substr(0,data.length-1);
+    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(state, data) {
+      data = data.substr(0, data.length - 1);
       var videos = data.split(';');
 
       if (videos.length <= 0) {
@@ -462,7 +462,7 @@ var Video = (function() {
           }
         };
 
-        req.onerror = function (e) {
+        req.onerror = function(e) {
           filesCanNotBeImported.push(videos[fileIndex]);
           fileIndex++;
 
@@ -483,9 +483,9 @@ var Video = (function() {
         };
       }, 0);
     }, {
-        title: _('import-video-title'),
-        fileType: 'VideoTypes'
-      });
+      title: _('import-video-title'),
+      fileType: 'VideoTypes'
+    });
   }
 
   window.addEventListener('load', function wnd_onload(event) {
@@ -506,8 +506,10 @@ var Video = (function() {
       }
 
       if (navigator.mozFFOSAssistant.isWifiConnect) {
-        new WifiModePromptDialog({title_l10n_id: 'remove-videos-dialog-header',
-                                 prompt_l10n_id: 'wifi-mode-remove-videos-promot'});
+        new WifiModePromptDialog({
+          title_l10n_id: 'remove-videos-dialog-header',
+          prompt_l10n_id: 'wifi-mode-remove-videos-promot'
+        });
         return;
       }
 
@@ -516,7 +518,9 @@ var Video = (function() {
         files.push(item.dataset.videoUrl);
       });
 
-      if (window.confirm(_('delete-videos-confirm', {n: files.length}))) {
+      if (window.confirm(_('delete-videos-confirm', {
+        n: files.length
+      }))) {
         Video.removeVideos(files);
       }
     });
@@ -535,14 +539,16 @@ var Video = (function() {
       }
 
       if (navigator.mozFFOSAssistant.isWifiConnect) {
-        new WifiModePromptDialog({title_l10n_id: 'export-videos-dialog-header',
-                                 prompt_l10n_id: 'wifi-mode-export-videos-promot'});
+        new WifiModePromptDialog({
+          title_l10n_id: 'export-videos-dialog-header',
+          prompt_l10n_id: 'wifi-mode-export-videos-promot'
+        });
         return;
       }
 
       var videos = $expr('#video-list-container li[data-checked="true"]');
 
-      if (videos.length <= 0 ) {
+      if (videos.length <= 0) {
         return;
       }
 
@@ -626,7 +632,7 @@ var Video = (function() {
               }
             };
 
-            req.onerror = function (e) {
+            req.onerror = function(e) {
               filesCanNotBeExported.push(videos[fileIndex]);
               fileIndex++;
 
