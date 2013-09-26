@@ -2,7 +2,7 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
+var animationLoading = null;
 var FFOSAssistant = (function() {
   var connPool = null;
   var connListenSocket = null;
@@ -13,6 +13,7 @@ var FFOSAssistant = (function() {
   var heartBeatSocket = null;
 
   function showConnectView() {
+    animationLoading.reset();
     $id('device-connected').classList.add('hiddenElement');
     $id('device-unconnected').classList.remove('hiddenElement');
     $id('views').classList.add('hidden-views');
@@ -197,6 +198,7 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowStorageInfo() {
+    var loadingGroupId = animationLoading.start();
     CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
       var deviceInfo = {
         usedInBytes: 0,
@@ -228,12 +230,15 @@ var FFOSAssistant = (function() {
       }
       fillStorageSummaryInfo('device-storage-summary', deviceInfo);
       fillStorageSummaryInfo('sdcard-storage-summary', sdcardInfo);
+      animationLoading.stop(loadingGroupId);
     }, function onerror_getStorage(message) {
+      animationLoading.stop(loadingGroupId);
       console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
     });
   }
 
   function getAndShowSummaryInfo() {
+    var loadingGroupId = animationLoading.start();
     getAndShowStorageInfo();
     CMD.Device.getSettings(function onresponse_getDeviceInfo(message) {
       var dataJSON = JSON.parse(message.data);
@@ -242,7 +247,9 @@ var FFOSAssistant = (function() {
       $expr('.device-hardware-revision-number', elem)[0].textContent = dataJSON["deviceinfo.hardware"];
       $expr('.device-platform-version-number', elem)[0].textContent = dataJSON["deviceinfo.platform_version"];
       $expr('.device-build-identifier-number', elem)[0].textContent = dataJSON["deviceinfo.platform_build_id"];
+      animationLoading.stop(loadingGroupId);
     }, function onerror_getSettings(message) {
+      animationLoading.stop(loadingGroupId);
       console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
     });
   }
@@ -255,15 +262,16 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowAllContacts(viewData) {
-    var loading = new ShowLoadingDialog();
+    var loadingGroupId = animationLoading.start();
     ViewManager.showViews('contact-quick-add-view');
     CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
       var dataJSON = JSON.parse(message.data);
       ContactList.init(dataJSON, viewData);
-      loading.close();
+      animationLoading.stop(loadingGroupId);
     }, function onerror_getAllContacts(message) {
+      animationLoading.stop(loadingGroupId);
       log('getAndShowAllContacts Error occurs when fetching all contacts.');
     });
   }
@@ -273,17 +281,21 @@ var FFOSAssistant = (function() {
   }
 
   function updateSMSThreads() {
+    var loadingGroupId = animationLoading.start();
     CMD.SMS.getThreads(function onresponse_getThreads(messages) {
       // Make sure the 'select-all' box is not checked.  
       SmsList.selectAllSms(false);
       var dataJSON = JSON.parse(messages.data);
       SmsList.init(dataJSON);
+      animationLoading.stop(loadingGroupId);
     }, function onerror_getThreads(messages) {
+      animationLoading.stop(loadingGroupId);
       log('Error occurs when fetching all messages' + messages.message);
     });
   }
 
   function getAndShowAllMusics() {
+    var loadingGroupId = animationLoading.start();
     MusicList.init();
     CMD.Musics.getOldMusicsInfo(function onresponse_getOldMusicsInfo(oldMusic) {
       var music = JSON.parse(oldMusic.data);
@@ -306,18 +318,22 @@ var FFOSAssistant = (function() {
             // Make sure the 'select-all' box is not checked.
             MusicList.selectAllMusics(false);
             MusicList.updateUI();
+            animationLoading.stop(loadingGroupId);
             return;
           }
         }, function onerror_getChangedMusics(e) {
+          animationLoading.stop(loadingGroupId);
           log('Error occurs when fetching changed musics.');
         })
       }
     }, function onerror_getOldMusicsInfo(e) {
+      animationLoading.stop(loadingGroupId);
       log('Error occurs when fetching all musics.');
     });
   }
 
   function getAndShowGallery() {
+    var loadingGroupId = animationLoading.start();
     Gallery.init();
     CMD.Pictures.getOldPicturesInfo(function onresponse_getOldMusicsInfo(oldPicture) {
       var picture = JSON.parse(oldPicture.data);
@@ -339,19 +355,23 @@ var FFOSAssistant = (function() {
           if (changedPicture.callbackID == 'onscanend') {
             Gallery.selectAllPictures(false);
             Gallery.updateUI();
+            animationLoading.stop(loadingGroupId);
             return;
           }
         }, function onerror_getChangedPictures(e) {
+          animationLoading.stop(loadingGroupId);
           log('Error occurs when fetching changed pictures.');
         });
         return;
       }
     }, function onerror_getOldMusicsInfo(e) {
+      animationLoading.stop(loadingGroupId);
       log('Error occurs when fetching old pictures.');
     });
   }
 
   function getAndShowAllVideos() {
+    var loadingGroupId = animationLoading.start();
     Video.init();
     CMD.Videos.getOldVideosInfo(function onresponse_getOldVideosInfo(oldVideo) {
       var video = JSON.parse(oldVideo.data);
@@ -374,13 +394,16 @@ var FFOSAssistant = (function() {
             // Make sure the 'select-all' box is not checked.
             Video.selectAllVideos(false);
             Video.updateUI();
+            animationLoading.stop(loadingGroupId);
             return;
           }
         }, function onerror_getChangedVideo(e) {
+          animationLoading.stop(loadingGroupId);
           log('Error occurs when fetching changed videos.');
         });
       }
     }, function onerror_getOldVideosInfo(e) {
+      animationLoading.stop(loadingGroupId);
       log('Error occurs when fetching old videos.');
     });
   }
@@ -417,17 +440,16 @@ var FFOSAssistant = (function() {
       if (!event.target.classList.contains('language-code-button')) {
         return;
       }
-
       navigator.mozL10n.language.code = event.target.dataset.languageCode;
       $expr('.language-code-button', this).forEach(function(elem) {
         elem.classList.remove('current');
       });
-
       event.target.classList.add('current');
     });
-
+    if (!animationLoading) {
+      animationLoading = new animationLoadingDialog();
+    }
     showConnectView();
-
     if (navigator.mozFFOSAssistant) {
       navigator.mozFFOSAssistant.onadbstatechange = function onADBStateChange(event) {
         if (navigator.mozFFOSAssistant.adbConnected === true) {

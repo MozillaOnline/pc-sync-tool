@@ -508,6 +508,7 @@ SendSMSDialog.prototype = {
   },
 
   sendSingle: function() {
+    var loadingGroupId = animationLoading.start();
     var tel = $id('selected-contact-tel');
     var message = $id('content');
     var sender = [tel.textContent];
@@ -523,7 +524,8 @@ SendSMSDialog.prototype = {
         self._mask = null;
         self._modalElement = null;
         document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
-        window.removeEventListener('resize', self._onWindowResize)
+        window.removeEventListener('resize', self._onWindowResize);
+        animationLoading.stop(loadingGroupId);
         self.options.onclose();
       }
     }, function onError_sendSms(e) {
@@ -532,6 +534,7 @@ SendSMSDialog.prototype = {
   },
 
   send: function() {
+    var loadingGroupId = animationLoading.start();
     var number = $id('address').value.split(';');
     var message = $id('content');
     var sender = [];
@@ -556,10 +559,12 @@ SendSMSDialog.prototype = {
         self._mask = null;
         self._modalElement = null;
         document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
-        window.removeEventListener('resize', self._onWindowResize)
+        window.removeEventListener('resize', self._onWindowResize);
+        animationLoading.stop(loadingGroupId);
         self.options.onclose();
       }
     }, function onError_sendSms(e) {
+      animationLoading.stop(loadingGroupId);
       alert(e);
     });
   }
@@ -1078,32 +1083,44 @@ WifiModePromptDialog.prototype = {
   }
 };
 
-function ShowLoadingDialog() {
-  this.initailize();
-}
+var animationLoadingDialog = function() {
+  this.groupId = 0;
+  this.startNum = 0;
+  this._modalElement = document.createElement('div');
+  this._modalElement.className = 'loading-dialog';
+  var templateData = {};
+  this._modalElement.innerHTML = tmpl('tmpl_loading_dialog', templateData);
+};
 
-ShowLoadingDialog.prototype = {
-  initailize: function() {
-    this._modalElement = null;
-
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'loading-dialog';
-    var templateData = {};
-    try {
-      this._modalElement.innerHTML = tmpl('tmpl_loading_dialog', templateData);
-    } catch (e) {
-      alert(e);
+animationLoadingDialog.prototype = {
+  start: function() {
+    this.startNum++;
+    if (this.startNum > 1) {
+      return this.groupId;
     }
     var containerHeight = $id('container').clientHeight;
     var documentHeight = document.documentElement.clientHeight;
     var loading = $expr('.loading', this._modalElement)[0];
     loading.style.top = (documentHeight > containerHeight ? (containerHeight - loading.clientHeight) / 2 : (documentHeight - loading.clientHeight) / 2) + 'px';
     document.body.appendChild(this._modalElement);
+    return this.groupId;
   },
 
-  close: function() {
-    this._modalElement.parentNode.removeChild(this._modalElement);
-    this._modalElement = null;
-    document.removeEventListener('ShowLoadingDialog:show', this._onModalDialogShown);
-  }
+  stop: function(groupId) {
+    if ((this.startNum <= 0) || (groupId != this.groupId)) {
+      return;
+    }
+    this.startNum--;
+    if (this.startNum == 0) {
+      this._modalElement.parentNode.removeChild(this._modalElement);
+    }
+  },
+
+  reset: function() {
+    if (this.startNum > 0) {
+      this.startNum = 0;
+      this.groupId++;
+      this._modalElement.parentNode.removeChild(this._modalElement);
+    }
+  },
 };
