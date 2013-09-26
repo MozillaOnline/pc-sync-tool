@@ -29,7 +29,6 @@ var SmsList = (function() {
       renderFunc: createGroupThreadList,
       container: threadListContainer
     });
-
     threadList.render();
     updateAvatar();
     showThreadList();
@@ -549,12 +548,12 @@ var SmsList = (function() {
   }
 
   function selectAllSms(select) {
-    $expr('#threads-list-container .threads-list-item').forEach(function(selected) {
+    $expr('#threads-list-container .threads-list-item').forEach(function(elem) {
       var item = $expr('label.unchecked', elem)[0];
       if (!item) {
         return;
       }
-      item.classList.checked = elem.dataset.checked = elem.dataset.focused = selected;
+      item.classList.checked = elem.dataset.checked = elem.dataset.focused = select;
     });
     opStateChanged();
   }

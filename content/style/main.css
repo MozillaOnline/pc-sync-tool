@@ -797,3 +797,65 @@ input.modal-btn {
   display: inline-block;
   margin-left: 0.4rem
 }
+
+.loading-dialog {
+  height: 100%;
+  margin-left: 0.7rem;
+  position: absolute;
+  top: 0;
+  width: calc(100% - 0.7rem);
+  z-index: 2;
+  background: transparent;
+}
+
+.loading {
+  background: transparent;
+  border: 0.1rem #aaaaaa solid;
+  border-radius: 50%;
+  font-size: 18px;
+  height: 100px;
+  line-height: 90px;
+  position: relative;
+  text-align: center;
+  width: 100px;
+  cursor: default;
+  left: 0;
+  margin: 0 auto;
+  top: 10.0rem;
+}
+
+.loading > div:nth-child(2), .loading > div:nth-child(3) {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 5px solid #FFF;
+  border-radius: 50%;
+  box-shadow: 0 0 5px 0 #009933;
+  height: 100px;
+  position: absolute;
+  top: 0px;
+  /* set top and bottom border widths to 0 */
+  border-top-width: 0;
+  border-bottom-width: 0;
+  /* css3 animation */
+  -moz-animation: anim 2s linear infinite;
+}
+
+.loading > div:nth-child(2) {
+  border-color: #FFF;
+  left: 0px;
+  width: 90px;
+}
+
+.loading > div:nth-child(3) {
+  border-color: #009933;
+  left: -5px;
+  width: 100px;
+  /* css3 delay */
+  -moz-animation-delay:0.5s;
+}
+
+/* css3 keyframes - animation */
+@-moz-keyframes anim {
+  from { -moz-transform: rotateY(0deg); }
+  50% { -moz-transform: rotateY(180deg); }
+  to { -moz-transform: rotateY(360deg); }
+}

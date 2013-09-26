@@ -1077,3 +1077,33 @@ WifiModePromptDialog.prototype = {
     this.options.onclose();
   }
 };
+
+function ShowLoadingDialog() {
+  this.initailize();
+}
+
+ShowLoadingDialog.prototype = {
+  initailize: function() {
+    this._modalElement = null;
+
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'loading-dialog';
+    var templateData = {};
+    try {
+      this._modalElement.innerHTML = tmpl('tmpl_loading_dialog', templateData);
+    } catch (e) {
+      alert(e);
+    }
+    var containerHeight = $id('container').clientHeight;
+    var documentHeight = document.documentElement.clientHeight;
+    var loading = $expr('.loading', this._modalElement)[0];
+    loading.style.top = (documentHeight > containerHeight ? (containerHeight - loading.clientHeight) / 2 : (documentHeight - loading.clientHeight) / 2) + 'px';
+    document.body.appendChild(this._modalElement);
+  },
+
+  close: function() {
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._modalElement = null;
+    document.removeEventListener('ShowLoadingDialog:show', this._onModalDialogShown);
+  }
+};

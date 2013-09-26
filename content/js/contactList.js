@@ -282,8 +282,12 @@ var ContactList = (function() {
   }
 
   function selectAllContacts(select) {
-    $expr('#contact-list-container .contact-list-item').forEach(function(item) {
-      selectContactItem(item, select);
+    $expr('#contact-list-container .contact-list-item').forEach(function(elem) {
+      var item = $expr('label.unchecked', elem)[0];
+      if (!item) {
+        return;
+      }
+      item.classList.checked = elem.dataset.checked = elem.dataset.focused = select;
     });
 
     opStateChanged();
@@ -315,14 +319,6 @@ var ContactList = (function() {
     $id('export-contacts').dataset.disabled = false;
 
     showContactInfo(JSON.parse(elem.dataset.contact));
-  }
-
-  function selectContactItem(elem, selected) {
-    var item = $expr('label.unchecked', elem)[0];
-    if (!item) {
-      return;
-    }
-    item.classList.checked = elem.dataset.checked = elem.dataset.focused = selected;
   }
 
   function toggleContactItem(elem) {

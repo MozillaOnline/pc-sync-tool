@@ -255,11 +255,14 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowAllContacts(viewData) {
+    var loading = new ShowLoadingDialog();
+    ViewManager.showViews('contact-quick-add-view');
     CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
       // Make sure the 'select-all' box is not checked.
       ContactList.selectAllContacts(false);
       var dataJSON = JSON.parse(message.data);
       ContactList.init(dataJSON, viewData);
+      loading.close();
     }, function onerror_getAllContacts(message) {
       log('getAndShowAllContacts Error occurs when fetching all contacts.');
     });
@@ -334,7 +337,7 @@ var FFOSAssistant = (function() {
             return;
           }
           if (changedPicture.callbackID == 'onscanend') {
-            Gallery.selectAllMusics(false);
+            Gallery.selectAllPictures(false);
             Gallery.updateUI();
             return;
           }
