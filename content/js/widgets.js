@@ -708,10 +708,9 @@ SelectContactsDialog.prototype = {
       } else {
         item = $expr('label.unchecked', elem)[0];
         if (item) {
-          item.classList.add('checked');
+          item.classList.checked = true;
         }
-        elem.dataset.checked = true;
-        elem.dataset.focused = true;
+        elem.dataset.checked = elem.dataset.focused = true;
         itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;
         header = _('contacts-selected', {
           n: itemNum

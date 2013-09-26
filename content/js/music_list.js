@@ -150,14 +150,14 @@ var MusicList = (function() {
         e.dataset.checked = false;
         var item = $expr('label.unchecked', e)[0];
         if (item) {
-          item.classList.remove('checked');
+          item.classList.checked = false;
         }
       }
     });
 
     item = $expr('label.unchecked', elem)[0];
     if (item) {
-      item.classList.add('checked');
+      item.classList.checked = true;
     }
     elem.dataset.checked = true;
     if ($expr('#music-list-container .music-list-item').length === 1) {
@@ -187,15 +187,10 @@ var MusicList = (function() {
 
   function selectMusicItem(elem, selected) {
     var item = $expr('label.unchecked', elem)[0];
-    if (item) {
-      if (selected) {
-        item.classList.add('checked');
-        elem.dataset.checked = true;
-      } else {
-        item.classList.remove('checked');
-        elem.dataset.checked = false;
-      }
+    if (!item) {
+      return;
     }
+    item.classList.checked = elem.dataset.checked = selected;
   }
 
   /**

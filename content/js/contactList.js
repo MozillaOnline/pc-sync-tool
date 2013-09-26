@@ -296,17 +296,16 @@ var ContactList = (function() {
         e.dataset.focused = false;
         var item = $expr('label.unchecked', e)[0];
         if (item) {
-          item.classList.remove('checked');
+          item.classList.checked = false;
         }
       }
     });
 
     item = $expr('label.unchecked', elem)[0];
     if (item) {
-      item.classList.add('checked');
+      item.classList.checked = true;
     }
-    elem.dataset.checked = true;
-    elem.dataset.focused = true;
+    elem.dataset.checked = elem.dataset.focused = true;
     if ($expr('#contact-list-container .contact-list-item').length === 1) {
       $id('selectAll-contacts').dataset.checked = true;
     } else {
@@ -320,17 +319,10 @@ var ContactList = (function() {
 
   function selectContactItem(elem, selected) {
     var item = $expr('label.unchecked', elem)[0];
-    if (item) {
-      if (selected) {
-        item.classList.add('checked');
-        elem.dataset.checked = true;
-        elem.dataset.focused = true;
-      } else {
-        item.classList.remove('checked');
-        elem.dataset.checked = false;
-        elem.dataset.focused = false;
-      }
+    if (!item) {
+      return;
     }
+    item.classList.checked = elem.dataset.checked = elem.dataset.focused = selected;
   }
 
   function toggleContactItem(elem) {
@@ -339,13 +331,7 @@ var ContactList = (function() {
       return;
     }
     item.classList.toggle('checked');
-    if (item.classList.contains('checked')) {
-      elem.dataset.checked = true;
-      elem.dataset.focused = true;
-    } else {
-      elem.dataset.checked = false;
-      elem.dataset.focused = false;
-    }
+    elem.dataset.checked = elem.dataset.focused = item.classList.contains('checked');
     opStateChanged();
     if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 0) {
       ViewManager.showViews('contact-quick-add-view');

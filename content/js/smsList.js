@@ -495,23 +495,21 @@ var SmsList = (function() {
         e.dataset.focused = false;
         var item = $expr('label.unchecked', e)[0];
         if (item) {
-          item.classList.remove('checked');
+          item.classList.checked = false;
         }
       }
     });
     item = $expr('label.unchecked', elem)[0];
     if (item) {
-      item.classList.add('checked');
+      item.classList.checked = true;
     }
-    elem.dataset.checked = true;
-    elem.dataset.focused = true;
+    elem.dataset.checked = elem.dataset.focused = true;
     if ($expr('#threads-list-container .threads-list-item').length === 1) {
       $id('selectAll-sms').dataset.checked = true;
     } else {
       $id('selectAll-sms').dataset.checked = false;
     }
-    $id('remove-sms').dataset.disabled = false;
-    $id('export-sms').dataset.disabled = false;
+    $id('remove-sms').dataset.disabled = $id('export-sms').dataset.disabled = false;
     opStateChanged();
   }
 
@@ -521,13 +519,7 @@ var SmsList = (function() {
       return;
     }
     item.classList.toggle('checked');
-    if (item.classList.contains('checked')) {
-      elem.dataset.checked = true;
-      elem.dataset.focused = true;
-    } else {
-      elem.dataset.checked = false;
-      elem.dataset.focused = false;
-    }
+    elem.dataset.checked = elem.dataset.focused = item.classList.contains('checked');
     opStateChanged();
   }
 
@@ -552,64 +544,51 @@ var SmsList = (function() {
         ViewManager.showViews('sms-send-view');
       }
     }
-    $id('remove-sms').dataset.disabled =
-    threadlistLength === 0;
-    $id('export-sms').dataset.disabled =
-    threadlistLength === 0;
-  }
-
-  function selectSmsItem(elem, selected) {
-    var item = $expr('label.unchecked', elem)[0];
-    if (item) {
-      if (selected) {
-        item.classList.add('checked');
-        elem.dataset.checked = true;
-        elem.dataset.focused = true;
-      } else {
-        item.classList.remove('checked');
-        elem.dataset.checked = false;
-        elem.dataset.focused = false;
-      }
-    }
+    $id('remove-sms').dataset.disabled = threadlistLength === 0;
+    $id('export-sms').dataset.disabled = threadlistLength === 0;
   }
 
   function selectAllSms(select) {
-    $expr('#threads-list-container .threads-list-item').forEach(function(item) {
-      selectSmsItem(item, select);
+    $expr('#threads-list-container .threads-list-item').forEach(function(selected) {
+      var item = $expr('label.unchecked', elem)[0];
+      if (!item) {
+        return;
+      }
+      item.classList.checked = elem.dataset.checked = elem.dataset.focused = selected;
     });
     opStateChanged();
   }
 
-  function onMessage(sms) {
+  function onMessage(msg) {
     if (threadList) {
-      if (sms == 'updateAvatar') {
+      if (msg == 'updateAvatar') {
         updateAvatar();
       } else {
         var threadListData = threadList.getGroupedData();
         if (threadListData.length > 0) {
           threadListData = threadListData[0].dataList;
           for (var i = 0; i < threadListData.length; i++) {
-            if (threadListData[i].id == sms.threadId) {
+            if (threadListData[i].id == msg.threadId) {
               threadList.remove(threadListData[i]);
-              if (sms.delivery == "received") {
+              if (msg.delivery == "received") {
                 threadListData[i].unreadCount += 1;
               }
               if (messageList) {
                 var messageListData = messageList.getGroupedData();
                 messageListData = messageListData[0].dataList;
                 if (messageListData.length > 0) {
-                  if (sms.threadId == messageListData[0].threadId) {
-                    sms['nearDate'] = messageListData[messageListData.length - 1].timestamp;
-                    messageList.add(sms);
-                    if (sms.delivery == "received") {
+                  if (msg.threadId == messageListData[0].threadId) {
+                    msg['nearDate'] = messageListData[messageListData.length - 1].timestamp;
+                    messageList.add(msg);
+                    if (msg.delivery == "received") {
                       threadListData[i].unreadCount = 0;
                     }
                   }
                 }
               }
-              threadListData[i].body = sms.body;
-              threadListData[i].timestamp = sms.timestamp;
-              threadListData[i].lastMessageType = sms.type;
+              threadListData[i].body = msg.body;
+              threadListData[i].timestamp = msg.timestamp;
+              threadListData[i].lastMessageType = msg.type;
               threadList.add(threadListData[i]);
               updateThreadAvatar(threadListData[i]);
               return;
@@ -620,33 +599,33 @@ var SmsList = (function() {
         }
         var tempparticipants;
         var unreadCount;
-        if (sms.delivery == "received") {
-          tempparticipants = sms.sender;
+        if (msg.delivery == "received") {
+          tempparticipants = msg.sender;
           unreadCount = 1;
         } else {
-          if (sms.type == "mms") {
-            tempparticipants = sms.receivers;
+          if (msg.type == "mms") {
+            tempparticipants = msg.receivers;
           } else {
-            tempparticipants = sms.receiver;
+            tempparticipants = msg.receiver;
           }
           unreadCount = 0;
         }
         var tempthreadListData = {
-          'id': sms.threadId,
-          'body': sms.body,
-          'timestamp': sms.timestamp,
+          'id': msg.threadId,
+          'body': msg.body,
+          'timestamp': msg.timestamp,
           'unreadCount': unreadCount,
           'participants': tempparticipants,
-          'lastMessageType': sms.type
+          'lastMessageType': msg.type
         };
-        tempthreadListData['threadIndex'] = sms.threadId;
+        tempthreadListData['threadIndex'] = msg.threadId;
         threadList.add(tempthreadListData);
         updateThreadAvatar(tempthreadListData);
       }
     }
   }
 
-  function removeThreads(item) {
+  function removeThread(item) {
     SmsList.selectAllSms(false);
     var groupedData = threadList.getGroupedData();
     groupedData = groupedData[0].dataList;
@@ -683,39 +662,39 @@ var SmsList = (function() {
       var threadId = item.threadIndex;
       CMD.SMS.getThreadMessagesById(threadId, function onresponse_getThreadMessagesById(messages) {
         var result = [];
-        var Sms = JSON.parse(messages.data);
+        var msg = JSON.parse(messages.data);
         threadnum++;
-        for (var i = 0; i < Sms.length; i++) {
+        for (var i = 0; i < msg.length; i++) {
           if (result.type == 'sms') {
-            content += Sms[i].type + ',';
-            content += Sms[i].id + ',';
-            content += Sms[i].threadId + ',';
-            content += Sms[i].delivery + ',';
-            content += Sms[i].deliveryStatus + ',';
-            content += Sms[i].sender + ',';
-            content += Sms[i].receiver + ',';
-            content += Sms[i].body + ',';
-            content += Sms[i].messageClass + ',';
-            content += Sms[i].timestamp + ',';
-            content += Sms[i].read + '\n';
+            content += msg[i].type + ';';
+            content += msg[i].id + ';';
+            content += msg[i].threadId + ';';
+            content += msg[i].delivery + ';';
+            content += msg[i].deliveryStatus + ';';
+            content += msg[i].sender + ';';
+            content += msg[i].receiver + ';';
+            content += msg[i].body + ';';
+            content += msg[i].messageClass + ';';
+            content += msg[i].timestamp + ';';
+            content += msg[i].read + '\n';
           } else if (result.type == 'mms') {
-            content += Sms[i].type + ',';
-            content += Sms[i].id + ',';
-            content += Sms[i].threadId + ',';
-            content += Sms[i].delivery + ',';
-            content += Sms[i].deliveryStatus + ',';
-            content += Sms[i].sender + ',';
-            content += Sms[i].receivers + ',';
-            content += Sms[i].subject + ',';
-            content += Sms[i].smil + ',';
-            content += Sms[i].expiryDate + ',';
-            for (var i = 0; i < Sms[i].attachments.length; i++) {
-              content += Sms[i].attachments[i].id + ',';
-              content += Sms[i].attachments[i].location + ',';
-              content += Sms[i].attachments[i].content + ',';
+            content += msg[i].type + ';';
+            content += msg[i].id + ';';
+            content += msg[i].threadId + ';';
+            content += msg[i].delivery + ';';
+            content += msg[i].deliveryStatus + ';';
+            content += msg[i].sender + ';';
+            content += msg[i].receivers + ';';
+            content += msg[i].subject + ';';
+            content += msg[i].smil + ';';
+            content += msg[i].expiryDate + ';';
+            for (var i = 0; i < msg[i].attachments.length; i++) {
+              content += msg[i].attachments[i].id + ';';
+              content += msg[i].attachments[i].location + ';';
+              content += msg[i].attachments[i].content + ';';
             }
-            content += Sms[i].timestamp + ',';
-            content += Sms[i].read + '\n';
+            content += msg[i].timestamp + ';';
+            content += msg[i].read + '\n';
           }
         }
         if (threadnum == ids.length) {
@@ -739,32 +718,34 @@ var SmsList = (function() {
     var messageListData = messageList.getGroupedData();
     messageListData = messageListData[0].dataList;
     for (var i = 0; i < messageListData.length; i++) {
-      if (messageListData[i].id == messageId) {
-        if ((i + 1) == messageListData.length) {
-          var threadListData = threadList.getGroupedData();
-          threadListData = threadListData[0].dataList;
-          for (var j = 0; j < threadListData.length; j++) {
-            if (threadListData[j].id == messageListData[i].threadId) {
-              if (messageListData.length == 1) {
-                SmsList.selectAllSms(false);
-                threadList.remove(threadListData[j]);
-                ViewManager.showViews('sms-send-view');
-                break;
-              } else {
-                threadList.remove(threadListData[j]);
-                threadListData[j].body = messageListData[i].body;
-                threadListData[j].timestamp = messageListData[i].timestamp;
-                threadListData[j].lastMessageType = messageListData[i].type;
-                threadList.add(threadListData[j]);
-                updateThreadAvatar(threadListData[j]);
-                break;
-              }
-            }
+      if (messageListData[i].id != messageId) {
+        continue;
+      }
+      if ((i + 1) == messageListData.length) {
+        var threadListData = threadList.getGroupedData();
+        threadListData = threadListData[0].dataList;
+        for (var j = 0; j < threadListData.length; j++) {
+          if (threadListData[j].id != messageListData[i].threadId) {
+            continue;
+          }
+          if (messageListData.length == 1) {
+            SmsList.selectAllSms(false);
+            threadList.remove(threadListData[j]);
+            ViewManager.showViews('sms-send-view');
+            break;
+          } else {
+            threadList.remove(threadListData[j]);
+            threadListData[j].body = messageListData[i].body;
+            threadListData[j].timestamp = messageListData[i].timestamp;
+            threadListData[j].lastMessageType = messageListData[i].type;
+            threadList.add(threadListData[j]);
+            updateThreadAvatar(threadListData[j]);
+            break;
           }
         }
-        messageList.remove(messageListData[i]);
-        break;
       }
+      messageList.remove(messageListData[i]);
+      break;
     }
   }
 
@@ -795,7 +776,7 @@ var SmsList = (function() {
         n: ids.length
       }))) {
         ids.forEach(function(item) {
-          SmsList.removeThreads(item);
+          SmsList.removeThread(item);
         });
         ViewManager.showViews('sms-send-view');
       }
@@ -880,7 +861,7 @@ var SmsList = (function() {
 
   return {
     init: initSmsPage,
-    removeThreads: removeThreads,
+    removeThread: removeThread,
     exportThreads: exportThreads,
     onMessage: onMessage,
     selectAllSms: selectAllSms,
