@@ -13,6 +13,11 @@
   margin-left: 2rem;
   padding-left: 2.2rem;
   font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.sms-ops-box label{
+  cursor: pointer;
 }
 
 #selectAll-sms[data-checked=true] {
@@ -21,6 +26,10 @@
 
 #selectAll-sms[data-disabled=true] {
   color: #CCCCCC;
+}
+
+#selectAll-sms[data-disabled=true] > label {
+  cursor: default;
 }
 
 #selectAll-sms[data-disabled=false]:hover {
@@ -85,6 +94,7 @@
 
 #remove-sms[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
+  color: #CCCCCC;
   cursor: default;
 }
 
@@ -105,7 +115,12 @@
 }
 
 #export-sms[data-disabled=true] {
+  color: #CCCCCC;
   background-image: url("images/export-disabled.png");
+}
+
+#export-sms[data-disabled=true] > label {
+  cursor: default;
 }
 
 #export-sms[data-disabled=false] {
@@ -190,6 +205,7 @@
 
 .threads-list-item {
   height: 4.5rem;
+  cursor:pointer;
 }
 
 .threads-list-item:hover {
@@ -573,6 +589,10 @@
   margin-left: 9rem;
   color: #999999;
   font-size: 1.2rem;
+}
+
+#sms-view-sub .card-view {
+  margin-top: 4rem;
 }
 
 .sms-message-thread .date-ctn{
@@ -1161,18 +1181,21 @@
   overflow: hidden;
 }
 
-.sms-thread-header .avatar-default {
-  background-image: url("images/avatar.png");
-  background-position: center center;
+.sms-thread-header .avatar-show {
+  border-radius: 0.5rem;
+  float: left;
+  height: 7rem;
+  margin: 0 0.5rem 0 1rem;
+  width: 7rem;
+}
+.sms-thread-header .avatar-show-default {
+  background-image: url("images/avatar-show.png");
+  background-position: center 0;
   background-repeat: no-repeat;
-  height: 5.5rem;
-  width: 5.5rem;
 }
 
 #sms-thread-header-img {
-  height:5.5rem;
-  width:5.5rem;
-  padding-top: 2rem;
+  margin-top: 2rem;
   float: left;
 }
 
@@ -1181,11 +1204,14 @@
   margin-top: 2.2rem;
   margin-left: 1rem;
   font-size: 2.2rem;
+  text-align: center;
+  width: 17rem;
+  display: block;
 }
 
 #sms-thread-header-button {
-  margin-left: 65px;
-  height: 21px;
-  margin-top: 50px;
-  width: 106px;
+  margin-left: 9.5rem;
+  height: 2.1rem;
+  margin-top: 6rem;
+  width: 10.6rem;
 }

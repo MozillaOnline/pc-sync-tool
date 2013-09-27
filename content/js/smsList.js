@@ -284,7 +284,7 @@ var SmsList = (function() {
         headerImg.classList.remove('avatar-default');
       }
       var headerName = $id('sms-thread-header-name');
-      headerName.value = threadname.childNodes[0].nodeValue;
+      headerName.textContent = threadname.childNodes[0].nodeValue;
       var headerButton = $id('sms-thread-header-button');
       if (headerButton) {
         if (threadname.childNodes[0].type != 'contact') {

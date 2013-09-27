@@ -24,15 +24,23 @@
   margin-left: 2rem;
   padding-left: 2.2rem;
 }
+
 #selectAll-pictures[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
 }
+
 #selectAll-pictures[data-disabled=true] {
   color: #CCCCCC;
 }
+
+#selectAll-pictures[data-disabled=true] > label {
+  cursor: default;
+}
+
 #selectAll-pictures[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #selectAll-pictures[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -40,15 +48,22 @@
 #remove-pictures {
   background-image: url("images/remove-default.png");
 }
+
 #remove-pictures[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
   cursor: default;
   color: #CCCCCC;
 }
+
+#remove-pictures[data-disabled=true] > label {
+  cursor: default;
+}
+
 #remove-pictures[data-disabled=false]:hover {
   background-image: url("images/remove-highlighted.png");
   color: #00CAF2;
 }
+
 #remove-pictures[data-disabled=false]:active {
   background-image: url("images/remove-selected.png");
   color: #018CAB;
@@ -58,13 +73,20 @@
   background-image: url("images/export-disabled.png");
   color: #CCCCCC;
 }
+
 #export-pictures[data-disabled=false] {
   background-image: url("images/export-default.png");
 }
+
+#export-pictures[data-disabled=true] > label {
+  cursor: default;
+}
+
 #export-pictures[data-disabled=false]:hover {
   background-image: url("images/export-highlighted.png");
   color: #00CAF2;
 }
+
 #export-pictures[data-disabled=false]:active {
   background-image: url("images/export-selected.png");
   color: #018CAB;
@@ -73,10 +95,16 @@
 #import-pictures {
   background-image: url("images/import-default.png");
 }
+
+#import-pictures[data-disabled=true] > label {
+  cursor: default;
+}
+
 #import-pictures:hover {
   background-image: url("images/import-highlighted.png");
   color: #00CAF2;
 }
+
 #import-pictures:active {
   background-image: url("images/import-selected.png");
   color: #018CAB;
@@ -85,10 +113,12 @@
 #refresh-pictures {
   background-image: url("images/refresh-default.png");
 }
+
 #refresh-pictures:hover {
   background-image: url("images/refresh-highlighted.png");
   color: #00CAF2;
 }
+
 #refresh-pictures:active {
   background-image: url("images/refresh-selected.png");
   color: #018CAB;

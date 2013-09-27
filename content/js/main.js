@@ -27,7 +27,7 @@ var FFOSAssistant = (function() {
       $id('usb-connection-button').dataset.checked = true;
       $id('wifi-arrow').classList.add('hiddenElement');
       $id('usb-arrow').classList.remove('hiddenElement');
-      $id('wifi-connection-code-input').hidden = true;
+      $id('wifi-connection-code-input').classList.add('hiddenElement');
       $id('wifi-connect-button').classList.add('hiddenElement');
       $id('wifi-connection-button').classList.remove('wifi-connection-button-select');
       $id('usb-connection-button').classList.add('usb-connection-button-select');
@@ -52,7 +52,7 @@ var FFOSAssistant = (function() {
       $id('usb-connection-button').dataset.checked = false;
       $id('usb-arrow').classList.add('hiddenElement');
       $id('wifi-arrow').classList.remove('hiddenElement');
-      $id('wifi-connection-code-input').hidden = false;
+      $id('wifi-connection-code-input').classList.remove('hiddenElement');
       $id('wifi-connect-button').classList.remove('hiddenElement');
       $id('wifi-connection-button').classList.add('wifi-connection-button-select');
       $id('usb-connection-button').classList.remove('usb-connection-button-select');
@@ -73,7 +73,7 @@ var FFOSAssistant = (function() {
     }
 
     handlerWifiConnect = function() {
-      var wifiCode = $id('wifi-connection-code-input');
+      var wifiCode = $id('wifi-connection-code');
       if (wifiCode && wifiCode.value && wifiCode.value.length > 0) {
         var ip = '';
         var dataArray = new ArrayBuffer(4);

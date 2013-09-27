@@ -131,7 +131,9 @@
                 <div id="step-three" class="step-three-usb">
                   <span id="step-three-span" data-l10n-id="usb-step-three"></span>
                 </div>
-                <input type="text" id="wifi-connection-code-input" hidden="true" class="hiddenElement" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></input>
+                <div id="wifi-connection-code-input" class="hiddenElement">
+                  <input id="wifi-connection-code" type="text" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></input>
+                </div>
                 <div id="wifi-connect-button" class="button hiddenElement" data-l10n-id="wifi-connect"></div>
               </div>
             </section>
@@ -372,123 +374,121 @@
           </section>
         </div>
         <div id="views" class="views table-cell hidden-views">
-          <div>
-            <section id="contact-view-sub" class="sub-view">
-              <section id="contact-quick-add-view" class="card-view" hidden="true">
-                <div class="quick-add-view"></div>
-                <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
-                <form id="contact-quick-add-form" action="#" onsubmit="return false;">
+          <section id="contact-view-sub" class="sub-view">
+            <section id="contact-quick-add-view" class="card-view" hidden="true">
+              <div class="quick-add-view"></div>
+              <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
+              <form id="contact-quick-add-form" action="#" onsubmit="return false;">
+                <div>
                   <div>
-                    <div>
-                      <label data-l10n-id="contact-quick-add-name"></label>
-                    </div>
-                    <input id="fullName" class="quick-input" type="text" value="" data-l10n-id="full-name"></input>
+                    <label data-l10n-id="contact-quick-add-name"></label>
                   </div>
+                  <input id="fullName" class="quick-input" type="text" value="" data-l10n-id="full-name"></input>
+                </div>
+                <div>
                   <div>
-                    <div>
-                       <label data-l10n-id="contact-quick-add-mobile"></label>
-                   </div>
-                    <input id="mobile" class="quick-input" type="tel" value="" data-l10n-id="mobile"></input>
-                  </div>
-                  <div><a id="quick-save-contact" class="button" data-l10n-id="save">保存</a></div>
-                </form>
-              </section>
-              <section id="contact-edit-view" class="card-view contact-form" hidden="true">
-                <span id="add-contact-header" class="title" data-l10n-id="add-contact-header"></span>
-                <span id="edit-contact-header" class="title" data-l10n-id="edit-contact-header"></span>
-                <form id="contact-form" action="#" onsubmit="return false;">
-                  <input id="contact-form-id" name="id" type="hidden" value="" />
-                  <section>
-                    <div>
-                      <img id="avatar-add-edit" class="avatar-add-edit avatar-add-edit-default" src="" />
-                      <div id="add-avatar">
-                        <div id="avatar-label" data-l10n-id="avatar-label">添加头像</div>
-                      </div>
-                      <input id="avatar-input" type="file" accept="image/*" hidden/>
-                    </div>
-                    <div class="item-body-exp">
-                      <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
-                      <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
-                    </div>
-                    <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
-                  </section>
-                  <!-- Contact field containter -->
-                  <ul></ul>
-                  <div class="saveAndCancel">
-                  <a id="save-contact" class="button" data-l10n-id="save">保存</a>
-                  <a id="cancel-edit-contact" class="button-cancel" data-l10n-id="cancel">取消</a>
-                  </div>
-                </form>
-              </section>
-              <section id="show-contact-view" class="card-view" hidden="true">
-                <span class="title" data-l10n-id="show-contact-header"></span>
-                <div class="show-contact-header">
-                  <img id="show-avatar" class="avatar-show avatar-show-default"></img>
-                  <div class="contact-head">
-                    <div id="show-contact-full-name"></div>
-                    <div id="show-contact-company"></div>
-                    <div id="edit-contact" class="button" data-l10n-id="edit-contact">
-                    </div>
-                  </div>
+                     <label data-l10n-id="contact-quick-add-mobile"></label>
+                 </div>
+                  <input id="mobile" class="quick-input" type="tel" value="" data-l10n-id="mobile"></input>
                 </div>
-                <div class="contact-content">
-                  <div class="header" data-l10n-id="show-contact-content">联系信息</div>
-                  <div id="show-contact-content">
-                  </div>
-                </div>
-                <div class="sms-message-quick-sender">
-                  <div class="sender-ctn">
-                    <div class="count-ctn">
-                      <div class="button-send primary" data-l10n-id="sms-send" id="sms-send-incontact"></div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-              <section id="show-multi-contacts" class="card-view" hidden="true">
-                <span id="show-contacts-header" class="title"></span>
-                <div id="show-contacts-container">
-                </div>
-                <div class="sms-message-quick-sender">
-                  <div class="sender-ctn">
-                    <div class="count-ctn">
-                      <div class="button-send primary" data-l10n-id="sms-send" id="sms-send-inmulticontact"></div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+                <div><a id="quick-save-contact" class="button" data-l10n-id="save">保存</a></div>
+              </form>
             </section>
-            <section id="sms-view-sub" class="sub-view" hidden="true">
-              <section id="sms-send-view" class="card-view sms-send-form">
-                <div class="sms-send-view"></div>
-                <div id="sms-send-view-header" data-l10n-id="sms-send-view-header"></div>
-                <form id="sms-send-view-form" action="#" onsubmit="return false;">
-                  <div id="sms-send-button" class="button" data-l10n-id="sms-send"></div>
-                </form>
-              </section>
-              <section id="sms-select-view" class="card-view sms-form" hidden="true">
-                <span id="select-threads-count" class="title"></span>
-                <div id="show-sms-container">
-                </div>
-              </section>
-              <section id="sms-thread-view" class="card-view sms-form" hidden="true">
-                <div class="sms-thread-header" id="sms-thread-header">
-                  <img id="sms-thread-header-img" class="avatar avatar-default"></img>
-                  <span id="sms-thread-header-name" class="title"></span>
-                  <div id="sms-thread-header-button" class="button" data-l10n-id="add-to-contacts-from-sms"></div>
-                </div>
-                <div id='message-list-container' class="sms-message-threads-ctn">
-                </div>
-                <div class="sms-message-quick-sender">
-                  <div class="sender-ctn">
-                    <textarea class="input-content" id="sender-ctn-input" autofocus="true" data-l10n-id="sender-ctn-input-placeholder" placeholder="填写您的新信息..."></textarea>
-                    <div class="count-ctn">
-                      <div class="button-send primary" data-l10n-id="sms-send" id="sms-send-inthread"></div>
+            <section id="contact-edit-view" class="card-view contact-form" hidden="true">
+              <span id="add-contact-header" class="title" data-l10n-id="add-contact-header"></span>
+              <span id="edit-contact-header" class="title" data-l10n-id="edit-contact-header"></span>
+              <form id="contact-form" action="#" onsubmit="return false;">
+                <input id="contact-form-id" name="id" type="hidden" value="" />
+                <section>
+                  <div>
+                    <img id="avatar-add-edit" class="avatar-add-edit avatar-add-edit-default" src="" />
+                    <div id="add-avatar">
+                      <div id="avatar-label" data-l10n-id="avatar-label">添加头像</div>
                     </div>
+                    <input id="avatar-input" type="file" accept="image/*" hidden/>
+                  </div>
+                  <div class="item-body-exp">
+                    <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
+                    <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
+                  </div>
+                  <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
+                </section>
+                <!-- Contact field containter -->
+                <ul></ul>
+                <div class="saveAndCancel">
+                <a id="save-contact" class="button" data-l10n-id="save">保存</a>
+                <a id="cancel-edit-contact" class="button-cancel" data-l10n-id="cancel">取消</a>
+                </div>
+              </form>
+            </section>
+            <section id="show-contact-view" class="card-view" hidden="true">
+              <span class="title" data-l10n-id="show-contact-header"></span>
+              <div class="show-contact-header">
+                <img id="show-avatar" class="avatar-show avatar-show-default"></img>
+                <div class="contact-head">
+                  <div id="show-contact-full-name"></div>
+                  <div id="show-contact-company"></div>
+                  <div id="edit-contact" class="button" data-l10n-id="edit-contact">
                   </div>
                 </div>
-              </section>
+              </div>
+              <div class="contact-content">
+                <div class="header" data-l10n-id="show-contact-content">联系信息</div>
+                <div id="show-contact-content">
+                </div>
+              </div>
+              <div class="sms-message-quick-sender">
+                <div class="sender-ctn">
+                  <div class="count-ctn">
+                    <div class="button-send primary" data-l10n-id="sms-send" id="sms-send-incontact"></div>
+                  </div>
+                </div>
+              </div>
             </section>
-          </div>
+            <section id="show-multi-contacts" class="card-view" hidden="true">
+              <span id="show-contacts-header" class="title"></span>
+              <div id="show-contacts-container">
+              </div>
+              <div class="sms-message-quick-sender">
+                <div class="sender-ctn">
+                  <div class="count-ctn">
+                    <div class="button-send primary" data-l10n-id="sms-send" id="sms-send-inmulticontact"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </section>
+          <section id="sms-view-sub" class="sub-view" hidden="true">
+            <section id="sms-send-view" class="card-view sms-send-form">
+              <div class="sms-send-view"></div>
+              <div id="sms-send-view-header" data-l10n-id="sms-send-view-header"></div>
+              <form id="sms-send-view-form" action="#" onsubmit="return false;">
+                <div id="sms-send-button" class="button" data-l10n-id="sms-send"></div>
+              </form>
+            </section>
+            <section id="sms-select-view" class="card-view sms-form" hidden="true">
+              <span id="select-threads-count" class="title"></span>
+              <div id="show-sms-container">
+              </div>
+            </section>
+            <section id="sms-thread-view" class="card-view sms-form" hidden="true">
+              <div class="sms-thread-header" id="sms-thread-header">
+                <img id="sms-thread-header-img" class="avatar-show avatar-show-default"></img>
+                <span id="sms-thread-header-name" class="title"></span>
+                <div id="sms-thread-header-button" class="button" data-l10n-id="add-to-contacts-from-sms"></div>
+              </div>
+              <div id='message-list-container' class="sms-message-threads-ctn">
+              </div>
+              <div class="sms-message-quick-sender">
+                <div class="sender-ctn">
+                  <textarea class="input-content" id="sender-ctn-input" autofocus="true" data-l10n-id="sender-ctn-input-placeholder" placeholder="填写您的新信息..."></textarea>
+                  <div class="count-ctn">
+                    <div class="button-send primary" data-l10n-id="sms-send" id="sms-send-inthread"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </section>
         </div>
       </div>
     </div>
