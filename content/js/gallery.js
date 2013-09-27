@@ -8,7 +8,7 @@ var Gallery = (function() {
 
   function init() {
     getListContainer().innerHTML = '';
-    showEmptyGallery(false);
+    checkGalleryIsEmpty();
   }
 
   function addPicture(picture) {
@@ -22,7 +22,7 @@ var Gallery = (function() {
       var threadBody = threadContainer.getElementsByTagName('ul')[0];
       threadBody.appendChild(_createPictureListItem(picture));
       threadContainer.dataset.length = 1 + parseInt(threadContainer.dataset.length);
-      var titles = $expr('.title', threadContainer);
+      var titles = threadContainer.getElementsByTagName('label');
       titles[0].innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
     } else {
       threadContainer = document.createElement('div');
@@ -33,7 +33,6 @@ var Gallery = (function() {
       threadContainer.appendChild(header);
 
       var title = document.createElement('label');
-      title.classList.add('title');
       header.appendChild(title);
       title.innerHTML = '<span>' + threadId + ' (' + 1 + ')</span>';
       container.appendChild(threadContainer);
@@ -97,13 +96,6 @@ var Gallery = (function() {
     }
   }
 
-  function updateUI() {
-    var pictureList = $expr('#picture-list-container li');
-    if (pictureList.length == 0) {
-      showEmptyGallery(true);
-    }
-  }
-
   function _createPictureListItem(picture) {
     var listItem = document.createElement('li');
     listItem.dataset.checked = 'false';
@@ -122,16 +114,10 @@ var Gallery = (function() {
       this.dataset.checked = itemCheckbox.classList.toggle('pic-checked');
       var threadBody = this.parentNode;
       var threadContainer = threadBody.parentNode;
-      var labels = threadContainer.getElementsByTagName('label');
-      if ($expr('.pic-checked', threadBody).length == threadContainer.dataset.length) {
-        labels[0].classList.add('thread-checked');
-        threadContainer.dataset.checked = true;
-      } else {
-        labels[0].classList.remove('thread-checked');
-        threadContainer.dataset.checked = false;
-      }
+      threadContainer.dataset.checked = $expr('.pic-checked', threadBody).length == threadContainer.dataset.length;
       opStateChanged();
     };
+
     listItem.ondblclick = function(e) {
       var tip = $id('pic-tip');
       if (tip) {
@@ -144,7 +130,7 @@ var Gallery = (function() {
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
       req.onsuccess = function on_success(result) {
-        var dialog = new ShowPicDialog({
+        var dialog = new ImageViewer({
           cachedUrl: cachedUrl,
           picUrl: self.dataset.picUrl,
           showPreviousPic: showPreviousPic,
@@ -155,6 +141,7 @@ var Gallery = (function() {
         alert("Can't pull picture to cache");
       };
     };
+
     listItem.onmouseover = function(e) {
       var tip = document.createElement('div');
       tip.setAttribute('id', 'pic-tip');
@@ -164,6 +151,7 @@ var Gallery = (function() {
       tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:' + parseDate(parseInt(this.dataset.date)) + '</div><div>size:' + toSizeInMB(this.dataset.size) + 'M' + '</div>';
       $id('gallery-view').appendChild(tip);
     };
+
     listItem.onmouseout = function(e) {
       var tip = $id('pic-tip');
       if (tip) {
@@ -193,17 +181,9 @@ var Gallery = (function() {
     var isEmpty = $expr('#picture-list-container li').length === 0;
     if (isEmpty) {
       $id('selectAll-pictures').dataset.disabled = true;
-      showEmptyGallery(true);
-    } else {
-      $id('selectAll-pictures').dataset.disabled = false;
-      showEmptyGallery(false);
-    }
-  }
-
-  function showEmptyGallery(bFlag) {
-    if (bFlag) {
       $id('empty-picture-container').hidden = false;
     } else {
+      $id('selectAll-pictures').dataset.disabled = false;
       $id('empty-picture-container').hidden = true;
     }
   }
@@ -305,7 +285,7 @@ var Gallery = (function() {
       picDiv.dataset.checked = selected;
     });
 
-    var groupCheckbox = $expr('.title', group)[0];
+    var groupCheckbox = group.getElementsByTagName('label')[0];
 
     if (!groupCheckbox) {
       return;
@@ -396,6 +376,8 @@ var Gallery = (function() {
           updateRemovedPictures(filesToBeRemoved);
           checkGalleryIsEmpty();
           opStateChanged();
+        } else {
+          removePicture();
         }
       };
 
@@ -420,6 +402,8 @@ var Gallery = (function() {
           updateRemovedPictures(filesToBeRemoved);
           checkGalleryIsEmpty();
           opStateChanged();
+        } else {
+          removePicture();
         }
       };
     }, 0);
@@ -705,7 +689,7 @@ var Gallery = (function() {
     init: init,
     addPicture: addPicture,
     updateRemovedPictures: updateRemovedPictures,
-    updateUI: updateUI,
+    checkGalleryIsEmpty: checkGalleryIsEmpty,
     selectAllPictures: selectAllPictures,
     removePictures: removePictures
   };

@@ -141,18 +141,21 @@
   margin-top: 0.4rem;
 }
 
-.picture-thread .header .title {
+.picture-thread[data-checked=false] label {
   background-image: url("images/checkbox.png");
   background-position: 0.2rem 0;
   background-repeat: no-repeat;
   display: inline-block;
 }
 
-.picture-thread .header .thread-checked {
-  background-image: url("images/checkbox-checked.png");  
+.picture-thread[data-checked=true] label {
+  background-image: url("images/checkbox-checked.png");
+  background-position: 0.2rem 0;
+  background-repeat: no-repeat;
+  display: inline-block;
 }
 
-.picture-thread .header .title >span {
+.picture-thread span {
   margin-left: 2.4rem;
 }
 

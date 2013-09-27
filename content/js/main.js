@@ -354,7 +354,7 @@ var FFOSAssistant = (function() {
           }
           if (changedPicture.callbackID == 'onscanend') {
             Gallery.selectAllPictures(false);
-            Gallery.updateUI();
+            Gallery.checkGalleryIsEmpty();
             animationLoading.stop(loadingGroupId);
             return;
           }

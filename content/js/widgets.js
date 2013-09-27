@@ -862,11 +862,11 @@ FilesOPDialog.prototype = {
   }
 };
 
-function ShowPicDialog(options) {
+function ImageViewer(options) {
   this.initailize(options);
 }
 
-ShowPicDialog.prototype = {
+ImageViewer.prototype = {
   initailize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
@@ -886,7 +886,7 @@ ShowPicDialog.prototype = {
 
   closeAll: function() {
     var evt = document.createEvent('Event');
-    evt.initEvent('ShowPicDialog:show', true, true);
+    evt.initEvent('ImageViewer:show', true, true);
     document.dispatchEvent(evt);
   },
 
@@ -914,7 +914,7 @@ ShowPicDialog.prototype = {
 
     var self = this;
     document.addEventListener('keypress', function(e) {
-      self._fireEvent('ShowPicDialog:show', e.keyCode);
+      self._fireEvent('ImageViewer:show', e.keyCode);
     });
 
     $id('gallery-left-arrow').onclick = this.options.showPreviousPic;
@@ -937,10 +937,10 @@ ShowPicDialog.prototype = {
         return;
       }
     }
-    document.addEventListener('ShowPicDialog:show', this._onModalDialogShown);
+    document.addEventListener('ImageViewer:show', this._onModalDialogShown);
 
     // Make sure other modal dialog has a chance to close itself.
-    this._fireEvent('ShowPicDialog:show');
+    this._fireEvent('ImageViewer:show');
   },
 
   _makeDialogCancelable: function() {
@@ -962,7 +962,7 @@ ShowPicDialog.prototype = {
     this._modalElement.parentNode.removeChild(this._modalElement);
     this._mask = null;
     this._modalElement = null;
-    document.removeEventListener('ShowPicDialog:show', this._onModalDialogShown);
+    document.removeEventListener('ImageViewer:show', this._onModalDialogShown);
     this.options.onclose();
   }
 };
