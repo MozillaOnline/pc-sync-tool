@@ -229,6 +229,7 @@ GroupedList.prototype = {
     // remove whole group
     if (group.dataList.length === 0) {
       groupElem.parentNode.removeChild(groupElem);
+      this._groupedData.splice(this._groupedData.indexOf(group),1);
     } else {
       for (var i = 0; i < groupElem.childNodes.length; i++) {
         var child = groupElem.childNodes[i];

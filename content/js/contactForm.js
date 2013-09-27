@@ -370,11 +370,7 @@ var ContactForm = (function() {
       alert(_('EmptyName'));
       return;
     }
-    /*
-    if (mobile == '') {
-      alert(_('EmptyPhone'));
-      return;
-    }*/
+    var loadingGroupId = animationLoading.start();
     contact = {
       id: null,
       photo: [],
@@ -415,7 +411,11 @@ var ContactForm = (function() {
       "carrier": ""
     }];
     CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
+      $id('fullName').value = '';
+      $id('mobile').value = '';
+      animationLoading.stop(loadingGroupId);
     }, function onerror_addcontact(message) {
+      animationLoading.stop(loadingGroupId);
       alert('Error occurs when quick adding contact: ' + JSON.stringify(message));
     });
   }

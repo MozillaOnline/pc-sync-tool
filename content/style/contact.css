@@ -132,7 +132,7 @@
   text-align: center;
 }
 
-.quick-add_view {
+.quick-add-view {
   background: url('images/logo.png') no-repeat scroll center center transparent;
   height: 20rem;
   width: 100%;
@@ -149,6 +149,7 @@
   padding-left: 1rem;
   padding-bottom: 2rem;
   font-size: 1.8rem;
+  margin-top: 8rem;
 }
 
 #contact-quick-add-form > div {

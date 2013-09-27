@@ -72,6 +72,9 @@ TCPConnectionPool.prototype = {
   },
 
   _getWrapperBySocket: function tc_getWrapperBySocket(socket) {
+    if (!this._connPool) {
+      return null;
+    }
     for (var i = 0; i < this._connPool.length; i++) {
       var wrapper = this._connPool[i];
       if (wrapper.socket == socket) {
