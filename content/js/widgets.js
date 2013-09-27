@@ -694,26 +694,21 @@ SelectContactsDialog.prototype = {
       var itemNum;
       var header;
       if (target instanceof HTMLLabelElement) {
-        var item = $expr('label.unchecked', elem)[0];
-        if (item) {
-          item.classList.toggle('checked');
+        var item = $expr('label', elem)[0];
+        var select = false;
+        if (item.dataset.checked == 'false') {
+          select = true;
         }
-        if (item.classList.contains('checked')) {
-          elem.dataset.checked = true;
-          elem.dataset.focused = true;
-        } else {
-          elem.dataset.checked = false;
-          elem.dataset.focused = false;
-        }
+        elem.dataset.checked = elem.dataset.focused = item.dataset.checked = select;
         itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;
         header = _('contacts-selected', {
           n: itemNum
         });
         $id('select-contact-count').innerHTML = header;
       } else {
-        item = $expr('label.unchecked', elem)[0];
+        item = $expr('label', elem)[0];
         if (item) {
-          item.classList.checked = true;
+          item.dataset.checked = true;
         }
         elem.dataset.checked = elem.dataset.focused = true;
         itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;

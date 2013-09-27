@@ -188,7 +188,7 @@
   float: left;
 }
 
-.music-list-item >label.unchecked {
+.music-list-item >label {
   background-image: url("images/checkbox.png");
   background-position: right center;
   background-repeat: no-repeat;
@@ -197,7 +197,7 @@
   float: left;
 }
 
-.music-list-item >label.checked {
+.music-list-item >label[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
 }
 

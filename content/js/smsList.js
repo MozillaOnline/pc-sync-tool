@@ -494,17 +494,16 @@ var SmsList = (function() {
   function smsItemClicked(elem) {
     $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(e) {
       if (e != elem) {
-        e.dataset.checked = false;
-        e.dataset.focused = false;
-        var item = $expr('label.unchecked', e)[0];
+        e.dataset.checked = e.dataset.focused = false;
+        var item = $expr('label', e)[0];
         if (item) {
-          item.classList.checked = false;
+          item.dataset.checked = false;
         }
       }
     });
-    item = $expr('label.unchecked', elem)[0];
+    item = $expr('label', elem)[0];
     if (item) {
-      item.classList.checked = true;
+      item.dataset.checked = true;
     }
     elem.dataset.checked = elem.dataset.focused = true;
     if ($expr('#threads-list-container .threads-list-item').length === 1) {
@@ -517,12 +516,15 @@ var SmsList = (function() {
   }
 
   function toggleSmsItem(elem) {
-    var item = $expr('label.unchecked', elem)[0];
+    var item = $expr('label', elem)[0];
     if (!item) {
       return;
     }
-    item.classList.toggle('checked');
-    elem.dataset.checked = elem.dataset.focused = item.classList.contains('checked');
+    var select = false;
+    if (item.dataset.checked == 'false') {
+      select = true;
+    }
+    elem.dataset.checked = elem.dataset.focused = item.dataset.checked = select;
     opStateChanged();
   }
 
@@ -536,8 +538,7 @@ var SmsList = (function() {
     } else {
       item = $expr('#threads-list-container .threads-list-item[data-checked="true"]');
       threadlistLength = item.length;
-      $id('selectAll-sms').dataset.checked =
-      $expr('#threads-list-container .threads-list-item').length === threadlistLength;
+      $id('selectAll-sms').dataset.checked = $expr('#threads-list-container .threads-list-item').length === threadlistLength;
       $id('selectAll-sms').dataset.disabled = false;
       if (threadlistLength == 1) {
         showThreadView(item);
@@ -553,11 +554,11 @@ var SmsList = (function() {
 
   function selectAllSms(select) {
     $expr('#threads-list-container .threads-list-item').forEach(function(elem) {
-      var item = $expr('label.unchecked', elem)[0];
+      var item = $expr('label', elem)[0];
       if (!item) {
         return;
       }
-      item.classList.checked = elem.dataset.checked = elem.dataset.focused = select;
+      item.dataset.checked = elem.dataset.checked = elem.dataset.focused = select;
     });
     opStateChanged();
   }
@@ -570,7 +571,6 @@ var SmsList = (function() {
       updateAvatar();
       return;
     }
-    var loadingGroupId = animationLoading.start();
     var threadListData = threadList.getGroupedData();
     if (threadListData.length > 0) {
       threadListData = threadListData[0].dataList;
@@ -600,7 +600,6 @@ var SmsList = (function() {
         threadListData[i].lastMessageType = msg.type;
         threadList.add(threadListData[i]);
         updateThreadAvatar(threadListData[i]);
-        animationLoading.stop(loadingGroupId);
         return;
       }
     } else {
@@ -630,7 +629,6 @@ var SmsList = (function() {
     tempthreadListData['threadIndex'] = msg.threadId;
     threadList.add(tempthreadListData);
     updateThreadAvatar(tempthreadListData);
-    animationLoading.stop(loadingGroupId);
   }
 
   function removeThread(item) {

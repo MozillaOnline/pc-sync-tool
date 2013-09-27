@@ -283,11 +283,11 @@ var ContactList = (function() {
 
   function selectAllContacts(select) {
     $expr('#contact-list-container .contact-list-item').forEach(function(elem) {
-      var item = $expr('label.unchecked', elem)[0];
+      var item = $expr('label', elem)[0];
       if (!item) {
         return;
       }
-      item.classList.checked = elem.dataset.checked = elem.dataset.focused = select;
+      item.dataset.checked = elem.dataset.checked = elem.dataset.focused = select;
     });
 
     opStateChanged();
@@ -296,18 +296,17 @@ var ContactList = (function() {
   function contactItemClicked(elem) {
     $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(e) {
       if (e != elem) {
-        e.dataset.checked = false;
-        e.dataset.focused = false;
-        var item = $expr('label.unchecked', e)[0];
+        e.dataset.checked = e.dataset.focused = false;
+        var item = $expr('label', e)[0];
         if (item) {
-          item.classList.checked = false;
+          item.dataset.checked = false;
         }
       }
     });
 
-    item = $expr('label.unchecked', elem)[0];
+    item = $expr('label', elem)[0];
     if (item) {
-      item.classList.checked = true;
+      item.dataset.checked = true;
     }
     elem.dataset.checked = elem.dataset.focused = true;
     if ($expr('#contact-list-container .contact-list-item').length === 1) {
@@ -322,12 +321,15 @@ var ContactList = (function() {
   }
 
   function toggleContactItem(elem) {
-    var item = $expr('label.unchecked', elem)[0];
+    var item = $expr('label', elem)[0];
     if (!item) {
       return;
     }
-    item.classList.toggle('checked');
-    elem.dataset.checked = elem.dataset.focused = item.classList.contains('checked');
+    var select = false;
+    if (item.dataset.checked == 'false') {
+      select = true;
+    }
+    elem.dataset.checked = elem.dataset.focused = item.dataset.checked = select;
     opStateChanged();
     if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 0) {
       ViewManager.showViews('contact-quick-add-view');

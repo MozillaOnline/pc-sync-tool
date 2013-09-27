@@ -212,7 +212,7 @@
   width: 3.5rem;
 }
 
-.threads-list-item > label.unchecked {
+.threads-list-item > label {
   background-image: url("images/checkbox.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -220,8 +220,8 @@
   width: 2rem;
 }
 
-.threads-list-item > label.checked {
-  background-image: url("images/checkbox-checked.png");
+.threads-list-item > label[data-checked=true] {
+  background-image: url('images/checkbox-checked.png');
 }
 
 .threads-list-item .avatar-default {

@@ -87,7 +87,7 @@ var MusicList = (function() {
 
   function _createMusicListItem(music) {
     var html = '';
-    html += '<label class="unchecked"></label>';
+    html += '<label data-checked="false"></label>';
     html += '<div class="music-names item"><span>' + music.metadata.title + '</span></div>';
     html += '<div class="music-singer item"><span>' + music.metadata.artist + '</span></div>';
     html += '<div class="music-album item"><span>' + music.metadata.album + '</span></div>';
@@ -117,15 +117,15 @@ var MusicList = (function() {
   }
 
   function toggleMusicItem(elem) {
-    var item = $expr('label.unchecked', elem)[0];
-    if (item) {
-      item.classList.toggle('checked');
+    var item = $expr('label', elem)[0];
+    if (!item) {
+      return;
     }
-    if (item.classList.contains('checked')) {
-      elem.dataset.checked = true;
-    } else {
-      elem.dataset.checked = false;
+    var select = false;
+    if (item.dataset.checked == 'false') {
+      select = true;
     }
+    elem.dataset.checked = item.dataset.checked = select;
     opStateChanged();
   }
 
@@ -148,16 +148,16 @@ var MusicList = (function() {
     $expr('#music-list-container .music-list-item[data-checked="true"]').forEach(function(e) {
       if (e != elem) {
         e.dataset.checked = false;
-        var item = $expr('label.unchecked', e)[0];
+        var item = $expr('label', e)[0];
         if (item) {
-          item.classList.checked = false;
+          item.dataset.checked = false;
         }
       }
     });
 
-    item = $expr('label.unchecked', elem)[0];
+    item = $expr('label', elem)[0];
     if (item) {
-      item.classList.checked = true;
+      item.dataset.checked = true;
     }
     elem.dataset.checked = true;
     if ($expr('#music-list-container .music-list-item').length === 1) {
@@ -186,11 +186,11 @@ var MusicList = (function() {
   }
 
   function selectMusicItem(elem, selected) {
-    var item = $expr('label.unchecked', elem)[0];
+    var item = $expr('label', elem)[0];
     if (!item) {
       return;
     }
-    item.classList.checked = elem.dataset.checked = selected;
+    item.dataset.checked = elem.dataset.checked = selected;
   }
 
   /**
