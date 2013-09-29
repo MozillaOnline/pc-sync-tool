@@ -867,22 +867,30 @@
   min-height:2.0rem;
   overflow-x: hidden;
   overflow-y: auto;
+  float: left;
+  width: 20rem;
 }
 
 .sms-message-quick-sender .sender-ctn .count-ctn{
-  min-width:7.8rem
+  min-width:7.8rem;
+  padding-top: 0.6rem;
 }
 
 .sms-message-quick-sender .sender-ctn .count-ctn .button-send{
-  width:100%;
-  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
-  border-radius: 0.3rem 0.3rem 0.3rem 0.3rem;
-  color: white;
+  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 buttonface;
+  border: 0.1rem solid #999999;
+  border-radius: 0.3rem;
+  box-shadow: 0 0.1rem 0 0 rgba(255, 255, 255, 0.2) inset;
+  color: #FFFFFF;
   cursor: pointer;
   display: inline-block;
+  font: 1.2rem/1.5em Arial,Helvetica,Microsoft Yahei,sans-serif;
   height: 2.6rem;
   letter-spacing: normal;
+  min-width: 6.5rem;
+  padding: 0.3rem 1rem;
   text-align: center;
+  text-shadow: 0 0.1rem 0 rgba(0, 0, 0, 0.2);
   vertical-align: middle;
   word-spacing: normal;
 }
@@ -1204,14 +1212,9 @@
   margin-top: 2.2rem;
   margin-left: 1rem;
   font-size: 2.2rem;
-  text-align: center;
   width: 17rem;
   display: block;
-}
-
-#sms-thread-header-button {
-  margin-left: 9.5rem;
-  height: 2.1rem;
-  margin-top: 6rem;
-  width: 10.6rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

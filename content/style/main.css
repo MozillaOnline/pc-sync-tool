@@ -34,6 +34,7 @@ input[type="tel"],
 input[type="search"],
 input[type="number"],
 input[type="url"], textarea {
+  text-overflow: ellipsis;
   -moz-box-sizing: border-box;
   width: 100%;
   border: 0.1rem solid #CCCCCC;
@@ -810,7 +811,7 @@ input.modal-btn {
 
 .loading {
   background: transparent;
-  border: 0.1rem #aaaaaa solid;
+  border: 0.1rem #E86000 solid;
   border-radius: 50%;
   font-size: 18px;
   height: 100px;
@@ -828,7 +829,7 @@ input.modal-btn {
   background-color: rgba(255, 255, 255, 0.2);
   border: 5px solid #FFF;
   border-radius: 50%;
-  box-shadow: 0 0 5px 0 #009933;
+  box-shadow: 0 0 5px 0 #E86000;
   height: 100px;
   position: absolute;
   top: 0px;
@@ -840,13 +841,13 @@ input.modal-btn {
 }
 
 .loading > div:nth-child(2) {
-  border-color: #FFF;
+  border-color: #E86000;
   left: 0px;
   width: 90px;
 }
 
 .loading > div:nth-child(3) {
-  border-color: #009933;
+  border-color: #E86000;
   left: -5px;
   width: 100px;
   /* css3 delay */
