@@ -123,23 +123,20 @@ var Gallery = (function() {
       if (tip) {
         tip.parentNode.removeChild(tip);
       }
-      var self = this;
-      var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
-      var cmd = 'adb pull "' + self.dataset.picUrl + '" "' + path + self.dataset.picUrl + '"';
-      var cachedUrl = PRE_PATH + CACHE_FOLDER_NAME + self.dataset.picUrl;
-      var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
-      req.onsuccess = function on_success(result) {
-        var dialog = new ImageViewer({
-          cachedUrl: cachedUrl,
-          picUrl: self.dataset.picUrl,
-          showPreviousPic: showPreviousPic,
-          showNextPic: showNextPic
-        });
-      };
-      req.onerror = function on_error(e) {
-        alert("Can't pull picture to cache");
-      };
+      var picList = $expr('li', getListContainer());
+      var currentIndex = 0;
+      for (; currentIndex < picList.length; currentIndex++) {
+        if (picList[currentIndex].dataset.picUrl == this.dataset.picUrl) {
+          break;
+        }
+      }
+
+      var imageViewer = new ImageViewer({
+        count: picList.length,
+        currentIndex: currentIndex,
+        getPictureAt: getPictureAt
+      });
     };
 
     listItem.onmouseover = function(e) {
@@ -159,6 +156,24 @@ var Gallery = (function() {
       }
     };
     return listItem;
+  }
+
+  function getPictureAt(index, callback) {
+    var picList = $expr('li', getListContainer());
+    if (picList[index]) {
+      //TODO: CHECK IF PICTURE HAS BEEN CACHED ALREADY
+      var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
+      var cmd = 'adb pull "' + picList[index].dataset.picUrl + '" "' + path + picList[index].dataset.picUrl + '"';
+      var cachedUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[index].dataset.picUrl;
+      var req = navigator.mozFFOSAssistant.runCmd(cmd);
+
+      req.onsuccess = function on_success(result) {
+        callback(true, cachedUrl);
+      };
+      req.onerror = function on_error(e) {
+        callback(false);
+      };
+    }
   }
 
   function opStateChanged() {
@@ -186,89 +201,6 @@ var Gallery = (function() {
       $id('selectAll-pictures').dataset.disabled = false;
       $id('empty-picture-container').hidden = true;
     }
-  }
-
-  function showPreviousPic() {
-    var picList = $expr('li', getListContainer());
-    var pic = $id('pic-content');
-    var originalPicUrl;
-    for (var i = 0; i < picList.length; i++) {
-      if (picList[i].dataset.picUrl != pic.dataset.picUrl) {
-        continue;
-      }
-      if (i == 0) {
-        pic.dataset.picUrl = picList[picList.length - 1].dataset.picUrl;
-        //TODO: check if picture cached
-        var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
-        var cmd = 'adb pull "' + picList[picList.length - 1].dataset.picUrl + '" "' + path + picList[picList.length - 1].dataset.picUrl + '"';
-        originalPicUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[picList.length - 1].dataset.picUrl;
-        var req = navigator.mozFFOSAssistant.runCmd(cmd);
-
-        req.onsuccess = function on_success(result) {
-          pic.setAttribute('src', originalPicUrl);
-        };
-        req.onerror = function on_error(e) {
-          alert("Can't pull picture to cache");
-        };
-      } else {
-        pic.dataset.picUrl = picList[i - 1].dataset.picUrl;
-        //TODO: check if picture cached
-        var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
-        var cmd = 'adb pull "' + picList[i - 1].dataset.picUrl + '" "' + path + picList[i - 1].dataset.picUrl + '"';
-        originalPicUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[i - 1].dataset.picUrl;
-        var req = navigator.mozFFOSAssistant.runCmd(cmd);
-
-        req.onsuccess = function on_success(result) {
-          pic.setAttribute('src', originalPicUrl);
-        };
-        req.onerror = function on_error(e) {
-          alert("Can't pull picture to cache");
-        };
-      }
-      break;
-    }
-  }
-
-  function showNextPic() {
-    var picList = $expr('li', getListContainer());
-    var pic = $id('pic-content');
-
-    for (var i = 0; i < picList.length; i++) {
-      if (picList[i].dataset.picUrl != pic.dataset.picUrl) {
-        continue;
-      }
-      if (i == picList.length - 1) {
-        pic.dataset.picUrl = picList[0].dataset.picUrl;
-        //TODO: check if picture cached
-        var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
-        var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + path + picList[0].dataset.picUrl + '"';
-        var nextUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[0].dataset.picUrl;
-        var req = navigator.mozFFOSAssistant.runCmd(cmd);
-
-        req.onsuccess = function on_success(result) {
-          pic.setAttribute('src', nextUrl);
-        };
-        req.onerror = function on_error(e) {
-          alert("Can't pull picture to cache");
-        };
-      } else {
-        pic.dataset.picUrl = picList[i + 1].dataset.picUrl;
-        //TODO: check if picture cached
-        var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
-        var cmd = 'adb pull "' + picList[i + 1].dataset.picUrl + '" "' + path + picList[i + 1].dataset.picUrl + '"';
-        var nextUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[i + 1].dataset.picUrl;
-        var req = navigator.mozFFOSAssistant.runCmd(cmd);
-
-        req.onsuccess = function on_success(result) {
-          pic.setAttribute('src', nextUrl);
-        };
-        req.onerror = function on_error(e) {
-          alert("Can't pull picture to cache");
-        };
-      }
-      break;
-    }
-
   }
 
   function selectAllPictures(select) {

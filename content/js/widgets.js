@@ -870,13 +870,13 @@ ImageViewer.prototype = {
   initailize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
-      picUrl: null,
-      showPreviousPic: emptyFunction,
-      showNextPic: emptyFunction
+      count: 0,
+      currentIndex: 0,
+      getPictureAt: emptyFunction
     }, options);
 
-    if (!this.options.picUrl) {
-      alert("selected picture doesn't exist");
+    if (this.options.count <= 0) {
+      alert("Gallery is empty");
       return;
     }
     this._modalElement = null;
@@ -891,62 +891,96 @@ ImageViewer.prototype = {
   },
 
   _build: function() {
-    this._mask = document.createElement('div');
-    this._mask.className = 'mask';
-    var container = document.getElementById('modal-container');
-    container.appendChild(this._mask);
+    this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
+      if (!bCached) {
+        alert('Cache picture failed');
+        return;
+      }
 
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'dialog';
+      this._mask = document.createElement('div');
+      this._mask.className = 'mask';
+      var container = document.getElementById('modal-container');
+      container.appendChild(this._mask);
 
-    var templateData = {
-      cachedUrl: this.options.cachedUrl,
-      picUrl: this.options.picUrl
-    };
+      this._modalElement = document.createElement('div');
+      this._modalElement.className = 'dialog';
 
-    try {
-      this._modalElement.innerHTML = tmpl('tmpl_showPic_dialog', templateData);
-    } catch (e) {
-      alert(e);
-    }
-    container.appendChild(this._modalElement);
-    this._makeDialogCancelable();
+      var templateData = {
+        cachedUrl: cachedUrl
+      };
 
-    var self = this;
-    document.addEventListener('keypress', function(e) {
-      self._fireEvent('ImageViewer:show', e.keyCode);
-    });
+      try {
+        this._modalElement.innerHTML = tmpl('tmpl_img_viewer', templateData);
+      } catch (e) {
+        alert(e);
+      }
+      container.appendChild(this._modalElement);
+      this._addListeners();
 
-    $id('gallery-left-arrow').onclick = this.options.showPreviousPic;
-    $id('gallery-right-arrow').onclick = this.options.showNextPic;
+      var self = this;
+      document.addEventListener('keypress', function(e) {
+        self._fireEvent('ImageViewer:show', e.keyCode);
+      });
 
-    this._onModalDialogShown = function(event) {
-      if (event.data && event.data == 37) {
-        if ($id('gallery-view').dataset.shown == 'true') {
-          self.options.showPreviousPic();
+      this._onImageViewerShown = function(event) {
+        if (event.data && event.data == 37) {
+          if ($id('gallery-view').dataset.shown == 'true') {
+            self._showPreviousPic();
+          }
+          return;
         }
-        return;
-      }
-      if (event.data && event.data == 39) {
-        if ($id('gallery-view').dataset.shown == 'true') {
-          self.options.showNextPic();
+        if (event.data && event.data == 39) {
+          if ($id('gallery-view').dataset.shown == 'true') {
+            self._showNextPic();
+          }
+          return;
         }
-        return;
+        if (event.targetElement == self._modalElement) {
+          return;
+        }
       }
-      if (event.targetElement == self._modalElement) {
-        return;
-      }
-    }
-    document.addEventListener('ImageViewer:show', this._onModalDialogShown);
+      document.addEventListener('ImageViewer:show', this._onImageViewerShown);
 
-    // Make sure other modal dialog has a chance to close itself.
-    this._fireEvent('ImageViewer:show');
+      this._fireEvent('ImageViewer:show');
+    }.bind(this));
   },
 
-  _makeDialogCancelable: function() {
+  _showPreviousPic: function() {
+    this.options.currentIndex -= 1;
+    if (this.options.currentIndex < 0) {
+      this.options.currentIndex += this.options.count;
+    }
+    this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
+      if (!bCached) {
+        $id('pic-content').setAttribute('src', '');
+        alert('Cache picture failed');
+        return;
+      }
+      $id('pic-content').setAttribute('src', cachedUrl);
+    });
+  },
+
+  _showNextPic: function() {
+    this.options.currentIndex += 1;
+    if (this.options.currentIndex >= this.options.count) {
+      this.options.currentIndex -= this.options.count;
+    }
+    this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
+      if (!bCached) {
+        $id('pic-content').setAttribute('src', '');
+        alert('Cache picture failed');
+        return;
+      }
+      $id('pic-content').setAttribute('src', cachedUrl);;
+    });
+  },
+
+  _addListeners: function() {
     var closeBtn = $expr('.closeX', this._modalElement)[0];
     closeBtn.hidden = false;
     closeBtn.addEventListener('click', this.close.bind(this));
+    $id('gallery-left-arrow').addEventListener('click', this._showPreviousPic.bind(this));
+    $id('gallery-right-arrow').addEventListener('click', this._showNextPic.bind(this));
   },
 
   _fireEvent: function(name, data) {
