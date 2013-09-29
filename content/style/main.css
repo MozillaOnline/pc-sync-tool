@@ -497,7 +497,7 @@ input[type="url"], textarea {
 }
 
 .content .view span.title {
-  display: block;
+  display: -moz-inline-box;
   padding: 2rem 1rem 1rem 2rem;
   font-size: 2.5rem;
 }
@@ -516,6 +516,10 @@ input[type="url"], textarea {
 }
 
 /******** summary view ******/
+#device-disconnect {
+  display: -moz-inline-box;
+}
+
 #device-image {
   float: left;
   width: 50%;
@@ -537,6 +541,9 @@ input[type="url"], textarea {
   background: url("images/usb.png") no-repeat center top transparent;
 }
 
+#device-image .device-connect.wifiConnection {
+  background: url("images/wireless.png") no-repeat center top transparent;
+}
 
 #summary-infos {
   float: left;

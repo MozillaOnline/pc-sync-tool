@@ -294,6 +294,7 @@ var ContactForm = (function() {
     var contactId = $id('contact-form-id').value;
     var updateContact = !! contactId;
     var contact = null;
+    var loadingGroupId = animationLoading.start();
 
     if (updateContact) {
       // Update contact
@@ -351,13 +352,17 @@ var ContactForm = (function() {
     if (updateContact) {
       // Save to device
       CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {
+        animationLoading.stop(loadingGroupId);
       }, function onerror_updatecontact(message) {
+        animationLoading.stop(loadingGroupId);
         new AlertDialog('Error occurs when updating contacts: ' + JSON.stringify(message));
       });
     } else {
       // Create new contact
       CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
+        animationLoading.stop(loadingGroupId);
       }, function onerror_addcontact(message) {
+        animationLoading.stop(loadingGroupId);
         new AlertDialog('Error occurs when adding contacts: ' + JSON.stringify(message));
       });
     }

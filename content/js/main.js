@@ -134,7 +134,22 @@ var FFOSAssistant = (function() {
         new AlertDialog(e);
       });
     };
-
+    $id('device-disconnect').addEventListener('click', function onclick_disconnect(event) {
+      if (connPool) {
+        connPool.finalize();
+        connPool = null;
+      }
+      if (heartBeatSocket) {
+        heartBeatSocket.close();
+      }
+      showConnectView();
+      ViewManager.reset();
+    });
+    if (navigator.mozFFOSAssistant.isWifiConnect) {
+      $id('device-image-connection').classList.add('wifiConnection');
+    } else {
+      $id('device-image-connection').classList.remove('wifiConnection');
+    }
     $id('device-connected').classList.remove('hiddenElement');
     $id('device-unconnected').classList.add('hiddenElement');
     ViewManager.showContent('summary-view');
