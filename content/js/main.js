@@ -402,13 +402,13 @@ var FFOSAssistant = (function() {
             return;
           }
           if (changedVideo.callbackID == 'ondeleted') {
-            Video.removeVideo(changedVideo.detail);
+            Video.updateRemovedVideos(changedVideo.detail);
             return;
           }
           if (changedVideo.callbackID == 'onscanend') {
             // Make sure the 'select-all' box is not checked.
             Video.selectAllVideos(false);
-            Video.updateUI();
+            Video.checkVideoListIsEmpty();
             animationLoading.stop(loadingGroupId);
             return;
           }

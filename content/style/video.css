@@ -142,18 +142,21 @@
   margin-top: 0.4rem;
 }
 
-.video-thread .header .title {
+.video-thread[data-checked=false] label {
   background-image: url("images/checkbox.png");
   background-position: 0.2rem 0;
   background-repeat: no-repeat;
   display: inline-block;
 }
 
-.video-thread .header .group-checked {
+.video-thread[data-checked=true] label {
   background-image: url("images/checkbox-checked.png");
+  background-position: 0.2rem 0;
+  background-repeat: no-repeat;
+  display: inline-block;
 }
 
-.video-thread .header .title >span {
+.video-thread span {
   margin-left: 2.4rem;
 }
 
@@ -178,19 +181,6 @@
 .video-item:hover {
 }
 
-.video-unchecked {
-  width: 1.7rem;
-  height: 1.7rem;
-  position: absolute;
-  left: 8.3rem;
-  background-image: url("images/pic-unchecked.png");
-  top: 1.0rem;
-}
-
-.video-checked {
-  background-image: url("images/pic-checked.png");
-}
-
 .video-thread .body >li {
   position: relative;
   width: 11.0rem;
@@ -204,6 +194,24 @@
   width: 10.6rem;
   height: 7.8rem;
   border: 0.2rem white solid;
+}
+
+.video-thread li[data-checked=true] .item-check {
+  width: 1.7rem;
+  height: 1.7rem;
+  position: absolute;
+  left: 8.3rem;
+  background-image: url("images/pic-checked.png");
+  top: 1.0rem;
+}
+
+.video-thread li[data-checked=false] .item-check {
+  width: 1.7rem;
+  height: 1.7rem;
+  position: absolute;
+  left: 8.3rem;
+  background-image: url("images/pic-unchecked.png");
+  top: 1.0rem;
 }
 
 .video-thread .body img:hover {

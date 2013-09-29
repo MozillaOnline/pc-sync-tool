@@ -36,7 +36,7 @@ var Gallery = (function() {
       header.appendChild(title);
       title.innerHTML = '<span>' + threadId + ' (' + 1 + ')</span>';
       container.appendChild(threadContainer);
-      title.onclick = function onSelectGroup(e) {
+      title.onclick = function onSelectThread(e) {
         var target = e.target;
         if (target instanceof HTMLLabelElement) {
           target.classList.toggle('thread-checked');
@@ -194,13 +194,8 @@ var Gallery = (function() {
 
   function checkGalleryIsEmpty() {
     var isEmpty = $expr('#picture-list-container li').length === 0;
-    if (isEmpty) {
-      $id('selectAll-pictures').dataset.disabled = true;
-      $id('empty-picture-container').hidden = false;
-    } else {
-      $id('selectAll-pictures').dataset.disabled = false;
-      $id('empty-picture-container').hidden = true;
-    }
+    $id('selectAll-pictures').dataset.disabled = isEmpty;
+    $id('empty-picture-container').hidden = !isEmpty;
   }
 
   function selectAllPictures(select) {
@@ -213,24 +208,24 @@ var Gallery = (function() {
 
   function selectPicturesGroup(group, selected) {
     group.dataset.checked = selected;
-    $expr('li', group).forEach(function(picDiv) {
-      picDiv.dataset.checked = selected;
+    $expr('li', group).forEach(function(item) {
+      item.dataset.checked = selected;
     });
 
-    var groupCheckbox = group.getElementsByTagName('label')[0];
+    var threadCheckbox = group.getElementsByTagName('label')[0];
 
-    if (!groupCheckbox) {
+    if (!threadCheckbox) {
       return;
     }
     if (selected) {
-      groupCheckbox.classList.add('thread-checked');
-      $expr('.pic-unchecked', group).forEach(function(picCheckbox) {
-        picCheckbox.classList.add('pic-checked');
+      threadCheckbox.classList.add('thread-checked');
+      $expr('.pic-unchecked', group).forEach(function(cb) {
+        cb.classList.add('pic-checked');
       });
     } else {
-      groupCheckbox.classList.remove('thread-checked');
-      $expr('.pic-unchecked', group).forEach(function(picCheckbox) {
-        picCheckbox.classList.remove('pic-checked');
+      threadCheckbox.classList.remove('thread-checked');
+      $expr('.pic-unchecked', group).forEach(function(cb) {
+        cb.classList.remove('pic-checked');
       });
     }
   }
@@ -268,7 +263,7 @@ var Gallery = (function() {
     var step = range / 50;
     var bTimer = false;
 
-    setTimeout(function removePicture() {
+    setTimeout(function doRemovePicture() {
       var cmd = 'adb shell rm "' + items[fileIndex] + '"';
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!bTimer) {
@@ -309,7 +304,7 @@ var Gallery = (function() {
           checkGalleryIsEmpty();
           opStateChanged();
         } else {
-          removePicture();
+          doRemovePicture();
         }
       };
 
@@ -335,7 +330,7 @@ var Gallery = (function() {
           checkGalleryIsEmpty();
           opStateChanged();
         } else {
-          removePicture();
+          doRemovePicture();
         }
       };
     }, 0);
@@ -378,7 +373,7 @@ var Gallery = (function() {
       var step = range / 50;
       var bTimer = false;
 
-      setTimeout(function importPicture() {
+      setTimeout(function doImportPicture() {
         var cmd = 'adb push "' + pictures[fileIndex] + '" /sdcard/DCIM/';
         var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
@@ -417,7 +412,7 @@ var Gallery = (function() {
             //TODO: update imported files insteadof refreshing gallery
             FFOSAssistant.getAndShowGallery();
           } else {
-            importPicture();
+            doImportPicture();
           }
         };
 
@@ -437,7 +432,7 @@ var Gallery = (function() {
             //TODO: update imported files insteadof refreshing gallery
             FFOSAssistant.getAndShowGallery();
           } else {
-            importPicture();
+            doImportPicture();
           }
         };
       }, 0);
@@ -452,11 +447,7 @@ var Gallery = (function() {
       if (this.dataset.disabled == "true") {
         return;
       }
-      if (this.dataset.checked == "false") {
-        selectAllPictures(true);
-      } else {
-        selectAllPictures(false);
-      }
+      selectAllPictures(this.dataset.checked == "false");
     });
 
     $id('remove-pictures').addEventListener('click', function onclick_removePictures(event) {
@@ -551,7 +542,7 @@ var Gallery = (function() {
           newDir = dir.substring(1, dir.length);
         }
 
-        setTimeout(function exportPicture() {
+        setTimeout(function doExportPicture() {
           var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + '/' + convertToOutputFileName(pictures[fileIndex].dataset.picUrl) + '"';
 
           var req = navigator.mozFFOSAssistant.runCmd(cmd);
@@ -588,7 +579,7 @@ var Gallery = (function() {
                 new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
               }
             } else {
-              exportPicture();
+              doExportPicture();
             }
           };
 
@@ -606,7 +597,7 @@ var Gallery = (function() {
                 new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
               }
             } else {
-              exportPicture();
+              doExportPicture();
             }
           };
         }, 0);
