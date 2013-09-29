@@ -389,15 +389,15 @@
   height:1.6rem;
   width:1.6rem;
   float: right;
-  background: url("images/sms-cancel.png");
+  background: url("images/dialog-cancel.png");
 }
 
 .sendSms-dialog-header-x:hover{
-  background: url("images/sms-cancel-hover.png");
+  background: url("images/dialog-cancel-hover.png");
 }
 
 .sendSms-dialog-header-x:active{
-  background: url("images/sms-cancel-active.png");
+  background: url("images/dialog-cancel-active.png");
 }
 
 .sendSms-dialog-body{

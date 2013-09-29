@@ -344,7 +344,7 @@ var ContactForm = (function() {
     }
 
     if (contact.givenName.length == 0) {
-      alert(navigator.mozL10n.get('EmptyForm'));
+      new AlertDialog(navigator.mozL10n.get('EmptyForm'));
       return;
     }
 
@@ -352,13 +352,13 @@ var ContactForm = (function() {
       // Save to device
       CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {
       }, function onerror_updatecontact(message) {
-        alert('Error occurs when updating contacts: ' + JSON.stringify(message));
+        new AlertDialog('Error occurs when updating contacts: ' + JSON.stringify(message));
       });
     } else {
       // Create new contact
       CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
       }, function onerror_addcontact(message) {
-        alert('Error occurs when adding contacts: ' + JSON.stringify(message));
+        new AlertDialog('Error occurs when adding contacts: ' + JSON.stringify(message));
       });
     }
   }
@@ -367,7 +367,7 @@ var ContactForm = (function() {
     var fullName = $id('fullName').value.trim();
     var mobile = $id('mobile').value.trim();
     if (fullName == '') {
-      alert(_('EmptyName'));
+      new AlertDialog(_('EmptyName'));
       return;
     }
     var loadingGroupId = animationLoading.start();
@@ -416,7 +416,7 @@ var ContactForm = (function() {
       animationLoading.stop(loadingGroupId);
     }, function onerror_addcontact(message) {
       animationLoading.stop(loadingGroupId);
-      alert('Error occurs when quick adding contact: ' + JSON.stringify(message));
+      new AlertDialog('Error occurs when quick adding contact: ' + JSON.stringify(message));
     });
   }
 
@@ -489,7 +489,6 @@ var ContactForm = (function() {
 
       offscreenImage.onerror = function() {
         URL.revokeObjectURL(url);
-        alert('error');
       };
 
       offscreenImage.onload = function() {

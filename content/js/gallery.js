@@ -302,7 +302,7 @@ var Gallery = (function() {
           //updating UI after removing pictures
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
           updateRemovedPictures(filesToBeRemoved);
@@ -328,7 +328,7 @@ var Gallery = (function() {
           //updating UI after removing pictures
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
           updateRemovedPictures(filesToBeRemoved);
@@ -412,7 +412,7 @@ var Gallery = (function() {
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing gallery
             FFOSAssistant.getAndShowGallery();
@@ -432,7 +432,7 @@ var Gallery = (function() {
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing gallery
             FFOSAssistant.getAndShowGallery();
@@ -585,7 +585,7 @@ var Gallery = (function() {
 
               if (filesCanNotBeExported.length > 0) {
                 //TODO: tell user some files can't be exported
-                alert(filesCanNotBeExported.length + " files can't be exported");
+                new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
               }
             } else {
               exportPicture();
@@ -603,7 +603,7 @@ var Gallery = (function() {
 
               if (filesCanNotBeExported.length > 0) {
                 //TODO: tell user some files can't be exported
-                alert(filesCanNotBeExported.length + " files can't be exported");
+                new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
               }
             } else {
               exportPicture();

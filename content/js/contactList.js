@@ -559,7 +559,7 @@ var ContactList = (function() {
             updateAvatar(contactData);
           }
         }, function(e) {
-          alert(e);
+          new AlertDialog(e);
         });
         break;
       }
@@ -571,7 +571,7 @@ var ContactList = (function() {
             addContact(contactData);
           }
         }, function(e) {
-          alert(e);
+          new AlertDialog(e);
         });
         break;
       }
@@ -1303,7 +1303,7 @@ var ContactList = (function() {
               }
             }
             CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {}, function onerror_addcontact(message) {
-              alert(JSON.stringify(message));
+              new AlertDialog(JSON.stringify(message));
             });
           });
         }
@@ -1405,7 +1405,7 @@ var ContactList = (function() {
 
       navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
         if (status) {
-          alert(_('export-contacts-success'));
+          new AlertDialog(_('export-contacts-success'));
         }
       }, {
         title: _('export-contacts-title'),

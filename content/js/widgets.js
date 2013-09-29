@@ -402,7 +402,7 @@ SendSMSDialog.prototype = {
           try {
             elem.innerHTML = tmpl('tmpl_select_contact', templateData);
           } catch (e) {
-            alert(e);
+            new AlertDialog(e);
           }
           elem.onclick = function onclick_sms_list(event) {
             var target = event.target;
@@ -530,7 +530,7 @@ SendSMSDialog.prototype = {
         self.options.onclose();
       }
     }, function onError_sendSms(e) {
-      alert(e);
+      new AlertDialog(e);
     });
   },
 
@@ -566,7 +566,7 @@ SendSMSDialog.prototype = {
       }
     }, function onError_sendSms(e) {
       animationLoading.stop(loadingGroupId);
-      alert(e);
+      new AlertDialog(e);
     });
   }
 };
@@ -596,7 +596,7 @@ SelectContactsDialog.prototype = {
     try {
       this._modalElement.innerHTML = tmpl('tmpl_select_contact_dialog', templateData);
     } catch (e) {
-      alert(e);
+      new AlertDialog(e);
     }
 
     document.body.appendChild(this._modalElement);
@@ -792,7 +792,7 @@ FilesOPDialog.prototype = {
     try {
       this._modalElement.innerHTML = tmpl('tmpl_fileOP_dialog', templateData);
     } catch (e) {
-      alert(e);
+      new AlertDialog(e);
     }
 
     document.body.appendChild(this._modalElement);
@@ -876,7 +876,7 @@ ImageViewer.prototype = {
     }, options);
 
     if (this.options.count <= 0) {
-      alert("Gallery is empty");
+      new AlertDialog("selected picture doesn't exist");
       return;
     }
     this._modalElement = null;
@@ -893,7 +893,7 @@ ImageViewer.prototype = {
   _build: function() {
     this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
       if (!bCached) {
-        alert('Cache picture failed');
+        new AlertDialog('Cache picture failed');
         return;
       }
 
@@ -912,7 +912,7 @@ ImageViewer.prototype = {
       try {
         this._modalElement.innerHTML = tmpl('tmpl_img_viewer', templateData);
       } catch (e) {
-        alert(e);
+      new AlertDialog(e);
       }
       container.appendChild(this._modalElement);
       this._addListeners();
@@ -953,7 +953,7 @@ ImageViewer.prototype = {
     this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
       if (!bCached) {
         $id('pic-content').setAttribute('src', '');
-        alert('Cache picture failed');
+        new AlertDialog('Cache picture failed');
         return;
       }
       $id('pic-content').setAttribute('src', cachedUrl);
@@ -968,7 +968,7 @@ ImageViewer.prototype = {
     this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
       if (!bCached) {
         $id('pic-content').setAttribute('src', '');
-        alert('Cache picture failed');
+        new AlertDialog('Cache picture failed');
         return;
       }
       $id('pic-content').setAttribute('src', cachedUrl);;
@@ -1044,7 +1044,7 @@ WifiModePromptDialog.prototype = {
     try {
       this._modalElement.innerHTML = tmpl('tmpl_wifiMode_dialog', templateData);
     } catch (e) {
-      alert(e);
+      new AlertDialog(e);
     }
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
@@ -1131,8 +1131,8 @@ animationLoadingDialog.prototype = {
     var containerHeight = $id('container').clientHeight;
     var documentHeight = document.documentElement.clientHeight;
     var loading = $expr('.loading', this._modalElement)[0];
-    loading.style.top = (documentHeight > containerHeight ? (containerHeight - loading.clientHeight) / 2 : (documentHeight - loading.clientHeight) / 2) + 'px';
     document.body.appendChild(this._modalElement);
+    loading.style.top = (documentHeight > containerHeight ? (containerHeight - loading.clientHeight) / 2 : (documentHeight - loading.clientHeight) / 2) + 'px';
     return this.groupId;
   },
 
@@ -1153,4 +1153,83 @@ animationLoadingDialog.prototype = {
       this._modalElement.parentNode.removeChild(this._modalElement);
     }
   },
+};
+
+function AlertDialog(message) {
+  this.initailize(message);
+}
+
+AlertDialog.prototype = {
+  initailize: function(message) {
+    this._modalElement = null;
+    this._mask = null;
+    this._mask = document.createElement('div');
+    this._mask.className = 'modal-mask';
+    document.body.appendChild(this._mask);
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    var templateData = {
+      message: message
+    };
+    this._modalElement.innerHTML = tmpl('tmpl_alert_dialog', templateData);
+    document.body.appendChild(this._modalElement);
+    this._adjustModalPosition();
+    this._makeDialogCancelable();
+    // Translate l10n value
+    navigator.mozL10n.translate(this._modalElement);
+    // Only one modal dialog is shown at a time.
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      // Show a popup dialog at a time.
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+
+      self.close();
+    }
+    document.addEventListener('AlertDialog:show', this._onModalDialogShown);
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('AlertDialog:show');
+    // Tweak modal dialog position when resizing.
+    this._onWindowResize = function(event) {
+      self._adjustModalPosition();
+    };
+    window.addEventListener('resize', this._onWindowResize);
+  },
+
+  closeAll: function() {
+    var evt = document.createEvent('Event');
+    evt.initEvent('AlertDialog:show', true, true);
+    document.dispatchEvent(evt);
+  },
+
+  _makeDialogCancelable: function() {
+    var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+    cancelBtn.hidden = false;
+    cancelBtn.addEventListener('click', this.close.bind(this));
+  },
+
+  _adjustModalPosition: function() {
+    var containerHeight = $id('container').clientHeight;
+    var documentHeight = document.documentElement.clientHeight;
+    var alertDialog = $expr('.alert', this._modalElement)[0];
+    alertDialog.style.top = (documentHeight > containerHeight ? (containerHeight - alertDialog.clientHeight) / 2 : (documentHeight - alertDialog.clientHeight) / 2) + 'px';
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  },
+
+  close: function() {
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+    document.removeEventListener('AlertDialog:show', this._onModalDialogShown);
+    window.removeEventListener('resize', this._onWindowResize)
+  }
 };

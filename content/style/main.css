@@ -740,7 +740,7 @@ input.modal-btn {
   height: 1.6rem;
   width: 1.6rem;
   float: right;
-  background: url("images/sms-cancel.png");
+  background: url("images/dialog-cancel.png");
 }
 
 .select-multi-files-dialog-body {
@@ -813,12 +813,12 @@ input.modal-btn {
   background: transparent;
   border: 0.1rem #E86000 solid;
   border-radius: 50%;
-  font-size: 18px;
-  height: 100px;
-  line-height: 90px;
+  font-size: 1.8rem;
+  height: 10rem;
+  line-height: 9rem;
   position: relative;
   text-align: center;
-  width: 100px;
+  width: 10rem;
   cursor: default;
   left: 0;
   margin: 0 auto;
@@ -827,12 +827,12 @@ input.modal-btn {
 
 .loading > div:nth-child(2), .loading > div:nth-child(3) {
   background-color: rgba(255, 255, 255, 0.2);
-  border: 5px solid #FFF;
+  border: 0.5rem solid #FFF;
   border-radius: 50%;
-  box-shadow: 0 0 5px 0 #E86000;
-  height: 100px;
+  box-shadow: 0 0 0.5rem 0 #E86000;
+  height: 10rem;
   position: absolute;
-  top: 0px;
+  top: 0rem;
   /* set top and bottom border widths to 0 */
   border-top-width: 0;
   border-bottom-width: 0;
@@ -842,14 +842,14 @@ input.modal-btn {
 
 .loading > div:nth-child(2) {
   border-color: #E86000;
-  left: 0px;
-  width: 90px;
+  left: 0rem;
+  width: 9rem;
 }
 
 .loading > div:nth-child(3) {
   border-color: #E86000;
-  left: -5px;
-  width: 100px;
+  left: -0.5rem;
+  width: 10rem;
   /* css3 delay */
   -moz-animation-delay:0.5s;
 }
@@ -859,4 +859,62 @@ input.modal-btn {
   from { -moz-transform: rotateY(0deg); }
   50% { -moz-transform: rotateY(180deg); }
   to { -moz-transform: rotateY(360deg); }
+}
+
+.alert {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border: 0.1rem #000 solid;
+  font-size: 1.8rem;
+  height: 20rem;
+  position: relative;
+  text-align: center;
+  width: 35rem;
+  cursor: default;
+  left: 0;
+  margin: 0 auto;
+  border-radius: 0.5rem;
+}
+
+.alert-dialog-header{
+  border-radius:0.5rem 0.5rem 0 0;
+  border-bottom:0.1rem #E86000 solid;
+  box-shadow:0 0.1rem 0 #E86000 inset;
+  padding:0.7rem 0.8rem 0.7rem 1.0rem;
+  overflow: hidden;
+  background-color: #E86000;
+  color: #FFFFFF;
+}
+
+.alert-dialog-header-title{
+  float: left
+}
+
+.alert-dialog-header-x{
+  cursor:default;
+  height:1.6rem;
+  width:1.6rem;
+  float: right;
+  background: url("images/dialog-cancel.png");
+}
+
+.alert-dialog-header-x:hover{
+  background: url("images/dialog-cancel-hover.png");
+}
+
+.alert-dialog-header-x:active{
+  background: url("images/dialog-cancel-active.png");
+}
+
+.alert-dialog-body{
+  height: 3.5em;
+  padding: 4.5rem 1.5rem 1.0rem;
+}
+
+.alert-dialog-footer{
+  border-radius:0 0 0.5rem 0.5rem;
+  padding:0 1.5rem 1.5rem;
+}
+
+.alert-dialog-footer .button{
+  color: #FFF;
 }

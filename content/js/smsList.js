@@ -107,7 +107,7 @@ var SmsList = (function() {
         }
       }
     }, function(e) {
-      alert(e);
+      new AlertDialog(e);
     });
   }
 
@@ -174,7 +174,7 @@ var SmsList = (function() {
     try {
       elem.innerHTML = tmpl('tmpl_sms_list_item', templateData);
     } catch (e) {
-      alert(e);
+      new AlertDialog(e);
     }
     elem.dataset.groupId = threadData.id;
     elem.id = 'id-threads-data-' + threadData.id;
@@ -239,7 +239,7 @@ var SmsList = (function() {
         try {
           elem.innerHTML = tmpl('tmpl_sms_select_item', templateData);
         } catch (e) {
-          alert(e);
+          new AlertDialog(e);
         }
         elem.id = 'show-multi-sms-' + SmsThreadsData.id;
         navigator.mozL10n.translate(elem);
@@ -369,7 +369,7 @@ var SmsList = (function() {
             CMD.SMS.resendMessage(JSON.stringify(resendSMS), function onSuccess(event) {
               removeMessage(smsId[1]);
             }, function onError(e) {
-              alert(e);
+              new AlertDialog(e);
             });
           });
         }
@@ -384,7 +384,7 @@ var SmsList = (function() {
             CMD.SMS.deleteMessageById(JSON.stringify(smsId), function onSuccess(event) {
               removeMessage(This.value);
             }, function onError(e) {
-              alert(e);
+              new AlertDialog(e);
             });
           });
         }
@@ -400,7 +400,7 @@ var SmsList = (function() {
 
   function createThreadDialogView(messageData) {
     CMD.SMS.markReadMessageById(JSON.stringify(messageData.id), function(response) {}, function(e) {
-      alert(e);
+      new AlertDialog(e);
     });
     var elem = document.createElement('div');
     elem.classList.add('messages-list-item');
@@ -495,7 +495,7 @@ var SmsList = (function() {
     try {
       elem.innerHTML = tmpl('tmpl_sms_display_item', templateData);
     } catch (e) {
-      alert(e);
+      new AlertDialog(e);
     }
     elem.dataset.groupId = messageData.threadId;
     elem.id = 'id-message-data-' + messageData.threadId;
@@ -672,7 +672,7 @@ var SmsList = (function() {
           animationLoading.stop(loadingGroupId);
         }, function onError(e) {
           animationLoading.stop(loadingGroupId);
-          alert(e);
+          new AlertDialog(e);
         });
       }
     }, function onerror_getThreadMessagesById(messages) {
@@ -728,7 +728,7 @@ var SmsList = (function() {
           animationLoading.stop(loadingGroupId);
           navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
             if (status) {
-              alert(_('export-sms-success'));
+              new AlertDialog(_('export-sms-success'));
             }
           }, {
             title: _('export-sms-success'),
@@ -886,7 +886,7 @@ var SmsList = (function() {
           }
         }, function onError_sendSms(e) {
           animationLoading.stop(loadingGroupId);
-          alert(e);
+          new AlertDialog(e);
         });
         body.value = '';
       }

@@ -233,7 +233,7 @@
 }
 
 .closeX {
-  background-image: url("images/sms-cancel.png");
+  background-image: url("images/dialog-cancel.png");
   background-position: center center;
   background-repeat: no-repeat;
   float: right;

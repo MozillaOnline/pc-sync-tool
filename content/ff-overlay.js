@@ -503,7 +503,7 @@
 
       this._socket.onopen = this._onopen.bind(this);
       this._socket.onerror = function(event) {
-        alert("telnet error: " + event.data);
+        debug("telnet error: " + event.data);
       };
 
       return this;

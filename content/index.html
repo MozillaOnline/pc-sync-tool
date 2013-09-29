@@ -632,7 +632,7 @@
     <menu class="sendSms-menu">
       <%for (var i=0; i<number.length; i++) {%>
         <li>
-          <label class="wc"><input type="radio" name="" value="<%=name%>"></input><span style="float: left; margin-top: 1px;"><%=name%>(<%=number[i].value%>)</span></label>
+          <label class="wc"><input type="radio" name="" value="<%=name%>"></input><span style="float: left; margin-top: 0.1rem;"><%=name%>(<%=number[i].value%>)</span></label>
         </li>
       <%}%>
     </menu>
@@ -738,6 +738,22 @@
       <span data-l10n-id="loading-message">Loading...</span>
       <div></div>
       <div></div>
+    </div>
+  </script>
+
+  <!-- templates for alert view -->
+  <script type="text/html" id="tmpl_alert_dialog">
+    <div class="alert">
+      <header class="alert-dialog-header">
+        <div class="alert-dialog-header-title" data-l10n-id="alert-dialog-title"></div>
+        <div class="alert-dialog-header-x"></div>
+      </header>
+      <div class="alert-dialog-body">
+        <span id="alert-message"><%=message%></span>
+      </div>
+      <footer class="alert-dialog-footer" style="">
+        <button data-l10n-id="OK" class="button button-cancel"></button>
+      </footer>
     </div>
   </script>
 </body>

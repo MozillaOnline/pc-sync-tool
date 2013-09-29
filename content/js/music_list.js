@@ -272,7 +272,7 @@ var MusicList = (function() {
           //updating UI after removing pictures
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
           updateMusicsList(filesToBeRemoved);
@@ -298,7 +298,7 @@ var MusicList = (function() {
           //updating UI after removing pictures
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
           updateMusicsList(filesToBeRemoved);
@@ -392,7 +392,7 @@ var MusicList = (function() {
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing musics
             FFOSAssistant.getAndShowAllMusics();
@@ -412,7 +412,7 @@ var MusicList = (function() {
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing musics
             FFOSAssistant.getAndShowAllMusics();
@@ -567,7 +567,7 @@ var MusicList = (function() {
 
                 if (filesCanNotBeExported.length > 0) {
                   //TODO: tell user some files can't be exported
-                  alert(filesCanNotBeExported.length + " music files can't be exported");
+                  new AlertDialog(filesCanNotBeExported.length + " music files can't be exported");
                 }
               } else {
                 exportMusic();
@@ -584,7 +584,7 @@ var MusicList = (function() {
 
                 if (filesCanNotBeExported.length > 0) {
                   //TODO: tell user some musics can't be exported
-                  alert(filesCanNotBeExported.length + " music files can't be exported");
+                  new AlertDialog(filesCanNotBeExported.length + " music files can't be exported");
                 }
               } else {
                 exportMusic();

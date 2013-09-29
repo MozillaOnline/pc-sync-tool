@@ -131,7 +131,7 @@ var FFOSAssistant = (function() {
       });
       connListenSocket = socketWrapper;
       CMD.Listen.listenMessage(function() {}, function(e) {
-        alert(e);
+        new AlertDialog(e);
       });
     };
 

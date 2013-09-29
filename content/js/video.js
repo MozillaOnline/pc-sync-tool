@@ -284,7 +284,7 @@ var Video = (function() {
           //updating UI after removing videos
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
           removeVideosProcess(filesToBeRemoved);
@@ -310,7 +310,7 @@ var Video = (function() {
           //updating UI after removing videos
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
           removeVideosProcess(filesToBeRemoved);
@@ -409,7 +409,7 @@ var Video = (function() {
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing videos
             FFOSAssistant.getAndShowAllVideos();
@@ -429,7 +429,7 @@ var Video = (function() {
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing videos
             FFOSAssistant.getAndShowAllVideos();
@@ -580,7 +580,7 @@ var Video = (function() {
 
                 if (filesCanNotBeExported.length > 0) {
                   //TODO: tell user some files can't be exported
-                  alert(filesCanNotBeExported.length + " files can't be exported");
+                  new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
                 }
               } else {
                 exportVideo();
@@ -598,7 +598,7 @@ var Video = (function() {
 
                 if (filesCanNotBeExported.length > 0) {
                   //TODO: tell user some files can't be exported
-                  alert(filesCanNotBeExported.length + " files can't be exported");
+                  new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
                 }
               } else {
                 exportVideo();
