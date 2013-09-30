@@ -525,15 +525,14 @@ var MusicList = (function() {
             };
           })();
 
-          var newDir = decodeURI(dir);
-          var oldDir = musics[fileIndex].dataset.id;
-          newDir = newDir + '/' + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type;
-          if (os.isWindows) {
-            newDir = newDir.substring(1, newDir.length);
-            newDir = UrlEncode(newDir);
-          }
-
           setTimeout(function exportMusic() {
+            var newDir = decodeURI(dir);
+            var oldDir = musics[fileIndex].dataset.id;
+            newDir = newDir + '/' + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type;
+            if (os.isWindows) {
+              newDir = newDir.substring(1, newDir.length);
+              newDir = UrlEncode(newDir);
+            }
             var cmd = 'adb pull "' + oldDir + '" "' + newDir + '"';
             var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
