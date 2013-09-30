@@ -218,7 +218,7 @@ function initAdbService(isWindows, libPath, adbPath) {
   // Load adb service library
   libadb.loadLib(libPath);
   // Set the path of adb executive file
-  ADB_PATH = adbPath;
+  ADB_PATH = '"' + adbPath + '"';
   if (isWindows) {
     //change adb to profiles, so the addon can be removed when adb is running.
     libadb.copyAdb();
