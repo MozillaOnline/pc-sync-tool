@@ -264,7 +264,7 @@ var Gallery = (function() {
     var bTimer = false;
 
     setTimeout(function doRemovePicture() {
-      var cmd = 'adb shell rm "' + items[fileIndex] + '"';
+      var cmd = 'adb shell rm ' + items[fileIndex];
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!bTimer) {
         bTimer = true;
