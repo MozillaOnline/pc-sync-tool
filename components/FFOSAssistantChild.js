@@ -146,7 +146,6 @@ FFOSAssistant.prototype = {
     if (this._onADBStateChange) {
       this._onADBStateChange.handleEvent(e);
     }
-    this.dispatchEvent(e);
   },
 
   /* Implementations */
