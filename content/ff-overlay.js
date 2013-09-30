@@ -81,11 +81,6 @@
         }
       };
       setAddonInfo(true);
-      var otherAdbService = navigator.mozFFOSAssistant.runCmd('listAdbService');
-      otherAdbService.onsuccess = function on_success(event) {
-        //TODO:
-        debug('output ' + event.target.result);
-      }
       AddonManager.addAddonListener(this._addonListener);
       DriverManager.startDriverManager();
       connectToDriverManager();
@@ -261,6 +256,32 @@
             ADBService.startDeviceDetecting(true);
           }
         };
+      } else {
+        if (modules.xulRuntime.OS == 'WINNT') {
+          var otherAdbService = navigator.mozFFOSAssistant.runCmd('listAdbService');
+          otherAdbService.onsuccess = function on_success(event) {
+            if (event.target.result.indexOf('ffosadb.exe') >= 0) {
+              return;
+            }
+            var message = messgae = 'adb端口被占用，如果Firefox OS设备连接失败，请关闭以下进程后再试： ' + event.target.result;
+            if (!"Notification" in window) {
+              return;
+            }
+            else if (Notification.permission === "granted") {
+              var notification = new Notification(message);
+            }
+            else if (Notification.permission !== 'denied') {
+              Notification.requestPermission(function (permission) {
+                if(!('permission' in Notification)) {
+                  Notification.permission = permission;
+                }
+                if (permission === "granted") {
+                  var notification = new Notification(message);
+                }
+              });
+            }
+          }
+        }
       }
     }
   };

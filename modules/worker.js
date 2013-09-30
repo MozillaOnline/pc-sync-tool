@@ -33,9 +33,9 @@ var libadb = (function() {
     copyAdb: function() {
       if (runCmd && ADB_PATH != '') {
         var oldPath = ADB_PATH;
-        ADB_PATH = oldPath.replace('extensions\\ffosassistant@mozillaonline.com\\components\\binary\\win\\adb.exe', 'adb.exe')
-        runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinApi.dll') + '/B ' + ADB_PATH.replace('adb.exe', 'AdbWinApi.dll') + '/B');
-        runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinUsbApi.dll') + '/B ' + ADB_PATH.replace('adb.exe', 'AdbWinUsbApi.dll') + '/B');
+        ADB_PATH = oldPath.replace('extensions\\ffosassistant@mozillaonline.com\\components\\binary\\win\\adb.exe', 'ffosadb.exe')
+        runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinApi.dll') + '/B ' + ADB_PATH.replace('ffosadb.exe', 'AdbWinApi.dll') + '/B');
+        runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinUsbApi.dll') + '/B ' + ADB_PATH.replace('ffosadb.exe', 'AdbWinUsbApi.dll') + '/B');
         runCmd('cmd.exe /c copy/Y ' + oldPath + '/B ' + ADB_PATH + '/B');
       }
       return;
@@ -202,7 +202,6 @@ self.onmessage = function(e) {
 function setConnected(newState) {
   let oldState = connected;
   connected = newState;
-
   if ((oldState !== connected) || (oldState && connected)) {
     debug('Connection state is changed!');
     postMessage({

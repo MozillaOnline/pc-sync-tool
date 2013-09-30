@@ -487,9 +487,9 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
     ViewManager.addViewEventListener('summary-view', 'othershow', getAndShowStorageInfo);
     ViewManager.addViewEventListener('contact-view', 'firstshow', getAndShowAllContacts);
-    //ViewManager.addViewEventListener('contact-view', 'othershow', getAndShowAllContacts);
+    ViewManager.addViewEventListener('contact-view', 'othershow', getAndShowAllContacts);
     ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSThreads);
-    //ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
+    ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
     ViewManager.addViewEventListener('music-view', 'firstshow', getAndShowAllMusics);
     ViewManager.addViewEventListener('gallery-view', 'firstshow', getAndShowGallery);
     ViewManager.addViewEventListener('video-view', 'firstshow', getAndShowAllVideos);
