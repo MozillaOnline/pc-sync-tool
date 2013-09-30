@@ -357,8 +357,21 @@ var MusicList = (function() {
       var step = range / 50;
       var bTimer = false;
 
+      var os = (function() {
+        var oscpu = navigator.oscpu.toLowerCase();
+        return {
+          isWindows: /windows/.test(oscpu),
+          isLinux: /linux/.test(oscpu),
+          isMac: /mac/.test(oscpu)
+        };
+      })();
+
       setTimeout(function importMusic() {
-        var newDir = UrlEncode(musics[fileIndex]);
+        var newDir = musics[fileIndex];
+        if (os.isWindows) {
+          newDir = UrlEncode(newDir);
+        }
+
         var cmd = 'adb push "' + newDir + '" /sdcard/Music';
         var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
