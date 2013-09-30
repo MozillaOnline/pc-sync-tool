@@ -418,6 +418,7 @@
 }
 
 #contact-form div {
+  position: relative;
 }
 
 #add-avatar {
