@@ -309,28 +309,24 @@ SendSMSDialog.prototype = {
         }
       }
     } else {
-      if (this.options.number) {
-        templateData.number.push(this.options.number);
-      }
-      var senderNum = 0;
-      if (this.options.number) {
-        var senders = this.options.number.split(';');
+      if (this.options.number && this.options.number.length > 0) {
+        templateData.number.push(this.options.number[0]);
+        var senderNum = 0;
+        var senders = this.options.number[0].split(';');
         senderNum = senders.length;
         for (var i = 0; i < senders.length; i++) {
           if (senders[i] == "") {
             senderNum--;
           }
         }
+        templateData.senderCount = _('send-sms-count', {
+          n: senderNum
+        });
       }
-      header = _('send-sms-count', {
-        n: senderNum
-      });
-      templateData.senderCount = header;
     }
-    var header = _('text-sms-count', {
+    templateData.textCount = _('text-sms-count', {
       n: 0
     });
-    templateData.textCount = header;
     if (this.options.bodyText) {
       templateData.body = this.options.bodyText;
     }

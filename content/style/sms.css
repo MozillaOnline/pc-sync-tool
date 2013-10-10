@@ -1076,7 +1076,11 @@
 
 .sendSms-button.sendSms-menubutton .label{
   text-align:left;
-  float: left
+  float: left;
+  max-width: 38rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
 }
 
 .sendSms-button.sendSms-menubutton .label+.arrow-ctn{
@@ -1178,7 +1182,14 @@
 
 #sms-send-incontact {
   height: 2.4rem;
-  margin-left: 8.1rem;
+  margin-left: 5.1rem;
+  padding-top: 0.4rem;
+  width: 11.5rem;
+}
+
+#sms-send-inmulticontact {
+  height: 2.4rem;
+  margin-left: 5.1rem;
   padding-top: 0.4rem;
   width: 11.5rem;
 }

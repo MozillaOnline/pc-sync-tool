@@ -331,13 +331,12 @@ var ContactList = (function() {
     }
     elem.dataset.checked = elem.dataset.focused = item.dataset.checked = select;
     opStateChanged();
-    if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 0) {
+    item = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
+    if (item.length <= 0) {
       ViewManager.showViews('contact-quick-add-view');
-    }
-    if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 1) {
-      showContactInfo(JSON.parse(elem.dataset.contact));
-    }
-    if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length > 1) {
+    } else if (item.length == 1) {
+      showContactInfo(JSON.parse(item[0].dataset.contact));
+    } else {
       showMultiContactInfo();
     }
   }
