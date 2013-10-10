@@ -4,7 +4,7 @@
 
 "use strict"
 
-let DEBUG = 1;
+let DEBUG = 0;
 if (DEBUG)
   debug = function (s) { dump("-*- adbService: " + s + "\n"); };
 else
@@ -21,6 +21,7 @@ const MANAGER_BINHOME = 'resource://ffosassistant-binhome';
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
 
+let modules = {};
 XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
                                    "@mozilla.org/childprocessmessagemanager;1",
                                    "nsISyncMessageSender");
@@ -29,6 +30,7 @@ XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil',          'resource://gre/modu
 XPCOMUtils.defineLazyModuleGetter(this, 'Services',         'resource://gre/modules/Services.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'utils',            'resource://ffosassistant/utils.jsm');
+XPCOMUtils.defineLazyServiceGetter(modules, "xulRuntime",   '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
 
 /***** Component definition *****/
 function FFOSAssistant() { }
@@ -151,6 +153,10 @@ FFOSAssistant.prototype = {
   /* Implementations */
   get adbConnected() {
     return cpmm.sendSyncMessage('ADBService:connected')[0];
+  },
+
+  get isWindows() {
+    return modules.xulRuntime.OS == 'WINNT';
   },
 
   get adbffosDeviceName() {

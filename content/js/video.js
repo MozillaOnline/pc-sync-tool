@@ -461,17 +461,8 @@ var Video = (function() {
         var step = range / 50;
         var bTimer = false;
 
-        var os = (function() {
-          var oscpu = navigator.oscpu.toLowerCase();
-          return {
-            isWindows: /windows/.test(oscpu),
-            isLinux: /linux/.test(oscpu),
-            isMac: /mac/.test(oscpu)
-          };
-        })();
-
         var newDir = dir;
-        if (os.isWindows) {
+        if (navigator.mozFFOSAssistant.isWindows) {
           newDir = dir.substring(1, dir.length);
         }
 

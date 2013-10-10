@@ -12,6 +12,11 @@ interface nsIFFOSAssistant : nsISupports
   readonly attribute boolean adbConnected;
 
   /**
+   *
+   */
+  readonly attribute boolean isWindows;
+
+  /**
    * FFOS device name
    */
   readonly attribute jsval adbffosDeviceName;

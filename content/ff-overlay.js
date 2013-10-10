@@ -21,7 +21,6 @@
 
   var modules = {};
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
-  XPCOMUtils.defineLazyServiceGetter(modules, "xulRuntime", '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
   XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 
   function startADBService() {
@@ -56,8 +55,8 @@
 
     let libPath = utils.getChromeFileURI(LIB_FILE_URL);
     let adbPath = utils.getChromeFileURI(ADB_FILE_URL);
-    ADBService.initAdbService(modules.xulRuntime.OS == 'WINNT', libPath.file.path, adbPath.file.path);
-    if (modules.xulRuntime.OS == 'WINNT') {
+    ADBService.initAdbService(navigator.mozFFOSAssistant.isWindows, libPath.file.path, adbPath.file.path);
+    if (navigator.mozFFOSAssistant.isWindows) {
       this._addonListener = {
         onUninstalling: function(addon) {
           if (addon.id == ADDON_ID) {
@@ -257,7 +256,7 @@
           }
         };
       } else {
-        if (modules.xulRuntime.OS == 'WINNT') {
+        if (navigator.mozFFOSAssistant.isWindows) {
           var otherAdbService = navigator.mozFFOSAssistant.runCmd('listAdbService');
           otherAdbService.onsuccess = function on_success(event) {
             if (event.target.result.indexOf('ffosadb.exe') >= 0) {
@@ -410,7 +409,7 @@
 
   window.addEventListener('unload', function wnd_onunload(e) {
     window.removeEventListener('unload', wnd_onunload);
-    if (modules.xulRuntime.OS == 'WINNT') {
+    if (navigator.mozFFOSAssistant.isWindows) {
       setAddonInfo(false);
     }
   });

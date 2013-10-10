@@ -357,18 +357,9 @@ var MusicList = (function() {
       var step = range / 50;
       var bTimer = false;
 
-      var os = (function() {
-        var oscpu = navigator.oscpu.toLowerCase();
-        return {
-          isWindows: /windows/.test(oscpu),
-          isLinux: /linux/.test(oscpu),
-          isMac: /mac/.test(oscpu)
-        };
-      })();
-
       setTimeout(function importMusic() {
         var newDir = musics[fileIndex];
-        if (os.isWindows) {
+        if (navigator.mozFFOSAssistant.isWindows) {
           newDir = UrlEncode(newDir);
         }
 
@@ -529,20 +520,11 @@ var MusicList = (function() {
           var step = range / 50;
           var bTimer = false;
 
-          var os = (function() {
-            var oscpu = navigator.oscpu.toLowerCase();
-            return {
-              isWindows: /windows/.test(oscpu),
-              isLinux: /linux/.test(oscpu),
-              isMac: /mac/.test(oscpu)
-            };
-          })();
-
           setTimeout(function exportMusic() {
             var newDir = decodeURI(dir);
             var oldDir = musics[fileIndex].dataset.id;
             newDir = newDir + '/' + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type;
-            if (os.isWindows) {
+            if (navigator.mozFFOSAssistant.isWindows) {
               newDir = newDir.substring(1, newDir.length);
               newDir = UrlEncode(newDir);
             }
