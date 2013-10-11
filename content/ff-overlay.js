@@ -85,9 +85,7 @@
       connectToDriverManager();
     }
     checkFirstRun();
-    if (isDisabled == false) {
-      ADBService.startDeviceDetecting(true);
-    }
+    ADBService.startDeviceDetecting(true);
   }
 
   function checkFirstRun() {

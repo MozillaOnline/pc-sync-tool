@@ -125,3 +125,37 @@ function parseDate(date) {
   }
   return strDate;
 }
+
+function formatDate(timestamp) {
+  var dt = new Date(timestamp);
+  var year = dt.getFullYear();
+  var month = dt.getMonth() + 1;
+  var date = dt.getDate();
+
+  var today = new Date();
+  var curYear = today.getFullYear();
+  var curMonth = today.getMonth() + 1;
+  var curDate = today.getDate();
+
+  if (curYear == year && curMonth == month && curDate == date) {
+    return _('today');
+  } else {
+    return year + '-' + month + '-' + date;
+  }
+}
+
+function formatTime(timestamp) {
+  var dt = new Date(timestamp);
+  var hour = dt.getHours();
+  var minutes = dt.getMinutes();
+  var time = '';
+  if (hour < 10) {
+    time += '0';
+  }
+  time += hour + ':';
+  if (minutes < 10) {
+    time += '0';
+  }
+  time += minutes;
+  return time;
+}

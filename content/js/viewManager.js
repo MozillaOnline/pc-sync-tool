@@ -215,6 +215,7 @@ var ViewManager = (function() {
     setTitle: setTitle,
     // Show the card view by given id, and hide all other sibling views
     showViews: showViews,
+    callEvent: callEvent,
     addViewEventListener: addViewEventListener
   };
 })();

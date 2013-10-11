@@ -38,10 +38,11 @@ GroupedList.prototype = {
     this.options = extend({
       dataList: null,
       dataIndexer: null,
+      dataSorterName: null,
+      dataSorter: this._dataSorter,
       disableDataIndexer: false,
       indexSorter: this._dictSorter,
       dataIdentifier: this._identifyById,
-      indexRender: this._renderIndex,
       renderFunc: null,
       container: document.body,
       ondatachange: function() {}
@@ -59,6 +60,28 @@ GroupedList.prototype = {
       return -1;
     }
     return 1;
+  },
+
+  _dataSorter: function gl_dataSorter(a, b) {
+    var aSorter = a['dataSorterName'].toString();
+    var bSorter = b['dataSorterName'].toString();
+    var length = aSorter.length < bSorter.length ? aSorter.length : bSorter.length;
+    for (var i = 0; i < length; i++) {
+      if(aSorter[i] == bSorter[i]) {
+        continue;
+      } else if (aSorter[i] < bSorter[i]) {
+        return -1;
+      } else {
+        return 1;
+      }
+    }
+    if(aSorter.length == bSorter.length) {
+      return 0;
+    } else if (aSorter.length < bSorter.length) {
+      return -1;
+    } else {
+      return 1;
+    }
   },
 
   _identifyById: function gl_identifyById(dataObj) {
@@ -99,9 +122,13 @@ GroupedList.prototype = {
       group.dataList = [];
       this._groupedData.push(group);
     }
-
-    group.dataList.push(dataObj);
-
+    if(this.options.dataSorterName) {
+      dataObj['dataSorterName'] = dataObj[this.options.dataSorterName];
+      group.dataList.push(dataObj);
+      group.dataList.sort(this.options.dataSorter);
+    } else {
+      group.dataList.push(dataObj);
+    }
     return group;
   },
 
@@ -136,7 +163,6 @@ GroupedList.prototype = {
 
   _groupDataList: function gl_groupData() {
     this._groupedData = [];
-
     var self = this;
 
     this.options.dataList.forEach(function(dataObj) {
@@ -165,7 +191,7 @@ GroupedList.prototype = {
     var groupElem = document.createElement('div');
     groupElem.id = this._getGroupElemId(group.index);
     if (this.options.disableDataIndexer == false) {
-      groupElem.appendChild(this.options.indexRender(group.index));
+      groupElem.appendChild(this._renderIndex(group.index));
     }
     var self = this;
     // Render data list
@@ -196,14 +222,18 @@ GroupedList.prototype = {
   add: function gl_add(dataObj) {
     var group = this._addToGroup(dataObj);
     this._sortGroup();
-
     var groupElem = this._getGroupElem(group.index);
     if (groupElem) {
-      // TODO sort data elements
+      var dataIndexInGroup = group.dataList.indexOf(dataObj);
       var elem = this.options.renderFunc(dataObj);
       if (elem) {
         elem.dataset.dataIdentity = this.options.dataIdentifier(dataObj);
-        groupElem.appendChild(elem);
+        if(dataIndexInGroup + 1 < group.dataList.length) {
+          var dataAfter = groupElem.childNodes[dataIndexInGroup + 1];
+          groupElem.insertBefore(elem, dataAfter);
+        } else {
+          groupElem.appendChild(elem);
+        }
       }
       this.options.ondatachange();
       return;
@@ -407,11 +437,7 @@ SendSMSDialog.prototype = {
           if (self.options.name && self.options.name.length > 0) {
             templateData.name = self.options.name[0];
           }
-          try {
-            elem.innerHTML = tmpl('tmpl_select_contact', templateData);
-          } catch (e) {
-            new AlertDialog(e);
-          }
+          elem.innerHTML = tmpl('tmpl_select_contact', templateData);
           elem.onclick = function onclick_sms_list(event) {
             var target = event.target;
             if (target.textContent != '') {
@@ -537,9 +563,7 @@ SendSMSDialog.prototype = {
         animationLoading.stop(loadingGroupId);
         self.options.onclose();
       }
-    }, function onError_sendSms(e) {
-      new AlertDialog(e);
-    });
+    }, null);
   },
 
   send: function() {
@@ -574,7 +598,6 @@ SendSMSDialog.prototype = {
       }
     }, function onError_sendSms(e) {
       animationLoading.stop(loadingGroupId);
-      new AlertDialog(e);
     });
   }
 };
@@ -601,11 +624,7 @@ SelectContactsDialog.prototype = {
     var templateData = {};
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    try {
-      this._modalElement.innerHTML = tmpl('tmpl_select_contact_dialog', templateData);
-    } catch (e) {
-      new AlertDialog(e);
-    }
+    this._modalElement.innerHTML = tmpl('tmpl_select_contact_dialog', templateData);
 
     document.body.appendChild(this._modalElement);
     var closeBtn = $expr('.sendSms-dialog-header-x', this._modalElement)[0];
@@ -652,6 +671,7 @@ SelectContactsDialog.prototype = {
         }
         return pinyin[0].toUpperCase();
       },
+      dataSorterName: 'name',
       renderFunc: this._createContactListItem,
       container: contactSmallListContainer,
     });
@@ -796,13 +816,7 @@ FilesOPDialog.prototype = {
     if (this.options.processbar_l10n_id != '') {
       templateData.processbar_l10n_id = this.options.processbar_l10n_id;
     }
-
-    try {
-      this._modalElement.innerHTML = tmpl('tmpl_fileOP_dialog', templateData);
-    } catch (e) {
-      new AlertDialog(e);
-    }
-
+    this._modalElement.innerHTML = tmpl('tmpl_fileOP_dialog', templateData);
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
     this._makeDialogCancelable();
@@ -916,12 +930,7 @@ ImageViewer.prototype = {
       var templateData = {
         cachedUrl: cachedUrl
       };
-
-      try {
-        this._modalElement.innerHTML = tmpl('tmpl_img_viewer', templateData);
-      } catch (e) {
-      new AlertDialog(e);
-      }
+      this._modalElement.innerHTML = tmpl('tmpl_img_viewer', templateData);
       container.appendChild(this._modalElement);
       this._addListeners();
 
@@ -1049,11 +1058,7 @@ WifiModePromptDialog.prototype = {
     if (this.options.prompt_l10n_id != '') {
       templateData.prompt_l10n_id = this.options.prompt_l10n_id;
     }
-    try {
-      this._modalElement.innerHTML = tmpl('tmpl_wifiMode_dialog', templateData);
-    } catch (e) {
-      new AlertDialog(e);
-    }
+    this._modalElement.innerHTML = tmpl('tmpl_wifiMode_dialog', templateData);
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
     this._makeDialogCancelable();

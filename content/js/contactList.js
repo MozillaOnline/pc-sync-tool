@@ -255,6 +255,7 @@ var ContactList = (function() {
 
         return pinyin[0].toUpperCase();
       },
+      dataSorterName: 'name',
       renderFunc: createContactListItem,
       container: container,
       ondatachange: checkIfContactListEmpty
@@ -263,6 +264,7 @@ var ContactList = (function() {
     groupedList.render();
     updateAllAvatar();
     checkIfContactListEmpty();
+    ViewManager.addViewEventListener('contact', 'onMessage', onMessage);
   }
 
   function showEmptyContacts(bFlag) {
@@ -274,11 +276,17 @@ var ContactList = (function() {
   }
 
 /*
-   * Remove contacts
+   * Remove contact from device
+   * when success, onMessage will remove the item
    */
 
   function removeContact(id) {
-    CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {}, function onerror_removeContact(message) {});
+    var loadingGroupId = animationLoading.start();
+    CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
+      animationLoading.stop(loadingGroupId);
+    }, function onerror_removeContact(message) {
+      animationLoading.stop(loadingGroupId);
+    });
   }
 
   function selectAllContacts(select) {
@@ -557,9 +565,7 @@ var ContactList = (function() {
             showContactInfo(contactData);
             updateAvatar(contactData);
           }
-        }, function(e) {
-          new AlertDialog(e);
-        });
+        }, null);
         break;
       }
     case 'create':
@@ -569,9 +575,7 @@ var ContactList = (function() {
             var contactData = JSON.parse(result.data);
             addContact(contactData);
           }
-        }, function(e) {
-          new AlertDialog(e);
-        });
+        }, null);
         break;
       }
     default:
@@ -1301,9 +1305,7 @@ var ContactList = (function() {
                 }
               }
             }
-            CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {}, function onerror_addcontact(message) {
-              new AlertDialog(JSON.stringify(message));
-            });
+            CMD.Contacts.addContact(JSON.stringify(contact), null, null);
           });
         }
       });

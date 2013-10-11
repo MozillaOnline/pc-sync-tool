@@ -355,7 +355,6 @@ var ContactForm = (function() {
         animationLoading.stop(loadingGroupId);
       }, function onerror_updatecontact(message) {
         animationLoading.stop(loadingGroupId);
-        new AlertDialog('Error occurs when updating contacts: ' + JSON.stringify(message));
       });
     } else {
       // Create new contact
@@ -363,7 +362,6 @@ var ContactForm = (function() {
         animationLoading.stop(loadingGroupId);
       }, function onerror_addcontact(message) {
         animationLoading.stop(loadingGroupId);
-        new AlertDialog('Error occurs when adding contacts: ' + JSON.stringify(message));
       });
     }
   }
@@ -421,7 +419,6 @@ var ContactForm = (function() {
       animationLoading.stop(loadingGroupId);
     }, function onerror_addcontact(message) {
       animationLoading.stop(loadingGroupId);
-      new AlertDialog('Error occurs when quick adding contact: ' + JSON.stringify(message));
     });
   }
 

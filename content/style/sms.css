@@ -500,6 +500,7 @@
   border:0.1rem #cacaca solid;
   cursor:text;
   margin-right:1.0rem;
+  margin-left: 0.2rem;
   max-height:6.3rem;
   min-height:2.1rem;
   overflow-y:auto;
@@ -844,7 +845,7 @@
   height: 38.0rem;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-top: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .sms-message-quick-sender{
@@ -869,6 +870,7 @@
   overflow-y: auto;
   float: left;
   width: 20rem;
+  max-height: 20rem;
 }
 
 .sms-message-quick-sender .sender-ctn .count-ctn{
