@@ -360,11 +360,11 @@ var FFOSAssistant = (function() {
         CMD.Pictures.getChangedPicturesInfo(function onresponse_getChangedPictures(changedPictureInfo) {
           var changedPicture = JSON.parse(changedPictureInfo.data);
           if (changedPicture.callbackID == 'oncreated') {
-            Gallery.addPicture(changedMusic.detail);
+            Gallery.addPicture(changedPicture.detail);
             return;
           }
           if (changedPicture.callbackID == 'ondeleted') {
-            Gallery.updateRemovedPictures(changedMusic.detail);
+            Gallery.updateRemovedPictures(changedPicture.detail);
             return;
           }
           if (changedPicture.callbackID == 'onscanend') {
