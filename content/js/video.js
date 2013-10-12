@@ -19,20 +19,18 @@ var Video = (function() {
       var threadBody = threadContainer.getElementsByTagName('ul')[0];
       threadBody.appendChild(_createVideoListItem(video));
       threadContainer.dataset.length = 1 + parseInt(threadContainer.dataset.length);
-      var titles = threadContainer.getElementsByTagName('label');
-      titles[0].innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
+      var title = threadContainer.getElementsByTagName('label')[0];
+      title.innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
     } else {
-      threadContainer = document.createElement('div');
-      threadContainer.setAttribute('id', 'video-' + threadId);
-      threadContainer.classList.add('video-thread');
-      var header = document.createElement('div');
-      header.classList.add('header');
-      threadContainer.appendChild(header);
+      var templateData = {
+        id: 'video-' + threadId,
+        threadId: threadId
+      };
 
-      var title = document.createElement('label');
-      header.appendChild(title);
-      title.innerHTML = '<span>' + threadId + ' (' + 1 + ')</span>';
-      container.appendChild(threadContainer);
+      var div = document.createElement('div');
+      div.innerHTML = tmpl('tmpl_video_thread_container', templateData);
+      container.appendChild(div);
+      var title = $expr('label', div)[0];
 
       title.onclick = function onSelectThread(e) {
         var target = e.target;
@@ -56,13 +54,7 @@ var Video = (function() {
         }
       };
 
-      var threadBody = document.createElement('ul');
-      threadBody.classList.add('body');
-      threadContainer.appendChild(threadBody);
-      threadContainer.dataset.length = 1;
-      threadContainer.dataset.checked = false;
-      threadContainer.dataset.threadId = threadId;
-
+      var threadBody = $expr('ul', div)[0];
       threadBody.appendChild(_createVideoListItem(video));
     }
   }
@@ -93,11 +85,11 @@ var Video = (function() {
     listItem.dataset.date = video.date;
     listItem.dataset.size = video.size;
 
-    listItem.innerHTML = '<img src="' + video.metadata.poster + '">';
+    var templateData = {
+      poster: video.metadata.poster
+    };
 
-    var itemCheckbox = document.createElement('div');
-    itemCheckbox.classList.add('item-check');
-    listItem.appendChild(itemCheckbox);
+    listItem.innerHTML = tmpl('tmpl_video_item', templateData);
 
     listItem.onclick = function onItemClick(e) {
       if (this.dataset.checked == 'true') {

@@ -15,27 +15,28 @@ var Gallery = (function() {
     if (!picture) {
       return;
     }
+
     var threadId = parseDate(parseInt(picture.date));
     var threadContainer = $id('pic-' + threadId);
     var container = getListContainer();
+
     if (threadContainer) {
       var threadBody = threadContainer.getElementsByTagName('ul')[0];
       threadBody.appendChild(_createPictureListItem(picture));
       threadContainer.dataset.length = 1 + parseInt(threadContainer.dataset.length);
-      var titles = threadContainer.getElementsByTagName('label');
-      titles[0].innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
+      var title = threadContainer.getElementsByTagName('label')[0];
+      titles.innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
     } else {
-      threadContainer = document.createElement('div');
-      threadContainer.setAttribute('id', 'pic-' + threadId);
-      threadContainer.classList.add('picture-thread');
-      var header = document.createElement('div');
-      header.classList.add('header');
-      threadContainer.appendChild(header);
+      var templateData = {
+        id: 'pic-' + threadId,
+        threadId: threadId
+      };
 
-      var title = document.createElement('label');
-      header.appendChild(title);
-      title.innerHTML = '<span>' + threadId + ' (' + 1 + ')</span>';
-      container.appendChild(threadContainer);
+      var div = document.createElement('div');
+      div.innerHTML = tmpl('tmpl_pic_thread_container', templateData);
+      threadContainer.appendChild(div);
+      var title = $expr('label', div)[0];
+
       title.onclick = function onSelectThread(e) {
         var target = e.target;
         if (target instanceof HTMLLabelElement) {
@@ -67,13 +68,7 @@ var Gallery = (function() {
         }
       };
 
-      var threadBody = document.createElement('ul');
-      threadBody.classList.add('body');
-      threadContainer.appendChild(threadBody);
-      threadContainer.dataset.length = 1;
-      threadContainer.dataset.checked = false;
-      threadContainer.dataset.threadId = threadId;
-
+      var threadBody = $expr('ul', div)[0];
       threadBody.appendChild(_createPictureListItem(picture));
     }
   }
@@ -104,11 +99,10 @@ var Gallery = (function() {
     listItem.dataset.date = picture.date;
     listItem.dataset.size = picture.size;
 
-    listItem.innerHTML = '<img src="' + picture.metadata.thumbnail + '">';
-
-    var itemCheckbox = document.createElement('div');
-    itemCheckbox.classList.add('pic-unchecked');
-    listItem.appendChild(itemCheckbox);
+    var templateData = {
+      thumbnail: picture.metadata.thumbnail
+    };
+    listItem.innerHTML = tmpl('tmpl_pic_item', templateData);
 
     listItem.onclick = function item_click(e) {
       this.dataset.checked = itemCheckbox.classList.toggle('pic-checked');

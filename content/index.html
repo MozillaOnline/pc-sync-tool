@@ -732,6 +732,30 @@
       </div>
     </div>
   </script>
+  <script type="text/html" id="tmpl_video_thread_container">
+    <div id=<%=id%> class="video-thread" data-length="1" data-checked="false" data-thread-id=<%=threadId%>>
+      <div class="header">
+        <label><span><%=threadId%> (1)</span></label>
+      </div>
+      <ul class="body"></ul>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_video_item">
+    <img src=<%=poster%>>
+    <div class="item-check"></div>
+  </script>
+  <script type="text/html" id="tmpl_pic_thread_container">
+    <div id=<%=id%> class="picture-thread" data-length="1" data-checked="false" data-thread-id=<%=threadId%>>
+      <div class="header">
+        <label><span><%=threadId%> (1)</span></label>
+      </div>
+      <ul class="body"></ul>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_pic_item">
+    <img src=<%=thumbnail%>>
+    <div class="pic-unchecked"></div>
+  </script>
 
   <!-- templates for loading view -->
   <script type="text/html" id="tmpl_loading_dialog">
