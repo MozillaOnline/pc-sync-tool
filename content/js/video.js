@@ -104,20 +104,16 @@ var Video = (function() {
     };
 
     listItem.onmouseover = function(e) {
-      var tip = document.createElement('div');
-      tip.setAttribute('id', 'video-tip');
-      tip.classList.add('video-tip');
-      tip.style.top = (e.target.parentNode.offsetTop + 80) + 'px';
-      tip.style.left = (e.target.parentNode.offsetLeft + 55) + 'px';
+      var tip = $id('tip');
       tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:' + parseDate(parseInt(this.dataset.date)) + '</div><div>size:' + toSizeInMB(this.dataset.size) + 'M' + '</div>';
-      $id('video-view').appendChild(tip);
+      tip.style.top = (e.target.parentNode.offsetTop + e.target.clientHeight + e.target.clientTop) + 'px';
+      tip.style.left = (e.target.parentNode.offsetLeft + e.target.clientWidth /2 + e.target.clientLeft) + 'px';
+      tip.style.display = 'block';
     };
 
     listItem.onmouseout = function(e) {
-      var tip = $id('video-tip');
-      if (tip) {
-        tip.parentNode.removeChild(tip);
-      }
+      var tip = $id('tip');
+      tip.style.display = 'none';
     };
     return listItem;
   }

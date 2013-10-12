@@ -223,15 +223,6 @@
   height: 7.5rem;
 }
 
-.video-tip {
-  background-color: #000000;
-  color: #FFFFFF;
-  width: 10.6rem;
-  padding: 0.7rem;
-  position: absolute;
-  font-size: 0.9rem;
-}
-
 .video-thread .title > * {
   float: left;
 }

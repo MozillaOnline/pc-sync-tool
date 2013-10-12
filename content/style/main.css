@@ -925,3 +925,13 @@ input.modal-btn {
 .alert-dialog-footer .button{
   color: #FFF;
 }
+
+.tip {
+  background-color: #000000;
+  color: #FFFFFF;
+  width: 10.6rem;
+  padding: 0.7rem;
+  position: absolute;
+  font-size: 0.9rem;
+  display: none;
+}

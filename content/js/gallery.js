@@ -25,7 +25,7 @@ var Gallery = (function() {
       threadBody.appendChild(_createPictureListItem(picture));
       threadContainer.dataset.length = 1 + parseInt(threadContainer.dataset.length);
       var title = threadContainer.getElementsByTagName('label')[0];
-      titles.innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
+      title.innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
     } else {
       var templateData = {
         id: 'pic-' + threadId,
@@ -34,7 +34,7 @@ var Gallery = (function() {
 
       var div = document.createElement('div');
       div.innerHTML = tmpl('tmpl_pic_thread_container', templateData);
-      threadContainer.appendChild(div);
+      container.appendChild(div);
       var title = $expr('label', div)[0];
 
       title.onclick = function onSelectThread(e) {
@@ -134,20 +134,16 @@ var Gallery = (function() {
     };
 
     listItem.onmouseover = function(e) {
-      var tip = document.createElement('div');
-      tip.setAttribute('id', 'pic-tip');
-      tip.classList.add('pic-tip');
-      tip.style.top = (e.target.parentNode.offsetTop + 187 - $id('picture-list-container').scrollTop) + 'px';
-      tip.style.left = (e.target.parentNode.offsetLeft + 515) + 'px';
+      var tip = $id('tip');
       tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:' + parseDate(parseInt(this.dataset.date)) + '</div><div>size:' + toSizeInMB(this.dataset.size) + 'M' + '</div>';
-      $id('gallery-view').appendChild(tip);
+      tip.style.top = (e.target.parentNode.offsetTop + e.target.parentNode.offsetParent.offsetTop + e.target.parentNode.clientHeight - $id('picture-list-container').scrollTop) + 'px';
+      tip.style.left = (e.target.parentNode.offsetParent.offsetLeft + e.target.parentNode.offsetLeft + e.target.parentNode.clientWidth / 2) + 'px';
+      tip.style.display = 'block';
     };
 
     listItem.onmouseout = function(e) {
-      var tip = $id('pic-tip');
-      if (tip) {
-        tip.parentNode.removeChild(tip);
-      }
+      var tip = $id('tip');
+      tip.style.display = 'none';
     };
     return listItem;
   }
