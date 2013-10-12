@@ -40,28 +40,20 @@ var Gallery = (function() {
       title.onclick = function onSelectThread(e) {
         var target = e.target;
         if (target instanceof HTMLLabelElement) {
-          target.classList.toggle('thread-checked');
           var threadContainer = this.parentNode.parentNode;
-          var checkboxes = $expr('.pic-unchecked', threadContainer);
           var picItems = $expr('li', threadContainer);
 
-          if (target.classList.contains('thread-checked')) {
-            threadContainer.dataset.checked = true;
-            checkboxes.forEach(function(item) {
-              item.classList.add('pic-checked');
-            });
-
-            picItems.forEach(function(item) {
-              item.dataset.checked = true;
-            });
-          } else {
+          if (threadContainer.dataset.checked == 'true') {
             threadContainer.dataset.checked = false;
-            checkboxes.forEach(function(cb) {
-              cb.classList.remove('pic-checked');
-            });
 
             picItems.forEach(function(item) {
               item.dataset.checked = false;
+            });
+          } else {
+            threadContainer.dataset.checked = true;
+
+            picItems.forEach(function(item) {
+              item.dataset.checked = true;
             });
           }
           opStateChanged();
@@ -105,10 +97,15 @@ var Gallery = (function() {
     listItem.innerHTML = tmpl('tmpl_pic_item', templateData);
 
     listItem.onclick = function item_click(e) {
-      this.dataset.checked = itemCheckbox.classList.toggle('pic-checked');
+      if (this.dataset.checked == 'true') {
+        this.dataset.checked = 'false';
+      } else {
+        this.dataset.checked = 'true';
+      }
+
       var threadBody = this.parentNode;
       var threadContainer = threadBody.parentNode;
-      threadContainer.dataset.checked = $expr('.pic-checked', threadBody).length == threadContainer.dataset.length;
+      threadContainer.dataset.checked = $expr('li[data-checked=true]', threadBody).length == threadContainer.dataset.length;
       opStateChanged();
     };
 
@@ -189,35 +186,14 @@ var Gallery = (function() {
   }
 
   function selectAllPictures(select) {
-    $expr('#picture-list-container .picture-thread').forEach(function(group) {
-      selectPicturesGroup(group, select);
+    $expr('#picture-list-container .picture-thread').forEach(function(thread) {
+      thread.dataset.checked = selected;
+      $expr('li', thread).forEach(function(item) {
+        item.dataset.checked = selected;
+      });
     });
 
     opStateChanged();
-  }
-
-  function selectPicturesGroup(group, selected) {
-    group.dataset.checked = selected;
-    $expr('li', group).forEach(function(item) {
-      item.dataset.checked = selected;
-    });
-
-    var threadCheckbox = group.getElementsByTagName('label')[0];
-
-    if (!threadCheckbox) {
-      return;
-    }
-    if (selected) {
-      threadCheckbox.classList.add('thread-checked');
-      $expr('.pic-unchecked', group).forEach(function(cb) {
-        cb.classList.add('pic-checked');
-      });
-    } else {
-      threadCheckbox.classList.remove('thread-checked');
-      $expr('.pic-unchecked', group).forEach(function(cb) {
-        cb.classList.remove('pic-checked');
-      });
-    }
   }
 
   /**

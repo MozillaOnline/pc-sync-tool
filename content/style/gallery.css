@@ -164,16 +164,16 @@
   margin-left: 0.3rem;
 }
 
-.picture-thread .body >li {
-  position: relative;
-  width: 11.0rem;
-  height: 8.2rem;
-  overflow: hidden;
-  display: inline-block;
-  margin: 0.3rem;
+.picture-thread li[data-checked=true] .item-check {
+  width: 1.7rem;
+  height: 1.7rem;
+  position: absolute;
+  left: 8.3rem;
+  background-image: url("images/pic-checked.png");
+  top: 1.0rem;
 }
 
-.pic-unchecked {
+.picture-thread li[data-checked=false] .item-check {
   width: 1.7rem;
   height: 1.7rem;
   position: absolute;
@@ -181,9 +181,13 @@
   background-image: url("images/pic-unchecked.png");
   top: 1.0rem;
 }
-
-.pic-checked {
-  background-image: url("images/pic-checked.png");
+.picture-thread .body >li {
+  position: relative;
+  width: 11.0rem;
+  height: 8.2rem;
+  overflow: hidden;
+  display: inline-block;
+  margin: 0.3rem;
 }
 
 .pic-selected {
