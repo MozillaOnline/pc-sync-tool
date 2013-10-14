@@ -163,13 +163,8 @@ var ContactList = (function() {
 
   function checkIfContactListEmpty() {
     var isEmpty = groupedList.count() == 0;
-    if (isEmpty) {
-      $id('selectAll-contacts').dataset.disabled = true;
-      showEmptyContacts(true);
-    } else {
-      showEmptyContacts(false);
-      $id('selectAll-contacts').dataset.disabled = false;
-    }
+    $id('selectAll-contacts').dataset.disabled = isEmpty;
+    $id('empty-contact-container').hidden = !isEmpty;
 
     var searchContent = $id('search-contact-input');
     if ((searchContent) && (searchContent.value.length > 0)) {
@@ -265,14 +260,6 @@ var ContactList = (function() {
     updateAllAvatar();
     checkIfContactListEmpty();
     ViewManager.addViewEventListener('contact', 'onMessage', onMessage);
-  }
-
-  function showEmptyContacts(bFlag) {
-    if (bFlag) {
-      $id('empty-contact-container').hidden = false;
-    } else {
-      $id('empty-contact-container').hidden = true;
-    }
   }
 
 /*

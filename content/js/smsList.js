@@ -112,21 +112,8 @@ var SmsList = (function() {
 
   function showThreadList() {
     var isEmpty = threadList.count() == 0;
-    if (!isEmpty) {
-      $id('selectAll-sms').dataset.disabled = false;
-      return;
-    }
-    threadListContainer.innerHTML = '';
-    $id('selectAll-sms').dataset.disabled = true;
-    var div = document.createElement('div');
-    div.classList.add('empty-sms');
-    threadListContainer.appendChild(div);
-    div = document.createElement('div');
-    html = '<label data-l10n-id="empty-sms"> </label>';
-    div.innerHTML = html;
-    div.classList.add('empty-sms-prompt');
-    navigator.mozL10n.translate(div)
-    threadListContainer.appendChild(div);
+    $id('selectAll-sms').dataset.disabled = isEmpty;
+    $id('empty-sms-container').hidden = !isEmpty;
   }
 
   function createGroupThreadList(threadData) {

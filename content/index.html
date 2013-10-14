@@ -23,6 +23,7 @@
   <script type="text/javascript" src="chrome://ffosassistant/content/js/cmd.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/connectionPool.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/vcard.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/vCardConverter.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/contactList.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/smsList.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/music_list.js"></script>
@@ -266,8 +267,13 @@
               </div>
             </div>
             <div id="threads-list-container">
-                <div class="threads-list-item">
+              <div class="threads-list-item"></div>
+              <div id="empty-sms-container">
+                <div class="empty-sms"></div>
+                <div class="empty-sms-prompt">
+                  <label data-l10n-id="empty-sms"> </label>
                 </div>
+              </div>
             </div>
           </section>
           <section id ="music-view" class="view" hidden="true">
