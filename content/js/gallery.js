@@ -76,7 +76,7 @@ var Gallery = (function() {
       }
       var threadBody = pic.parentNode;
       threadBody.removeChild(pic);
-      var thread = threadBody.parentNode;
+      var thread = threadBody.parentNode.parentNode;
       if ($expr('li', threadBody).length == 0) {
         getListContainer().removeChild(thread);
       }
@@ -214,19 +214,20 @@ var Gallery = (function() {
     var oldFileIndex = 0;
     var steps = 0;
 
+    var pb = new ProcessBar({
+      sectionsNumber: items.length,
+      stepsPerSection: 50
+    });
+
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-pictures-dialog-header',
-      processbar_l10n_id: 'processbar-remove-pictures-prompt'
+      processbar_l10n_id: 'processbar-remove-pictures-prompt',
+      processbar: pb
     });
 
     var filesIndicator = $id('files-indicator');
-    var pb = $id('processbar');
-    var ratio = 0;
     filesIndicator.innerHTML = '0/' + items.length;
 
-    //processbar range for one file
-    var range = Math.round(100 / items.length);
-    var step = range / 50;
     var bTimer = false;
 
     setTimeout(function doRemovePicture() {
@@ -238,8 +239,7 @@ var Gallery = (function() {
           if (oldFileIndex == fileIndex) {
             if (steps < 50) {
               steps++;
-              ratio += step;
-              pb.style.width = ratio + '%';
+              pb.moveForward();
             }
           } else {
             oldFileIndex = fileIndex;
@@ -251,13 +251,12 @@ var Gallery = (function() {
       req.onsuccess = function(e) {
         filesToBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
           //updating UI after removing pictures
@@ -277,13 +276,12 @@ var Gallery = (function() {
       req.onerror = function(e) {
         filesCanNotBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
           //updating UI after removing pictures
@@ -325,18 +323,20 @@ var Gallery = (function() {
       var oldFileIndex = 0;
       var steps = 0;
 
+      var pb = new ProcessBar({
+        sectionsNumber: pictures.length,
+        stepsPerSection: 50
+      });
+
       var dialog = new FilesOPDialog({
         title_l10n_id: 'import-pictures-dialog-header',
-        processbar_l10n_id: 'processbar-import-pictures-promot'
+        processbar_l10n_id: 'processbar-import-pictures-promot',
+        processbar: pb
       });
 
       var filesIndicator = $id('files-indicator');
-      var pb = $id('processbar');
-      var ratio = 0;
       filesIndicator.innerHTML = '0/' + pictures.length;
 
-      var range = Math.round(100 / pictures.length);
-      var step = range / 50;
       var bTimer = false;
 
       setTimeout(function doImportPicture() {
@@ -349,8 +349,7 @@ var Gallery = (function() {
             if (oldFileIndex == fileIndex) {
               if (steps < 50) {
                 steps++;
-                ratio += step;
-                pb.style.width = ratio + '%';
+                pb.moveForward();
               }
             } else {
               oldFileIndex = fileIndex;
@@ -362,13 +361,12 @@ var Gallery = (function() {
         req.onsuccess = function(e) {
           filesToBeImported.push(pictures[fileIndex]);
           fileIndex++;
-          ratio = Math.round(filesToBeImported.length * 100 / pictures.length);
-          pb.style.width = ratio + '%';
+          pb.finish(filesToBeImported.length);
           filesIndicator.innerHTML = fileIndex + '/' + pictures.length;
 
           if (fileIndex == pictures.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(pictures.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
@@ -388,7 +386,7 @@ var Gallery = (function() {
 
           if (fileIndex == pictures.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(pictures.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
@@ -479,19 +477,20 @@ var Gallery = (function() {
         var oldFileIndex = 0;
         var steps = 0;
 
+        var pb = new ProcessBar({
+          sectionsNumber: pictures.length,
+          stepsPerSection: 50
+        });
+
         var dialog = new FilesOPDialog({
           title_l10n_id: 'export-pictures-dialog-header',
-          processbar_l10n_id: 'processbar-export-pictures-promot'
+          processbar_l10n_id: 'processbar-export-pictures-promot',
+          processbar: pb
         });
 
         var filesIndicator = $id('files-indicator');
-        var pb = $id('processbar');
-        var ratio = 0;
         filesIndicator.innerHTML = '0/' + pictures.length;
 
-        //processbar range for one file
-        var range = Math.round(100 / pictures.length);
-        var step = range / 50;
         var bTimer = false;
 
         var newDir = dir;
@@ -509,8 +508,7 @@ var Gallery = (function() {
               if (oldFileIndex == fileIndex) {
                 if (steps < 50) {
                   steps++;
-                  ratio += step;
-                  pb.style.width = ratio + '%';
+                  pb.moveForward();
                 }
               } else {
                 oldFileIndex = fileIndex;
@@ -522,13 +520,12 @@ var Gallery = (function() {
           req.onsuccess = function(e) {
             filesToBeExported.push(pictures[fileIndex]);
             fileIndex++;
-            ratio = Math.round(filesToBeExported.length * 100 / pictures.length);
-            pb.style.width = ratio + '%';
+            pb.finish(filesToBeExported.length);
             filesIndicator.innerHTML = filesToBeExported.length + '/' + pictures.length;
 
             if (fileIndex == pictures.length) {
               clearInterval(timer);
-              pb.style.width = '100%';
+              pb.finish(pictures.length);
               dialog.closeAll();
 
               if (filesCanNotBeExported.length > 0) {
@@ -546,7 +543,7 @@ var Gallery = (function() {
 
             if (fileIndex == pictures.length) {
               clearInterval(timer);
-              pb.style.width = '100%';
+              pb.finish(pictures.length);
               dialog.closeAll();
 
               if (filesCanNotBeExported.length > 0) {

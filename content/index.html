@@ -694,9 +694,6 @@
               <span id="files-indicator"></span>
             </div>
           </div>
-          <div id="processbar-container" class="processbar-container">
-            <div id="processbar" class="processbar"></div>
-          </div>
         </div>
         <footer class="select-multi-files-dialog-footer">
           <div class="select-multi-files-dialog-footer-button-ctn">
@@ -762,6 +759,24 @@
   <script type="text/html" id="tmpl_pic_item">
     <img src=<%=thumbnail%>>
     <div class="item-check"></div>
+  </script>
+  <script type="text/html" id="tmpl_music_item">
+    <label data-checked="false"></label>
+    <div class="music-names item">
+      <span><%=title%></span>
+    </div>
+    <div class="music-singer item">
+      <span><%=artist%></span>
+    </div>
+    <div class="music-album item">
+      <span><%=album%> </span>
+    </div>
+    <div class="music-type item">
+      <span><%=type%></span>
+    </div>
+    <div class="music-size item">
+      <span><%=size%> MB</span>
+    </div>
   </script>
 
   <!-- templates for loading view -->

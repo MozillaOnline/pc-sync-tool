@@ -1,7 +1,3 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- License, v. 2.0. If a copy of the MPL was not distributed with this
- file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 var MusicList = (function() {
   function getListContainer() {
     return $id('music-list-container');
@@ -39,7 +35,7 @@ var MusicList = (function() {
 
   function init() {
     getListContainer().innerHTML = '';
-    $id('empty-music-container').hidden = false;
+    $id('empty-music-container').hidden = true;
   }
 
   function addMusic(music) {
@@ -86,18 +82,18 @@ var MusicList = (function() {
   }
 
   function _createMusicListItem(music) {
-    var html = '';
-    html += '<label data-checked="false"></label>';
-    html += '<div class="music-names item"><span>' + music.metadata.title + '</span></div>';
-    html += '<div class="music-singer item"><span>' + music.metadata.artist + '</span></div>';
-    html += '<div class="music-album item"><span>' + music.metadata.album + '</span></div>';
-    html += '<div class="music-type item"><span>' + music.type + '</span></div>';
-    html += '<div class="music-size item"><span>' + toSizeInMB(music.size) + ' MB' + '</span></div>';
+    var templateData = {
+      title: music.metadata.title,
+      artist: music.metadata.artist,
+      album: music.metadata.album,
+      type: music.type,
+      size: toSizeInMB(music.size)
+    };
 
     var elem = document.createElement('div');
     elem.classList.add('music-header');
     elem.classList.add('music-list-item');
-    elem.innerHTML = html;
+    elem.innerHTML = tmpl('tmpl_music_item', templateData);
 
     elem.dataset.music = JSON.stringify(music);
     elem.dataset.name = retriveName(music.name);
@@ -112,7 +108,7 @@ var MusicList = (function() {
         musicItemClicked(elem);
       }
     };
-    elem.setAttribute('id', music.name);
+    elem.id = music.name;
     return elem;
   }
 
@@ -215,22 +211,23 @@ var MusicList = (function() {
     var oldFileIndex = 0;
     var steps = 0;
 
+    var pb = new ProcessBar({
+      sectionsNumber: items.length,
+      stepsPerSection: 50
+    });
+
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-musics-dialog-header',
-      processbar_l10n_id: 'processbar-remove-musics-promot'
+      processbar_l10n_id: 'processbar-remove-musics-promot',
+      processbar: pb
     });
 
     var filesIndicator = $id('files-indicator');
-    var pb = $id('processbar');
-    var ratio = 0;
     filesIndicator.innerHTML = '0/' + items.length;
 
-    //processbar range for one file
-    var range = Math.round(100 / items.length);
-    var step = range / 50;
     var bTimer = false;
 
-    setTimeout(function timer_removeMusic() {
+    setTimeout(function doRemoveMusic() {
       var cmd = 'adb shell rm "' + items[fileIndex] + '"';
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!bTimer) {
@@ -239,8 +236,7 @@ var MusicList = (function() {
           if (oldFileIndex == fileIndex) {
             if (steps < 50) {
               steps++;
-              ratio += step;
-              pb.style.width = ratio + '%';
+              pb.moveForward();
             }
           } else {
             oldFileIndex = fileIndex;
@@ -252,52 +248,48 @@ var MusicList = (function() {
       req.onsuccess = function(e) {
         filesToBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
-          //updating UI after removing pictures
+          //updating UI after removing musics
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
             new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
           updateMusicsList(filesToBeRemoved);
-
           opStateChanged();
         } else {
-          timer_removeMusic();
+          doRemoveMusic();
         }
       };
 
       req.onerror = function(e) {
         filesCanNotBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
-          //updating UI after removing pictures
+          //updating UI after removing musics
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
             new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
           updateMusicsList(filesToBeRemoved);
-
           opStateChanged();
         } else {
-          removeMusic();
+          doRemoveMusic();
         }
       };
     }, 0);
@@ -335,21 +327,23 @@ var MusicList = (function() {
       var oldFileIndex = 0;
       var steps = 0;
 
+      var pb = new ProcessBar({
+        sectionsNumber: musics.length,
+        stepsPerSection: 50
+      });
+
       var dialog = new FilesOPDialog({
         title_l10n_id: 'import-musics-dialog-header',
-        processbar_l10n_id: 'processbar-import-musics-promot'
+        processbar_l10n_id: 'processbar-import-musics-promot',
+        processbar: pb
       });
 
       var filesIndicator = $id('files-indicator');
-      var pb = $id('processbar');
-      var ratio = 0;
       filesIndicator.innerHTML = '0/' + musics.length;
 
-      var range = Math.round(100 / musics.length);
-      var step = range / 50;
       var bTimer = false;
 
-      setTimeout(function importMusic() {
+      setTimeout(function doImportMusic() {
         var newDir = musics[fileIndex];
         if (navigator.mozFFOSAssistant.isWindows) {
           newDir = UrlEncode(newDir);
@@ -364,8 +358,7 @@ var MusicList = (function() {
             if (oldFileIndex == fileIndex) {
               if (steps < 50) {
                 steps++;
-                ratio += step;
-                pb.style.width = ratio + '%';
+                pb.moveForward();
               }
             } else {
               oldFileIndex = fileIndex;
@@ -377,13 +370,12 @@ var MusicList = (function() {
         req.onsuccess = function(e) {
           filesToBeImported.push(musics[fileIndex]);
           fileIndex++;
-          ratio = Math.round(filesToBeImported.length * 100 / musics.length);
-          pb.style.width = ratio + '%';
+          pb.finish(filesToBeImported.length);
           filesIndicator.innerHTML = fileIndex + '/' + musics.length;
 
           if (fileIndex == musics.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(musics.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
@@ -393,7 +385,7 @@ var MusicList = (function() {
             //TODO: update imported files insteadof refreshing musics
             FFOSAssistant.getAndShowAllMusics();
           } else {
-            importMusic();
+            doImportMusic();
           }
         };
 
@@ -403,7 +395,7 @@ var MusicList = (function() {
 
           if (fileIndex == musics.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(musics.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
@@ -413,7 +405,7 @@ var MusicList = (function() {
             //TODO: update imported files insteadof refreshing musics
             FFOSAssistant.getAndShowAllMusics();
           } else {
-            importMusic();
+            doImportMusic();
           }
         };
       }, 0);
@@ -428,11 +420,7 @@ var MusicList = (function() {
       if (this.dataset.disabled == "true") {
         return;
       }
-      if (this.dataset.checked == "false") {
-        selectAllMusics(true);
-      } else {
-        selectAllMusics(false);
-      }
+      selectAllMusics(this.dataset.checked == "false");
     });
 
     $id('remove-musics').addEventListener('click', function onclick_removeMusic(event) {
@@ -489,95 +477,95 @@ var MusicList = (function() {
       }
 
       navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
-        if (status) {
-          var filesToBeExported = [];
-          var filesCanNotBeExported = [];
-
-          var fileIndex = 0;
-          var oldFileIndex = 0;
-          var steps = 0;
-
-          var dialog = new FilesOPDialog({
-            title_l10n_id: 'export-musics-dialog-header',
-            processbar_l10n_id: 'processbar-export-musics-promot'
-          });
-
-          var filesIndicator = $id('files-indicator');
-          var pb = $id('processbar');
-          var ratio = 0;
-          filesIndicator.innerHTML = '0/' + musics.length;
-
-          //processbar range for one file
-          var range = Math.round(100 / musics.length);
-          var step = range / 50;
-          var bTimer = false;
-
-          setTimeout(function exportMusic() {
-            var newDir = decodeURI(dir);
-            var oldDir = musics[fileIndex].dataset.id;
-            newDir = newDir + '/' + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type;
-            if (navigator.mozFFOSAssistant.isWindows) {
-              newDir = newDir.substring(1, newDir.length);
-              newDir = UrlEncode(newDir);
-            }
-            var cmd = 'adb pull "' + oldDir + '" "' + newDir + '"';
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
-
-            if (!bTimer) {
-              bTimer = true;
-              var timer = setInterval(function() {
-                if (oldFileIndex == fileIndex) {
-                  if (steps < 50) {
-                    steps++;
-                    ratio += step;
-                    pb.style.width = ratio + '%';
-                  }
-                } else {
-                  oldFileIndex = fileIndex;
-                  steps = 0;
-                }
-              }, 100);
-            }
-
-            req.onsuccess = function(e) {
-              filesToBeExported.push(musics[fileIndex]);
-              fileIndex++;
-              ratio = Math.round(fileIndex * 100 / musics.length);
-              pb.style.width = ratio + '%';
-              filesIndicator.innerHTML = filesToBeExported.length + '/' + musics.length;
-
-              if (fileIndex == musics.length) {
-                clearInterval(timer);
-                pb.style.width = '100%';
-                dialog.closeAll();
-
-                if (filesCanNotBeExported.length > 0) {
-                  //TODO: tell user some files can't be exported
-                  new AlertDialog(filesCanNotBeExported.length + " music files can't be exported");
-                }
-              } else {
-                exportMusic();
-              }
-            };
-
-            req.onerror = function(e) {
-              filesCanNotBeExported.push(musics[fileIndex]);
-              fileIndex++;
-              if (fileIndex == musics.length) {
-                clearInterval(timer);
-                pb.style.width = '100%';
-                dialog.closeAll();
-
-                if (filesCanNotBeExported.length > 0) {
-                  //TODO: tell user some musics can't be exported
-                  new AlertDialog(filesCanNotBeExported.length + " music files can't be exported");
-                }
-              } else {
-                exportMusic();
-              }
-            };
-          }, 0);
+        if (!status) {
+          return;
         }
+        var filesToBeExported = [];
+        var filesCanNotBeExported = [];
+
+        var fileIndex = 0;
+        var oldFileIndex = 0;
+        var steps = 0;
+
+        var pb = new ProcessBar({
+          sectionsNumber: musics.length,
+          stepsPerSection: 50
+        });
+
+        var dialog = new FilesOPDialog({
+          title_l10n_id: 'export-musics-dialog-header',
+          processbar_l10n_id: 'processbar-export-musics-promot',
+          processbar: pb
+        });
+
+        var filesIndicator = $id('files-indicator');
+        filesIndicator.innerHTML = '0/' + musics.length;
+
+        var bTimer = false;
+
+        setTimeout(function doExportMusic() {
+          var newDir = decodeURI(dir);
+          var oldDir = musics[fileIndex].dataset.id;
+          newDir = newDir + '/' + musics[fileIndex].dataset.name + '.' + musics[fileIndex].dataset.type;
+          if (navigator.mozFFOSAssistant.isWindows) {
+            newDir = newDir.substring(1, newDir.length);
+            newDir = UrlEncode(newDir);
+          }
+          var cmd = 'adb pull "' + oldDir + '" "' + newDir + '"';
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
+
+          if (!bTimer) {
+            bTimer = true;
+            var timer = setInterval(function() {
+              if (oldFileIndex == fileIndex) {
+                if (steps < 50) {
+                  steps++;
+                  pb.moveForward();
+                }
+              } else {
+                oldFileIndex = fileIndex;
+                steps = 0;
+              }
+            }, 100);
+          }
+
+          req.onsuccess = function(e) {
+            filesToBeExported.push(musics[fileIndex]);
+            fileIndex++;
+            pb.finish(filesToBeExported.length);
+            filesIndicator.innerHTML = filesToBeExported.length + '/' + musics.length;
+
+            if (fileIndex == musics.length) {
+              clearInterval(timer);
+              pb.finish(musics.length);
+              dialog.closeAll();
+
+              if (filesCanNotBeExported.length > 0) {
+                //TODO: tell user some files can't be exported
+                new AlertDialog(filesCanNotBeExported.length + " music files can't be exported");
+              }
+            } else {
+              doExportMusic();
+            }
+          };
+
+          req.onerror = function(e) {
+            filesCanNotBeExported.push(musics[fileIndex]);
+            fileIndex++;
+            if (fileIndex == musics.length) {
+              clearInterval(timer);
+              pb.finish(musics.length);
+              dialog.closeAll();
+
+              if (filesCanNotBeExported.length > 0) {
+                //TODO: tell user some musics can't be exported
+                new AlertDialog(filesCanNotBeExported.length + " music files can't be exported");
+              }
+            } else {
+              doExportMusic();
+            }
+          };
+        }, 0);
       }, {
         title: _('export-music-title'),
         fileType: 'Audio'

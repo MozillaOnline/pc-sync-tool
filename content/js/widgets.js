@@ -29,12 +29,12 @@
  *     Function to be invoked if the data is added or removed
  */
 var GroupedList = function(options) {
-  this.initailize(options);
+  this.initialize(options);
   this.DEFAULT_INDEX = '__DEF_INDEX__';
 };
 
 GroupedList.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       dataList: null,
       dataIndexer: null,
@@ -291,7 +291,7 @@ GroupedList.prototype = {
 };
 
 function SendSMSDialog(options) {
-  this.initailize(options);
+  this.initialize(options);
 }
 
 SendSMSDialog.closeAll = function() {
@@ -301,7 +301,7 @@ SendSMSDialog.closeAll = function() {
 };
 
 SendSMSDialog.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       onclose: emptyFunction
     }, options);
@@ -603,11 +603,11 @@ SendSMSDialog.prototype = {
 };
 
 function SelectContactsDialog(options) {
-  this.initailize(options);
+  this.initialize(options);
 }
 
 SelectContactsDialog.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       contactList: null,
       onok: emptyFunction
@@ -776,16 +776,57 @@ SelectContactsDialog.prototype = {
   }
 };
 
+function ProcessBar(options) {
+  this.initialize(options);
+}
+
+ProcessBar.prototype = {
+  initialize: function (options) {
+    this.options = extend({
+      sectionsNumber: 0,
+      stepsPerSection: 0
+    }, options);
+
+    if (!this.options.sectionsNumber || !this.options.stepsPerSection) {
+      new AlertDialog("Process bar initialize failed");
+      return;
+    }
+
+    this.container = document.createElement('div');
+    this.container.classList.add('processbar-container');
+    this.processBar = document.createElement('div');
+    this.processBar.classList.add('processbar');
+    this.container.appendChild(this.processBar);
+    this.ratio = 0;
+    this.step = Math.round(100 / this.options.sectionsNumber) / this.options.stepsPerSection;
+  },
+
+  moveForward: function() {
+    this.ratio += this.step;
+    this.processBar.style.width = this.ratio + '%';
+  },
+
+  finish: function(count) {
+    this.ratio = Math.round(count * 100 / this.options.sectionsNumber);
+    this.processBar.style.width = this.ratio + '%';
+  },
+
+  getContent: function() {
+    return this.container;
+  }
+};
+
 function FilesOPDialog(options) {
-  this.initailize(options);
+  this.initialize(options);
 }
 
 FilesOPDialog.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
       title_l10n_id: '',
-      processbar_l10n_id: ''
+      processbar_l10n_id: '',
+      processbar: null
     }, options);
 
     this._modalElement = null;
@@ -817,6 +858,8 @@ FilesOPDialog.prototype = {
       templateData.processbar_l10n_id = this.options.processbar_l10n_id;
     }
     this._modalElement.innerHTML = tmpl('tmpl_fileOP_dialog', templateData);
+    var dlgBody = $expr('.select-multi-files-dialog-body', this._modalElement)[0];
+    dlgBody.appendChild(this.options.processbar.getContent());
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
     this._makeDialogCancelable();
@@ -885,11 +928,11 @@ FilesOPDialog.prototype = {
 };
 
 function ImageViewer(options) {
-  this.initailize(options);
+  this.initialize(options);
 }
 
 ImageViewer.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
       count: 0,
@@ -1019,11 +1062,11 @@ ImageViewer.prototype = {
 };
 
 function WifiModePromptDialog(options) {
-  this.initailize(options);
+  this.initialize(options);
 }
 
 WifiModePromptDialog.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
       title_l10n_id: '',
@@ -1169,11 +1212,11 @@ animationLoadingDialog.prototype = {
 };
 
 function AlertDialog(message) {
-  this.initailize(message);
+  this.initialize(message);
 }
 
 AlertDialog.prototype = {
-  initailize: function(message) {
+  initialize: function(message) {
     this._modalElement = null;
     this._mask = null;
     this._mask = document.createElement('div');

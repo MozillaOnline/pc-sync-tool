@@ -70,7 +70,7 @@ var Video = (function() {
       }
       var threadBody = video.parentNode;
       threadBody.removeChild(video);
-      var thread = threadBody.parentNode;
+      var thread = threadBody.parentNode.parentNode;
       if ($expr('li', threadBody).length == 0) {
         getListContainer().removeChild(thread);
       }
@@ -169,19 +169,20 @@ var Video = (function() {
     var oldFileIndex = 0;
     var steps = 0;
 
+    var pb = new ProcessBar({
+      sectionsNumber: files.length,
+      stepsPerSection: 50
+    });
+
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-videos-dialog-header',
-      processbar_l10n_id: 'processbar-remove-videos-promot'
+      processbar_l10n_id: 'processbar-remove-videos-promot',
+      processbar: pb
     });
 
     var filesIndicator = $id('files-indicator');
-    var pb = $id('processbar');
-    var ratio = 0;
     filesIndicator.innerHTML = '0/' + items.length;
 
-    //processbar range for one file
-    var range = Math.round(100 / items.length);
-    var step = range / 50;
     var bTimer = false;
 
     setTimeout(function doRemoveVideo() {
@@ -193,8 +194,7 @@ var Video = (function() {
           if (oldFileIndex == fileIndex) {
             if (steps < 50) {
               steps++;
-              ratio += step;
-              pb.style.width = ratio + '%';
+              pb.moveForward();
             }
           } else {
             oldFileIndex = fileIndex;
@@ -206,13 +206,12 @@ var Video = (function() {
       req.onsuccess = function(e) {
         filesToBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
           //updating UI after removing videos
@@ -232,13 +231,12 @@ var Video = (function() {
       req.onerror = function(e) {
         filesCanNotBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
           //updating UI after removing videos
@@ -280,18 +278,20 @@ var Video = (function() {
       var oldFileIndex = 0;
       var steps = 0;
 
+      var pb = new ProcessBar({
+        sectionsNumber: videos.length,
+        stepsPerSection: 50
+      });
+
       var dialog = new FilesOPDialog({
         title_l10n_id: 'import-videos-dialog-header',
-        processbar_l10n_id: 'processbar-import-videos-promot'
+        processbar_l10n_id: 'processbar-import-videos-promot',
+        processbar: pb
       });
 
       var filesIndicator = $id('files-indicator');
-      var pb = $id('processbar');
-      var ratio = 0;
       filesIndicator.innerHTML = '0/' + videos.length;
 
-      var range = Math.round(100 / videos.length);
-      var step = range / 50;
       var bTimer = false;
 
       setTimeout(function doImportVideo() {
@@ -304,8 +304,7 @@ var Video = (function() {
             if (oldFileIndex == fileIndex) {
               if (steps < 50) {
                 steps++;
-                ratio += step;
-                pb.style.width = ratio + '%';
+                pb.moveForward();
               }
             } else {
               oldFileIndex = fileIndex;
@@ -317,13 +316,12 @@ var Video = (function() {
         req.onsuccess = function(e) {
           filesToBeImported.push(videos[fileIndex]);
           fileIndex++;
-          ratio = Math.round(filesToBeImported.length * 100 / videos.length);
-          pb.style.width = ratio + '%';
+          pb.finish(filesToBeImported.length);
           filesIndicator.innerHTML = fileIndex + '/' + videos.length;
 
           if (fileIndex == videos.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(videos.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
@@ -343,7 +341,7 @@ var Video = (function() {
 
           if (fileIndex == videos.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(videos.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
@@ -425,8 +423,8 @@ var Video = (function() {
 
       navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
         if (!status) {
-	  return;
-	}
+          return;
+        }
         var filesToBeExported = [];
         var filesCanNotBeExported = [];
 
@@ -434,19 +432,20 @@ var Video = (function() {
         var oldFileIndex = 0;
         var steps = 0;
 
+        var pb = new ProcessBar({
+          sectionsNumber: videos.length,
+          stepsPerSection: 50
+        });
+
         var dialog = new FilesOPDialog({
           title_l10n_id: 'export-videos-dialog-header',
-          processbar_l10n_id: 'processbar-export-videos-promot'
+          processbar_l10n_id: 'processbar-export-videos-promot',
+          processbar: pb
         });
 
         var filesIndicator = $id('files-indicator');
-        var pb = $id('processbar');
-        var ratio = 0;
         filesIndicator.innerHTML = '0/' + videos.length;
 
-        //processbar range for one file
-        var range = Math.round(100 / videos.length);
-        var step = range / 50;
         var bTimer = false;
 
         var newDir = dir;
@@ -458,14 +457,14 @@ var Video = (function() {
           var cmd = 'adb pull "' + videos[fileIndex].dataset.videoUrl + '" "' + decodeURI(newDir) + '/' + convertToOutputFileName(videos[fileIndex].dataset.videoUrl) + '"';
 
           var req = navigator.mozFFOSAssistant.runCmd(cmd);
+
           if (!bTimer) {
             bTimer = true;
             var timer = setInterval(function() {
               if (oldFileIndex == fileIndex) {
                 if (steps < 50) {
                   steps++;
-                  ratio += step;
-                  pb.style.width = ratio + '%';
+                  pb.moveForward();
                 }
               } else {
                 oldFileIndex = fileIndex;
@@ -477,13 +476,12 @@ var Video = (function() {
           req.onsuccess = function(e) {
             filesToBeExported.push(videos[fileIndex]);
             fileIndex++;
-            ratio = Math.round(filesToBeExported.length * 100 / videos.length);
-            pb.style.width = ratio + '%';
+            pb.finish(filesToBeExported.length);
             filesIndicator.innerHTML = filesToBeExported.length + '/' + videos.length;
 
             if (fileIndex == videos.length) {
               clearInterval(timer);
-              pb.style.width = '100%';
+              pb.finish(videos.length);
               dialog.closeAll();
 
               if (filesCanNotBeExported.length > 0) {
@@ -501,7 +499,7 @@ var Video = (function() {
 
             if (fileIndex == videos.length) {
               clearInterval(timer);
-              pb.style.width = '100%';
+              pb.finish(videos.length);
               dialog.closeAll();
 
               if (filesCanNotBeExported.length > 0) {
