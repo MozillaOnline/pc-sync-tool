@@ -9,7 +9,7 @@ html {
 
 body {
   font-size: 1.4rem;
-  font-family: MozTT,sans-serif;
+  font-family: Arial, Helvetica, sans-serif, 宋体;
   color: #333333;
   padding-top: 1rem;
   overflow-y: scroll;
@@ -307,15 +307,14 @@ input[type="url"], textarea {
 }
 
 #wifi-connect-button {
-  height: 2.4rem;
-  width: 9.0rem;
+  height: 2.8rem;
+  width: 10rem;
   float: left;
   font-size: 1.5rem;
   margin-left: 0.7rem;
   margin-top: 3.7rem;
   text-align: center;
   font-size: 1.4rem;
-  padding: 0.5rem 0 0 0 ;
 }
 
 .connection-step .usbarrow {
@@ -498,7 +497,7 @@ input[type="url"], textarea {
 
 .content .view span.title {
   display: -moz-inline-box;
-  padding: 2rem 1rem 1rem 2rem;
+  padding: 2rem 1.2rem 1rem 2rem;
   font-size: 2.5rem;
 }
 
@@ -518,6 +517,8 @@ input[type="url"], textarea {
 /******** summary view ******/
 #device-disconnect {
   display: -moz-inline-box;
+  color: #00c9f7;
+  font-size: 1.6rem;
 }
 
 #device-image {

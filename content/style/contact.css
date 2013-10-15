@@ -199,9 +199,8 @@
 #quick-save-contact {
   margin: 0.6rem 0 0 7.5rem;
   float: left;
-  height: 2.2rem;
-  width: 5rem;
-  padding-top: 0.3rem;
+  height: 3.2rem;
+  width: 15rem;
 }
 
 #contact-view-sub span.title {
@@ -538,16 +537,6 @@ button.add-new-button {
   margin-top: 1.2rem;
 }
 
-#save-contact {
-  padding: 0.4rem 3.4rem;
-  width: 5.6rem;
-}
-
-#cancel-edit-contact {
-  padding: 0.3rem 2.8rem;
-  width: 5.6rem;
-}
-
 .show-contact-header {
   height: 9rem;
 }
@@ -587,11 +576,9 @@ button.add-new-button {
 
 #edit-contact {
   display: -moz-inline-box;
-  height: 2.0rem;
+  height: 2.4rem;
   margin-left: 1rem;
   margin-top: 0.7rem;
-  padding:0.3rem 0 0 2.3rem;
-  width: 5.4rem;
   text-align: center;
 }
 

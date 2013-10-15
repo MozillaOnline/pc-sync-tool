@@ -135,7 +135,7 @@
                 <div id="wifi-connection-code-input" class="hiddenElement">
                   <input id="wifi-connection-code" type="text" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></input>
                 </div>
-                <div id="wifi-connect-button" class="button hiddenElement" data-l10n-id="wifi-connect"></div>
+                <button id="wifi-connect-button" class="button hiddenElement" data-l10n-id="wifi-connect"></button>
               </div>
             </section>
           </section>
@@ -243,8 +243,7 @@
               </div>
             </div>
             <div id="contact-list-container">
-              <div class="contact-list-item">
-              </div>
+              <div class="contact-list-item"></div>
             </div>
           </section>
           <section id="sms-view" class="view" hidden="true">
@@ -266,14 +265,14 @@
                 <label data-l10n-id="sms-send"></label>
               </div>
             </div>
+            <div id="empty-sms-container">
+              <div class="empty-sms"></div>
+              <div class="empty-sms-prompt">
+                <label data-l10n-id="empty-sms"> </label>
+              </div>
+            </div>
             <div id="threads-list-container">
               <div class="threads-list-item"></div>
-              <div id="empty-sms-container">
-                <div class="empty-sms"></div>
-                <div class="empty-sms-prompt">
-                  <label data-l10n-id="empty-sms"> </label>
-                </div>
-              </div>
             </div>
           </section>
           <section id ="music-view" class="view" hidden="true">
@@ -399,7 +398,9 @@
                  </div>
                   <input id="mobile" class="quick-input" type="tel" value="" data-l10n-id="mobile"></input>
                 </div>
-                <div><a id="quick-save-contact" class="button" data-l10n-id="save">保存</a></div>
+                <div>
+                  <button id="quick-save-contact" class="button" data-l10n-id="save">保存</button>
+                </div>
               </form>
             </section>
             <section id="contact-edit-view" class="card-view contact-form" hidden="true">
@@ -424,8 +425,8 @@
                 <!-- Contact field containter -->
                 <ul></ul>
                 <div class="saveAndCancel">
-                <a id="save-contact" class="button" data-l10n-id="save">保存</a>
-                <a id="cancel-edit-contact" class="button-cancel" data-l10n-id="cancel">取消</a>
+                  <button id="save-contact" class="button" data-l10n-id="save">保存</button>
+                  <button id="cancel-edit-contact" class="button-cancel" data-l10n-id="cancel">取消</button>
                 </div>
               </form>
             </section>
@@ -436,8 +437,7 @@
                 <div class="contact-head">
                   <div id="show-contact-full-name"></div>
                   <div id="show-contact-company"></div>
-                  <div id="edit-contact" class="button" data-l10n-id="edit-contact">
-                  </div>
+                  <button id="edit-contact" class="button" data-l10n-id="edit-contact"></button>
                 </div>
               </div>
               <div class="contact-content">
@@ -448,7 +448,7 @@
               <div class="sms-message-quick-sender">
                 <div class="sender-ctn">
                   <div class="count-ctn">
-                    <div class="button" data-l10n-id="sms-send" id="sms-send-incontact"></div>
+                    <button class="button" data-l10n-id="sms-send" id="sms-send-incontact"></button>
                   </div>
                 </div>
               </div>
@@ -460,7 +460,7 @@
               <div class="sms-message-quick-sender">
                 <div class="sender-ctn">
                   <div class="count-ctn">
-                    <div class="button" data-l10n-id="sms-send" id="sms-send-inmulticontact"></div>
+                    <button class="button" data-l10n-id="sms-send" id="sms-send-inmulticontact"></button>
                   </div>
                 </div>
               </div>
@@ -471,7 +471,7 @@
               <div class="sms-send-view"></div>
               <div id="sms-send-view-header" data-l10n-id="sms-send-view-header"></div>
               <form id="sms-send-view-form" action="#" onsubmit="return false;">
-                <div id="sms-send-button" class="button" data-l10n-id="sms-send"></div>
+                <button id="sms-send-button" class="button" data-l10n-id="sms-send"></button>
               </form>
             </section>
             <section id="sms-select-view" class="card-view sms-form" hidden="true">

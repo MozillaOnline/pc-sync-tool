@@ -544,6 +544,7 @@ var SmsList = (function() {
         threadListData.lastMessageType = msg.type;
         threadList.add(threadListData);
         updateThreadAvatar(threadListData);
+        showThreadList();
         return;
       }
     } else {
@@ -573,11 +574,12 @@ var SmsList = (function() {
     tempthreadListData['threadIndex'] = msg.threadId;
     threadList.add(tempthreadListData);
     updateThreadAvatar(tempthreadListData);
+    showThreadList();
   }
 
   function removeThread(item) {
     var loadingGroupId = animationLoading.start();
-    SmsList.selectAllSms(false);
+    selectAllSms(false);
     var groupedData = threadList.getGroupedData();
     var threadId = item.threadIndex;
     CMD.SMS.getThreadMessagesById(threadId, function onresponse_getThreadMessagesById(messages) {
@@ -598,6 +600,7 @@ var SmsList = (function() {
               break;
             }
           }
+          showThreadList();
           animationLoading.stop(loadingGroupId);
         }, function onError(e) {
           animationLoading.stop(loadingGroupId);
@@ -687,7 +690,7 @@ var SmsList = (function() {
           }
           threadListData = threadListData[j].dataList[0];
           if (messageListData.length == 1) {
-            SmsList.selectAllSms(false);
+            selectAllSms(false);
             threadList.remove(threadListData);
             ViewManager.showViews('sms-send-view');
           } else {

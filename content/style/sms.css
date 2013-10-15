@@ -266,6 +266,7 @@
   padding-left: 1rem;
   float: left;
   width: 80%;
+  line-height: 1.2em;
 }
 
 .threads-list-item .sms-info > *{
@@ -327,9 +328,8 @@
   margin: 0 0 0 8.5rem;
   text-align: center;
   font-size: 1.4rem;
-  padding-top: 1rem;
   height: 3rem;
-  width: 8rem;
+  width: 14rem;
 }
 
 .send-single-sms-dialog {
@@ -542,7 +542,8 @@
   background: url("images/sms-select-contact.png");
   display: inline-block;
   height: 1.6rem;
-  margin: -0.2rem 0.3rem 0 0;
+  float: left;
+  margin-right: 0.5rem;
   vertical-align: middle;
   width: 1.6rem
 }
@@ -1183,16 +1184,14 @@
 }
 
 #sms-send-incontact {
-  height: 2.4rem;
+  height: 3.4rem;
   margin-left: 5.1rem;
-  padding-top: 0.4rem;
   width: 11.5rem;
 }
 
 #sms-send-inmulticontact {
-  height: 2.4rem;
+  height: 3.4rem;
   margin-left: 5.1rem;
-  padding-top: 0.4rem;
   width: 11.5rem;
 }
 

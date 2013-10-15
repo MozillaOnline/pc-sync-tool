@@ -131,9 +131,6 @@
   color: #018CAB;
 }
 
-#empty-music-container {
-}
-
 #music-list-container {
   max-height: 50rem;
   overflow: auto;
