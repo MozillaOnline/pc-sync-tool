@@ -136,10 +136,6 @@
   overflow: auto;
 }
 
-.content {
-  margin: 0 2rem 0 0.6rem;
-}
-
 .empty-musics {
   background: url('images/empty-musics.png') no-repeat scroll 29.2rem center transparent;
   height: 16rem;

@@ -53,21 +53,6 @@ input[type="url"], textarea {
   clear: both;
 }
 
-.table {
-  display: table;
-  width: 100%;
-}
-
-.table > div {
-  display: table-row;
-  width: 100%;
-}
-
-.table-cell {
-  display: table-cell;
-  height: 100%;
-}
-
 .coming-soon {
   height: 50rem;
   background: url("images/coming-soon.jpg") no-repeat center center transparent;
@@ -360,6 +345,8 @@ input[type="url"], textarea {
   box-shadow: 0.6rem 0 0 0 #EFEFEF;
   background-color: #F4F4F4;
   vertical-align: top;
+  float: left;
+  height: 58rem;
 }
 
 .sidebar .list {
@@ -485,6 +472,13 @@ input[type="url"], textarea {
 /******** content *********/
 .content {
   height: 100%;
+  float: left;
+  height: 58rem;
+  width: 75rem;
+}
+
+.narrow-content {
+  width: 47rem;
 }
 
 .content .view {
@@ -503,11 +497,12 @@ input[type="url"], textarea {
 
 /******** views ******/
 .views {
-  height: 100%;
-  width: 33%;
+  height: 58rem;
+  width: 29rem;
   background-color: #FAFAFA;
   padding: 0 1rem;
   vertical-align: top;
+  float: right;
 }
 
 .hidden-views {
@@ -935,4 +930,8 @@ input.modal-btn {
   position: absolute;
   font-size: 0.9rem;
   display: none;
+}
+
+.empty-container {
+  margin: 0 2rem 0 0.6rem;
 }

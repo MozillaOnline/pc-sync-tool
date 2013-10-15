@@ -296,10 +296,6 @@
   max-height: 100%;
 }
 
-.content {
-  margin: 0 2rem 0 0.6rem;
-}
-
 #empty-picture-container {
   display: none;
 }

@@ -77,8 +77,10 @@ var ViewManager = (function() {
       viewElem.dataset.shown = true;
       if (viewId == "summary-view" || viewId == "connect-view" || viewId == "music-view" || viewId == "gallery-view" || viewId == "video-view") {
         $id('views').classList.add('hidden-views');
+        $id('content').classList.remove('narrow-content');
       } else {
         $id('views').classList.remove('hidden-views');
+        $id('content').classList.add('narrow-content');
       }
       var tabId = viewElem.dataset.linkedTab;
       if (!tabId) {

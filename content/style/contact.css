@@ -168,7 +168,7 @@
 
 #mobile, #fullName {
   float: right;
-  width: 20.2rem;
+  width: 19.5rem;
   height: 2.5rem;
   margin-right: 2rem;
 }
@@ -416,10 +416,6 @@
   padding-right: 3rem;
 }
 
-#contact-form div {
-  position: relative;
-}
-
 #add-avatar {
   height: 2rem;
   background-color: #A6A6A6;
@@ -443,7 +439,7 @@
 }
 
 #contact-form .action-delete {
-  position: absolute;
+  position: relative;
   height: 2.2rem;
   width: 2.2rem;
   background: url(images/delete.png) no-repeat;
