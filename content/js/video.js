@@ -264,10 +264,12 @@ var Video = (function() {
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(state, data) {
+    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(data) {
+      if (!data) {
+        return;
+      }
       data = data.substr(0, data.length - 1);
       var videos = data.split(';');
-
       if (videos.length <= 0) {
         return;
       }
@@ -357,7 +359,7 @@ var Video = (function() {
       }, 0);
     }, {
       title: _('import-video-title'),
-      fileType: 'VideoTypes'
+      fileType: 'Video'
     });
   }
 
@@ -387,11 +389,13 @@ var Video = (function() {
         files.push(item.dataset.videoUrl);
       });
 
-      if (window.confirm(_('delete-videos-confirm', {
-        n: files.length
-      }))) {
-        Video.removeVideos(files);
-      }
+      new AlertDialog(_('delete-videos-confirm', {
+          n: files.length
+        }), true, function (returnBtn) {
+        if(returnBtn) {
+          Video.removeVideos(files);
+        }
+      });
     });
 
     $id('refresh-videos').addEventListener('click', function onclick_refreshVideos(event) {
@@ -421,13 +425,9 @@ var Video = (function() {
         return;
       }
 
-      navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
-        if (!status) {
-          return;
-        }
+      navigator.mozFFOSAssistant.selectDirectory(function(dir) {
         var filesToBeExported = [];
         var filesCanNotBeExported = [];
-
         var fileIndex = 0;
         var oldFileIndex = 0;
         var steps = 0;

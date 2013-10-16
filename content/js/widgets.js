@@ -1211,12 +1211,12 @@ animationLoadingDialog.prototype = {
   },
 };
 
-function AlertDialog(message) {
-  this.initialize(message);
+function AlertDialog(message, showCancelButton, callback) {
+  this.initialize(message, showCancelButton, callback);
 }
 
 AlertDialog.prototype = {
-  initialize: function(message) {
+    initialize: function(message, showCancelButton, callback) {
     this._modalElement = null;
     this._mask = null;
     this._mask = document.createElement('div');
@@ -1224,6 +1224,8 @@ AlertDialog.prototype = {
     document.body.appendChild(this._mask);
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
+    this.callback = callback;
+    this.showCancelButton = showCancelButton;
     var templateData = {
       message: message
     };
@@ -1253,16 +1255,16 @@ AlertDialog.prototype = {
     window.addEventListener('resize', this._onWindowResize);
   },
 
-  closeAll: function() {
-    var evt = document.createEvent('Event');
-    evt.initEvent('AlertDialog:show', true, true);
-    document.dispatchEvent(evt);
-  },
-
   _makeDialogCancelable: function() {
+    var okBtn = $expr('.button-ok', this._modalElement)[0];
+    okBtn.addEventListener('click', this.okButtonCallback.bind(this));
+
     var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-    cancelBtn.hidden = false;
-    cancelBtn.addEventListener('click', this.close.bind(this));
+    cancelBtn.hidden = !this.showCancelButton;
+    cancelBtn.addEventListener('click', this.cancelButtonCallback.bind(this));
+
+    var closeBtn = $expr('.alert-dialog-header-x', this._modalElement)[0];
+    closeBtn.addEventListener('click', this.cancelButtonCallback.bind(this));
   },
 
   _adjustModalPosition: function() {
@@ -1278,6 +1280,20 @@ AlertDialog.prototype = {
     evt.data = data;
     evt.targetElement = this._modalElement;
     document.dispatchEvent(evt);
+  },
+
+  okButtonCallback: function() {
+    if(this.callback){
+      this.callback(true);
+    }
+    this.close();
+  },
+
+  cancelButtonCallback: function() {
+    if(this.callback){
+      this.callback(false);
+    }
+    this.close();
   },
 
   close: function() {

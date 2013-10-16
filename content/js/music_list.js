@@ -313,7 +313,10 @@ var MusicList = (function() {
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(state, data) {
+    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(data) {
+      if (!data) {
+        return;
+      }
       data = data.substr(0, data.length - 1);
       var musics = data.split(';');
 
@@ -442,11 +445,13 @@ var MusicList = (function() {
         files.push(JSON.parse(item.dataset.music).name);
       });
 
-      if (window.confirm(_('delete-musics-confirm', {
-        n: files.length
-      }))) {
-        MusicList.removeMusics(files);
-      }
+      new AlertDialog(_('delete-musics-confirm', {
+          n: files.length
+        }), true, function (returnBtn) {
+        if(returnBtn) {
+          MusicList.removeMusics(files);
+        }
+      });
     });
 
     $id('refresh-musics').addEventListener('click', function onclick_refreshMusics(event) {
@@ -476,10 +481,7 @@ var MusicList = (function() {
         return;
       }
 
-      navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
-        if (!status) {
-          return;
-        }
+      navigator.mozFFOSAssistant.selectDirectory(function(dir) {
         var filesToBeExported = [];
         var filesCanNotBeExported = [];
 

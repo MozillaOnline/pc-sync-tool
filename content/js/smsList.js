@@ -732,14 +732,16 @@ var SmsList = (function() {
         ids.push(item.dataset);
       });
 
-      if (window.confirm(_('delete-sms-confirm', {
-        n: ids.length
-      }))) {
-        ids.forEach(function(item) {
-          SmsList.removeThread(item);
-        });
-        ViewManager.showViews('sms-send-view');
-      }
+      new AlertDialog(_('delete-sms-confirm', {
+          n: ids.length
+        }), true, function (returnBtn) {
+          if(returnBtn) {
+            ids.forEach(function(item) {
+              SmsList.removeThread(item);
+            });
+            ViewManager.showViews('sms-send-view');
+          }
+      });
     });
 
     $id('add-new-sms').addEventListener('click', function onclick_addNewSms(event) {
@@ -783,11 +785,13 @@ var SmsList = (function() {
       $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(item) {
         ids.push(item.dataset);
       });
-      if (window.confirm(_('export-sms-confirm', {
-        n: ids.length
-      }))) {
-        SmsList.exportThreads(ids);
-      }
+      new AlertDialog(_('export-sms-confirm', {
+          n: ids.length
+        }), true, function (returnBtn) {
+          if(returnBtn) {
+            SmsList.exportThreads(ids);
+          }
+      });
     });
 
     $id('sms-send-inthread').addEventListener('click', function onclick_quickreply(event) {
@@ -829,6 +833,6 @@ var SmsList = (function() {
     removeThread: removeThread,
     exportThreads: exportThreads,
     onMessage: onMessage,
-    selectAllSms: selectAllSms,
+    selectAllSms: selectAllSms
   };
 })();

@@ -49,7 +49,7 @@ var ViewManager = (function() {
         continue;
       }
     }
-    var isChangeView = false;
+
     if ( !! viewOldId) {
       if (viewOldId == viewId) {
         return;
@@ -57,80 +57,74 @@ var ViewManager = (function() {
       if (viewOldId == "contact-view") {
         var sub = $id('contact-edit-view');
         if (sub.hidden == false) {
-          if (window.confirm(_('save-contacts-confirm'))) {
-            ContactForm.saveContact();
-          }
-          $id(viewOldId).dataset.shown = false;
-          isChangeView = true;
-        } else {
-          $id(viewOldId).dataset.shown = false;
-          isChangeView = true;
+          new AlertDialog(_('save-contacts-confirm'), true, function (returnBtn) {
+            if(returnBtn) {
+              $id(viewOldId).dataset.shown = false;
+              switchContent(viewId, showData, viewElem);
+            }
+          });
+          return;
         }
       } else if (viewOldId == "sms-view") {
         var sub = $id('sender-ctn-input');
         if (sub.hidden == false && sub.value.length > 0) {
-          if (window.confirm(_('send-sms-confirm'))) {
-            $id(viewOldId).dataset.shown = false;
-            isChangeView = true;
-          } else {
-            return;
-          }
-        } else {
-          $id(viewOldId).dataset.shown = false;
-          isChangeView = true;
+          new AlertDialog(_('send-sms-confirm'), true, function (returnBtn) {
+            if(returnBtn) {
+              $id(viewOldId).dataset.shown = false;
+              switchContent(viewId, showData, viewElem);
+            }
+          });
+          return;
         }
-      } else {
-        $id(viewOldId).dataset.shown = false;
-        isChangeView = true;
       }
-    } else {
-      isChangeView = true;
+      $id(viewOldId).dataset.shown = false;
     }
-    if (isChangeView == true) {
-      viewElem.dataset.shown = true;
-      if (viewId == "summary-view" || viewId == "connect-view" || viewId == "music-view" || viewId == "gallery-view" || viewId == "video-view") {
-        $id('views').classList.add('hidden-views');
-        $id('content').classList.remove('narrow-content');
-      } else {
-        $id('views').classList.remove('hidden-views');
-        $id('content').classList.add('narrow-content');
-      }
-      var tabId = viewElem.dataset.linkedTab;
-      if (!tabId) {
-        return;
-      }
-      var tabElem = $id(tabId);
-      // Hide other radio list
-      if (tabElem.parentNode.classList.contains('radio-list')) {
-        $expr('#container .radio-list').forEach(function hideList(list) {
-          list.hidden = true;
-        });
-      }
-      // unselect selected item
-      $expr('#container .selected').forEach(function unselect(elem) {
-        elem.classList.remove('selected');
-        elem.classList.remove(elem.id + '-selected');
-        elem.classList.add(elem.id);
-      });
-      tabElem.parentNode.hidden = false;
-      tabElem.classList.add('selected');
-      tabElem.classList.add(tabId + '-selected');
-      $expr('#container .content .view').forEach(function hideView(view) {
-        view.hidden = true;
-      });
-      viewElem.hidden = false;
-      _showViews(viewId + '-sub');
-      var event;
-      if (viewElem.dataset.firstshown != "true") {
-        viewElem.dataset.firstshown = true;
-        event = 'firstshow';
-      } else {
-        event = 'othershow';
-      }
-      callEvent(event, viewId, showData);
-    }
+    switchContent(viewId, showData, viewElem);
   }
 
+  function switchContent(viewId, showData, viewElem) {
+    viewElem.dataset.shown = true;
+    if (viewId == "summary-view" || viewId == "connect-view" || viewId == "music-view" || viewId == "gallery-view" || viewId == "video-view") {
+      $id('views').classList.add('hidden-views');
+      $id('content').classList.remove('narrow-content');
+    } else {
+      $id('views').classList.remove('hidden-views');
+      $id('content').classList.add('narrow-content');
+    }
+    var tabId = viewElem.dataset.linkedTab;
+    if (!tabId) {
+      return;
+    }
+    var tabElem = $id(tabId);
+    // Hide other radio list
+    if (tabElem.parentNode.classList.contains('radio-list')) {
+      $expr('#container .radio-list').forEach(function hideList(list) {
+        list.hidden = true;
+      });
+    }
+    // unselect selected item
+    $expr('#container .selected').forEach(function unselect(elem) {
+      elem.classList.remove('selected');
+      elem.classList.remove(elem.id + '-selected');
+      elem.classList.add(elem.id);
+    });
+    tabElem.parentNode.hidden = false;
+    tabElem.classList.add('selected');
+    tabElem.classList.add(tabId + '-selected');
+    $expr('#container .content .view').forEach(function hideView(view) {
+      view.hidden = true;
+    });
+    viewElem.hidden = false;
+    _showViews(viewId + '-sub');
+    var event;
+    if (viewElem.dataset.firstshown != "true") {
+      viewElem.dataset.firstshown = true;
+      event = 'firstshow';
+    } else {
+      event = 'othershow';
+    }
+    callEvent(event, viewId, showData);
+  }
   /**
    * show sub-views related to content
    */

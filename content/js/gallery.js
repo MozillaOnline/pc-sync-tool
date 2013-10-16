@@ -309,7 +309,10 @@ var Gallery = (function() {
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(state, data) {
+    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(data) {
+      if (!data) {
+        return;
+      }
       data = data.substr(0, data.length - 1);
       var pictures = data.split(';');
 
@@ -432,11 +435,13 @@ var Gallery = (function() {
         files.push(item.dataset.picUrl);
       });
 
-      if (window.confirm(_('delete-pictures-confirm', {
-        n: files.length
-      }))) {
-        Gallery.removePictures(files);
-      }
+      new AlertDialog(_('delete-pictures-confirm', {
+          n: files.length
+        }), true, function (returnBtn) {
+        if(returnBtn) {
+          Gallery.removePictures(files);
+        }
+      });
     });
 
     $id('refresh-pictures').addEventListener('click', function onclick_refreshPictures(event) {
@@ -466,10 +471,7 @@ var Gallery = (function() {
         return;
       }
 
-      navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
-        if (!status) {
-          return;
-        }
+      navigator.mozFFOSAssistant.selectDirectory(function(dir) {
         var filesToBeExported = [];
         var filesCanNotBeExported = [];
 

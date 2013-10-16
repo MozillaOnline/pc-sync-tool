@@ -208,13 +208,12 @@ FFOSAssistant.prototype = {
     callback = (typeof callback === 'function') ? callback : function() {};
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
-        case Ci.nsIFilePicker.returnOK:
-          callback(true,filePicker.fileURL.path);
-          break;
+      case Ci.nsIFilePicker.returnOK:
+        callback(filePicker.fileURL.path);
+         break;
       case Ci.nsIFilePicker.returnCancel:
-        default:
-          callback(false);
-          break;
+      default:
+        break;
       }
     });
   },
@@ -328,11 +327,11 @@ FFOSAssistant.prototype = {
             var file = files.getNext().QueryInterface(Components.interfaces.nsIFile);
             filePath += file.path + ';';
           }
-          callback(true, filePath);
+          callback(filePath);
           break;
         case Ci.nsIFilePicker.returnCancel:
         default:
-          callback(false, null);
+          break;
       }
     });
   },

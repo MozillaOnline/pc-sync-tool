@@ -666,17 +666,19 @@ var ContactList = (function() {
         ids.push(item.dataset.contactId);
       });
 
-      if (window.confirm(_('delete-contacts-confirm', {
-        n: ids.length
-      }))) {
-        if ($id('selectAll-contacts').dataset.checked == "true") {
-          $id('selectAll-contacts').dataset.checked = false;
+      new AlertDialog(_('delete-contacts-confirm', {
+          n: ids.length
+        }), true, function (returnBtn) {
+        if(returnBtn) {
+          if ($id('selectAll-contacts').dataset.checked == "true") {
+            $id('selectAll-contacts').dataset.checked = false;
+          }
+          ids.forEach(function(item) {
+            ContactList.removeContact(item);
+          });
+          ViewManager.showViews('contact-quick-add-view');
         }
-        ids.forEach(function(item) {
-          ContactList.removeContact(item);
-        });
-        ViewManager.showViews('contact-quick-add-view');
-      }
+      });
     });
 
     $id('add-new-contact').addEventListener('click', function onclick_addNewContact(event) {
