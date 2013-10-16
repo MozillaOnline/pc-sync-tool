@@ -74,10 +74,14 @@ input[type="url"], textarea {
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
 
+.button-ok {
+  width: 11rem;
+}
+
 .button-cancel {
   border: 0.1rem solid;
-  border-radius: 0.2rem 0.2rem 0.2rem 0.2rem;
-  color: gray;
+  border-radius: 0.2rem;
+  color: #808080;
   padding: 0.1rem 3rem;
   text-decoration: none;
 }

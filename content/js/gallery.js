@@ -202,7 +202,7 @@ var Gallery = (function() {
     $id('empty-picture-container').hidden = !isEmpty;
   }
 
-  function selectAllPictures(select) {
+  function selectAllPictures(selected) {
     $expr('#picture-list-container .picture-thread').forEach(function(thread) {
       thread.dataset.checked = selected;
       $expr('li', thread).forEach(function(item) {
