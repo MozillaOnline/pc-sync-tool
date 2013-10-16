@@ -34,7 +34,24 @@ var Gallery = (function() {
 
       var div = document.createElement('div');
       div.innerHTML = tmpl('tmpl_pic_thread_container', templateData);
-      container.appendChild(div);
+
+      var threads = $expr('.picture-thread', container);
+      if (threads.length == 0) {
+        container.appendChild(div);
+      } else {
+        var dt = new Date(threadId);
+        var index = 0;
+        for (; index < threads.length; index++) {
+          var date = new Date(threads[index].dataset.threadId);
+          if (dt > date) {
+            container.insertBefore(div, threads[index].parentNode);
+            break;
+          }
+        }
+        if (index == threads.length) {
+          container.appendChild(div);
+        }
+      }
       var title = $expr('label', div)[0];
 
       title.onclick = function onSelectThread(e) {
