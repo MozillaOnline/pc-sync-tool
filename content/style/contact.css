@@ -396,8 +396,8 @@
 }
 
 #contact-form .avatar-add-edit {
-  height: 7rem;
-  width: 7rem;
+  height: 6.5rem;
+  width: 6.7rem;
   float: left;
   margin-right: 0.5rem;
 }
@@ -405,7 +405,6 @@
 #contact-form .avatar-add-edit-default {
   background-image: url("images/avatar-add.png");
   background-repeat: no-repeat;
-  background-position: 0 .5rem;
 }
 
 .item-body-exp {
@@ -421,7 +420,7 @@
   background-color: #A6A6A6;
   width: 6.7rem;
   position: absolute;
-  top: 5.3rem;
+  top: 5rem;
 }
 
 #avatar-label {
@@ -438,8 +437,12 @@
   overflow-x: hidden;
 }
 
-#contact-form .action-delete {
+#contact-form ul div {
   position: relative;
+}
+
+#contact-form .action-delete {
+  position: absolute;
   height: 2.2rem;
   width: 2.2rem;
   background: url(images/delete.png) no-repeat;
