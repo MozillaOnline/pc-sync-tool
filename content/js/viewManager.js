@@ -66,6 +66,19 @@ var ViewManager = (function() {
           $id(viewOldId).dataset.shown = false;
           isChangeView = true;
         }
+      } else if (viewOldId == "sms-view") {
+        var sub = $id('sender-ctn-input');
+        if (sub.hidden == false && sub.value.length > 0) {
+          if (window.confirm(_('send-sms-confirm'))) {
+            $id(viewOldId).dataset.shown = false;
+            isChangeView = true;
+          } else {
+            return;
+          }
+        } else {
+          $id(viewOldId).dataset.shown = false;
+          isChangeView = true;
+        }
       } else {
         $id(viewOldId).dataset.shown = false;
         isChangeView = true;
