@@ -343,7 +343,7 @@ var Gallery = (function() {
       var bTimer = false;
 
       setTimeout(function doImportPicture() {
-        var cmd = 'adb push "' + pictures[fileIndex] + '" /sdcard/DCIM/';
+        var cmd = 'adb push "' + pictures[fileIndex] + '" /sdcard/DCIM';
         var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
         if (!bTimer) {

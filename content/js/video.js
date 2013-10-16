@@ -297,7 +297,7 @@ var Video = (function() {
       var bTimer = false;
 
       setTimeout(function doImportVideo() {
-        var cmd = 'adb push "' + videos[fileIndex] + '" /sdcard/Movies/';
+        var cmd = 'adb push "' + videos[fileIndex] + '" /sdcard/Movies';
         var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
         if (!bTimer) {
