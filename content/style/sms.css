@@ -596,10 +596,6 @@
   font-size: 1.2rem;
 }
 
-#sms-view-sub .card-view {
-  margin-top: 4rem;
-}
-
 .sms-message-thread .date-ctn{
   margin:1.5rem auto;
   width:100%;
@@ -837,6 +833,14 @@
   text-shadow:0 0.1rem 0 #fff
 }
 
+#sms-select-view span.title {
+  display: block;
+  font-size: 2.5rem;
+  padding-top: 4rem;
+  padding-bottom: 2.6rem;
+  text-align: center;
+}
+
 .sms-select-view-header{
   width: 100%;
   height: 3.5rem;
@@ -906,7 +910,8 @@
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
 
-.sms-message-quick-sender .sender-ctn .count-ctn .button-send:active {  background-color: #018CAB;
+.sms-message-quick-sender .sender-ctn .count-ctn .button-send:active {
+  background-color: #018CAB;
 }
 
 .sms-message-quick-sender .sender-ctn .count-ctn .button-send:visited {
@@ -966,13 +971,17 @@
   float: left;
   overflow: hidden;
   text-overflow: ellipsis;
+  height: 1.5rem;
+  width: 18rem;
 }
 
 .show-sms-item .select-sms-info .body{
   height: 1.5rem;
   padding-top: 0.2rem;
   white-space: nowrap;
-  width: 36rem;
+  width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .show-multi-sms-content .name {
@@ -1020,11 +1029,12 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding-left: 1.9rem;
+  margin-top: 1rem;
 }
 
 #show-sms-container
 {
-  max-height: 40rem;
+  max-height: 46rem;
   overflow: auto;
   padding-left: 1rem;
 }

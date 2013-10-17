@@ -139,11 +139,7 @@ var SmsList = (function() {
     if (threadData.lastMessageType == 'mms') {
       templateData.body = 'MMS';
     } else {
-      if (threadData.body.length > 36) {
-        templateData.body = threadData.body.substr(0, 36);
-      } else {
-        templateData.body = threadData.body;
-      }
+      templateData.body = threadData.body;
     }
     elem.innerHTML = tmpl('tmpl_sms_list_item', templateData);
     elem.dataset.groupId = threadData.id;
@@ -196,11 +192,7 @@ var SmsList = (function() {
         if (SmsThreadsData.lastMessageType == 'mms') {
           body = 'MMS';
         } else {
-          if (SmsThreadsData.body.length > 12) {
-            body = SmsThreadsData.body.substr(0, 12) + '..';
-          } else {
-            body = SmsThreadsData.body;
-          }
+          body = SmsThreadsData.body;
         }
         var templateData = {
           name: name,
