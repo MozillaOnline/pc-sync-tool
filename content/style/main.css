@@ -41,7 +41,7 @@ input[type="url"], textarea {
   border-radius: 0.3rem 0.3rem 0.3rem 0.3rem;
   box-shadow: none;
   display: block;
-  font: 1.4rem/4rem "MozTT",Sans-serif;
+  font: 1.4rem/4rem;
   overflow: hidden;
   padding: 0 0.8rem;
   resize: none;
@@ -797,7 +797,7 @@ input.modal-btn {
   min-width: 6.0rem;
   padding: 0.3rem 1.0rem;
   vertical-align: middle;
-  font: 1.2rem/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
+  font: 1.2rem/1.5em;
   text-align: center;
   background-color: buttonface;
   letter-spacing: normal;
@@ -859,8 +859,7 @@ input.modal-btn {
 .alert {
   background: none repeat scroll 0 0 #FFFFFF;
   border: 0.1rem #000 solid;
-  font-size: 1.8rem;
-  height: 20rem;
+  height: 17rem;
   position: relative;
   text-align: center;
   width: 35rem;
@@ -901,7 +900,7 @@ input.modal-btn {
 }
 
 .alert-dialog-body{
-  height: 3.5em;
+  height: 2.5em;
   padding: 4.5rem 1.5rem 1.0rem;
 }
 
