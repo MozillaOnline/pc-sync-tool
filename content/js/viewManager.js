@@ -54,7 +54,7 @@ var ViewManager = (function() {
       if (viewOldId == viewId) {
         return;
       }
-      if (viewOldId == "contact-view") {
+      if (viewOldId == "contact-view" && viewId != 'connect-view') {
         var sub = $id('contact-edit-view');
         if (sub.hidden == false) {
           new AlertDialog(_('save-contacts-confirm'), true, function (returnBtn) {
@@ -65,7 +65,7 @@ var ViewManager = (function() {
           });
           return;
         }
-      } else if (viewOldId == "sms-view") {
+      } else if (viewOldId == "sms-view" && viewId != 'connect-view') {
         var sub = $id('sender-ctn-input');
         if (sub.hidden == false && sub.value.length > 0) {
           new AlertDialog(_('send-sms-confirm'), true, function (returnBtn) {
