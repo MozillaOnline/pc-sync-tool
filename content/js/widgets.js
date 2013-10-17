@@ -323,19 +323,10 @@ SendSMSDialog.prototype = {
       textCount: '',
       senderCount: ''
     };
-    var defaultName = '';
     if (this.options.type == 'single') {
-      if (this.options.name && this.options.name.length > 0) {
-        defaultName = this.options.name[0];
-      }
       if (this.options.number && this.options.number.length > 0) {
         for (var i=0;i<this.options.number.length;i++) {
-          if (i == 0) {
-            defaultName += '(' + this.options.number[i].value + ')';
-            templateData.number.push(defaultName);
-          } else {
             templateData.number.push(this.options.number[i].value);
-          }
         }
       }
     } else {
@@ -419,43 +410,7 @@ SendSMSDialog.prototype = {
       $id('text-count').innerHTML = header;
     });
 
-    if (self.options.type == 'single') {
-      if (self.options.number.length > 1) {
-        $id('select-contact-tel-button').addEventListener('click', function onclick_selectContactTel(event) {
-          var titleElem = $id('select-contact-tel-header');
-          var oldElem = $id('select-contact-tel-header');
-          var child = oldElem.childNodes[5];
-          if (child) {
-            child.parentNode.removeChild(child);
-          }
-
-          var elem = document.createElement('div');
-          var templateData = {
-            name: '',
-            number: self.options.number
-          };
-          if (self.options.name && self.options.name.length > 0) {
-            templateData.name = self.options.name[0];
-          }
-          elem.innerHTML = tmpl('tmpl_select_contact', templateData);
-          elem.onclick = function onclick_sms_list(event) {
-            var target = event.target;
-            if (target.textContent != '') {
-              var titleElem = $expr('.label', self._modalElement)[0];
-              if ( !! titleElem) {
-                titleElem.innerHTML = templateData.name + '(' + target.textContent + ')';
-              }
-              titleElem = $id('select-contact-tel-header');
-              var child = titleElem.childNodes[5];
-              if (child) {
-                child.parentNode.removeChild(child);
-              }
-            }
-          };
-          titleElem.appendChild(elem);
-        });
-      }
-    } else {
+    if (self.options.type != 'single') {
       $id('address').addEventListener('keydown', function onclick_addNewSms(event) {
         var senders = this.value.split(';');
         var senderNum = senders.length;
@@ -544,9 +499,9 @@ SendSMSDialog.prototype = {
 
   sendSingle: function() {
     var loadingGroupId = animationLoading.start();
-    var tel = $id('selected-contact-tel');
+    var tel = $id('select-contact-tel-button');
     var message = $id('content');
-    var sender = [tel.textContent];
+    var sender = [tel.value];
     var self = this;
     message.readOnly = true;
     CMD.SMS.sendSMS(JSON.stringify({

@@ -579,14 +579,11 @@
         <%if (type == 'single') {%>
           <div class="header" id="select-contact-tel-header">
             <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
-            <button class="sendSms-button sendSms-menubutton" id="select-contact-tel-button">
-              <div class="label wc" id="selected-contact-tel"><%=number[0]%></div>
-              <%if (number.length > 1) {%>
-                <div class="arrow-ctn">
-                  <div class="arrow"></div>
-                </div>
+            <select class="sendSms-button sendSms-menubutton" id="select-contact-tel-button">
+              <%for (var i=0; i<number.length; i++) {%>
+                  <option><%=number[i]%></option>
               <%}%>
-            </button>
+            </select>
           </div>
         <%} else {%>
           <div class="header">
@@ -616,15 +613,6 @@
         </div>
       </footer>
     </div>
-  </script>
-  <script type="text/html" id="tmpl_select_contact">
-    <menu class="sendSms-menu">
-      <%for (var i=0; i<number.length; i++) {%>
-        <li>
-          <label class="wc"><input type="radio" name="" value="<%=name%>"></input><span style="float: left; margin-top: 0.1rem;"><%=number[i].value%></span></label>
-        </li>
-      <%}%>
-    </menu>
   </script>
   <script type="text/html" id="tmpl_select_contact_dialog">
     <div class="sendSms-dialog-contact">

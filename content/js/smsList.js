@@ -760,15 +760,45 @@ var SmsList = (function() {
       });
     });
 
-    $id('sender-ctn-input').addEventListener('keyup', function onclick_addNewSms(event) {
+    var elemSendInput = $id('sender-ctn-input');
+    var elemMessageContainer = $id('message-list-container');
+    var getStyle = function (elem, name) {
+      if(elem.currentStyle) {
+        var val = elem.currentStyle[name];
+        if (name === 'height' && val.search(/px/i) !== 1) {
+          var rect = elem.getBoundingClientRect();
+          return rect.bottom - rect.top - parseFloat(getStyle(elem, 'paddingTop')) - parseFloat(getStyle(elem, 'paddingBottom')) + 'px';
+        };
+        return val;
+      } else {
+        return getComputedStyle(elem, null)[name];
+      }
+    },
+    minHeight = parseFloat(getStyle(elemSendInput, 'height')),
+    maxHeight = 5 * parseFloat(getStyle(elemSendInput, 'height')),
+    messageListContainerHeight = parseFloat(getStyle(elemMessageContainer, 'height'));
+    elemSendInput.addEventListener('keyup', function onclick_addNewSms(event) {
       var This = this;
-      if (This.clientHeight > messageListContainer.clientHeight/2){
+      var scrollTop;
+      This.style.maxHeight = This.style.resize = 'none';
+      if (This._length === This.value.length)
         return;
+      This._length = This.value.length;
+      scrollTop = This.scrollTop;
+      This.style.height = minHeight + 'px';
+      if (This.scrollHeight > minHeight) {
+        if (maxHeight && This.scrollHeight > maxHeight) {
+          This.style.height = maxHeight + 'px';
+          This.style.overflowY = 'auto';
+        } else {
+          This.style.height = This.scrollHeight + 'px';
+          This.style.overflowY = 'hidden';
+        }
+        scrollTop += parseInt(This.style.height) - This.currHeight;
+        This.scrollTop = scrollTop;
+        This.currHeight = parseInt(This.style.height);
       }
-      messageListContainer.style.height = messageListContainer.clientHeight - This.scrollTop + 'px';
-      while (This.scrollTop != 0) {
-        This.style.height = This.offsetHeight + This.scrollTop + 'px';
-      }
+      elemMessageContainer.style.height = messageListContainerHeight - parseFloat(getStyle(elemSendInput, 'height')) + minHeight + 'px';
     });
 
     $id('refresh-sms').addEventListener('click', function onclick_refreshContacts(event) {

@@ -564,6 +564,10 @@ button.add-new-button {
   height: 2rem;
   margin-left: 1rem;
   color: #333333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 15rem;
 }
 
 #show-contact-company {
@@ -571,6 +575,10 @@ button.add-new-button {
   margin: 0 0 -0.5rem 1rem;
   color: #999999;
   margin-top: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 15rem;
 }
 
 #edit-contact {
@@ -662,20 +670,21 @@ button.add-new-button {
   color: #424242;
   width: 12rem;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .contact-ops-box .search-input {
-    display: block;
-    line-height: 2.5rem;
-    width: 40.0rem;
-    padding-left: 2.0rem;
-    padding-top: 2.5rem;
+  display: block;
+  line-height: 2.5rem;
+  width: 40.0rem;
+  padding-left: 2.0rem;
+  padding-top: 2.5rem;
 }
 
 .contact-ops-box .search-input .input-content {
-    display: block;
-    line-height: 2.5rem;
-    margin-right: 1.0rem;
-    width: 35.0rem;
+  display: block;
+  line-height: 2.5rem;
+  margin-right: 1.0rem;
+  width: 35.0rem;
 }
 
