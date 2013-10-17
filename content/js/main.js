@@ -2,8 +2,6 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-//Components.utils.import("resource://gre/modules/Services.jsm");
-
 var chromeWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                          .getInterface(Components.interfaces.nsIWebNavigation)
                          .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
@@ -12,9 +10,10 @@ var chromeWindow = window.QueryInterface(Components.interfaces.nsIInterfaceReque
                          .getInterface(Components.interfaces.nsIDOMWindow);
 
 var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-                     .getService(Components.interfaces.nsIWindowMediator);
+                   .getService(Components.interfaces.nsIWindowMediator);
 var browserEnumerator = wm.getEnumerator("navigator:browser");
 var bFound = false;
+
 while (browserEnumerator.hasMoreElements()) {
   var browserWin = browserEnumerator.getNext();
   var tabbrowser = browserWin.gBrowser;
