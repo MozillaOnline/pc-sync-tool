@@ -2,6 +2,40 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+//Components.utils.import("resource://gre/modules/Services.jsm");
+
+var chromeWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+                         .getInterface(Components.interfaces.nsIWebNavigation)
+                         .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
+                         .rootTreeItem
+                         .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+                         .getInterface(Components.interfaces.nsIDOMWindow);
+
+var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                     .getService(Components.interfaces.nsIWindowMediator);
+var browserEnumerator = wm.getEnumerator("navigator:browser");
+var bFound = false;
+while (browserEnumerator.hasMoreElements()) {
+  var browserWin = browserEnumerator.getNext();
+  var tabbrowser = browserWin.gBrowser;
+
+  // Check each tab of this browser instance
+  var numTabs = tabbrowser.browsers.length;
+  for (var index = 0; index < numTabs; index++) {
+    var currentBrowser = tabbrowser.getBrowserAtIndex(index);
+    if ('about:ffos' == currentBrowser.currentURI.spec) {
+      if(!bFound) {
+        bFound = true;
+      } else {
+        browserWin.focus();
+        tabbrowser.removeCurrentTab();
+      }
+    }
+  }
+}
+
+chromeWindow.switchToTabHavingURI('about:ffos', true);
+
 var animationLoading = null;
 var FFOSAssistant = (function() {
   var connPool = null;
@@ -9,7 +43,6 @@ var FFOSAssistant = (function() {
   var handlerUsbConnection = null;
   var handlerWifiConnection = null;
   var handlerWifiConnect = null;
-  var wsurl = "ws://" + location.host + "/ws";
   var heartBeatSocket = null;
 
   function showConnectView() {

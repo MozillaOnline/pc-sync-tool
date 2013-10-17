@@ -829,7 +829,7 @@ input.modal-btn {
 }
 
 .loading li {
-  background: url("images/loading.png"); no-repeat;
+  background: url("images/loading.png") no-repeat;
   width: 1em;
   height: 1em;
   -moz-animation:
