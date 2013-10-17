@@ -187,12 +187,6 @@
   background-image: url("images/add-default.png");
 }
 
-#threads-list-container {
-  padding-left: 1rem;
-  max-height: 60rem;
-  overflow: auto;
-}
-
 .empty-sms {
   background: url('images/empty-sms.png') no-repeat scroll center 9rem transparent;
   height: 25rem;
@@ -278,7 +272,7 @@
 }
 
 .threads-list-item .sms-info > div:first-child{
-  width: 28rem;
+  width: 25rem;
 }
 
 .threads-list-item .sms-info > div:last-child{
@@ -912,8 +906,7 @@
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
 
-.sms-message-quick-sender .sender-ctn .count-ctn .button-send:active {
-  background-color: #018CAB;
+.sms-message-quick-sender .sender-ctn .count-ctn .button-send:active {  background-color: #018CAB;
 }
 
 .sms-message-quick-sender .sender-ctn .count-ctn .button-send:visited {
@@ -1024,8 +1017,9 @@
 #threads-list-container
 {
   max-height: 46rem;
-  overflow: auto;
-  padding-left: 1rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-left: 1.9rem;
 }
 
 #show-sms-container
@@ -1059,7 +1053,7 @@
 #sms-send-inmulticontact {
   height: 3.4rem;
   margin-left: 5.1rem;
-  width: 11.5rem;
+  width: 13.5rem;
 }
 
 .sms-thread-header{
