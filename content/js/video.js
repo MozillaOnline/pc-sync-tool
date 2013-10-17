@@ -124,8 +124,8 @@ var Video = (function() {
     listItem.onmouseover = function(e) {
       var tip = $id('tip');
       tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:' + parseDate(parseInt(this.dataset.date)) + '</div><div>size:' + toSizeInMB(this.dataset.size) + 'M' + '</div>';
-      tip.style.top = (e.target.parentNode.offsetTop + e.target.clientHeight + e.target.clientTop) + 'px';
-      tip.style.left = (e.target.parentNode.offsetLeft + e.target.clientWidth /2 + e.target.clientLeft) + 'px';
+      tip.style.top = (e.target.parentNode.offsetTop + e.target.parentNode.offsetParent.offsetTop + e.target.parentNode.clientHeight - $id('video-list-container').scrollTop) + 'px';
+      tip.style.left = (e.target.parentNode.offsetParent.offsetLeft + e.target.parentNode.offsetLeft + e.target.parentNode.clientWidth / 2) + 'px';
       tip.style.display = 'block';
     };
 
