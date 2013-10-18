@@ -24,15 +24,23 @@
   margin-left: 2rem;
   padding-left: 2.2rem;
 }
+
 #selectAll-videos[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
 }
+
 #selectAll-videos[data-disabled=true] {
   color: #CCCCCC;
 }
+
+#selectAll-videos[data-disabled=true] > label {
+  cursor: default;
+}
+
 #selectAll-videos[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #selectAll-videos[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -40,15 +48,22 @@
 #remove-videos {
   background-image: url("images/remove-default.png");
 }
+
 #remove-videos[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
   cursor: default;
   color: #CCCCCC;
 }
+
+#remove-videos[data-disabled=true] > label {
+  cursor: default;
+}
+
 #remove-videos[data-disabled=false]:hover {
   background-image: url("images/remove-highlighted.png");
   color: #00CAF2;
 }
+
 #remove-videos[data-disabled=false]:active {
   background-image: url("images/remove-selected.png");
   color: #018CAB;
@@ -58,13 +73,20 @@
   background-image: url("images/export-disabled.png");
   color: #CCCCCC;
 }
+
 #export-videos[data-disabled=false] {
   background-image: url("images/export-default.png");
 }
+
+#export-videos[data-disabled=true] > label {
+  cursor: default;
+}
+
 #export-videos[data-disabled=false]:hover {
   background-image: url("images/export-highlighted.png");
   color: #00CAF2;
 }
+
 #export-videos[data-disabled=false]:active {
   background-image: url("images/export-selected.png");
   color: #018CAB;
@@ -73,10 +95,16 @@
 #import-videos {
   background-image: url("images/import-default.png");
 }
+
+#import-videos[data-disabled=true] > label {
+  cursor: default;
+}
+
 #import-videos:hover {
   background-image: url("images/import-highlighted.png");
   color: #00CAF2;
 }
+
 #import-videos:active {
   background-image: url("images/import-selected.png");
   color: #018CAB;
@@ -85,17 +113,19 @@
 #refresh-videos {
   background-image: url("images/refresh-default.png");
 }
+
 #refresh-videos:hover {
   background-image: url("images/refresh-highlighted.png");
   color: #00CAF2;
 }
+
 #refresh-videos:active {
   background-image: url("images/refresh-selected.png");
   color: #018CAB;
 }
 
 #video-list-container {
-  max-height: 50rem;
+  max-height: 46rem;
   overflow: auto;
   margin-bottom: 2rem;
 }
@@ -107,24 +137,27 @@
 }
 
 .video-thread .header {
-  height: 22px;
+  height: 2.2rem;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 0.4rem;
 }
 
-.video-thread .header .title {
+.video-thread[data-checked=false] label {
   background-image: url("images/checkbox.png");
-  background-position: 2px 0;
+  background-position: 0.2rem 0;
   background-repeat: no-repeat;
   display: inline-block;
 }
 
-.video-thread .header .group-checked {
+.video-thread[data-checked=true] label {
   background-image: url("images/checkbox-checked.png");
+  background-position: 0.2rem 0;
+  background-repeat: no-repeat;
+  display: inline-block;
 }
 
-.video-thread .header .title >span {
-  margin-left: 24px;
+.video-thread span {
+  margin-left: 2.4rem;
 }
 
 .video-thread .body {
@@ -134,64 +167,60 @@
 
 .video-thread .body > div {
   position: relative;
-  width: 106px;
-  height: 81px;
+  width: 10.6rem;
+  height: 8.1rem;
   float: left;
 }
 
 .video-item {
   float: left;
-  height: 78px;
-  width: 106px;
+  height: 7.8rem;
+  width: 10.6rem;
 }
 
 .video-item:hover {
 }
 
-.video-unchecked {
-  width: 17px;
-  height: 17px;
-  position: absolute;
-  left: 83px;
-  background-image: url("images/pic-unchecked.png");
-  top: 10px;
-}
-
-.video-checked {
-  background-image: url("images/pic-checked.png");
-}
-
 .video-thread .body >li {
   position: relative;
-  width: 110px;
-  height: 82px;
+  width: 11.0rem;
+  height: 8.2rem;
   overflow: hidden;
   display: inline-block;
-  margin: 3px;
+  margin: 0.3rem;
 }
 
 .video-thread .body >li >img {
-  width: 106px;
-  height: 78px;
-  border: 2px white solid;
+  width: 10.6rem;
+  height: 7.8rem;
+  border: 0.2rem white solid;
+}
+
+.video-thread li[data-checked=true] .item-check {
+  width: 1.7rem;
+  height: 1.7rem;
+  position: absolute;
+  left: 8.3rem;
+  background-image: url("images/pic-checked.png");
+  top: 1.0rem;
+}
+
+.video-thread li[data-checked=false] .item-check {
+  width: 1.7rem;
+  height: 1.7rem;
+  position: absolute;
+  left: 8.3rem;
+  background-image: url("images/pic-unchecked.png");
+  top: 1.0rem;
 }
 
 .video-thread .body img:hover {
-  border: 2px #00c8f0 solid;
+  border: 0.2rem #00c8f0 solid;
 }
 
 .video-thread .body .video-item > img {
-  width: 100px;
-  height: 75px;
-}
-
-.video-tip {
-  background-color: #000000;
-  color: #FFFFFF;
-  width: 106px;
-  padding: 7px;
-  position: absolute;
-  font-size: 9px;
+  width: 10.0rem;
+  height: 7.5rem;
 }
 
 .video-thread .title > * {

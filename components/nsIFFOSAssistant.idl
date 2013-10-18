@@ -12,31 +12,19 @@ interface nsIFFOSAssistant : nsISupports
   readonly attribute boolean adbConnected;
 
   /**
+   *
+   */
+  readonly attribute boolean isWindows;
+
+  /**
    * FFOS device name
    */
   readonly attribute jsval adbffosDeviceName;
 
   readonly attribute boolean isWifiConnect;
 
-  /**
-   * Get the port listened by the Driver Manager.
-   * It should be great than 1024, or the Driver Manager failed to start.
-   */
-  readonly attribute long driverManagerPort;
-
-  /**
-   * State of FFOS device driver manager
-   */
-  readonly attribute boolean isDriverManagerRunning;
-
   /* Fired when USB cable or ADB forward disconnected */
   attribute nsIDOMEventListener onadbstatechange;
-
-  /**
-   * Fired when received any message from Driver Downloader, including:
-   *  download state change, progress etc.
-   */
-  attribute nsIDOMEventListener ondriverdownloadermessage;
 
   /**
    * select directory for exporting pictures, musics and videos
@@ -69,56 +57,13 @@ interface nsIFFOSAssistant : nsISupports
   /**
    *
    */
-  void getDirInTmp(in jsval folderName, in jsval callback);
+  string getGalleryCachedDir(in jsval pathArray);
 
   /**
    * Run command from local host
    */
   nsIDOMDOMRequest runCmd(in DOMString cmd);
 
-  /**
-   * To make the page debuggable by using Firebug, we should not use any privileged
-   * interfaces, instead, we open such an interface to support the communication
-   * between the page and the Driver Downloader
-   *
-   * Send Command To Driver Manager, and receive response immediately.
-   * cmd = {
-   *   command: 'addDownload' | 'cancelDownload' | 'resumeDownload' | 'getDownload',
-   *   data: {
-   *     ...
-   *   }
-   * }
-   */
-  jsval sendCmdToDriverDownloader(in jsval cmd, [optional] in boolean async);
-
-  /**
-   * Start the USB Monitor Daemon
-   */
-  void startDriverManager();
-
-  void setAddonInfo(in boolean isRun);
-
   void wifiConnected(in boolean isConnected);
-
-  /**
-   * These functions related to EventTarget are temporary hacks:
-   *   - addEventListener
-   *   - removeEventListener
-   *   - handleEvent
-   *
-   * These will be removed by inheriting from nsIJSDOMEventTarget,
-   * see bug 731746.
-   */
-  [optional_argc] void addEventListener(in DOMString type,
-                                        in nsIDOMEventListener listener,
-                                        [optional] in boolean useCapture,
-                                        [optional] in boolean wantsUntrusted);
-
-  void  removeEventListener(in DOMString type,
-                            in nsIDOMEventListener listener,
-                            [optional] in boolean useCapture);
-
-  boolean dispatchEvent(in nsIDOMEvent evt) raises(DOMException);
-
 };
 

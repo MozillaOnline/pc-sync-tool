@@ -1,250 +1,183 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- License, v. 2.0. If a copy of the MPL was not distributed with this
- file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 var Gallery = (function() {
   function getListContainer() {
     return $id('picture-list-container');
   }
 
-  function convertFileName(str) {
-    var obj = {
-      folder: '',
-      file: ''
-    };
-
-    var index = str.lastIndexOf('/');
-    if (index < 0) {
-      obj.file = str;
-      return obj;
-    }
-
-    obj.file = str.substr(index + 1);
-    str = str.substr(0, index);
-
-    index = str.lastIndexOf('/');
-    if (index >= 0) {
-      obj.folder = str.substr(index + 1);
-    }
-    return obj;
-  }
-
-  function parseName(str) {
-    var s = '';
-    var index = str.lastIndexOf('/');
-    if (index != -1) {
-      s = str.substr(index + 1);
-    }
-    return s;
-  }
-
-  function parseSize(size) {
-    var retSize = size / 1024 /10.24;
-    return parseInt(retSize) / 100;
-  }
-
-  function parseDate(date) {
-    var dt = new Date(date);
-    var strDate = dt.getFullYear() + '-';
-
-    if (dt.getMonth() < 9) {
-      strDate += '0' + (dt.getMonth() + 1) + '-';
-    } else {
-      strDate += (dt.getMonth() + 1) + '-';
-    }
-    if(dt.getDay() < 9) {
-      strDate += '0' + (dt.getDay() + 1);
-    } else {
-      strDate += dt.getDay() + 1;
-    }
-    return strDate;
-  }
-
-  // directory for caching pitures
-  var galleryCachedDir = 'gallery_tmp';
-  var addonDir = '/home/tiger/work/ffosassistant/'
-
-  // Modify addonDir to the place on your PC
-  // and set debug = 1 for debugging in html with firebug
-  var debug = 0;
-
-  if (debug) {
-    var prePath = '';
-  } else {
-    var prePath = 'chrome://ffosassistant/content/';
-  }
+  const CACHE_FOLDER_NAME = 'gallery_tmp';
+  const PRE_PATH = 'chrome://ffosassistant/content/';
 
   function init() {
     getListContainer().innerHTML = '';
-    showEmptyGallery(false);
+    checkGalleryIsEmpty();
   }
 
   function addPicture(picture) {
     if (!picture) {
       return;
     }
-    _addToPictureList(picture);
-  }
 
-  function removePicture(pictures) {
-    if (!pictures || !pictures.length || pictures.length < 1) {
-      return;
-    }
-    removePicturesProcess(pictures);
-  }
-
-  function updateUI() {
-    var pictureList = $expr('#picture-list-container li');
-    if (pictureList.length == 0) {
-      showEmptyGallery(true);
-    }
-  }
-
-  function _addToPictureList(picture) {
     var threadId = parseDate(parseInt(picture.date));
     var threadContainer = $id('pic-' + threadId);
     var container = getListContainer();
+
     if (threadContainer) {
       var threadBody = threadContainer.getElementsByTagName('ul')[0];
       threadBody.appendChild(_createPictureListItem(picture));
       threadContainer.dataset.length = 1 + parseInt(threadContainer.dataset.length);
-      var titles = $expr('.title', threadContainer);
-      titles[0].innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
+      var title = threadContainer.getElementsByTagName('label')[0];
+      title.innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
     } else {
-      threadContainer = document.createElement('div');
-      threadContainer.setAttribute('id', 'pic-' + threadId);
-      threadContainer.classList.add('picture-thread');
-      var header = document.createElement('div');
-      header.classList.add('header');
-      threadContainer.appendChild(header);
+      var templateData = {
+        id: 'pic-' + threadId,
+        threadId: threadId
+      };
 
-      var title = document.createElement('label');
-      title.classList.add('title');
-      header.appendChild(title);
-      title.innerHTML = '<span>' + threadId + ' (' + 1 + ')</span>';
-      container.appendChild(threadContainer);
-      title.onclick = function onSelectGroup(e) {
+      var div = document.createElement('div');
+      div.innerHTML = tmpl('tmpl_pic_thread_container', templateData);
+
+      var threads = $expr('.picture-thread', container);
+      if (threads.length == 0) {
+        container.appendChild(div);
+      } else {
+        var dt = new Date(threadId);
+        var index = 0;
+        for (; index < threads.length; index++) {
+          var date = new Date(threads[index].dataset.threadId);
+          if (dt > date) {
+            container.insertBefore(div, threads[index].parentNode);
+            break;
+          }
+        }
+        if (index == threads.length) {
+          container.appendChild(div);
+        }
+      }
+      var title = $expr('label', div)[0];
+
+      title.onclick = function onSelectThread(e) {
         var target = e.target;
         if (target instanceof HTMLLabelElement) {
-          target.classList.toggle('thread-checked');
           var threadContainer = this.parentNode.parentNode;
-          var checkboxes = $expr('.pic-unchecked',threadContainer);
-          var picItems = $expr('li',threadContainer);
+          var picItems = $expr('li', threadContainer);
 
-          if (target.classList.contains('thread-checked')) {
-            threadContainer.dataset.checked = true;
-            checkboxes.forEach(function(item) {
-              item.classList.add('pic-checked');
-            });
-
-            picItems.forEach(function(item) {
-              item.dataset.checked = true;
-            });
-          } else {
+          if (threadContainer.dataset.checked == 'true') {
             threadContainer.dataset.checked = false;
-            checkboxes.forEach(function(cb) {
-              cb.classList.remove('pic-checked');
-            });
 
             picItems.forEach(function(item) {
               item.dataset.checked = false;
             });
+          } else {
+            threadContainer.dataset.checked = true;
+
+            picItems.forEach(function(item) {
+              item.dataset.checked = true;
+            });
           }
-           opStateChanged();
-         }
+          opStateChanged();
+        }
       };
 
-      var threadBody = document.createElement('ul');
-      threadBody.classList.add('body');
-      threadContainer.appendChild(threadBody);
-      threadContainer.dataset.length = 1;
-      threadContainer.dataset.checked = false;
-      threadContainer.dataset.threadId = threadId;
-
+      var threadBody = $expr('ul', div)[0];
       threadBody.appendChild(_createPictureListItem(picture));
     }
   }
 
+  function updateRemovedPictures(pictures) {
+    if (!pictures || !pictures.length || pictures.length < 1) {
+      return;
+    }
+    for (var i = 0; i < pictures.length; i++) {
+      var pic = $expr('li[data-pic-url="' + pictures[i] + '"]')[0];
+      if (!pic) {
+        continue;
+      }
+      var threadBody = pic.parentNode;
+      threadBody.removeChild(pic);
+      var thread = threadBody.parentNode.parentNode;
+      if ($expr('li', threadBody).length == 0) {
+        getListContainer().removeChild(thread);
+      }
+    }
+  }
+
   function _createPictureListItem(picture) {
-      var listItem = document.createElement('li');
-      listItem.dataset.checked = 'false';
-      listItem.dataset.picUrl = picture.name;
-      listItem.dataset.title = parseName(picture.name);
-      listItem.dataset.date = picture.date;
-      listItem.dataset.size = picture.size;
+    var listItem = document.createElement('li');
+    listItem.dataset.checked = 'false';
+    listItem.dataset.picUrl = picture.name;
+    listItem.dataset.title = getFileName(picture.name);
+    listItem.dataset.date = picture.date;
+    listItem.dataset.size = picture.size;
 
-      listItem.innerHTML = '<img src="' + picture.metadata.thumbnail + '">';
+    var templateData = {
+      thumbnail: picture.metadata.thumbnail
+    };
+    listItem.innerHTML = tmpl('tmpl_pic_item', templateData);
 
-      var itemCheckbox = document.createElement('div');
-      itemCheckbox.classList.add('pic-unchecked');
-      listItem.appendChild(itemCheckbox);
+    listItem.onclick = function item_click(e) {
+      if (this.dataset.checked == 'true') {
+        this.dataset.checked = 'false';
+      } else {
+        this.dataset.checked = 'true';
+      }
 
-      listItem.onclick = function item_click(e) {
-        itemCheckbox.classList.toggle('pic-checked');
+      var threadBody = this.parentNode;
+      var threadContainer = threadBody.parentNode;
+      threadContainer.dataset.checked = $expr('li[data-checked=true]', threadBody).length == threadContainer.dataset.length;
+      opStateChanged();
+    };
 
-        if (itemCheckbox.classList.contains('pic-checked')) {
-          this.dataset.checked = 'true';
-        } else {
-          this.dataset.checked = 'false';
+    listItem.ondblclick = function(e) {
+      var tip = $id('pic-tip');
+      if (tip) {
+        tip.parentNode.removeChild(tip);
+      }
+
+      var picList = $expr('li', getListContainer());
+      var currentIndex = 0;
+      for (; currentIndex < picList.length; currentIndex++) {
+        if (picList[currentIndex].dataset.picUrl == this.dataset.picUrl) {
+          break;
         }
+      }
 
-        var threadBody = this.parentNode;
-        var threadContainer = threadBody.parentNode;
-        var labels = threadContainer.getElementsByTagName('label');
-        if ($expr('.pic-checked', threadBody).length == threadContainer.dataset.length) {
-          labels[0].classList.add('thread-checked');
-          threadContainer.dataset.checked = true;
-        } else {
-          labels[0].classList.remove('thread-checked');
-          threadContainer.dataset.checked = false;
-        }
-        opStateChanged();
-      };
-      listItem.ondblclick = function (e) {
-        var tip = $id('pic-tip');
-        if (tip) {
-          tip.parentNode.removeChild(tip);
-        }
-        var self = this;
-        navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-          if (debug) {
-            var cmd = 'adb pull "' + self.dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + self.dataset.picUrl + '"';
-          } else {
-            var cmd = 'adb pull "' + self.dataset.picUrl + '" "' + path + self.dataset.picUrl + '"';
-          }
-          var req = navigator.mozFFOSAssistant.runCmd(cmd);
+      var imageViewer = new ImageViewer({
+        count: picList.length,
+        currentIndex: currentIndex,
+        getPictureAt: getPictureAt
+      });
+    };
 
-          req.onsuccess = function on_success(result) {
-            var dialog = new ShowPicDialog({
-              cachedUrl: prePath + galleryCachedDir + self.dataset.picUrl,
-              picUrl: self.dataset.picUrl,
-              showPreviousPic: showPreviousPic,
-              showNextPic: showNextPic
-            });
-          };
-          req.onerror = function on_error(e) {
-            alert("Can't pull picture to cache");
-          };
-        });
+    listItem.onmouseover = function(e) {
+      var tip = $id('tip');
+      tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:' + parseDate(parseInt(this.dataset.date)) + '</div><div>size:' + toSizeInMB(this.dataset.size) + 'M' + '</div>';
+      tip.style.top = (e.target.parentNode.offsetTop + e.target.parentNode.offsetParent.offsetTop + e.target.parentNode.clientHeight - $id('picture-list-container').scrollTop) + 'px';
+      tip.style.left = (e.target.parentNode.offsetParent.offsetLeft + e.target.parentNode.offsetLeft + e.target.parentNode.clientWidth / 2) + 'px';
+      tip.style.display = 'block';
+    };
+
+    listItem.onmouseout = function(e) {
+      var tip = $id('tip');
+      tip.style.display = 'none';
+    };
+    return listItem;
+  }
+
+  function getPictureAt(index, callback) {
+    var picList = $expr('li', getListContainer());
+    if (picList[index]) {
+      //TODO: CHECK IF PICTURE HAS BEEN CACHED ALREADY
+      var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER_NAME]);
+      var cmd = 'adb pull "' + picList[index].dataset.picUrl + '" "' + path + picList[index].dataset.picUrl + '"';
+      var cachedUrl = PRE_PATH + CACHE_FOLDER_NAME + picList[index].dataset.picUrl;
+      var req = navigator.mozFFOSAssistant.runCmd(cmd);
+
+      req.onsuccess = function on_success(result) {
+        callback(true, cachedUrl);
       };
-      listItem.onmouseover = function(e) {
-        var tip = document.createElement('div');
-        tip.setAttribute('id', 'pic-tip');
-        tip.classList.add('pic-tip');
-        tip.style.top = (e.target.parentNode.offsetTop + 247 - $id('picture-list-container').scrollTop) + 'px';
-        tip.style.left = (e.target.parentNode.offsetLeft + 595) + 'px';
-        tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:'
-                         + parseDate(parseInt(this.dataset.date)) + '</div><div>size:'
-                         + parseSize(this.dataset.size) + 'M' + '</div>';
-        $id('gallery-view').appendChild(tip);
+      req.onerror = function on_error(e) {
+        callback(false);
       };
-      listItem.onmouseout = function(e) {
-        var tip = $id('pic-tip');
-        if (tip) {
-          tip.parentNode.removeChild(tip);
-        }
-      };
-      return listItem;
+    }
   }
 
   function opStateChanged() {
@@ -253,172 +186,37 @@ var Gallery = (function() {
       $id('selectAll-pictures').dataset.disabled = true;
     } else {
       $id('selectAll-pictures').dataset.checked =
-        $expr('#picture-list-container li').length ===
-          $expr('#picture-list-container li[data-checked="true"]').length;
+      $expr('#picture-list-container li').length === $expr('#picture-list-container li[data-checked="true"]').length;
       $id('selectAll-pictures').dataset.disabled = false;
     }
 
     $id('remove-pictures').dataset.disabled =
-      $expr('#picture-list-container li[data-checked="true"]').length === 0;
+    $expr('#picture-list-container li[data-checked="true"]').length === 0;
     $id('export-pictures').dataset.disabled =
-      $expr('#picture-list-container li[data-checked="true"]').length === 0;
+    $expr('#picture-list-container li[data-checked="true"]').length === 0;
   }
 
   function checkGalleryIsEmpty() {
-    var isEmpty = $expr('#picture-list-container li').length === 0 ;
-    if (isEmpty) {
-      $id('selectAll-pictures').dataset.disabled = true;
-      showEmptyGallery(true);
-    } else {
-      $id('selectAll-pictures').dataset.disabled = false;
-      showEmptyGallery(false);
-    }
+    var isEmpty = $expr('#picture-list-container li').length === 0;
+    $id('selectAll-pictures').dataset.disabled = isEmpty;
+    $id('empty-picture-container').hidden = !isEmpty;
   }
 
-  function showEmptyGallery(bFlag) {
-    if (bFlag) {
-      $id('empty-picture-container').style.display = 'block';
-    } else {
-      $id('empty-picture-container').style.display = 'none';
-    }
-
-  }
-
-  function showPreviousPic() {
-    var picList = $expr('li', getListContainer());
-    var pic = $id('pic-content');
-   
-    for (var i = 0; i < picList.length; i++) {
-      if (picList[i].dataset.picUrl == pic.dataset.picUrl) {
-        if (i == 0) {
-          var previouseUrl = prePath + galleryCachedDir + picList[picList.length -1].dataset.picUrl;
-          pic.dataset.picUrl = picList[picList.length -1].dataset.picUrl;
-          //TODO: check if picture cached
-          navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-            if (debug) {
-              var cmd = 'adb pull "' + picList[picList.length -1].dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + picList[picList.length -1].dataset.picUrl + '"';
-            } else {
-              var cmd = 'adb pull "' + picList[picList.length -1].dataset.picUrl + '" "' + path + picList[picList.length -1].dataset.picUrl + '"';
-            }
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
-
-            req.onsuccess = function on_success(result) {
-              pic.setAttribute('src', previouseUrl);
-            };
-            req.onerror = function on_error(e) {
-              alert("Can't pull picture to cache");
-            };
-          });
-        } else {
-          var previouseUrl = prePath + galleryCachedDir + picList[i-1].dataset.picUrl;
-          pic.dataset.picUrl = picList[i -1].dataset.picUrl;
-          //TODO: check if picture cached
-          navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-            if (debug) {
-              var cmd = 'adb pull "' + picList[i -1].dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + picList[i -1].dataset.picUrl + '"';
-            } else {
-              var cmd = 'adb pull "' + picList[i -1].dataset.picUrl + '" "' + path + picList[i -1].dataset.picUrl + '"';
-            }
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
-
-            req.onsuccess = function on_success(result) {
-              pic.setAttribute('src', previouseUrl);
-            };
-            req.onerror = function on_error(e) {
-              alert("Can't pull picture to cache");
-            };
-          });
-        }
-        break;
-      }
-    }
-  }
-
-  function showNextPic() {
-    var picList = $expr('li', getListContainer());
-    var pic = $id('pic-content');
-
-    for (var i = 0; i < picList.length; i++) {
-      if (picList[i].dataset.picUrl == pic.dataset.picUrl) {
-        if (i == picList.length -1) {
-          var nextUrl = prePath + galleryCachedDir + picList[0].dataset.picUrl;
-          pic.dataset.picUrl = picList[0].dataset.picUrl;
-          //TODO: check if picture cached
-          navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-            if (debug) {
-              var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + picList[0].dataset.picUrl + '"';
-            } else {
-              var cmd = 'adb pull "' + picList[0].dataset.picUrl + '" "' + path + picList[0].dataset.picUrl + '"';
-            }
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
-
-            req.onsuccess = function on_success(result) {
-              pic.setAttribute('src', nextUrl);
-            };
-            req.onerror = function on_error(e) {
-              alert("Can't pull picture to cache");
-            };
-          });
-        } else {
-          var nextUrl = prePath + galleryCachedDir + picList[i+1].dataset.picUrl;
-          pic.dataset.picUrl = picList[i+1].dataset.picUrl;
-          //TODO: check if picture cached
-          navigator.mozFFOSAssistant.getDirInTmp(['extensions', 'ffosassistant@mozillaonline.com', 'content', galleryCachedDir], function(path) {
-            if (debug) {
-              var cmd = 'adb pull "' + picList[i+1].dataset.picUrl + '" "' + addonDir + 'content/' + galleryCachedDir + picList[i+1].dataset.picUrl + '"';
-            } else {
-              var cmd = 'adb pull "' + picList[i+1].dataset.picUrl + '" "' + path + picList[i+1].dataset.picUrl + '"';
-            }
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
-
-            req.onsuccess = function on_success(result) {
-              pic.setAttribute('src', nextUrl);
-            };
-            req.onerror = function on_error(e) {
-              alert("Can't pull picture to cache");
-            };
-          });
-        }
-        break;
-      }
-    }
-
-  }
-
-  function selectAllPictures(select) {
-    $expr('#picture-list-container .picture-thread').forEach(function(group) {
-      selectPicturesGroup(group, select);
+  function selectAllPictures(selected) {
+    $expr('#picture-list-container .picture-thread').forEach(function(thread) {
+      thread.dataset.checked = selected;
+      $expr('li', thread).forEach(function(item) {
+        item.dataset.checked = selected;
+      });
     });
 
     opStateChanged();
   }
 
-  function selectPicturesGroup(group, selected) {
-    group.dataset.checked = selected;
-    $expr('li', group).forEach(function(picDiv) {
-      picDiv.dataset.checked = selected;
-    });
-
-    var groupCheckbox = $expr('.title', group)[0];
-
-    if (groupCheckbox) {
-      if (selected) {
-        groupCheckbox.classList.add('thread-checked');
-        $expr('.pic-unchecked', group).forEach(function(picCheckbox) {
-          picCheckbox.classList.add('pic-checked');
-        });
-      } else {
-        groupCheckbox.classList.remove('thread-checked');
-        $expr('.pic-unchecked', group).forEach(function(picCheckbox) {
-          picCheckbox.classList.remove('pic-checked');
-        });
-      }
-    }
-  }
-
   /**
    * Remove pictures
    */
+
   function removePictures(files) {
     var items = files || [];
     if (items.length <= 0) {
@@ -433,32 +231,32 @@ var Gallery = (function() {
     var oldFileIndex = 0;
     var steps = 0;
 
+    var pb = new ProcessBar({
+      sectionsNumber: items.length,
+      stepsPerSection: 50
+    });
+
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-pictures-dialog-header',
-      processbar_l10n_id: 'processbar-remove-pictures-promot' 
+      processbar_l10n_id: 'processbar-remove-pictures-prompt',
+      processbar: pb
     });
 
     var filesIndicator = $id('files-indicator');
-    var pb = $id('processbar');
-    var ratio = 0;
     filesIndicator.innerHTML = '0/' + items.length;
 
-    //processbar range for one file
-    var range = Math.round(100 / items.length);
-    var step = range / 50;
     var bTimer = false;
 
-    setTimeout(function removePicture() {
-      var cmd = 'adb shell rm "' + items[fileIndex] + '"';
+    setTimeout(function doRemovePicture() {
+      var cmd = 'adb shell rm ' + items[fileIndex];
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!bTimer) {
         bTimer = true;
         var timer = setInterval(function() {
           if (oldFileIndex == fileIndex) {
-            if (steps < 50) {
+            if (steps < 45) {
               steps++;
-              ratio+= step;
-              pb.style.width = ratio + '%';
+              pb.moveForward();
             }
           } else {
             oldFileIndex = fileIndex;
@@ -470,81 +268,69 @@ var Gallery = (function() {
       req.onsuccess = function(e) {
         filesToBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
           //updating UI after removing pictures
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
-          removePicturesProcess(filesToBeRemoved);
+          updateRemovedPictures(filesToBeRemoved);
           checkGalleryIsEmpty();
           opStateChanged();
         } else {
-          removePicture();
+          doRemovePicture();
         }
       };
 
-      req.onerror = function (e) {
+      req.onerror = function(e) {
         filesCanNotBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
           //updating UI after removing pictures
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
-          removePicturesProcess(filesToBeRemoved);
+          updateRemovedPictures(filesToBeRemoved);
           checkGalleryIsEmpty();
           opStateChanged();
         } else {
-          removePicture();
+          doRemovePicture();
         }
       };
     }, 0);
   }
 
-  function removePicturesProcess(filesToBeRemoved) {
-    for (var i = 0; i < filesToBeRemoved.length; i++) {
-      var pic = $expr('li[data-pic-url="' + filesToBeRemoved[i] + '"]')[0];
-      if (pic) {
-        var threadBody = pic.parentNode;
-        threadBody.removeChild(pic);
-        var thread = threadBody.parentNode;
-        
-        if ($expr('li', threadBody).length == 0) {
-          getListContainer().removeChild(thread);
-        }
-      }
-    }
-  }
-
   function importPictures() {
     if (navigator.mozFFOSAssistant.isWifiConnect) {
-      new WifiModePromptDialog({title_l10n_id: 'import-pictures-dialog-header',
-                               prompt_l10n_id: 'wifi-mode-import-pictures-promot'});
+      new WifiModePromptDialog({
+        title_l10n_id: 'import-pictures-dialog-header',
+        prompt_l10n_id: 'wifi-mode-import-pictures-promot'
+      });
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
-      data = data.substr(0,data.length-1);
+    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(data) {
+      if (!data) {
+        return;
+      }
+      data = data.substr(0, data.length - 1);
       var pictures = data.split(';');
 
       if (pictures.length <= 0) {
@@ -557,32 +343,33 @@ var Gallery = (function() {
       var oldFileIndex = 0;
       var steps = 0;
 
+      var pb = new ProcessBar({
+        sectionsNumber: pictures.length,
+        stepsPerSection: 50
+      });
+
       var dialog = new FilesOPDialog({
         title_l10n_id: 'import-pictures-dialog-header',
-        processbar_l10n_id: 'processbar-import-pictures-promot'
+        processbar_l10n_id: 'processbar-import-pictures-promot',
+        processbar: pb
       });
 
       var filesIndicator = $id('files-indicator');
-      var pb = $id('processbar');
-      var ratio = 0;
       filesIndicator.innerHTML = '0/' + pictures.length;
 
-      var range = Math.round(100 / pictures.length);
-      var step = range / 50;
       var bTimer = false;
 
-      setTimeout(function importPicture() {
-        var cmd = 'adb push "' + pictures[fileIndex] + '" /sdcard/DCIM/';
+      setTimeout(function doImportPicture() {
+        var cmd = 'adb push "' + pictures[fileIndex] + '" /sdcard/DCIM';
         var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
         if (!bTimer) {
           bTimer = true;
           var timer = setInterval(function() {
             if (oldFileIndex == fileIndex) {
-              if (steps < 50) {
+              if (steps < 45) {
                 steps++;
-                ratio += step;
-                pb.style.width = ratio + '%';
+                pb.moveForward();
               }
             } else {
               oldFileIndex = fileIndex;
@@ -594,50 +381,49 @@ var Gallery = (function() {
         req.onsuccess = function(e) {
           filesToBeImported.push(pictures[fileIndex]);
           fileIndex++;
-          ratio = Math.round(filesToBeImported.length * 100 / pictures.length);
-          pb.style.width = ratio + '%';
+          pb.finish(filesToBeImported.length);
           filesIndicator.innerHTML = fileIndex + '/' + pictures.length;
 
           if (fileIndex == pictures.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(pictures.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing gallery
             FFOSAssistant.getAndShowGallery();
           } else {
-            importPicture();
+            doImportPicture();
           }
         };
 
-        req.onerror = function (e) {
+        req.onerror = function(e) {
           filesCanNotBeImported.push(pictures[fileIndex]);
           fileIndex++;
 
           if (fileIndex == pictures.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(pictures.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing gallery
             FFOSAssistant.getAndShowGallery();
           } else {
-            importPicture();
+            doImportPicture();
           }
         };
       }, 0);
     }, {
-        title: _('import-picture-title'),
-        fileType: 'Image'
-      });
+      title: _('import-picture-title'),
+      fileType: 'Image'
+    });
   }
 
   window.addEventListener('load', function wnd_onload(event) {
@@ -645,11 +431,7 @@ var Gallery = (function() {
       if (this.dataset.disabled == "true") {
         return;
       }
-      if (this.dataset.checked == "false") {
-        selectAllPictures(true);
-      } else {
-        selectAllPictures(false);
-      }
+      selectAllPictures(this.dataset.checked == "false");
     });
 
     $id('remove-pictures').addEventListener('click', function onclick_removePictures(event) {
@@ -658,8 +440,10 @@ var Gallery = (function() {
       }
 
       if (navigator.mozFFOSAssistant.isWifiConnect) {
-        new WifiModePromptDialog({title_l10n_id: 'remove-pictures-dialog-header',
-                                 prompt_l10n_id: 'wifi-mode-remove-pictures-promot'});
+        new WifiModePromptDialog({
+          title_l10n_id: 'remove-pictures-dialog-header',
+          prompt_l10n_id: 'wifi-mode-remove-pictures-promot'
+        });
         return;
       }
 
@@ -668,9 +452,13 @@ var Gallery = (function() {
         files.push(item.dataset.picUrl);
       });
 
-      if (window.confirm(_('delete-pictures-confirm', {n: files.length}))) {
-        Gallery.removePictures(files);
-      }
+      new AlertDialog(_('delete-pictures-confirm', {
+          n: files.length
+        }), true, function (returnBtn) {
+        if(returnBtn) {
+          Gallery.removePictures(files);
+        }
+      });
     });
 
     $id('refresh-pictures').addEventListener('click', function onclick_refreshPictures(event) {
@@ -687,116 +475,105 @@ var Gallery = (function() {
       }
 
       if (navigator.mozFFOSAssistant.isWifiConnect) {
-        new WifiModePromptDialog({title_l10n_id: 'export-pictures-dialog-header',
-                                 prompt_l10n_id: 'wifi-mode-export-pictures-promot'});
+        new WifiModePromptDialog({
+          title_l10n_id: 'export-pictures-dialog-header',
+          prompt_l10n_id: 'wifi-mode-export-pictures-promot'
+        });
         return;
       }
 
       var pictures = $expr('#picture-list-container li[data-checked="true"]');
 
-      if (pictures.length <= 0 ) {
+      if (pictures.length <= 0) {
         return;
       }
 
-      navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
-        if (status) {
-          var filesToBeExported = [];
-          var filesCanNotBeExported = [];
+      navigator.mozFFOSAssistant.selectDirectory(function(dir) {
+        var filesToBeExported = [];
+        var filesCanNotBeExported = [];
 
-          var fileIndex = 0;
-          var oldFileIndex = 0;
-          var steps = 0;
+        var fileIndex = 0;
+        var oldFileIndex = 0;
+        var steps = 0;
 
-          var dialog = new FilesOPDialog({
-            title_l10n_id: 'export-pictures-dialog-header',
-            processbar_l10n_id: 'processbar-export-pictures-promot'
-          });
+        var pb = new ProcessBar({
+          sectionsNumber: pictures.length,
+          stepsPerSection: 50
+        });
 
-          var filesIndicator = $id('files-indicator');
-          var pb = $id('processbar');
-          var ratio = 0;
-          filesIndicator.innerHTML = '0/' + pictures.length;
+        var dialog = new FilesOPDialog({
+          title_l10n_id: 'export-pictures-dialog-header',
+          processbar_l10n_id: 'processbar-export-pictures-promot',
+          processbar: pb
+        });
 
-          //processbar range for one file
-          var range = Math.round(100 / pictures.length);
-          var step = range / 50;
-          var bTimer = false;
+        var filesIndicator = $id('files-indicator');
+        filesIndicator.innerHTML = '0/' + pictures.length;
 
-          var os = (function() {
-            var oscpu = navigator.oscpu.toLowerCase();
-            return {
-              isWindows: /windows/.test(oscpu),
-              isLinux: /linux/.test(oscpu),
-              isMac: /mac/.test(oscpu)
-            };
-          })();
+        var bTimer = false;
 
-          var newDir = dir;
-          if (os.isWindows) {
-            newDir = dir.substring(1, dir.length);
+        var newDir = dir;
+        if (navigator.mozFFOSAssistant.isWindows) {
+          newDir = dir.substring(1, dir.length);
+        }
+
+        setTimeout(function doExportPicture() {
+          var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + '/' + convertToOutputFileName(pictures[fileIndex].dataset.picUrl) + '"';
+
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
+          if (!bTimer) {
+            bTimer = true;
+            var timer = setInterval(function() {
+              if (oldFileIndex == fileIndex) {
+                if (steps < 45) {
+                  steps++;
+                  pb.moveForward();
+                }
+              } else {
+                oldFileIndex = fileIndex;
+                steps = 0;
+              }
+            }, 100);
           }
 
-          setTimeout(function exportPicture() {
-            var obj = convertFileName(pictures[fileIndex].dataset.picUrl);
-            var cmd = 'adb pull "' + pictures[fileIndex].dataset.picUrl + '" "' + decodeURI(newDir) + '/' + obj.folder + '_' + obj.file + '"';
+          req.onsuccess = function(e) {
+            filesToBeExported.push(pictures[fileIndex]);
+            fileIndex++;
+            pb.finish(filesToBeExported.length);
+            filesIndicator.innerHTML = filesToBeExported.length + '/' + pictures.length;
 
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
-            if (!bTimer) {
-              bTimer = true;
-              var timer = setInterval(function() {
-                if (oldFileIndex == fileIndex) {
-                  if (steps < 50) {
-                    steps++;
-                    ratio += step;
-                    pb.style.width = ratio + '%';
-                  }
-                } else {
-                  oldFileIndex = fileIndex;
-                  steps = 0;
-                }
-              }, 100);
+            if (fileIndex == pictures.length) {
+              clearInterval(timer);
+              pb.finish(pictures.length);
+              dialog.closeAll();
+
+              if (filesCanNotBeExported.length > 0) {
+                //TODO: tell user some files can't be exported
+                new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
+              }
+            } else {
+              doExportPicture();
             }
+          };
 
-            req.onsuccess = function(e) {
-              filesToBeExported.push(pictures[fileIndex]);
-              fileIndex++;
-              ratio = Math.round(filesToBeExported.length * 100 / pictures.length);
-              pb.style.width = ratio + '%';
-              filesIndicator.innerHTML = filesToBeExported.length + '/' + pictures.length;
+          req.onerror = function(e) {
+            filesCanNotBeExported.push(pictures[fileIndex]);
+            fileIndex++;
 
-              if (fileIndex == pictures.length) {
-                clearInterval(timer);
-                pb.style.width = '100%';
-                dialog.closeAll();
+            if (fileIndex == pictures.length) {
+              clearInterval(timer);
+              pb.finish(pictures.length);
+              dialog.closeAll();
 
-                if (filesCanNotBeExported.length > 0) {
-                  //TODO: tell user some files can't be exported
-                  alert(filesCanNotBeExported.length + " files can't be exported");
-                }
-              } else {
-                exportPicture();
+              if (filesCanNotBeExported.length > 0) {
+                //TODO: tell user some files can't be exported
+                new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
               }
-            };
-
-            req.onerror = function (e) {
-              filesCanNotBeExported.push(pictures[fileIndex]);
-              fileIndex++;
-
-              if (fileIndex == pictures.length) {
-                clearInterval(timer);
-                pb.style.width = '100%';
-                dialog.closeAll();
-
-                if (filesCanNotBeExported.length > 0) {
-                  //TODO: tell user some files can't be exported
-                  alert(filesCanNotBeExported.length + " files can't be exported");
-                }
-              } else {
-                exportPicture();
-              }
-            };
-          }, 0);
-        }
+            } else {
+              doExportPicture();
+            }
+          };
+        }, 0);
       }, {
         title: _('export-picture-title'),
         fileType: 'Image'
@@ -807,8 +584,8 @@ var Gallery = (function() {
   return {
     init: init,
     addPicture: addPicture,
-    removePicture: removePicture,
-    updateUI: updateUI,
+    updateRemovedPictures: updateRemovedPictures,
+    checkGalleryIsEmpty: checkGalleryIsEmpty,
     selectAllPictures: selectAllPictures,
     removePictures: removePictures
   };

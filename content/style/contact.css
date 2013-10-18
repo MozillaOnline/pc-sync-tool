@@ -12,7 +12,7 @@
   overflow: hidden;
   height: 6rem;
   line-height: 3rem;
-  font-size: 14px;
+  font-size: 1.4rem;
 }
 
 .contact-ops-box .contact-op {
@@ -34,15 +34,23 @@
   margin-left: 2rem;
   padding-left: 2.2rem;
 }
+
 #selectAll-contacts[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
 }
+
 #selectAll-contacts[data-disabled=true] {
   color: #CCCCCC;
 }
+
+#selectAll-contacts[data-disabled=true] > label {
+  cursor: default;
+}
+
 #selectAll-contacts[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #selectAll-contacts[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -50,15 +58,22 @@
 #remove-contacts {
   background-image: url("images/remove-default.png");
 }
+
 #remove-contacts[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
   cursor: default;
   color: #CCCCCC;
 }
+
+#remove-contacts[data-disabled=true] > label {
+  cursor: default;
+}
+
 #remove-contacts[data-disabled=false]:hover {
   background-image: url("images/remove-highlighted.png");
   color: #00CAF2;
 }
+
 #remove-contacts[data-disabled=false]:active {
   background-image: url("images/remove-selected.png");
   color: #018CAB;
@@ -68,13 +83,20 @@
   background-image: url("images/export-disabled.png");
   color: #CCCCCC;
 }
+
+#export-contacts[data-disabled=true] > label {
+  cursor: default;
+}
+
 #export-contacts[data-disabled=false] {
   background-image: url("images/export-default.png");
 }
+
 #export-contacts[data-disabled=false]:hover {
   background-image: url("images/export-highlighted.png");
   color: #00CAF2;
 }
+
 #export-contacts[data-disabled=false]:active {
   background-image: url("images/export-selected.png");
   color: #018CAB;
@@ -83,10 +105,12 @@
 #import-contacts {
   background-image: url("images/import-default.png");
 }
+
 #import-contacts:hover {
   background-image: url("images/import-highlighted.png");
   color: #00CAF2;
 }
+
 #import-contacts:active {
   background-image: url("images/import-selected.png");
   color: #018CAB;
@@ -95,10 +119,12 @@
 #refresh-contacts {
   background-image: url("images/refresh-default.png");
 }
+
 #refresh-contacts:hover {
   background-image: url("images/refresh-highlighted.png");
   color: #00CAF2;
 }
+
 #refresh-contacts:active {
   background-image: url("images/refresh-selected.png");
   color: #018CAB;
@@ -107,10 +133,12 @@
 #add-new-contact {
   background-image: url("images/add-default.png");
 }
+
 #add-new-contact:hover {
   background-image: url("images/add-highlighted.png");
   color: #00CAF2;
 }
+
 #add-new-contact:active {
   background-image: url("images/add-selected.png");
   color: #018CAB;
@@ -118,7 +146,7 @@
 
 #contact-list-container {
   padding-left: 1rem;
-  max-height: 46rem;
+  max-height: 42rem;
   overflow: auto;
 }
 
@@ -132,7 +160,7 @@
   text-align: center;
 }
 
-.quick-add_view {
+.quick-add-view {
   background: url('images/logo.png') no-repeat scroll center center transparent;
   height: 20rem;
   width: 100%;
@@ -140,7 +168,7 @@
 
 #mobile, #fullName {
   float: right;
-  width: 20.2rem;
+  width: 19.5rem;
   height: 2.5rem;
   margin-right: 2rem;
 }
@@ -149,6 +177,7 @@
   padding-left: 1rem;
   padding-bottom: 2rem;
   font-size: 1.8rem;
+  margin-top: 8rem;
 }
 
 #contact-quick-add-form > div {
@@ -170,11 +199,16 @@
 #quick-save-contact {
   margin: 0.6rem 0 0 7.5rem;
   float: left;
-  height: 2.2rem;
-  width: 5rem;
-  padding-top: 0.3rem;
+  height: 3.2rem;
+  width: 15rem;
 }
 
+#contact-view-sub span.title {
+  text-align: center;
+  padding: 4rem 0;
+  font-size: 2.5rem;
+  display: block;
+}
 
 .data-index {
   border-bottom: .1rem solid #E86000;
@@ -186,6 +220,9 @@
 
 .contact-list-item {
   margin-top: .5rem;
+  overflow: hidden;
+  cursor: pointer;
+  padding: .5rem 0 .5rem 1rem;
 }
 
 .contact-list-item:hover {
@@ -200,17 +237,11 @@
   background-color: #DEF3F8;
 }
 
-.contact-list-item > div {
-  overflow: hidden;
-  cursor: pointer;
-  padding: .5rem 0 .5rem 1rem;
-}
-
-.contact-list-item > div > * {
+.contact-list-item > * {
   float: left;
 }
 
-.contact-list-item >div input.checkbox[type="checkbox"] + label.selectAll {
+.contact-list-item input.checkbox[type="checkbox"] + label.selectAll {
   background-image: url("images/checkbox.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -218,7 +249,7 @@
   width: 2rem;
 }
 
-.contact-list-item >div input.checkbox[type="checkbox"]:checked + label.selectAll {
+.contact-list-item input.checkbox[type="checkbox"]:checked + label.selectAll {
   background-image: url("images/checkbox-checked.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -226,7 +257,7 @@
   width: 2rem;
 }
 
-.contact-list-item >div > label.unchecked {
+.contact-list-item > label {
   background-image: url("images/checkbox.png");
   background-position: center center;
   background-repeat: no-repeat;
@@ -234,7 +265,7 @@
   width: 2rem;
 }
 
-.contact-list-item >div  > label.checked {
+.contact-list-item > label[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
 }
 
@@ -247,7 +278,7 @@
   background-position: center center;
 }
 
-#contact-list-container div.favorite .bookmark {
+#contact-list-container .favorite .bookmark {
   background-image: url("images/bookmarked.png");
 }
 
@@ -263,20 +294,20 @@
 }
 
 .contact-list-item .contact-info {
-  font-size: 14px;
+  font-size: 1.4rem;
   padding-left: 1rem;
 }
 
 .contact-list-item .contact-info >div {
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 320px;
+  width: 32.0rem;
   white-space: nowrap;
 }
 
 .contact-list-item .contact-info .name {
   color: #333333;
-  font-size: 14px;
+  font-size: 1.4rem;
   height: 2rem;
 }
 
@@ -365,8 +396,8 @@
 }
 
 #contact-form .avatar-add-edit {
-  height: 7rem;
-  width: 7rem;
+  height: 6.5rem;
+  width: 6.7rem;
   float: left;
   margin-right: 0.5rem;
 }
@@ -374,7 +405,6 @@
 #contact-form .avatar-add-edit-default {
   background-image: url("images/avatar-add.png");
   background-repeat: no-repeat;
-  background-position: 0 .5rem;
 }
 
 .item-body-exp {
@@ -385,21 +415,18 @@
   padding-right: 3rem;
 }
 
-#contact-form div {
-}
-
 #add-avatar {
   height: 2rem;
   background-color: #A6A6A6;
-  width: 67px;
+  width: 6.7rem;
   position: absolute;
-  top: 53px;
+  top: 5rem;
 }
 
 #avatar-label {
   text-align: center;
-  font-size: 12px;
-  padding-top: 3px;
+  font-size: 1.2rem;
+  padding-top: 0.3rem;
   color: white;
 }
 
@@ -408,6 +435,10 @@
   max-height: 27rem;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+#contact-form ul div {
+  position: relative;
 }
 
 #contact-form .action-delete {
@@ -427,7 +458,7 @@ fieldset {
   padding: 0;
   border-radius: 0.3rem;
   border: 0.1rem solid rgba(0,0,0,.2);
-  font: 1.4rem/1em "MozTT", Sans-serif;
+  font: 1.4rem/1em;
   margin: 0 0 .5rem;
   background-color: white;
 }
@@ -501,25 +532,8 @@ button.add-new-button {
 
 .saveAndCancel {
   height: 3rem;
-  padding-left: 25px;
-  margin-top: 12px;
-}
-
-#save-contact {
-  padding: 4px 34px;
-  width: 56px;
-}
-
-#cancel-edit-contact {
-  padding: 3.5px 28px;
-  width: 56px;
-}
-
-#views span.title {
-  text-align: center;
-  padding: 4rem 0;
-  font-size: 25px;
-  display: block;
+  padding-left: 2.5rem;
+  margin-top: 1.2rem;
 }
 
 .show-contact-header {
@@ -546,26 +560,32 @@ button.add-new-button {
 }
 
 #show-contact-full-name {
-  font-size: 16px;
+  font-size: 1.6rem;
   height: 2rem;
   margin-left: 1rem;
   color: #333333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 15rem;
 }
 
 #show-contact-company {
   height: 2rem;
   margin: 0 0 -0.5rem 1rem;
   color: #999999;
-  margin-top: 2px;
+  margin-top: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 15rem;
 }
 
 #edit-contact {
   display: -moz-inline-box;
-  height: 20px;
+  height: 2.4rem;
   margin-left: 1rem;
-  margin-top: 7px;
-  padding:3px 0 0 23px;
-  width: 54px;
+  margin-top: 0.7rem;
   text-align: center;
 }
 
@@ -650,19 +670,21 @@ button.add-new-button {
   color: #424242;
   width: 12rem;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .contact-ops-box .search-input {
-    display: block;
-    line-height: 25px;
-    width: 400px;
-    padding-left: 20px;
-    padding-top: 25px;
+  display: block;
+  line-height: 2.5rem;
+  width: 40.0rem;
+  padding-left: 2.0rem;
+  padding-top: 2.5rem;
 }
 
 .contact-ops-box .search-input .input-content {
-    display: block;
-    line-height: 25px;
-    margin-right: 10px;
-    width: 350px;
+  display: block;
+  line-height: 2.5rem;
+  margin-right: 1.0rem;
+  width: 35.0rem;
 }
+

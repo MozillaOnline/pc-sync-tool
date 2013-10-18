@@ -4,7 +4,7 @@
 
 "use strict"
 
-let DEBUG = 1;
+let DEBUG = 0;
 if (DEBUG)
   debug = function (s) { dump("-*- adbService: " + s + "\n"); };
 else
@@ -17,22 +17,20 @@ const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
 const ADBSERVICE_CONTRACT_ID = '@mozilla.org/adbservice;1';
 const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
 const MANAGER_BINHOME = 'resource://ffosassistant-binhome';
-const MANAGER_DMHOME  = 'resource://ffosassistant-dmhome';
-const MANAGER_INI_FILE_NAME = 'driver_manager.ini';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
 
+let modules = {};
 XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
                                    "@mozilla.org/childprocessmessagemanager;1",
                                    "nsISyncMessageSender");
 XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils',        'resource://gre/modules/FileUtils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil',          'resource://gre/modules/NetUtil.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'ctypes',           'resource://gre/modules/ctypes.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Services',         'resource://gre/modules/Services.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'SocketConn',       'resource://ffosassistant/conn.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'utils',            'resource://ffosassistant/utils.jsm');
+XPCOMUtils.defineLazyServiceGetter(modules, "xulRuntime",   '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
 
 /***** Component definition *****/
 function FFOSAssistant() { }
@@ -72,14 +70,6 @@ FFOSAssistant.prototype = {
 
   _callADBService: function(name, arg) {
     return this._callMessage("ADBService", name, arg);
-  },
-
-  _callDriverDownloader: function(name, arg) {
-    return this._callMessage("DriverDownloader", name, arg);
-  },
-
-  _callDriverManager: function(name, arg) {
-    return this._callMessage("DriverManager", name, arg);
   },
 
   _callMessage: function(moduleName, msgName, arg) {
@@ -141,9 +131,6 @@ FFOSAssistant.prototype = {
         }
         Services.DOMRequest.fireError(request, "Failed to excute async command");
         break;
-      case 'DriverDownloader:message':
-        this._onRevDriverDownloaderMessage(msg.data);
-        break;
       case 'ADBService:RunCmd:Return:OK':
         request = this.takeRequest(msg.rid);
         if (!request) {
@@ -161,15 +148,6 @@ FFOSAssistant.prototype = {
     if (this._onADBStateChange) {
       this._onADBStateChange.handleEvent(e);
     }
-    this.dispatchEvent(e);
-  },
-
-  _onRevDriverDownloaderMessage: function(message) {
-    let e = this._createEvent('driverdownloadermessage');
-    if (this._onDriverDownloaderMessage) {
-      this._onDriverDownloaderMessage.handleEvent(e);
-    }
-    this.dispatchEvent(e);
   },
 
   /* Implementations */
@@ -177,61 +155,16 @@ FFOSAssistant.prototype = {
     return cpmm.sendSyncMessage('ADBService:connected')[0];
   },
 
+  get isWindows() {
+    return modules.xulRuntime.OS == 'WINNT';
+  },
+
   get adbffosDeviceName() {
     return cpmm.sendSyncMessage('ADBService:ffosDeviceName')[0];
   },
 
-  get driverManagerPort() {
-    // Read port number from driver_manager.ini
-    try {
-      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
-      file.append(MANAGER_INI_FILE_NAME);
-      if (!file.exists()) {
-        debug('No ini file is found');
-        return 0;
-      }
-
-      return parseInt(utils.getIniValue(file, 'socket', 'port'));
-    } catch (e) {
-      debug(e);
-      return 0;
-    }
-
-    return 0;
-  },
-
   set onadbstatechange(callback) {
     this._onADBStateChange = callback;
-  },
-
-  set ondriverdownloadermessage(callback) {
-    this._onDriverDownloaderMessage = callback;
-  },
-
-  get isDriverManagerRunning() {
-    return cpmm.sendSyncMessage('DriverManager:isRunning')[0];
-  },
-
-  startDriverManager: function() {
-    if (this.isDriverManagerRunning) {
-      return;
-    }
-    this._callDriverManager('start', null);
-  },
-
-  setAddonInfo: function(isRun) {
-    // Write firefox path to the ini file
-    try {
-      let file = utils.getChromeFileURI(MANAGER_DMHOME).file;
-      file.append(MANAGER_INI_FILE_NAME);
-      if (!file.exists()) {
-        file.create(Ci.nsIFile.NORMAL_FILE_TYPE, '0644');
-      }
-      utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
-      utils.saveIniValue(file, 'status', 'isRun', isRun);
-    } catch (e) {
-      debug(e);
-    }
   },
 
   wifiConnected: function(isConnected) {
@@ -251,16 +184,6 @@ FFOSAssistant.prototype = {
 
   get isWifiConnect() {
     return this._isWifiConnect;
-  },
-  /**
-   * If it's an async command, a request object will be returned.
-   */
-  sendCmdToDriverDownloader: function(cmd, async) {
-    if (async) {
-      return this._callDriverDownloader('asyncCommand', cmd);
-    } else {
-      return cpmm.sendSyncMessage('DriverDownloader:syncCommand', cmd)[0];
-    }
   },
 
   selectDirectory: function (callback, options) {
@@ -285,13 +208,12 @@ FFOSAssistant.prototype = {
     callback = (typeof callback === 'function') ? callback : function() {};
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
-        case Ci.nsIFilePicker.returnOK:
-          callback(true,filePicker.fileURL.path);
-          break;
+      case Ci.nsIFilePicker.returnOK:
+        callback(filePicker.fileURL.path);
+         break;
       case Ci.nsIFilePicker.returnCancel:
-        default:
-          callback(false);
-          break;
+      default:
+        break;
       }
     });
   },
@@ -405,102 +327,24 @@ FFOSAssistant.prototype = {
             var file = files.getNext().QueryInterface(Components.interfaces.nsIFile);
             filePath += file.path + ';';
           }
-          callback(true, filePath);
+          callback(filePath);
           break;
         case Ci.nsIFilePicker.returnCancel:
         default:
-          callback(false, null);
+          break;
       }
     });
   },
 
-  getDirInTmp: function (path, callback) {
-    var file = FileUtils.getDir("ProfD", path, false);
-    callback(file.path);
+  getGalleryCachedDir: function (pathArray) {
+    var file = FileUtils.getDir("ProfD", pathArray, false);
+    return file.path;
   },
 
   runCmd: function(cmd) {
     return this._callMessage('ADBService', 'RunCmd', cmd);
-  },
-
-  // These are fake implementations, will be replaced by using
-  // nsJSDOMEventTargetHelper, see bug 731746
-  addEventListener: function(type, listener, useCapture) {
-    if (!this._eventListenersByType) {
-      this._eventListenersByType = {};
-    }
-
-    if (!listener) {
-      return;
-    }
-
-    var listeners = this._eventListenersByType[type];
-    if (!listeners) {
-      listeners = this._eventListenersByType[type] = [];
-    }
-
-    useCapture = !!useCapture;
-    for (let i = 0, len = listeners.length; i < len; i++) {
-      let l = listeners[i];
-      if (l && l.listener === listener && l.useCapture === useCapture) {
-        return;
-      }
-    }
-
-    listeners.push({
-      listener: listener,
-      useCapture: useCapture
-    });
-  },
-
-  removeEventListener: function(type, listener, useCapture) {
-    if (!this._eventListenersByType) {
-      return;
-    }
-
-    useCapture = !!useCapture;
-
-    var listeners = this._eventListenersByType[type];
-    if (listeners) {
-      for (let i = 0, len = listeners.length; i < len; i++) {
-        let l = listeners[i];
-        if (l && l.listener === listener && l.useCapture === useCapture) {
-          listeners.splice(i, 1);
-        }
-      }
-    }
-  },
-
-  dispatchEvent: function(evt) {
-    if (!this._eventListenersByType) {
-      return;
-    }
-
-    let type = evt.type;
-    var listeners = this._eventListenersByType[type];
-    if (listeners) {
-      for (let i = 0, len = listeners.length; i < len; i++) {
-        let listener = listeners[i].listener;
-
-        try {
-          if (typeof listener == "function") {
-            listener.call(this, evt);
-          } else if (listener && listener.handleEvent &&
-                     typeof listener.handleEvent == "function") {
-            listener.handleEvent(evt);
-          }
-        } catch (e) {
-          debug("Exception is caught: " + e);
-        }
-      }
-    }
   }
 };
-
-function getFirefoxPath() {
-  var firefoxPath = Services.dirsvc.get('XREExeF', Ci.nsIFile);
-  return firefoxPath.path;
-}
 
 this.NSGetFactory = XPCOMUtils.generateNSGetFactory([FFOSAssistant]);
 

@@ -19,17 +19,19 @@
   <script type="text/javascript" src="chrome://ffosassistant/content/js/utils.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/widgets.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/3rd/pinyin.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/3rd/tmpl.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/cmd.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/connectPool.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/connectionPool.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/vcard.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/contact_list.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/sms_list.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/vCardConverter.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/contactList.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/smsList.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/music_list.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/gallery.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/video.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/form.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/contactForm.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/main.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/view.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/viewManager.js"></script>
 </head>
 <body hidden="true">
   <div id="container">
@@ -42,9 +44,9 @@
         <label class="language-code-button" data-language-code="zh-CN">中文</label>
       </div>
     </div>
-    <div id="container-body" class="table">
+    <div id="container-body">
       <div>
-        <div class="sidebar table-cell">
+        <div class="sidebar">
           <div id="connect-list" class="list radio-list">
             <div id="connect-tab"
                  class="item"
@@ -67,40 +69,21 @@
                  class="sms-tab item sms"
                  data-linked-view="sms-view"
                  data-l10n-id="sms">短信</div>
-            <div id="music-tab"
-                 class="music-tab item music"
-                 data-linked-view="music-view"
-                 data-l10n-id="music">音乐</div>
             <div id="gallery-tab"
                  class="gallery-tab item gallery"
                  data-linked-view="gallery-view"
                  data-l10n-id="gallery">相册图片</div>
+            <div id="music-tab"
+                 class="music-tab item music"
+                 data-linked-view="music-view"
+                 data-l10n-id="music">音乐</div>
             <div id="videos-tab"
                  class="videos-tab item videos"
                  data-linked-view="video-view"
                  data-l10n-id="videos">视频</div>
-            <div id="apps-tab"
-                 class="apps-tab item apps"
-                 data-linked-view="apps-view"
-                 data-l10n-id="apps">应用程序</div>
-          </div>
-          <div class="list list2">
-            <div class="header" data-l10n-id="resources">资源推荐</div>
-            <div id="marketplace-tab"
-                 class="marketplace-tab item marketplace"
-                 data-linked-view="marketplace-view"
-                 data-l10n-id="marketplace">火狐官方应用市场</div>
-            <div id="themes-tab"
-                 class="themes-tab item theme"
-                 data-linked-view="theme-view"
-                 data-l10n-id="themes">免费手机壁纸</div>
-            <div id="ringtone-tab"
-                 class="ringtone-tab item ringtone"
-                 data-linked-view="ringtone-view"
-                 data-l10n-id="ringtone">手机铃声专区</div>
           </div>
         </div>
-        <div class="content table-cell">
+        <div id="content" class="content">
           <section id="connect-view" class="view">
             <span class="title" data-l10n-id="pls_connect_device">连接手机</span>
             <div id="welcome-msg">
@@ -130,75 +113,78 @@
                 <div id="step-three" class="step-three-usb">
                   <span id="step-three-span" data-l10n-id="usb-step-three"></span>
                 </div>
-                <input type="text" id="wifi-connection-code-input" style='display: none' class="hiddenElement" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></input>
-                <div id="wifi-connect-button" class="button hiddenElement" href="javascript: void(0);" data-l10n-id="wifi-connect"></div>
+                <div id="wifi-connection-code-input" class="hiddenElement">
+                  <input id="wifi-connection-code" type="text" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></input>
+                </div>
+                <button id="wifi-connect-button" class="button hiddenElement" data-l10n-id="wifi-connect"></button>
               </div>
             </section>
           </section>
           <section id="summary-view" class="view" hidden>
-            <div class="content-table">
-              <div class="content-row">
+            <div>
+              <div>
                 <span data-l10n-id="summary" class="title">基本信息</span>
+                <a id="device-disconnect" href="javascript: void(0);" data-l10n-id="disconnect">断开</a>
               </div>
-              <div class="content-row">
-                <div id="device-image">
-              <div class="device-picture"></div>
-              <div class="device-connect"></div>
+              <div id="device-image">
+                <div id="device-image-screen" class="device-picture"></div>
+                <div id="device-image-connection" class="device-connect"></div>
+              </div>
             </div>
             <div id="summary-infos">
               <div id="device-storage-summary">
                 <div class="storage-totle">
-                  <div class="storage-name" data-l10n-id="handset">手机</div>
-                  <div class="storage-number"></div>
+                  <span class="storage-name" data-l10n-id="handset">手机</span>
+                  <span class="storage-number"></span>
                 </div>
                 <div class="storage-graph">
                   <div class="used"></div>
                 </div>
                 <div class="device-info">
-                  <div class="device-os-version" data-l10n-id="osversion">OS version</div>
-                  <div class="device-os-version-number"></div>
+                  <span class="device-os-version" data-l10n-id="osversion">OS version</span>
+                  <span class="device-os-version-number"></span>
                 </div>
                 <div class="device-info">
-                  <div class="device-hardware-revision" data-l10n-id="hardwarerevision">Hardware revision</div>
-                  <div class="device-hardware-revision-number"></div>
+                  <span class="device-hardware-revision" data-l10n-id="hardwarerevision">Hardware revision</span>
+                  <span class="device-hardware-revision-number"></span>
                 </div>
                 <div class="device-info">
-                  <div class="device-platform-version" data-l10n-id="platformversion">Platform version</div>
-                  <div class="device-platform-version-number"></div>
+                  <span class="device-platform-version" data-l10n-id="platformversion">Platform version</span>
+                  <span class="device-platform-version-number"></span>
                 </div>
                 <div class="device-info">
-                  <div class="device-build-identifier" data-l10n-id="buildidentifier">Build identifier</div>
-                  <div class="device-build-identifier-number"></div>
+                  <span class="device-build-identifier" data-l10n-id="buildidentifier">Build identifier</span>
+                  <span class="device-build-identifier-number"></span>
                 </div>
               </div>
               <div id="sdcard-storage-summary">
                 <div class="storage-totle">
-                  <div class="storage-name" data-l10n-id="sdcard">SD卡</div>
-                  <div class="storage-number"></div>
+                  <span class="storage-name" data-l10n-id="sdcard">SD卡</span>
+                  <span class="storage-number"></span>
                 </div>
                 <div class="storage-graph">
                   <div class="used"></div>
                 </div>
                 <div class="storage-detail">
-                  <div class="storage-name" data-l10n-id="sdcard-music">音乐</div>
+                  <span class="storage-name" data-l10n-id="sdcard-music">音乐</span>
                   <div class="storage-detailgraph">
                     <div class="storage-used"></div>
                   </div>
                 </div>
                 <div class="storage-detail">
-                  <div class="storage-name" data-l10n-id="sdcard-picture">图片</div>
+                  <span class="storage-name" data-l10n-id="sdcard-picture">图片</span>
                   <div class="storage-detailgraph">
                     <div class="storage-used"></div>
                   </div>
                 </div>
                 <div class="storage-detail">
-                  <div class="storage-name" data-l10n-id="sdcard-video">视频</div>
+                  <span class="storage-name" data-l10n-id="sdcard-video">视频</span>
                   <div class="storage-detailgraph">
                     <div class="storage-used"></div>
                   </div>
                 </div>
                 <div class="storage-detail">
-                  <div class="storage-name" data-l10n-id="sdcard-other">其它</div>
+                  <span class="storage-name" data-l10n-id="sdcard-other">其它</span>
                   <div class="storage-detailgraph">
                     <div class="storage-used"></div>
                   </div>
@@ -238,8 +224,7 @@
               </div>
             </div>
             <div id="contact-list-container">
-              <div class="contact-list-item">
-              </div>
+              <div class="contact-list-item"></div>
             </div>
           </section>
           <section id="sms-view" class="view" hidden="true">
@@ -261,9 +246,14 @@
                 <label data-l10n-id="sms-send"></label>
               </div>
             </div>
+            <div id="empty-sms-container">
+              <div class="empty-sms"></div>
+              <div class="empty-sms-prompt">
+                <label data-l10n-id="empty-sms"> </label>
+              </div>
+            </div>
             <div id="threads-list-container">
-                <div class="threads-list-item">
-                </div>
+              <div class="threads-list-item"></div>
             </div>
           </section>
           <section id ="music-view" class="view" hidden="true">
@@ -293,7 +283,7 @@
               <div class="music-type"> <label data-l10n-id="type">类型</label></div>
               <div class="music-size"> <label data-l10n-id="size">大小</label></div>
             </div>
-            <div id="empty-music-container" class="content">
+            <div id="empty-music-container" class="empty-container">
               <div class="empty-musics"></div>
               <div class="empty-musics-prompt">
                 <label data-l10n-id="empty-musics">There are no musics.</label>
@@ -325,7 +315,7 @@
                   <label data-l10n-id="refresh">刷新</label>
                 </div>
               </div>
-              <div id="empty-picture-container" class="content">
+              <div id="empty-picture-container" class="empty-container">
                 <div class="empty-pictures"></div>
                 <div class="empty-pictures-prompt">
                   <label data-l10n-id="empty-pictures">There are no pictures.</label>
@@ -357,7 +347,7 @@
                 <label data-l10n-id="refresh">刷新</label>
               </div>
             </div>
-            <div id="empty-video-container" class="content">
+            <div id="empty-video-container" class="empty-container">
               <div class="empty-videos"></div>
               <div class="empty-videos-prompt">
                 <label data-l10n-id="empty-videos">There are no videos.</label>
@@ -369,126 +359,418 @@
             <div id="video-list-container">
             </div>
           </section>
+          <div class="tip" id="tip"></div>
         </div>
-        <div id="views" class="views table-cell hidden-views">
-          <div>
-            <section id="contact-view-sub" class="sub-view">
-              <section id="contact-quick-add-view" class="card-view" hidden="true">
-                <div class="quick-add_view"></div>
-                <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
-                <form id="contact-quick-add-form" action="#" onsubmit="return false;">
+        <div id="views" class="views hidden-views">
+          <section id="contact-view-sub" class="sub-view">
+            <section id="contact-quick-add-view" class="card-view" hidden="true">
+              <div class="quick-add-view"></div>
+              <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
+              <form id="contact-quick-add-form" action="#" onsubmit="return false;">
+                <div>
                   <div>
-                    <div>
-                      <label data-l10n-id="contact-quick-add-name"></label>
-                    </div>
-                    <input id="fullName" class="quick-input" type="text" value="" data-l10n-id="full-name"></input>
+                    <label data-l10n-id="contact-quick-add-name"></label>
                   </div>
+                  <input id="fullName" class="quick-input" type="text" value="" data-l10n-id="full-name"></input>
+                </div>
+                <div>
                   <div>
-                    <div>
-                       <label data-l10n-id="contact-quick-add-mobile"></label>
-                   </div>
-                    <input id="mobile" class="quick-input" type="tel" value="" data-l10n-id="mobile"></input>
-                  </div>
-                  <div><a id="quick-save-contact" class="button" href="javascript: void(0);" data-l10n-id="save">保存</a></div>
-                </form>
-              </section>
-              <section id="contact-edit-view" class="card-view contact-form" hidden="true">
-                <span id="add-contact-header" class="title" data-l10n-id="add-contact-header"></span>
-                <span id="edit-contact-header" class="title" data-l10n-id="edit-contact-header"></span>
-                <form id="contact-form" action="#" onsubmit="return false;">
-                  <input id="contact-form-id" name="id" type="hidden" value="" />
-                  <section>
-                    <div>
-                      <img id="avatar-add-edit" class="avatar-add-edit avatar-add-edit-default" src="" />
-                      <div id="add-avatar">
-                        <div id="avatar-label" data-l10n-id="avatar-label">添加头像</div>
-                      </div>
-                      <input id="avatar-input" type="file" accept="image/*" hidden/>
-                    </div>
-                    <div class="item-body-exp">
-                      <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
-                      <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
-                    </div>
-                    <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
-                  </section>
-                  <!-- Contact field containter -->
-                  <ul></ul>
-                  <div class="saveAndCancel">
-                  <a id="save-contact" class="button" href="javascript: void(0);" data-l10n-id="save">保存</a>
-                  <a id="cancel-edit-contact" class="button-cancel" href="javascript: void(0);" data-l10n-id="cancel">取消</a>
-                  </div>
-                </form>
-              </section>
-              <section id="show-contact-view" class="card-view" hidden="true">
-                <span class="title" data-l10n-id="show-contact-header"></span>
-                <div class="show-contact-header">
-                  <img id="show-avatar" class="avatar-show avatar-show-default"></img>
-                  <div class="contact-head">
-                    <div id="show-contact-full-name"></div>
-                    <div id="show-contact-company"></div>
-                    <div id="edit-contact" class="button" data-l10n-id="edit-contact">
-                    </div>
-                  </div>
+                     <label data-l10n-id="contact-quick-add-mobile"></label>
+                 </div>
+                  <input id="mobile" class="quick-input" type="tel" value="" data-l10n-id="mobile"></input>
                 </div>
-                <div class="contact-content">
-                  <div class="header" data-l10n-id="show-contact-content">联系信息</div>
-                  <div id="show-contact-content">
-                  </div>
+                <div>
+                  <button id="quick-save-contact" class="button" data-l10n-id="save">保存</button>
                 </div>
-                <div class="sms-message-quick-sender">
-                  <div class="sender-ctn">
-                    <div class="count-ctn">
-                      <div class="button-send primary" data-l10n-id="sms-send" id="sms-send-incontact"></div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-              <section id="show-multi-contacts" class="card-view" hidden="true">
-                <span id="show-contacts-header" class="title"></span>
-                <div id="show-contacts-container">
-                </div>
-                <div class="sms-message-quick-sender">
-                  <div class="sender-ctn">
-                    <div class="count-ctn">
-                      <div class="button-send primary" data-l10n-id="sms-send" id="sms-send-inmulticontact"></div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+              </form>
             </section>
-            <section id="sms-view-sub" class="sub-view" hidden="true">
-              <section id="sms-send-view" class="card-view sms-send-form">
-                <div class="sms-send-view"></div>
-                <div id="sms-send-view-header" data-l10n-id="sms-send-view-header"></div>
-                <form id="sms-send-view-form" action="#" onsubmit="return false;">
-                  <div id="sms-send-button" class="button" href="javascript: void(0);" data-l10n-id="sms-send"></div>
-                </form>
-              </section>
-              <section id="sms-select-view" class="card-view sms-form" hidden="true">
-                <span id="select-threads-count" class="title"></span>
-                <div id="show-sms-container">
-                </div>
-              </section>
-              <section id="sms-thread-view" class="card-view sms-form" hidden="true">
-                <div class="sms-thread-header" id="sms-thread-header">
-                </div>
-                <div id='message-list-container' class="sms-message-threads-ctn">
-                </div>
-                <div class="sms-message-quick-sender">
-                  <div class="sender-ctn">
-                    <textarea class="input-content" id="sender-ctn-input" autofocus="true" data-l10n-id="sender-ctn-input-placeholder" placeholder="填写您的新信息..."></textarea>
-                    <div class="count-ctn">
-                      <div class="button-send primary" data-l10n-id="sms-send" id="sms-send-inthread"></div>
+            <section id="contact-edit-view" class="card-view contact-form" hidden="true">
+              <span id="add-contact-header" class="title" data-l10n-id="add-contact-header"></span>
+              <span id="edit-contact-header" class="title" data-l10n-id="edit-contact-header"></span>
+              <form id="contact-form" action="#" onsubmit="return false;">
+                <input id="contact-form-id" name="id" type="hidden" value="" />
+                <section>
+                  <div>
+                    <img id="avatar-add-edit" class="avatar-add-edit avatar-add-edit-default" src="" />
+                    <div id="add-avatar">
+                      <div id="avatar-label" data-l10n-id="avatar-label">添加头像</div>
                     </div>
+                    <input id="avatar-input" type="file" accept="image/*" hidden/>
+                  </div>
+                  <div class="item-body-exp">
+                    <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
+                    <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
+                  </div>
+                  <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
+                </section>
+                <!-- Contact field containter -->
+                <ul></ul>
+                <div class="saveAndCancel">
+                  <button id="save-contact" class="button" data-l10n-id="save">保存</button>
+                  <button id="cancel-edit-contact" class="button-cancel" data-l10n-id="cancel">取消</button>
+                </div>
+              </form>
+            </section>
+            <section id="show-contact-view" class="card-view" hidden="true">
+              <span class="title" data-l10n-id="show-contact-header"></span>
+              <div class="show-contact-header">
+                <img id="show-avatar" class="avatar-show avatar-show-default"></img>
+                <div class="contact-head">
+                  <div id="show-contact-full-name"></div>
+                  <div id="show-contact-company"></div>
+                  <button id="edit-contact" class="button" data-l10n-id="edit-contact"></button>
+                </div>
+              </div>
+              <div class="contact-content">
+                <div class="header" data-l10n-id="show-contact-content">联系信息</div>
+                <div id="show-contact-content">
+                </div>
+              </div>
+              <div class="sms-message-quick-sender">
+                <div class="sender-ctn">
+                  <div class="count-ctn">
+                    <button class="button" data-l10n-id="sms-send" id="sms-send-incontact"></button>
                   </div>
                 </div>
-              </section>
+              </div>
             </section>
-          </div>
+            <section id="show-multi-contacts" class="card-view" hidden="true">
+              <span id="show-contacts-header" class="title"></span>
+              <div id="show-contacts-container">
+              </div>
+              <div class="sms-message-quick-sender">
+                <div class="sender-ctn">
+                  <div class="count-ctn">
+                    <button class="button" data-l10n-id="sms-send" id="sms-send-inmulticontact"></button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </section>
+          <section id="sms-view-sub" class="sub-view" hidden="true">
+            <section id="sms-send-view" class="card-view sms-send-form">
+              <div class="sms-send-view"></div>
+              <div id="sms-send-view-header" data-l10n-id="sms-send-view-header"></div>
+              <form id="sms-send-view-form" action="#" onsubmit="return false;">
+                <button id="sms-send-button" class="button" data-l10n-id="sms-send"></button>
+              </form>
+            </section>
+            <section id="sms-select-view" class="card-view sms-form" hidden="true">
+              <span id="select-threads-count" class="title"></span>
+              <div id="show-sms-container">
+              </div>
+            </section>
+            <section id="sms-thread-view" class="card-view sms-form" hidden="true">
+              <div class="sms-thread-header" id="sms-thread-header">
+                <img id="sms-thread-header-img" class="avatar-show avatar-show-default"></img>
+                <span id="sms-thread-header-name" class="title"></span>
+                <button id="sms-thread-header-button" class="button" data-l10n-id="add-to-contacts-from-sms"></button>
+              </div>
+              <div id='message-list-container' class="sms-message-threads-ctn">
+              </div>
+              <div class="sms-message-quick-sender">
+                <div class="sender-ctn">
+                  <textarea class="input-content" id="sender-ctn-input" autofocus="true" data-l10n-id="sender-ctn-input-placeholder" placeholder="填写您的新信息..."></textarea>
+                  <div class="count-ctn">
+                    <button class="button-send primary" data-l10n-id="sms-send-button" id="sms-send-inthread"></button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </section>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- templates for contact list view -->
+  <script type="text/html" id="tmpl_contact_list_item">
+    <label data-checked="false"></label>
+    <div class="bookmark"></div>
+    <img class="avatar avatar-default"></img>
+    <div class="contact-info">
+       <div class="name"><%=fullName%></div>
+       <div class="tel"><%=tel%></div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_contact_vcard_info_element">
+    <div class="contact-way-name" data-l10n-id="<%=type%>"><%=localizedType%></div>
+    <div><%=value</div>
+  </script>
+  <script type="text/html" id="tmpl_contact_vcard_multi_info">
+  <%if (avatar) {%>
+    <img class="multi-avatar-show" src="<%=avatar%>" />
+  <%} else {%>
+    <img class="multi-avatar-show multi-avatar-show-default"></img>
+  <%}%>
+    <div class="show-multi-contact-content">
+      <div class="name"><%=name%></div>
+      <div class="tel"><%=tel%></div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_contact_tel_digest">
+    <%if (['Mobile', 'Home', 'Work', 'Personal', 'FaxHome', 'FaxOffice', 'FaxOther', 'Another'].indexOf(type) > -1) {%>
+      <div class="title"><label data-l10n-id="<%=type%>Tel"></label></div>
+      <div class="value"><label><%=value%></label></div>
+    <%} else {%>
+      <div class="title"><label><%=type%></label></div>
+      <div class="value"><label><%=value%></label></div>
+    <%}%>
+  </script>
+  <script type="text/html" id="tmpl_contact_email_digest">
+    <%if (['Personal', 'Work', 'Home'].indexOf(type) > -1) {%>
+      <div class="title"><label data-l10n-id="<%=type%>Email"></label></div>
+      <div class="value"><label><%=value%></label></div>
+    <%} else {%>
+      <div class="title"><label><%=type%></label></div>
+      <div class="value"><label><%=value%></label></div>
+    <%}%>
+  </script>
+
+  <!-- templates for sms list view -->
+  <script type="text/html" id="tmpl_sms_list_item">
+    <label data-checked="false"></label>
+    <div class="readflag"></div>
+    <img class="avatar avatar-default"></img>
+    <div class="sms-info">
+       <div class="name"><%=name%></div>
+       <div class="unread"><%=unread%></div>
+       <div class="date"><%=date%></div>
+       <div class="body"><%=body%></div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_sms_select_item">
+    <img class="avatar avatar-default"></img>
+    <div class="select-sms-info">
+       <div class="name"><%=name%></div>
+       <div class="body"><%=body%></div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_sms_display_item">
+    <date class="sms-date"><%=date%></date>
+    <div class="sms-body">
+      <%for (var i=0; i<body.length; i++) {%>
+        <%if (type[i] == 'img') {%>
+          <img region="Image" src="<%=body[i]%>"></img>
+        <%} else {%>
+          <text region="Text"><%=body[i]%></text>
+        <%}%>
+      <%}%>
+    </div>
+    <date class="sms-time"><%=time%></date>
+    <div class="arrow">
+      <div class="side"></div>
+    </div>
+    <div class="actions">
+      <button id="sms-resend-<%=id%>" hidden="<%=showResendButton%>" value="<%=resendValue%>" class="button-resend" title="重发"></button>
+      <button id="sms-reply-<%=id%>" hidden="<%=showReplyButton%>" value="<%=replyValue%>" class="button-forward" title="转发"></button>
+      <button id="sms-delete-<%=id%>" hidden="<%=showDeleteButton%>" value="<%=deleteValue%>" class="button-delete" title="删除"></button>
+    </div>
+  </script>
+
+  <!-- templates for widgets list view -->
+  <script type="text/html" id="tmpl_sendSms_dialog">
+    <div class="sendSms-dialog">
+      <header class="sendSms-dialog-header">
+        <div class="sendSms-dialog-header-title" data-l10n-id="sms-send-sms"></div>
+        <div class="sendSms-dialog-header-x" style=""></div>
+      </header>
+      <div class="sendSms-dialog-body">
+        <%if (type == 'single') {%>
+          <div class="header" id="select-contact-tel-header">
+            <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
+            <select class="sendSms-button sendSms-menubutton" id="select-contact-tel-button">
+              <%for (var i=0; i<number.length; i++) {%>
+                  <option><%=number[i]%></option>
+              <%}%>
+            </select>
+          </div>
+        <%} else {%>
+          <div class="header">
+            <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
+            <div class="address">
+              <input id="address" type="text" class="input-contact searchbox" value="<%=number%>">
+            </div>
+            <button id="button-add-contact" data-l10n-id="sms-add-contact" class="sms-icon-btn">
+              <span class="icon add-grey"></span>
+            </button>
+          </div>
+        <%}%>
+        <div class="body">
+          <label data-l10n-id="sms-send-content" class="cf" for="content"></label>
+          <textarea id="sms-text-content" class="input-content" autofocus="true"><%=body%></textarea>
+        </div>
+        <div class="monitor text-secondary">
+          <span id="text-count" class="content-count"><%=textCount%></span>
+          <span id="sender-count" class="contacts-count"><%=senderCount%></span>
+        </div>
+      </div>
+      <footer class="sendSms-dialog-footer" style="">
+        <div class="sendSms-dialog-footer-monitor"></div>
+        <div class="sendSms-dialog-footer-button-ctn">
+          <button data-l10n-id="sms-send-button" class="button-send primary"></button>
+          <button data-l10n-id="cancel" class="button-cancel primary"></button>
+        </div>
+      </footer>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_select_contact_dialog">
+    <div class="sendSms-dialog-contact">
+      <header class="sendSms-dialog-header">
+        <div data-l10n-id="sms-add-contact" class="sendSms-dialog-header-title"></div>
+        <div class="sendSms-dialog-header-x" style=""></div>
+      </header>
+      <div class="sendSms-dialog-body">
+        <div class="sms-message-contact-selector-body">
+          <div class="list-ctn">
+            <div class="sendSms-smartlist" id="sendSms-smartlist-container">
+            </div>
+          </div>
+        </div>
+        <footer class="sendSms-dialog-footer" style="">
+          <div class="sendSms-dialog-footer-monitor">
+            <div>
+              <span id="select-contact-count" class="text-secondary count"></span>
+            </div>
+          </div>
+          <div class="sendSms-dialog-footer-button-ctn">
+            <button data-l10n-id="OK" class="button-send primary"></button>
+            <button data-l10n-id="cancel" class="button-cancel"></button>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_select_contact_item">
+      <label data-checked="false"></label>
+      <img class="avatar avatar-default"></img>
+      <div class="contact-info">
+        <div class="name"><%=name%></div>
+        <div class="tel"><%=tel%></div>
+      </div>
+  </script>
+  <script type="text/html" id="tmpl_fileOP_dialog">
+    <div class="modal-container">
+      <div class="select-multi-files-dialog">
+        <header class="select-multi-files-dialog-header">
+          <div class="select-multi-files-dialog-header-title" data-l10n-id="<%=title_l10n_id%>"></div>
+          <div class="select-multi-files-dialog-header-x"></div>
+        </header>
+        <div class="select-multi-files-dialog-body">
+          <div class="processbar-prompt">
+            <span data-l10n-id="<%=processbar_l10n_id%>"></span>
+            <div>
+              <span id="files-indicator"></span>
+            </div>
+          </div>
+        </div>
+        <footer class="select-multi-files-dialog-footer">
+          <div class="select-multi-files-dialog-footer-button-ctn">
+            <button data-l10n-id="cancel" class="button button-cancel"></button>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_img_viewer">
+    <div class="bar">
+      <div class="closeX"></div>
+    </div>
+    <div class="column-left">
+      <div id="gallery-left-arrow" class="gallery-left-arrow"></div>
+    </div>
+    <div class="column-middle">
+      <img id="pic-content" src="<%=cachedUrl%>"></div>
+      <div class="column-right">
+      <div id="gallery-right-arrow" class="gallery-right-arrow"></div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_wifiMode_dialog">
+    <div class="modal-container">
+      <div class="select-multi-files-dialog">
+        <header class="select-multi-files-dialog-header">
+          <div class="select-multi-files-dialog-header-title" data-l10n-id="<%=title_l10n_id%>"></div>
+          <div class="select-multi-files-dialog-header-x"></div>
+        </header>
+        <div class="select-multi-files-dialog-body">
+          <div class="processbar-prompt">
+            <span data-l10n-id="<%=prompt_l10n_id%>"></span>
+          </div>
+        </div>
+        <footer class="select-multi-files-dialog-footer">
+          <div class="select-multi-files-dialog-footer-button-ctn">
+            <button data-l10n-id="cancel" class="button button-cancel"></button>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_video_thread_container">
+    <div id=<%=id%> class="video-thread" data-length="1" data-checked="false" data-thread-id=<%=threadId%>>
+      <div class="header">
+        <label><span><%=threadId%> (1)</span></label>
+      </div>
+      <ul class="body"></ul>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_video_item">
+    <img src=<%=poster%>>
+    <div class="item-check"></div>
+  </script>
+  <script type="text/html" id="tmpl_pic_thread_container">
+    <div id=<%=id%> class="picture-thread" data-length="1" data-checked="false" data-thread-id=<%=threadId%>>
+      <div class="header">
+        <label><span><%=threadId%> (1)</span></label>
+      </div>
+      <ul class="body"></ul>
+    </div>
+  </script>
+  <script type="text/html" id="tmpl_pic_item">
+    <img src=<%=thumbnail%>>
+    <div class="item-check"></div>
+  </script>
+  <script type="text/html" id="tmpl_music_item">
+    <label data-checked="false"></label>
+    <div class="music-names item">
+      <span><%=title%></span>
+    </div>
+    <div class="music-singer item">
+      <span><%=artist%></span>
+    </div>
+    <div class="music-album item">
+      <span><%=album%> </span>
+    </div>
+    <div class="music-type item">
+      <span><%=type%></span>
+    </div>
+    <div class="music-size item">
+      <span><%=size%> MB</span>
+    </div>
+  </script>
+
+  <!-- templates for loading view -->
+  <script type="text/html" id="tmpl_loading_dialog">
+    <div class="loading">
+      <li></li>
+    </div>
+  </script>
+
+  <!-- templates for alert view -->
+  <script type="text/html" id="tmpl_alert_dialog">
+    <div class="alert">
+      <header class="alert-dialog-header">
+        <div class="alert-dialog-header-title" data-l10n-id="alert-dialog-title"></div>
+        <div class="alert-dialog-header-x"></div>
+      </header>
+      <div class="alert-dialog-body">
+        <span id="alert-message"><%=message%></span>
+      </div>
+      <footer class="alert-dialog-footer" style="">
+        <button data-l10n-id="OK" class="button button-ok"></button>
+        <button data-l10n-id="cancel" class="button-cancel"></button>
+      </footer>
+    </div>
+  </script>
 </body>
 </html>
 

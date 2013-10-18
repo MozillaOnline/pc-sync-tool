@@ -1,14 +1,10 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- License, v. 2.0. If a copy of the MPL was not distributed with this
- file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 function TCPConnectionPool(options) {
   this.initialize(options);
 }
 
 TCPConnectionPool.prototype = {
   log: function tc_log(msg) {
-    var DEBUG = 1;
+    var DEBUG = 0;
     if (DEBUG) {
       console.log('-*- TCPConnectionPool -*-' + msg);
     }
@@ -47,7 +43,7 @@ TCPConnectionPool.prototype = {
     this._currentId = null;
     this._callbacks = null;
     this._messageQueue = null;
-    if(this._messageSendingTimer){
+    if (this._messageSendingTimer) {
       window.clearInterval(this._messageSendingTimer);
       this._messageSendingTimer = null;
     }
@@ -76,6 +72,9 @@ TCPConnectionPool.prototype = {
   },
 
   _getWrapperBySocket: function tc_getWrapperBySocket(socket) {
+    if (!this._connPool) {
+      return null;
+    }
     for (var i = 0; i < this._connPool.length; i++) {
       var wrapper = this._connPool[i];
       if (wrapper.socket == socket) {
@@ -124,7 +123,7 @@ TCPConnectionPool.prototype = {
     }
   },
 
-  /*
+/*
    * The callback function to be called in the wrapper
    * @see TCPSocketWrapper
    */
@@ -135,7 +134,7 @@ TCPConnectionPool.prototype = {
         return;
       }
       var callback = this._fetchRequestCallback(jsonCmd.id);
-      if(jsonCmd.result != RS_MIDDLE) {
+      if (jsonCmd.result != RS_MIDDLE) {
         this._deleteRequestCallback(jsonCmd.id);
         if (callback.json) {
           // Parse the result as the object
@@ -226,7 +225,7 @@ TCPConnectionPool.prototype = {
     wrapper.send(obj.cmd, obj.cmd.data);
   },
 
-  /*
+/*
    * obj = {
    *   cmd: { id: 1, command: 1, type: 1},
    *   data: null,
@@ -251,71 +250,6 @@ TCPConnectionPool.prototype = {
       this._messageQueue.push(obj);
     } else {
       this._doSend(wrapper, obj);
-    }
-  }
-};
-
-function TCPListenConnectionPool(options) {
-  this.initialize(options);
-}
-
-TCPListenConnectionPool.prototype = {
-  initialize: function tc_initialize(options) {
-    this.options = extend({
-      host: 'localhost',
-      port: 10010,
-      onListening: emptyFunction
-    }, options);
-    this.wrapper = null;
-    var socket = navigator.mozTCPSocket.open(this.options.host, this.options.port, {
-      binaryType: 'arraybuffer'
-    });
-    socket.onopen = this._onSocketOpened.bind(this);
-  },
-
-  finalize: function tc_finalize() {
-    this.options = null;
-    if(this.wrapper) {
-      this.wrapper.socket.close();
-      this.wrapper = null;
-    }
-  },
-
-  _onSocketOpened: function tc_onSocketOpened(event) {
-    // Init wrapper
-    var socketWrapper = new TCPSocketWrapper({
-      socket: event.target,
-      onmessage: this._onWrapperMessage.bind(this),
-      onclose: this._onSocketClosed.bind(this)
-    });
-    this.wrapper = socketWrapper;
-    CMD.Listen.listenMessage(function() {}, function(e) {
-      alert(e);
-    });
-  },
-
-  _onSocketClosed: function tc_onSocketClosed(event) {
-    this.wrapper = null;
-  },
-
-  _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd, sendCallback, recvData) {
-    if (this.wrapper == null) {
-      return;
-    }
-    this.options.onListening(JSON.parse(recvData));
-  },
-
-  send: function tc_send(obj) {
-    obj.cmd = extend({
-      cmd: null,
-      data: null,
-      datalength: 0,
-      json: false // Indicates if the reulst is an JSON string
-    }, obj.cmd);
-
-    obj.cmd.id = 1;
-    if (this.wrapper) {
-      this.wrapper.send(obj.cmd, obj.cmd.data);
     }
   }
 };

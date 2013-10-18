@@ -31,15 +31,23 @@
   margin-left: 2rem;
   padding-left: 2.2rem;
 }
+
 #selectAll-musics[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
 }
+
 #selectAll-musics[data-disabled=true] {
   color: #CCCCCC;
 }
+
+#selectAll-musics[data-disabled=true] > label {
+  cursor: default;
+}
+
 #selectAll-musics[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #selectAll-musics[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -47,15 +55,22 @@
 #remove-musics {
   background-image: url("images/remove-default.png");
 }
+
 #remove-musics[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
   cursor: default;
   color: #CCCCCC;
 }
+
+#remove-musics[data-disabled=true] > label {
+  cursor: default;
+}
+
 #remove-musics[data-disabled=false]:hover {
   background-image: url("images/remove-highlighted.png");
   color: #00CAF2;
 }
+
 #remove-musics[data-disabled=false]:active {
   background-image: url("images/remove-selected.png");
   color: #018CAB;
@@ -65,13 +80,20 @@
   background-image: url("images/export-disabled.png");
   color: #CCCCCC;
 }
+
 #export-musics[data-disabled=false] {
   background-image: url("images/export-default.png");
 }
+
+#export-musics[data-disabled=true] > label {
+  cursor: default;
+}
+
 #export-musics[data-disabled=false]:hover {
   background-image: url("images/export-highlighted.png");
   color: #00CAF2;
 }
+
 #export-musics[data-disabled=false]:active {
   background-image: url("images/export-selected.png");
   color: #018CAB;
@@ -80,10 +102,16 @@
 #import-musics {
   background-image: url("images/import-default.png");
 }
+
+#import-musics[data-disabled=true] > label {
+  cursor: default;
+}
+
 #import-musics:hover {
   background-image: url("images/import-highlighted.png");
   color: #00CAF2;
 }
+
 #import-musics:active {
   background-image: url("images/import-selected.png");
   color: #018CAB;
@@ -92,30 +120,24 @@
 #refresh-musics {
   background-image: url("images/refresh-default.png");
 }
+
 #refresh-musics:hover {
   background-image: url("images/refresh-highlighted.png");
   color: #00CAF2;
 }
+
 #refresh-musics:active {
   background-image: url("images/refresh-selected.png");
   color: #018CAB;
 }
 
-#empty-music-container {
-  display: none;
-}
-
 #music-list-container {
-  max-height: 50rem;
+  max-height: 42rem;
   overflow: auto;
 }
 
-.content {
-  margin: 0 2rem 0 6px;
-}
-
 .empty-musics {
-  background: url('images/empty-musics.png') no-repeat scroll 292px center transparent;
+  background: url('images/empty-musics.png') no-repeat scroll 29.2rem center transparent;
   height: 16rem;
   margin: 4rem 0 1rem;
   opacity: 0.4;
@@ -124,7 +146,7 @@
 .empty-musics-prompt {
   text-align: center;
   color: #a6a6a6;
-  font-size: 17px;
+  font-size: 1.7rem;
 }
 
 .import-musics-btn-container {
@@ -135,25 +157,25 @@
   float: left;
   height: 2rem;
   width: 12rem;
-  margin: 12px 0 0 31rem;
+  margin: 1.2rem 0 0 31rem;
   padding: 1rem 1rem;
 }
 
 .music-header{
   height: 3rem;
   background-color: #E7E7E7;
-  margin: 0 2rem 0 6px;
+  margin: 0 2rem 0 0.6rem;
   cursor: default;
 }
 
 .music-header div {
-  font-size: 12px;
+  font-size: 1.2rem;
   float:left;
   padding: 0.5rem 0 0  2.5rem;
 }
 
 .music-header div >label {
-  font-size: 14px;
+  font-size: 1.4rem;
 }
 
 .music-header .music-names {
@@ -166,7 +188,7 @@
 }
 
 .music-header .music-album {
-  width:20rem;
+  width:16rem;
 }
 
 .music-header .music-timespan {
@@ -188,7 +210,7 @@
   float: left;
 }
 
-.music-list-item >label.unchecked {
+.music-list-item >label {
   background-image: url("images/checkbox.png");
   background-position: right center;
   background-repeat: no-repeat;
@@ -197,7 +219,7 @@
   float: left;
 }
 
-.music-list-item >label.checked {
+.music-list-item >label[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
 }
 

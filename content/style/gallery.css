@@ -24,15 +24,23 @@
   margin-left: 2rem;
   padding-left: 2.2rem;
 }
+
 #selectAll-pictures[data-checked=true] {
   background-image: url("images/checkbox-checked.png");
 }
+
 #selectAll-pictures[data-disabled=true] {
   color: #CCCCCC;
 }
+
+#selectAll-pictures[data-disabled=true] > label {
+  cursor: default;
+}
+
 #selectAll-pictures[data-disabled=false]:hover {
   color: #00CAF2;
 }
+
 #selectAll-pictures[data-disabled=false]:active {
   color: #018CAB;
 }
@@ -40,15 +48,22 @@
 #remove-pictures {
   background-image: url("images/remove-default.png");
 }
+
 #remove-pictures[data-disabled=true] {
   background-image: url("images/remove-disabled.png");
   cursor: default;
   color: #CCCCCC;
 }
+
+#remove-pictures[data-disabled=true] > label {
+  cursor: default;
+}
+
 #remove-pictures[data-disabled=false]:hover {
   background-image: url("images/remove-highlighted.png");
   color: #00CAF2;
 }
+
 #remove-pictures[data-disabled=false]:active {
   background-image: url("images/remove-selected.png");
   color: #018CAB;
@@ -58,13 +73,20 @@
   background-image: url("images/export-disabled.png");
   color: #CCCCCC;
 }
+
 #export-pictures[data-disabled=false] {
   background-image: url("images/export-default.png");
 }
+
+#export-pictures[data-disabled=true] > label {
+  cursor: default;
+}
+
 #export-pictures[data-disabled=false]:hover {
   background-image: url("images/export-highlighted.png");
   color: #00CAF2;
 }
+
 #export-pictures[data-disabled=false]:active {
   background-image: url("images/export-selected.png");
   color: #018CAB;
@@ -73,10 +95,16 @@
 #import-pictures {
   background-image: url("images/import-default.png");
 }
+
+#import-pictures[data-disabled=true] > label {
+  cursor: default;
+}
+
 #import-pictures:hover {
   background-image: url("images/import-highlighted.png");
   color: #00CAF2;
 }
+
 #import-pictures:active {
   background-image: url("images/import-selected.png");
   color: #018CAB;
@@ -85,17 +113,19 @@
 #refresh-pictures {
   background-image: url("images/refresh-default.png");
 }
+
 #refresh-pictures:hover {
   background-image: url("images/refresh-highlighted.png");
   color: #00CAF2;
 }
+
 #refresh-pictures:active {
   background-image: url("images/refresh-selected.png");
   color: #018CAB;
 }
 
 #picture-list-container {
-  max-height: 50rem;
+  max-height: 46rem;
   overflow: auto;
   margin-bottom: 2rem;
 }
@@ -106,24 +136,27 @@
 }
 
 .picture-thread .header {
-  height: 22px;
+  height: 2.2rem;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 0.4rem;
 }
 
-.picture-thread .header .title {
+.picture-thread[data-checked=false] label {
   background-image: url("images/checkbox.png");
-  background-position: 2px 0;
+  background-position: 0.2rem 0;
   background-repeat: no-repeat;
   display: inline-block;
 }
 
-.picture-thread .header .thread-checked {
-  background-image: url("images/checkbox-checked.png");  
+.picture-thread[data-checked=true] label {
+  background-image: url("images/checkbox-checked.png");
+  background-position: 0.2rem 0;
+  background-repeat: no-repeat;
+  display: inline-block;
 }
 
-.picture-thread .header .title >span {
-  margin-left: 24px;
+.picture-thread span {
+  margin-left: 2.4rem;
 }
 
 .picture-thread .body {
@@ -131,43 +164,57 @@
   margin-left: 0.3rem;
 }
 
+.picture-thread li img {
+  border: 0.2rem #FFFFFF solid;
+  height: 7.8rem;
+  width: 10.6rem;
+}
+
+.picture-thread li img:hover {
+  border: 0.2rem #00c8f0 solid;
+}
+
+.picture-thread li[data-checked=true] .item-check {
+  width: 1.7rem;
+  height: 1.7rem;
+  position: absolute;
+  left: 8.3rem;
+  background-image: url("images/pic-checked.png");
+  top: 1.0rem;
+}
+
+.picture-thread li[data-checked=false] .item-check {
+  width: 1.7rem;
+  height: 1.7rem;
+  position: absolute;
+  left: 8.3rem;
+  background-image: url("images/pic-unchecked.png");
+  top: 1.0rem;
+}
 .picture-thread .body >li {
   position: relative;
-  width: 110px;
-  height: 82px;
+  width: 11.0rem;
+  height: 8.2rem;
   overflow: hidden;
   display: inline-block;
-  margin: 3px;
-}
-
-.pic-unchecked {
-  width: 17px;
-  height: 17px;
-  position: absolute;
-  left: 83px;
-  background-image: url("images/pic-unchecked.png");
-  top: 10px;
-}
-
-.pic-checked {
-  background-image: url("images/pic-checked.png");
+  margin: 0.3rem;
 }
 
 .pic-selected {
-  border: 2px solid #00CAF4;
+  border: 0.2rem solid #00CAF4;
 }
 
 .pictures-group .groupBody .pic-item > img {
-  width: 100px;
-  height: 75px;
+  width: 10.0rem;
+  height: 7.5rem;
 }
 
 .pic-tip {
   background-color: #000000;
   color: #FFFFFF;
-  padding: 7px;
+  padding: 0.7rem;
   position: absolute;
-  font-size: 9px;
+  font-size: 0.9rem;
 }
 
 #modal-container {
@@ -179,20 +226,20 @@
   background-color: #000000;
   opacity: 0.7;
   height: 100%;
-  width: calc(100% - 7px);
+  width: calc(100% - 0.7rem);
   position: absolute;
   top: 0;
   z-index: 1;
-  margin-left: 7px;
+  margin-left: 0.7rem;
 }
 
 .dialog {
   position: absolute;
   top: 0;
   z-index: 2;
-  width: calc(100% - 7px);
+  width: calc(100% - 0.7rem);
   height: 100%;
-  margin-left: 7px;
+  margin-left: 0.7rem;
 }
 
 .dialog .bar {
@@ -200,7 +247,7 @@
 }
 
 .closeX {
-  background-image: url("images/sms-cancel.png");
+  background-image: url("images/dialog-cancel.png");
   background-position: center center;
   background-repeat: no-repeat;
   float: right;
@@ -257,10 +304,6 @@
   margin: auto;
   max-width: 100%;
   max-height: 100%;
-}
-
-.content {
-  margin: 0 2rem 0 6px;
 }
 
 #empty-picture-container {

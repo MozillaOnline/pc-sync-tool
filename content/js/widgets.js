@@ -29,19 +29,20 @@
  *     Function to be invoked if the data is added or removed
  */
 var GroupedList = function(options) {
-  this.initailize(options);
+  this.initialize(options);
   this.DEFAULT_INDEX = '__DEF_INDEX__';
 };
 
 GroupedList.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       dataList: null,
       dataIndexer: null,
+      dataSorterName: null,
+      dataSorter: this._dataSorter,
       disableDataIndexer: false,
       indexSorter: this._dictSorter,
       dataIdentifier: this._identifyById,
-      indexRender: this._renderIndex,
       renderFunc: null,
       container: document.body,
       ondatachange: function() {}
@@ -59,6 +60,28 @@ GroupedList.prototype = {
       return -1;
     }
     return 1;
+  },
+
+  _dataSorter: function gl_dataSorter(a, b) {
+    var aSorter = a['dataSorterName'].toString();
+    var bSorter = b['dataSorterName'].toString();
+    var length = aSorter.length < bSorter.length ? aSorter.length : bSorter.length;
+    for (var i = 0; i < length; i++) {
+      if(aSorter[i] == bSorter[i]) {
+        continue;
+      } else if (aSorter[i] < bSorter[i]) {
+        return -1;
+      } else {
+        return 1;
+      }
+    }
+    if(aSorter.length == bSorter.length) {
+      return 0;
+    } else if (aSorter.length < bSorter.length) {
+      return -1;
+    } else {
+      return 1;
+    }
   },
 
   _identifyById: function gl_identifyById(dataObj) {
@@ -99,9 +122,13 @@ GroupedList.prototype = {
       group.dataList = [];
       this._groupedData.push(group);
     }
-
-    group.dataList.push(dataObj);
-
+    if(this.options.dataSorterName) {
+      dataObj['dataSorterName'] = dataObj[this.options.dataSorterName];
+      group.dataList.push(dataObj);
+      group.dataList.sort(this.options.dataSorter);
+    } else {
+      group.dataList.push(dataObj);
+    }
     return group;
   },
 
@@ -118,8 +145,7 @@ GroupedList.prototype = {
       return null;
     }
     var newDataList = removeFromArray(function(obj) {
-      return self.options.dataIdentifier(obj) ===
-               self.options.dataIdentifier(dataObj);
+      return self.options.dataIdentifier(obj) === self.options.dataIdentifier(dataObj);
     }, group.dataList);
 
     group.dataList = newDataList;
@@ -137,7 +163,6 @@ GroupedList.prototype = {
 
   _groupDataList: function gl_groupData() {
     this._groupedData = [];
-
     var self = this;
 
     this.options.dataList.forEach(function(dataObj) {
@@ -166,7 +191,7 @@ GroupedList.prototype = {
     var groupElem = document.createElement('div');
     groupElem.id = this._getGroupElemId(group.index);
     if (this.options.disableDataIndexer == false) {
-      groupElem.appendChild(this.options.indexRender(group.index));
+      groupElem.appendChild(this._renderIndex(group.index));
     }
     var self = this;
     // Render data list
@@ -186,7 +211,7 @@ GroupedList.prototype = {
   },
 
   _getGroupElem: function gl_getGroupElem(index) {
-      return $id(this._getGroupElemId(index));
+    return $id(this._getGroupElemId(index));
   },
 
   render: function gl_render() {
@@ -197,14 +222,18 @@ GroupedList.prototype = {
   add: function gl_add(dataObj) {
     var group = this._addToGroup(dataObj);
     this._sortGroup();
-
     var groupElem = this._getGroupElem(group.index);
     if (groupElem) {
-      // TODO sort data elements
+      var dataIndexInGroup = group.dataList.indexOf(dataObj);
       var elem = this.options.renderFunc(dataObj);
       if (elem) {
         elem.dataset.dataIdentity = this.options.dataIdentifier(dataObj);
-        groupElem.appendChild(elem);
+        if(dataIndexInGroup + 1 < group.dataList.length) {
+          var dataAfter = groupElem.childNodes[dataIndexInGroup + 1];
+          groupElem.insertBefore(elem, dataAfter);
+        } else {
+          groupElem.appendChild(elem);
+        }
       }
       this.options.ondatachange();
       return;
@@ -217,8 +246,7 @@ GroupedList.prototype = {
       this.options.container.appendChild(groupElem);
     } else {
       var groupAfter = this._groupedData[position + 1];
-      this.options.container.insertBefore(groupElem,
-        this._getGroupElem(groupAfter.index));
+      this.options.container.insertBefore(groupElem, this._getGroupElem(groupAfter.index));
     }
     this.options.ondatachange();
   },
@@ -231,6 +259,7 @@ GroupedList.prototype = {
     // remove whole group
     if (group.dataList.length === 0) {
       groupElem.parentNode.removeChild(groupElem);
+      this._groupedData.splice(this._groupedData.indexOf(group),1);
     } else {
       for (var i = 0; i < groupElem.childNodes.length; i++) {
         var child = groupElem.childNodes[i];
@@ -261,163 +290,8 @@ GroupedList.prototype = {
   }
 };
 
-function ModalDialog(options) {
-  this.initailize(options);
-}
-
-ModalDialog.closeAll = function() {
-  var evt = document.createEvent('Event');
-  evt.initEvent('ModalDialog:show', true, true);
-  document.dispatchEvent(evt);
-};
-
-ModalDialog.prototype = {
-  initailize: function(options) {
-    this.options = extend({
-      title: 'Modal Title',
-      titleL10n: null,
-      bodyElement: null,
-      bodyText: null,
-      bodyTextL10n: null,
-      cancelable: true,
-      onclose: emptyFunction
-    }, options);
-
-    if (!this.options.bodyElement && !this.options.bodyText) {
-      throw Error('bodyElement or bodyText should be specified');
-    }
-
-    this._modalElement = null;
-    this._mask = null;
-    this._build();
-  },
-
-  _build: function() {
-    this._mask = document.createElement('div');
-    this._mask.className = 'modal-mask';
-    document.body.appendChild(this._mask);
-
-    // TODO using template
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="modal-container">'
-      + '  <div class="modal-close-btn" hidden="true">X</div>'
-      + '  <div class="modal-title">'
-      + this.options.title
-      + '  </div>'
-      + '  <div class="modal-body">'
-      + '  </div>'
-      + '  <div class="modal-btn-container">'
-      + '    <input hidden="true" class="modal-btn modal-btn-ok" type="button" data-l10n-id="OK" value="OK" />'
-      + '  </div>'
-      + '</div>';
-
-    var titleElem = $expr('.modal-title', this._modalElement)[0];
-    if (this.options.titleL10n) {
-      titleElem.dataset.l10nId = this.options.titleL10n;
-    }
-
-    var bodyContainer = $expr('.modal-body', this._modalElement)[0];
-    if (this.options.bodyElement) {
-      bodyContainer.appendChild(this.options.bodyElement);
-    } else {
-      bodyContainer.textContent = this.options.bodyText;
-      if (this.options.bodyTextL10n) {
-        bodyContainer.dataset.l10nId = this.options.bodyTextL10n;
-      }
-    }
-
-    document.body.appendChild(this._modalElement);
-    this._adjustModalPosition();
-
-    if (this.options.cancelable) {
-      this._makeDialogCancelable();
-    }
-
-    // Translate l10n value
-    navigator.mozL10n.translate(this._modalElement);
-
-    // Only one modal dialog is shown at a time.
-    var self = this;
-    this._onModalDialogShown = function(event) {
-      // Show a popup dialog at a time.
-      if (event.targetElement == self._modalElement) {
-        return;
-      }
-
-      self.close();
-    }
-    document.addEventListener('ModalDialog:show', this._onModalDialogShown);
-
-    // Make sure other modal dialog has a chance to close itself.
-    this._fireEvent('ModalDialog:show');
-
-    // Tweak modal dialog position when resizing.
-    this._onWindowResize = function(event) {
-      self._adjustModalPosition();
-    };
-    window.addEventListener('resize', this._onWindowResize);
-  },
-
-  _makeDialogCancelable: function() {
-   var closeBtn = $expr('.modal-close-btn', this._modalElement)[0];
-
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
-
-   var okBtn = $expr('.modal-btn-ok', this._modalElement)[0];
-   okBtn.hidden = false;
-   okBtn.addEventListener('click', this.close.bind(this));
-
-   var self = this;
-   okBtn.addEventListener('keydown', function(event) {
-     if (event.keyCode == 27) {
-       self.close();
-     }
-   });
-
-   // Make sure we can close the dialog by hitting ENTER or ESC
-   okBtn.focus();
-
-   // Close modal dialog when mousedown on the realestate outside.
-   this._modalElement.addEventListener('mousedown', this.close.bind(this));
-   var container = $expr('.modal-container', this._modalElement)[0];
-   container.addEventListener('mousedown', function(event) {
-     event.stopPropagation();
-   }, true); 
-  },
-
-  _adjustModalPosition: function() {
-    var container = $expr('.modal-container', this._modalElement)[0];
-    var documentHeight = document.documentElement.clientHeight;
-    var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
-  },
-
-  _fireEvent: function(name, data) {
-    var evt = document.createEvent('Event');
-    evt.initEvent(name, true, true);
-    evt.data = data;
-    evt.targetElement = this._modalElement;
-    document.dispatchEvent(evt);
-  },
-
-  close: function() {
-    this._mask.parentNode.removeChild(this._mask);
-    this._modalElement.parentNode.removeChild(this._modalElement);
-    this._mask = null;
-    this._modalElement = null;
-
-    document.removeEventListener('ModalDialog:show', this._onModalDialogShown);
-    window.removeEventListener('resize', this._onWindowResize)
-
-    this.options.onclose();
-  }
-};
-
 function SendSMSDialog(options) {
-  this.initailize(options);
+  this.initialize(options);
 }
 
 SendSMSDialog.closeAll = function() {
@@ -427,7 +301,7 @@ SendSMSDialog.closeAll = function() {
 };
 
 SendSMSDialog.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       onclose: emptyFunction
     }, options);
@@ -438,100 +312,68 @@ SendSMSDialog.prototype = {
   },
 
   _build: function() {
+    var self = this;
     this._mask = document.createElement('div');
     this._mask.className = 'modal-mask';
     document.body.appendChild(this._mask);
-
-    // TODO using template
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="send-message-modal-container">'
-      + '<div class="sms-ui-window">'
-      + '<header class="sms-ui-window-header">'
-      + '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
-      + '<div class="sms-ui-window-header-x" style=""></div>'
-      + '</header>'
-      + '<div class="sms-ui-window-body">'
-      + '<div class="sms-message-sender-window">'
-      + '<div class="header">'
-      + '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
-      + '<div class="address">'
-      + '<input id="address" type="text" class="input-contact searchbox">'
-      + '</div>'
-      + '<button data-l10n-id="sms-add-contact" class="sms-icon-btn button-add-contact">'
-      + '<span class="icon add-grey"></span>'
-      + '</button>'
-      + '</div>'
-      + '<div class="body">'
-      + '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
-      + '<textarea id="content" class="input-content" autofocus="true"></textarea>'
-      + '</div>'
-      + '<div class="monitor text-secondary">'
-      + '<span id="text-count" class="content-count"></span>'
-      + '<span id="sender-count" class="contacts-count"></span>'
-      + '</div>'
-      + '</div>'
-      + '</div>'
-      + '<footer class="sms-ui-window-footer" style="">'
-      + '<div class="sms-ui-window-footer-monitor"></div>'
-      + '<div class="sms-ui-window-footer-button-ctn">'
-      + '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
-      + '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
-      + '</div>'
-      + '</footer>'
-      + '</div>'
-      + '</div>';
-
-    var titleElem = $expr('.input-contact', this._modalElement)[0];
-    if (this.options.number) {
-      titleElem.value = this.options.number;
-    }
-
-    var bodyContainer = $expr('.input-content', this._modalElement)[0];
-    if (this.options.bodyText) {
-      bodyContainer.textContent = this.options.bodyText;
-    }
-    document.body.appendChild(this._modalElement);
-    this._adjustModalPosition();
-    this._makeDialogCancelable();
-
-    var header = _('text-sms-count', {
-      n: 0
-    });
-    $id('text-count').innerHTML = header;
-    var senderNum = 0;
-    if (this.options.number) {
-      var senders = this.options.number.split(';');
-      senderNum = senders.length;
-      for(var i = 0; i < senders.length; i++) {
-        if (senders[i] == "") {
-          senderNum--;
+    var templateData = {
+      type: this.options.type,
+      number: [],
+      body: '',
+      textCount: '',
+      senderCount: ''
+    };
+    if (this.options.type == 'single') {
+      if (this.options.number && this.options.number.length > 0) {
+        for (var i=0;i<this.options.number.length;i++) {
+            templateData.number.push(this.options.number[i].value);
         }
       }
+    } else {
+      if (this.options.number && this.options.number.length > 0) {
+        templateData.number.push(this.options.number[0]);
+        var senderNum = 0;
+        var senders = this.options.number[0].split(';');
+        senderNum = senders.length;
+        for (var i = 0; i < senders.length; i++) {
+          if (senders[i] == "") {
+            senderNum--;
+          }
+        }
+        templateData.senderCount = _('send-sms-count', {
+          n: senderNum
+        });
+      }
     }
-    header = _('send-sms-count', {
-      n: senderNum
+    templateData.textCount = _('text-sms-count', {
+      n: 0
     });
-    $id('sender-count').innerHTML = header;
+    if (this.options.bodyText) {
+      templateData.body = this.options.bodyText;
+    }
+
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    this._modalElement.innerHTML = tmpl('tmpl_sendSms_dialog', templateData);
+    document.body.appendChild(this._modalElement);
+
+    this._adjustModalPosition();
+    this._makeDialogCancelable();
 
     // Translate l10n value
     navigator.mozL10n.translate(this._modalElement);
 
     // Only one modal dialog is shown at a time.
-    var self = this;
     this._onModalDialogShown = function(event) {
       // Show a popup dialog at a time.
       if (event.targetElement == self._modalElement) {
         return;
       }
-
       self.close();
     }
     document.addEventListener('SendSMSDialog:show', this._onModalDialogShown);
-
     // Make sure other modal dialog has a chance to close itself.
     this._fireEvent('SendSMSDialog:show');
-
     // Tweak modal dialog position when resizing.
     this._onWindowResize = function(event) {
       self._adjustModalPosition();
@@ -540,74 +382,74 @@ SendSMSDialog.prototype = {
   },
 
   _makeDialogCancelable: function() {
-   var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
+    var self = this;
+    var closeBtn = $expr('.sendSms-dialog-header-x', self._modalElement)[0];
+    closeBtn.hidden = false;
+    closeBtn.addEventListener('click', self.close.bind(self));
+    var okBtn = $expr('.button-send', self._modalElement)[0];
+    okBtn.hidden = false;
+    if (self.options.type == 'single') {
+      okBtn.addEventListener('click', self.sendSingle.bind(self));
+    } else {
+      okBtn.addEventListener('click', self.send.bind(self));
+    }
 
-   var okBtn = $expr('.button-send', this._modalElement)[0];
-   okBtn.hidden = false;
-   okBtn.addEventListener('click', this.send.bind(this));
-   var self = this;
-   okBtn.addEventListener('keydown', function(event) {
-     if (event.keyCode == 27) {
-       self.close();
-     }
-   });
-
-   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-   cancelBtn.hidden = false;
-   cancelBtn.addEventListener('click', this.close.bind(this));
-
-   var self = this;
-   var selectBtn = $expr('.button-add-contact', this._modalElement)[0];
-   selectBtn.hidden = false;
-   selectBtn.addEventListener('click', function(event) {
-    CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
-      var dataJSON = JSON.parse(message.data);
-      new SelectContactsDialog({
-        contactList: dataJSON,
-        onok: self._selectContacts
-      });
-    }, function onerror_getAllContacts(message) {
-      log('Error occurs when fetching all contacts.');
+    okBtn.addEventListener('keydown', function(event) {
+      if (event.keyCode == 27) {
+        self.close();
+      }
     });
-   });
+    var cancelBtn = $expr('.button-cancel', self._modalElement)[0];
+    cancelBtn.hidden = false;
+    cancelBtn.addEventListener('click', self.close.bind(self));
 
-   $id('content').addEventListener('keyup', function onclick_addNewSms(event) {
+    $id('sms-text-content').addEventListener('keyup', function onclick_addNewSms(event) {
       var header = _('text-sms-count', {
         n: this.value.length
       });
       $id('text-count').innerHTML = header;
     });
 
-   $id('address').addEventListener('keydown', function onclick_addNewSms(event) {
-      var senders = this.value.split(';');
-      var senderNum = senders.length;
-      for(var i=0;i<senders.length;i++){
-        if (senders[i] == "") {
-          senderNum--;
+    if (self.options.type != 'single') {
+      $id('address').addEventListener('keydown', function onclick_addNewSms(event) {
+        var senders = this.value.split(';');
+        var senderNum = senders.length;
+        for (var i = 0; i < senders.length; i++) {
+          if (senders[i] == "") {
+            senderNum--;
+          }
         }
-      }
-      var header = _('send-sms-count', {
-        n: senderNum
+        var header = _('send-sms-count', {
+          n: senderNum
+        });
+        $id('sender-count').innerHTML = header;
       });
-      $id('sender-count').innerHTML = header;
-    });
-   // Make sure we can close the dialog by hitting ENTER or ESC
-   okBtn.focus();
+      $id('button-add-contact').addEventListener('click', function(event) {
+        CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
+          var dataJSON = JSON.parse(message.data);
+          new SelectContactsDialog({
+            contactList: dataJSON,
+            onok: self._selectContacts
+          });
+        }, function onerror_getAllContacts(message) {
+          log('Error occurs when fetching all contacts.');
+        });
+      });
+    }
+    // Make sure we can close the dialog by hitting ENTER or ESC
+    okBtn.focus();
   },
 
   _adjustModalPosition: function() {
-    var container = $expr('.send-message-modal-container', this._modalElement)[0];
+    var container = $expr('.sendSms-dialog', this._modalElement)[0];
     var documentHeight = document.documentElement.clientHeight;
     var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
+    container.style.top = (documentHeight > containerHeight ? (documentHeight - containerHeight) / 2 : 0) + 'px';
   },
 
   _selectContacts: function(data) {
     var titleElem = $expr('.input-contact', this._modalElement)[0];
-    if ((titleElem.value.length > 0) && (titleElem.value[titleElem.value.length-1] != ";")) {
+    if ((titleElem.value.length > 0) && (titleElem.value[titleElem.value.length - 1] != ";")) {
       titleElem.value += ';';
     }
     for (var i = 0; i < data.length; i++) {
@@ -615,10 +457,10 @@ SendSMSDialog.prototype = {
       if (contact.tel && contact.tel.length > 0) {
         var sendStr = contact.name + "(" + contact.tel[0].value + ");";
         var searchStr = contact.tel[0].value + ";";
-        if (titleElem.value.indexOf(searchStr) >= 0) {
+        if (titleElem.value.contains(searchStr)) {
           titleElem.value = titleElem.value.replace(searchStr, sendStr);
         } else {
-          if (titleElem.value.indexOf("(" + contact.tel[0].value+")") < 0 ) {
+          if (!titleElem.value.contains("(" + contact.tel[0].value + ")")) {
             titleElem.value += sendStr;
           }
         }
@@ -654,272 +496,73 @@ SendSMSDialog.prototype = {
     window.removeEventListener('resize', this._onWindowResize)
     this.options.onclose();
   },
+
+  sendSingle: function() {
+    var loadingGroupId = animationLoading.start();
+    var tel = $id('select-contact-tel-button');
+    var message = $id('sms-text-content');
+    var sender = [tel.value];
+    var self = this;
+    message.readOnly = true;
+    CMD.SMS.sendSMS(JSON.stringify({
+      number: sender,
+      message: message.value
+    }), function onSuccess_sendSms(event) {
+      if (!event.result) {
+        self._mask.parentNode.removeChild(self._mask);
+        self._modalElement.parentNode.removeChild(self._modalElement);
+        self._mask = null;
+        self._modalElement = null;
+        document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
+        window.removeEventListener('resize', self._onWindowResize);
+        animationLoading.stop(loadingGroupId);
+        self.options.onclose();
+      }
+    }, null);
+  },
+
   send: function() {
+    var loadingGroupId = animationLoading.start();
     var number = $id('address').value.split(';');
-    var message = $id('content');
+    var message = $id('sms-text-content');
     var sender = [];
-    var self=this;
+    var self = this;
     message.readOnly = true;
     number.forEach(function(item) {
       var start = item.indexOf("(");
       var end = item.indexOf(")");
-      if (start >= 0 &&  end > 0) {
-        sender.push(item.slice(start+1,end));
+      if (start >= 0 && end > 0) {
+        sender.push(item.slice(start + 1, end));
       } else if (item != "") {
         sender.push(item);
       }
     });
-    CMD.SMS.sendSMS(JSON.stringify({number:sender, message: message.value}),
-      function onSuccess_sendSms(event) {
-        if (!event.result) {
-          self._mask.parentNode.removeChild(self._mask);
-          self._modalElement.parentNode.removeChild(self._modalElement);
-          self._mask = null;
-          self._modalElement = null;
-          document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
-          window.removeEventListener('resize', self._onWindowResize)
-          self.options.onclose();
-        }
-      }, function onError_sendSms(e) {
-        alert(e);
-      });
-  }
-};
-
-function SendSMSToSingle(options) {
-  this.initailize(options);
-}
-
-SendSMSToSingle.closeAll = function() {
-  var evt = document.createEvent('Event');
-  evt.initEvent('SendSMSToSingle:show', true, true);
-  document.dispatchEvent(evt);
-};
-
-SendSMSToSingle.prototype = {
-  initailize: function(options) {
-    this.options = extend({
-      onclose: emptyFunction
-    }, options);
-    this._modalElement = null;
-    this._mask = null;
-    this._build();
-  },
-
-  _build: function() {
-    this._mask = document.createElement('div');
-    this._mask.className = 'modal-mask';
-    document.body.appendChild(this._mask);
-
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'modal-dialog';
-    this._modalElement.innerHTML = '<div class="send-single-sms-dialog">'
-      + '<div class="sms-ui-window">'
-      + '<header class="sms-ui-window-header">'
-      + '<div class="sms-ui-window-header-title" data-l10n-id="sms-send-sms"></div>'
-      + '<div class="sms-ui-window-header-x" style=""></div>'
-      + '</header>'
-      + '<div class="sms-ui-window-body">'
-      + '<div class="sms-message-sender-window">'
-      + '<div class="header" id="select-contact-tel-header">'
-      + '<label data-l10n-id="sms-send-address" class="cf" for="address"></label>'
-      + '<button class="sms-ui-button sms-ui-menubutton" id="select-contact-tel-button">'
-      + '<div class="label wc" id="selected-contact-tel"></div>'
-      + '<div class="arrow-ctn">'
-      + '<div class="arrow"></div>'
-      + '</div>'
-      + '</button>'
-      + '</div>'
-      + '<div class="body">'
-      + '<label data-l10n-id="sms-send-content" class="cf" for="content"></label>'
-      + '<textarea id="content" class="input-content" autofocus="true"></textarea>'
-      + '</div>'
-      + '<div class="monitor text-secondary">'
-      + '<span id="text-count" class="content-count"></span>'
-      + '<span id="sender-count" class="contacts-count"></span>'
-      + '</div>'
-      + '</div>'
-      + '</div>'
-      + '<footer class="sms-ui-window-footer" style="">'
-      + '<div class="sms-ui-window-footer-monitor"></div>'
-      + '<div class="sms-ui-window-footer-button-ctn">'
-      + '<button data-l10n-id="sms-send-button" class="button-send primary"></button>'
-      + '<button data-l10n-id="cancel" class="button-cancel primary"></button>'
-      + '</div>'
-      + '</footer>'
-      + '</div>'
-      + '</div>';
-
-    var titleElem = $expr('.label', this._modalElement)[0];
-    if (this.options.name && this.options.name.length > 0) {
-      titleElem.innerHTML = this.options.name[0];
-    }
-    if (this.options.number && this.options.number.length > 0) {
-      titleElem.innerHTML += '(' + this.options.number[0].value + ')';
-    }
-    document.body.appendChild(this._modalElement);
-    this._adjustModalPosition();
-    this._makeDialogCancelable();
-    var header = _('only-text-sms-count', {
-      n: 0
-    });
-    $id('text-count').innerHTML = header;
-
-    // Translate l10n value
-    navigator.mozL10n.translate(this._modalElement);
-
-    // Only one modal dialog is shown at a time.
-    var self = this;
-    this._onModalDialogShown = function(event) {
-      // Show a popup dialog at a time.
-      if (event.targetElement == self._modalElement) {
-        return;
+    CMD.SMS.sendSMS(JSON.stringify({
+      number: sender,
+      message: message.value
+    }), function onSuccess_sendSms(event) {
+      if (!event.result) {
+        self._mask.parentNode.removeChild(self._mask);
+        self._modalElement.parentNode.removeChild(self._modalElement);
+        self._mask = null;
+        self._modalElement = null;
+        document.removeEventListener('SendSMSDialog:show', self._onModalDialogShown);
+        window.removeEventListener('resize', self._onWindowResize);
+        animationLoading.stop(loadingGroupId);
+        self.options.onclose();
       }
-
-      self.close();
-    }
-    document.addEventListener('SendSMSToSingle:show', this._onModalDialogShown);
-
-    // Make sure other modal dialog has a chance to close itself.
-    this._fireEvent('SendSMSToSingle:show');
-    this._onWindowResize = function(event) {
-      self._adjustModalPosition();
-    };
-    window.addEventListener('resize', this._onWindowResize);
-
-    $id('select-contact-tel-button').addEventListener('click', function onclick_selectContactTel(event) {
-      var titleElem = $id('select-contact-tel-header');
-      var div = document.createElement('div');
-      var html = '';
-      html += '<menu class="sms-ui-menu">';
-      if (self.options.number && self.options.number.length > 0) {
-        for(var i=0;i<self.options.number.length;i++){
-          html += '<li>';
-          html += '<label class="wc">';
-          html += '<input type="radio" name="" value="';
-
-          if (self.options.name && self.options.name.length > 0) {
-            html += self.options.name[0];
-          }
-
-          html += '(' + self.options.number[i].value + ')';
-          html += '">';
-          html += '<span style="float: left; margin-top: 1px;">'
-
-          if (self.options.name && self.options.name.length > 0) {
-            html += '(' + self.options.name[0] + ')';
-          }
-
-          html += self.options.number[i].value;
-          html += '</span>';
-          html += '</label>';
-          html += '</li>';
-        }
-      }
-      html += '</menu>';
-
-      div.onclick = function onclick_sms_list(event) {
-        var target = event.target;
-        if (target.textContent!='') {
-          var titleElem = $expr('.label', self._modalElement)[0];
-          if (titleElem != null) {
-            titleElem.innerHTML = target.textContent;
-          }
-          titleElem = $id('select-contact-tel-header');
-          var child = titleElem.childNodes[2];
-          if (child) {
-            child.parentNode.removeChild(child);
-          }
-        }
-      };
-      div.innerHTML = html;
-      titleElem.appendChild(div);
+    }, function onError_sendSms(e) {
+      animationLoading.stop(loadingGroupId);
     });
-  },
-
-  _makeDialogCancelable: function() {
-   var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
-   var okBtn = $expr('.button-send', this._modalElement)[0];
-   okBtn.hidden = false;
-   okBtn.addEventListener('click', this.send.bind(this));
-   var self = this;
-
-   okBtn.addEventListener('keydown', function(event) {
-     if (event.keyCode == 27) {
-       self.close();
-     }
-   });
-
-   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-   cancelBtn.hidden = false;
-   cancelBtn.addEventListener('click', this.close.bind(this));
-
-   $id('content').addEventListener('keyup', function onclick_addNewSms(event) {
-      var header = _('only-text-sms-count', {
-        n: this.value.length
-      });
-      $id('text-count').innerHTML = header;
-    });
-   okBtn.focus();
-  },
-
-  _adjustModalPosition: function() {
-    var container = $expr('.send-single-sms-dialog', this._modalElement)[0];
-    var documentHeight = document.documentElement.clientHeight;
-    var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
-  },
-
-
-  _fireEvent: function(name, data) {
-    var evt = document.createEvent('Event');
-    evt.initEvent(name, true, true);
-    evt.data = data;
-    evt.targetElement = this._modalElement;
-    document.dispatchEvent(evt);
-  },
-
-  close: function() {
-    this._mask.parentNode.removeChild(this._mask);
-    this._modalElement.parentNode.removeChild(this._modalElement);
-    this._mask = null;
-    this._modalElement = null;
-    document.removeEventListener('SendSMSToSingle:show', this._onModalDialogShown);
-    window.removeEventListener('resize', this._onWindowResize)
-    this.options.onclose();
-  },
-  send: function() {
-    var tel = $id('selected-contact-tel');
-    var message = $id('content');
-    var sender = [tel.textContent];
-    var self = this;
-    message.readOnly = true;
-    CMD.SMS.sendSMS(JSON.stringify({number:sender, message: message.value}),
-      function onSuccess_sendSms(event) {
-        if (!event.result) {
-          self._mask.parentNode.removeChild(self._mask);
-          self._modalElement.parentNode.removeChild(self._modalElement);
-          self._mask = null;
-          self._modalElement = null;
-          document.removeEventListener('SendSMSToSingle:show', self._onModalDialogShown);
-          window.removeEventListener('resize', self._onWindowResize)
-          self.options.onclose();
-        }
-      }, function onError_sendSms(e) {
-        alert(e);
-      });
   }
 };
 
 function SelectContactsDialog(options) {
-  this.initailize(options);
+  this.initialize(options);
 }
 
 SelectContactsDialog.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       contactList: null,
       onok: emptyFunction
@@ -933,37 +576,13 @@ SelectContactsDialog.prototype = {
     this._mask = document.createElement('div');
     this._mask.className = 'modal-mask';
     document.body.appendChild(this._mask);
-    // TODO using template
+    var templateData = {};
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    var html = '<div class="sms-ui-window-contact">'
-      + '<header class="sms-ui-window-header">'
-      + '<div data-l10n-id="sms-add-contact" class="sms-ui-window-header-title"></div>'
-      + '<div class="sms-ui-window-header-x" style=""></div>'
-      + '</header>'
-      + '<div class="sms-ui-window-body">'
-      + '<div class="sms-message-contact-selector-body">'
-      + '<div class="list-ctn">'
-      + '<div class="sms-ui-smartlist" id="sms-ui-smartlist-container">'
-      + '</div>'
-      + '</div>'
-      + '</div>'
-      + '<footer class="sms-ui-window-footer" style="">'
-      + '<div class="sms-ui-window-footer-monitor">'
-      + '<div>'
-      + '<span id="select-contact-count" class="text-secondary count"></span>'
-      + '</div>'
-      + '</div>'
-      + '<div class="sms-ui-window-footer-button-ctn">'
-      + '<button data-l10n-id="OK" class="button-send primary"></button>'
-      + '<button data-l10n-id="cancel" class="button-cancel"></button>'
-      + '</div>'
-      + '</footer>'
-      + '</div>'
-      + '</div>';
-    this._modalElement.innerHTML = html;
+    this._modalElement.innerHTML = tmpl('tmpl_select_contact_dialog', templateData);
+
     document.body.appendChild(this._modalElement);
-    var closeBtn = $expr('.sms-ui-window-header-x', this._modalElement)[0];
+    var closeBtn = $expr('.sendSms-dialog-header-x', this._modalElement)[0];
     closeBtn.hidden = false;
     closeBtn.addEventListener('click', this.close.bind(this));
 
@@ -995,7 +614,7 @@ SelectContactsDialog.prototype = {
     // Make sure other modal dialog has a chance to close itself.
     this._fireEvent('SelectContactsDialog:show');
 
-    var contactSmallListContainer = $id('sms-ui-smartlist-container');
+    var contactSmallListContainer = $id('sendSms-smartlist-container');
     contactSmallListContainer.innerHTML = '';
     contactSmallList = new GroupedList({
       dataList: this.options.contactList,
@@ -1007,26 +626,25 @@ SelectContactsDialog.prototype = {
         }
         return pinyin[0].toUpperCase();
       },
+      dataSorterName: 'name',
       renderFunc: this._createContactListItem,
       container: contactSmallListContainer,
     });
     contactSmallList.render();
     contactSmallList.getGroupedData().forEach(function(group) {
-      group.dataList.forEach( function (contact) {
-        if ((contact.photo != null) && (contact.photo.length > 0)) {
+      group.dataList.forEach(function(contact) {
+        if (( !! contact.photo) && (contact.photo.length > 0)) {
           var item = $id('smartlist-contact-' + contact.id);
-          if (item != null) {
+          if ( !! item) {
             var img = item.getElementsByTagName('img')[0];
             img.src = contact.photo;
             item.dataset.avatar = contact.photo;
-            if (img.classList.contains('avatar-default')) {
-              img.classList.remove('avatar-default');
-            }
+            img.classList.remove('avatar-default');
           }
         }
       });
     });
-    var itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+    var itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;
     var header = _('contacts-selected', {
       n: itemNum
     });
@@ -1034,27 +652,22 @@ SelectContactsDialog.prototype = {
   },
 
   _createContactListItem: function(contact) {
-    var html = '';
-    html += '<div>';
-    html += '  <label class="unchecked"></label>';
-    html += '    <img class="avatar avatar-default"></img>';
-    html += '      <div class="contact-info">';
-    html += '        <div class="name">';
+    var templateData = {
+      name: '',
+      tel: ''
+    };
     if (contact.name) {
-      html += contact.name.join(' ');
+      templateData.name = contact.name.join(' ');
     }
-    html += '</div>';
     if (contact.tel && contact.tel.length > 0) {
-      html += '        <div class="tel">' + contact.tel[0].value +  '</div>';
+      templateData.tel = contact.tel[0].value;
     }
-    html += '      </div>';
-    html += '    </div>';
     var elem = document.createElement('div');
     elem.classList.add('contact-list-item');
     if (contact.category && contact.category.indexOf('favorite') > -1) {
       elem.classList.add('favorite');
     }
-    elem.innerHTML = html;
+    elem.innerHTML = tmpl('tmpl_select_contact_item', templateData);
     elem.dataset.contact = JSON.stringify(contact);
     elem.dataset.contactId = contact.id;
     elem.id = 'smartlist-contact-' + contact.id;
@@ -1065,30 +678,24 @@ SelectContactsDialog.prototype = {
       var itemNum;
       var header;
       if (target instanceof HTMLLabelElement) {
-        var item = $expr('label.unchecked', elem)[0];
-        if (item) {
-          item.classList.toggle('checked');
+        var item = $expr('label', elem)[0];
+        var select = false;
+        if (item.dataset.checked == 'false') {
+          select = true;
         }
-        if (item.classList.contains('checked')) {
-          elem.dataset.checked = true;
-          elem.dataset.focused = true;
-        } else {
-          elem.dataset.checked = false;
-          elem.dataset.focused = false;
-        }
-        itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+        elem.dataset.checked = elem.dataset.focused = item.dataset.checked = select;
+        itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;
         header = _('contacts-selected', {
           n: itemNum
         });
         $id('select-contact-count').innerHTML = header;
       } else {
-        item = $expr('label.unchecked', elem)[0];
+        item = $expr('label', elem)[0];
         if (item) {
-          item.classList.add('checked');
+          item.dataset.checked = true;
         }
-        elem.dataset.checked = true;
-        elem.dataset.focused = true;
-        itemNum = $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').length;
+        elem.dataset.checked = elem.dataset.focused = true;
+        itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;
         header = _('contacts-selected', {
           n: itemNum
         });
@@ -1116,7 +723,7 @@ SelectContactsDialog.prototype = {
   },
   select: function() {
     var ids = [];
-    $expr('#sms-ui-smartlist-container .contact-list-item[data-checked="true"]').forEach(function(item) {
+    $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').forEach(function(item) {
       ids.push(item.dataset.contact);
     });
     this.options.onok(ids);
@@ -1124,16 +731,57 @@ SelectContactsDialog.prototype = {
   }
 };
 
+function ProcessBar(options) {
+  this.initialize(options);
+}
+
+ProcessBar.prototype = {
+  initialize: function (options) {
+    this.options = extend({
+      sectionsNumber: 0,
+      stepsPerSection: 0
+    }, options);
+
+    if (!this.options.sectionsNumber || !this.options.stepsPerSection) {
+      new AlertDialog("Process bar initialize failed");
+      return;
+    }
+
+    this.container = document.createElement('div');
+    this.container.classList.add('processbar-container');
+    this.processBar = document.createElement('div');
+    this.processBar.classList.add('processbar');
+    this.container.appendChild(this.processBar);
+    this.ratio = 0;
+    this.step = Math.round(100 / this.options.sectionsNumber) / this.options.stepsPerSection;
+  },
+
+  moveForward: function() {
+    this.ratio += this.step;
+    this.processBar.style.width = this.ratio + '%';
+  },
+
+  finish: function(count) {
+    this.ratio = Math.round(count * 100 / this.options.sectionsNumber);
+    this.processBar.style.width = this.ratio + '%';
+  },
+
+  getContent: function() {
+    return this.container;
+  }
+};
+
 function FilesOPDialog(options) {
-  this.initailize(options);
+  this.initialize(options);
 }
 
 FilesOPDialog.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
-      title_l10n_id : '',
-      processbar_l10n_id : ''
+      title_l10n_id: '',
+      processbar_l10n_id: '',
+      processbar: null
     }, options);
 
     this._modalElement = null;
@@ -1154,37 +802,19 @@ FilesOPDialog.prototype = {
 
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    var html = '';
-    html += '<div class="modal-container">';
-    html += '<div class="select-multi-files-dialog">';
-    html += '  <header class="select-multi-files-dialog-header">';
-    html += '    <div class="select-multi-files-dialog-header-title"';
+    var templateData = {
+      title_l10n_id: '',
+      processbar_l10n_id: ''
+    };
     if (this.options.title_l10n_id != '') {
-      html += ' data-l10n-id="' + this.options.title_l10n_id + '"';
+      templateData.title_l10n_id = this.options.title_l10n_id;
     }
-    html += '    ></div>';
-    html += '    <div class="select-multi-files-dialog-header-x"></div>';
-    html += '  </header>';
-    html += '  <div class="select-multi-files-dialog-body">';
-    html += '    <div class="processbar-prompt"><span';
     if (this.options.processbar_l10n_id != '') {
-      html += ' data-l10n-id="' + this.options.processbar_l10n_id + '"';
+      templateData.processbar_l10n_id = this.options.processbar_l10n_id;
     }
-    html += '    ></span>';
-    html += '      <div><span id="files-indicator"></span></div>';
-    html += '    </div>';
-    html += '    <div id="processbar-container" class="processbar-container">';
-    html += '      <div id="processbar" class="processbar"></div>';
-    html += '    </div>';
-    html += '  </div>';
-    html += '  <footer class="select-multi-files-dialog-footer">';
-    html += '    <div class="select-multi-files-dialog-footer-button-ctn">';
-    html += '      <button data-l10n-id="cancel" class="button button-cancel"></button>';
-    html += '    </div>';
-    html += '  </footer>';
-    html += '</div></div>';
-
-    this._modalElement.innerHTML = html;
+    this._modalElement.innerHTML = tmpl('tmpl_fileOP_dialog', templateData);
+    var dlgBody = $expr('.select-multi-files-dialog-body', this._modalElement)[0];
+    dlgBody.appendChild(this.options.processbar.getContent());
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
     this._makeDialogCancelable();
@@ -1215,23 +845,22 @@ FilesOPDialog.prototype = {
   },
 
   _makeDialogCancelable: function() {
-   var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
+    var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
+    closeBtn.hidden = false;
+    closeBtn.addEventListener('click', this.close.bind(this));
 
-   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-   cancelBtn.hidden = false;
-   cancelBtn.addEventListener('click', this.close.bind(this));
+    var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+    cancelBtn.hidden = false;
+    cancelBtn.addEventListener('click', this.close.bind(this));
 
-   var self = this;
+    var self = this;
   },
 
   _adjustModalPosition: function() {
     var container = $expr('.modal-container', this._modalElement)[0];
     var documentHeight = document.documentElement.clientHeight;
     var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
+    container.style.top = (documentHeight > containerHeight ? (documentHeight - containerHeight) / 2 : 0) + 'px';
   },
 
   _fireEvent: function(name, data) {
@@ -1253,21 +882,21 @@ FilesOPDialog.prototype = {
   }
 };
 
-function ShowPicDialog(options) {
-  this.initailize(options);
+function ImageViewer(options) {
+  this.initialize(options);
 }
 
-ShowPicDialog.prototype = {
-  initailize: function(options) {
+ImageViewer.prototype = {
+  initialize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
-      picUrl: null,
-      showPreviousPic: emptyFunction,
-      showNextPic: emptyFunction
+      count: 0,
+      currentIndex: 0,
+      getPictureAt: emptyFunction
     }, options);
 
-    if (!this.options.picUrl) {
-      alert("selected picture doesn't exist");
+    if (this.options.count <= 0) {
+      new AlertDialog("selected picture doesn't exist");
       return;
     }
     this._modalElement = null;
@@ -1277,70 +906,96 @@ ShowPicDialog.prototype = {
 
   closeAll: function() {
     var evt = document.createEvent('Event');
-    evt.initEvent('ShowPicDialog:show', true, true);
+    evt.initEvent('ImageViewer:show', true, true);
     document.dispatchEvent(evt);
   },
 
   _build: function() {
-    this._mask = document.createElement('div');
-    this._mask.className = 'mask';
-    var container = document.getElementById('modal-container');
-    container.appendChild(this._mask);
+    this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
+      if (!bCached) {
+        new AlertDialog('Cache picture failed');
+        return;
+      }
 
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'dialog';
-    this._modalElement.innerHTML = '<div class="bar">'
-      + '<div class="closeX"></div></div>'
-      + '<div class="column-left">'
-      + '<div id="gallery-left-arrow" class="gallery-left-arrow"></div>'
-      + '</div>'
-      + '<div class="column-middle">'
-      + '<img id="pic-content" src='
-      + this.options.cachedUrl
-      + ' data-pic-Url=' + this.options.picUrl
-      + ' ></div>'
-      + '<div class="column-right">'
-      + '<div id="gallery-right-arrow" class="gallery-right-arrow"></div>'
-      + '</div>';
+      this._mask = document.createElement('div');
+      this._mask.className = 'mask';
+      var container = document.getElementById('modal-container');
+      container.appendChild(this._mask);
 
-    container.appendChild(this._modalElement);
-    this._makeDialogCancelable();
+      this._modalElement = document.createElement('div');
+      this._modalElement.className = 'dialog';
 
-    var self = this;
-    document.addEventListener('keypress', function(e) {
-      self._fireEvent('ShowPicDialog:show', e.keyCode);
-    });
+      var templateData = {
+        cachedUrl: cachedUrl
+      };
+      this._modalElement.innerHTML = tmpl('tmpl_img_viewer', templateData);
+      container.appendChild(this._modalElement);
+      this._addListeners();
 
-    $id('gallery-left-arrow').onclick = this.options.showPreviousPic;
-    $id('gallery-right-arrow').onclick = this.options.showNextPic;
+      var self = this;
+      document.addEventListener('keypress', function(e) {
+        self._fireEvent('ImageViewer:show', e.keyCode);
+      });
 
-    this._onModalDialogShown = function(event) {
-      if (event.data && event.data == 37) {
-        if ($id('gallery-view').dataset.shown == 'true') {
-          self.options.showPreviousPic();
+      this._onImageViewerShown = function(event) {
+        if (event.data && event.data == 37) {
+          if ($id('gallery-view').dataset.shown == 'true') {
+            self._showPreviousPic();
+          }
+          return;
         }
-        return;
-      }
-      if (event.data && event.data == 39) {
-        if ($id('gallery-view').dataset.shown == 'true') {
-          self.options.showNextPic();
+        if (event.data && event.data == 39) {
+          if ($id('gallery-view').dataset.shown == 'true') {
+            self._showNextPic();
+          }
+          return;
         }
-        return;
+        if (event.targetElement == self._modalElement) {
+          return;
+        }
       }
-      if (event.targetElement == self._modalElement) {
-        return;
-      }
-    }
-    document.addEventListener('ShowPicDialog:show', this._onModalDialogShown);
+      document.addEventListener('ImageViewer:show', this._onImageViewerShown);
 
-    // Make sure other modal dialog has a chance to close itself.
-    this._fireEvent('ShowPicDialog:show');
+      this._fireEvent('ImageViewer:show');
+    }.bind(this));
   },
 
-  _makeDialogCancelable: function() {
-   var closeBtn = $expr('.closeX', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
+  _showPreviousPic: function() {
+    this.options.currentIndex -= 1;
+    if (this.options.currentIndex < 0) {
+      this.options.currentIndex += this.options.count;
+    }
+    this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
+      if (!bCached) {
+        $id('pic-content').setAttribute('src', '');
+        new AlertDialog('Cache picture failed');
+        return;
+      }
+      $id('pic-content').setAttribute('src', cachedUrl);
+    });
+  },
+
+  _showNextPic: function() {
+    this.options.currentIndex += 1;
+    if (this.options.currentIndex >= this.options.count) {
+      this.options.currentIndex -= this.options.count;
+    }
+    this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
+      if (!bCached) {
+        $id('pic-content').setAttribute('src', '');
+        new AlertDialog('Cache picture failed');
+        return;
+      }
+      $id('pic-content').setAttribute('src', cachedUrl);;
+    });
+  },
+
+  _addListeners: function() {
+    var closeBtn = $expr('.closeX', this._modalElement)[0];
+    closeBtn.hidden = false;
+    closeBtn.addEventListener('click', this.close.bind(this));
+    $id('gallery-left-arrow').addEventListener('click', this._showPreviousPic.bind(this));
+    $id('gallery-right-arrow').addEventListener('click', this._showNextPic.bind(this));
   },
 
   _fireEvent: function(name, data) {
@@ -1356,21 +1011,21 @@ ShowPicDialog.prototype = {
     this._modalElement.parentNode.removeChild(this._modalElement);
     this._mask = null;
     this._modalElement = null;
-    document.removeEventListener('ShowPicDialog:show', this._onModalDialogShown);
+    document.removeEventListener('ImageViewer:show', this._onModalDialogShown);
     this.options.onclose();
   }
 };
 
 function WifiModePromptDialog(options) {
-  this.initailize(options);
+  this.initialize(options);
 }
 
 WifiModePromptDialog.prototype = {
-  initailize: function(options) {
+  initialize: function(options) {
     this.options = extend({
       onclose: emptyFunction,
-      title_l10n_id : '',
-      prompt_l10n_id : ''
+      title_l10n_id: '',
+      prompt_l10n_id: ''
     }, options);
 
     this._modalElement = null;
@@ -1391,33 +1046,17 @@ WifiModePromptDialog.prototype = {
 
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    var html = '';
-    html += '<div class="modal-container">';
-    html += '<div class="select-multi-files-dialog">';
-    html += '  <header class="select-multi-files-dialog-header">';
-    html += '    <div class="select-multi-files-dialog-header-title"';
+    var templateData = {
+      title_l10n_id: '',
+      prompt_l10n_id: ''
+    };
     if (this.options.title_l10n_id != '') {
-      html += ' data-l10n-id="' + this.options.title_l10n_id + '"';
+      templateData.title_l10n_id = this.options.title_l10n_id;
     }
-    html += '    ></div>';
-    html += '    <div class="select-multi-files-dialog-header-x"></div>';
-    html += '  </header>';
-    html += '  <div class="select-multi-files-dialog-body">';
-    html += '    <div class="processbar-prompt"><span';
     if (this.options.prompt_l10n_id != '') {
-      html += ' data-l10n-id="' + this.options.prompt_l10n_id + '"';
+      templateData.prompt_l10n_id = this.options.prompt_l10n_id;
     }
-    html += '    ></span>';
-    html += '    </div>';
-    html += '  </div>';
-    html += '  <footer class="select-multi-files-dialog-footer">';
-    html += '    <div class="select-multi-files-dialog-footer-button-ctn">';
-    html += '      <button data-l10n-id="cancel" class="button button-cancel"></button>';
-    html += '    </div>';
-    html += '  </footer>';
-    html += '</div></div>';
-
-    this._modalElement.innerHTML = html;
+    this._modalElement.innerHTML = tmpl('tmpl_wifiMode_dialog', templateData);
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
     this._makeDialogCancelable();
@@ -1448,23 +1087,22 @@ WifiModePromptDialog.prototype = {
   },
 
   _makeDialogCancelable: function() {
-   var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
-   closeBtn.hidden = false;
-   closeBtn.addEventListener('click', this.close.bind(this));
+    var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
+    closeBtn.hidden = false;
+    closeBtn.addEventListener('click', this.close.bind(this));
 
-   var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-   cancelBtn.hidden = false;
-   cancelBtn.addEventListener('click', this.close.bind(this));
+    var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+    cancelBtn.hidden = false;
+    cancelBtn.addEventListener('click', this.close.bind(this));
 
-   var self = this;
+    var self = this;
   },
 
   _adjustModalPosition: function() {
     var container = $expr('.modal-container', this._modalElement)[0];
     var documentHeight = document.documentElement.clientHeight;
     var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ?
-      (documentHeight - containerHeight) / 2 : 0) + 'px';
+    container.style.top = (documentHeight > containerHeight ? (documentHeight - containerHeight) / 2 : 0) + 'px';
   },
 
   _fireEvent: function(name, data) {
@@ -1483,5 +1121,142 @@ WifiModePromptDialog.prototype = {
     document.removeEventListener('WifiModePromptDialog:show', this._onModalDialogShown);
     window.removeEventListener('resize', this._onWindowResize)
     this.options.onclose();
+  }
+};
+
+var animationLoadingDialog = function() {
+  this.groupId = 0;
+  this.startNum = 0;
+  this._modalElement = document.createElement('div');
+  this._modalElement.className = 'loading-dialog';
+  var templateData = {};
+  this._modalElement.innerHTML = tmpl('tmpl_loading_dialog', templateData);
+};
+
+animationLoadingDialog.prototype = {
+  start: function() {
+    this.startNum++;
+    if (this.startNum > 1) {
+      return this.groupId;
+    }
+    var containerHeight = $id('container').clientHeight;
+    var documentHeight = document.documentElement.clientHeight;
+    var loading = $expr('.loading', this._modalElement)[0];
+    document.body.appendChild(this._modalElement);
+    loading.style.top = (documentHeight > containerHeight ? (containerHeight - loading.clientHeight) / 2 : (documentHeight - loading.clientHeight) / 2) + 'px';
+    return this.groupId;
+  },
+
+  stop: function(groupId) {
+    if ((this.startNum <= 0) || (groupId != this.groupId)) {
+      return;
+    }
+    this.startNum--;
+    if (this.startNum == 0) {
+      this._modalElement.parentNode.removeChild(this._modalElement);
+    }
+  },
+
+  reset: function() {
+    if (this.startNum > 0) {
+      this.startNum = 0;
+      this.groupId++;
+      this._modalElement.parentNode.removeChild(this._modalElement);
+    }
+  },
+};
+
+function AlertDialog(message, showCancelButton, callback) {
+  this.initialize(message, showCancelButton, callback);
+}
+
+AlertDialog.prototype = {
+    initialize: function(message, showCancelButton, callback) {
+    this._modalElement = null;
+    this._mask = null;
+    this._mask = document.createElement('div');
+    this._mask.className = 'modal-mask';
+    document.body.appendChild(this._mask);
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    this.callback = callback;
+    this.showCancelButton = showCancelButton;
+    var templateData = {
+      message: message
+    };
+    this._modalElement.innerHTML = tmpl('tmpl_alert_dialog', templateData);
+    document.body.appendChild(this._modalElement);
+    this._adjustModalPosition();
+    this._makeDialogCancelable();
+    // Translate l10n value
+    navigator.mozL10n.translate(this._modalElement);
+    // Only one modal dialog is shown at a time.
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      // Show a popup dialog at a time.
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+
+      self.close();
+    }
+    document.addEventListener('AlertDialog:show', this._onModalDialogShown);
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('AlertDialog:show');
+    // Tweak modal dialog position when resizing.
+    this._onWindowResize = function(event) {
+      self._adjustModalPosition();
+    };
+    window.addEventListener('resize', this._onWindowResize);
+  },
+
+  _makeDialogCancelable: function() {
+    var okBtn = $expr('.button-ok', this._modalElement)[0];
+    okBtn.addEventListener('click', this.okButtonCallback.bind(this));
+
+    var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
+    cancelBtn.hidden = !this.showCancelButton;
+    cancelBtn.addEventListener('click', this.cancelButtonCallback.bind(this));
+
+    var closeBtn = $expr('.alert-dialog-header-x', this._modalElement)[0];
+    closeBtn.addEventListener('click', this.cancelButtonCallback.bind(this));
+  },
+
+  _adjustModalPosition: function() {
+    var containerHeight = $id('container').clientHeight;
+    var documentHeight = document.documentElement.clientHeight;
+    var alertDialog = $expr('.alert', this._modalElement)[0];
+    alertDialog.style.top = (documentHeight > containerHeight ? (containerHeight - alertDialog.clientHeight) / 2 : (documentHeight - alertDialog.clientHeight) / 2) + 'px';
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  },
+
+  okButtonCallback: function() {
+    if(this.callback){
+      this.callback(true);
+    }
+    this.close();
+  },
+
+  cancelButtonCallback: function() {
+    if(this.callback){
+      this.callback(false);
+    }
+    this.close();
+  },
+
+  close: function() {
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+    document.removeEventListener('AlertDialog:show', this._onModalDialogShown);
+    window.removeEventListener('resize', this._onWindowResize)
   }
 };

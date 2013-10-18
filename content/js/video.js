@@ -1,200 +1,139 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- License, v. 2.0. If a copy of the MPL was not distributed with this
- file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 var Video = (function() {
   function getListContainer() {
     return $id('video-list-container');
   }
 
-  function convertFileName(str) {
-    var obj = {
-      folder: '',
-      file: ''
-    };
-
-    var index = str.lastIndexOf('/');
-    if (index < 0) {
-      obj.file = str;
-      return obj;
-    }
-
-    obj.file = str.substr(index + 1, str.length);
-    str = str.substr(0, index);
-
-    index = str.lastIndexOf('/');
-    if (index >= 0) {
-      obj.folder = str.substring(index + 1, str.length);
-    }
-    return obj;
-  }
-
-  function parseDate(date) {
-    var dt = new Date(date);
-    var strDate = dt.getFullYear() + '-';
-
-    if (dt.getMonth() < 9) {
-      strDate += '0' + (dt.getMonth() + 1) + '-';
-    } else {
-      strDate += (dt.getMonth() + 1) + '-';
-    }
-    if(dt.getDay() < 9) {
-      strDate += '0' + (dt.getDay() + 1);
-    } else {
-      strDate += dt.getDay() + 1;
-    }
-    return strDate;
-  }
-
-  function parseSize(size) {
-    var retSize = size / 1024 /10.24;
-    return parseInt(retSize) / 100;
-  }
-
   function init() {
     getListContainer().innerHTML = '';
-    showEmptyVideoList(false);
+    checkVideoListIsEmpty();
   }
 
   function addVideo(video) {
     if (!video) {
       return;
     }
-    _addToVideoList(video);
-  }
-
-  function removeVideo(videos) {
-    if (!videos || !videos.length || videos.length < 1) {
-      return;
-    }
-    removeVideosProcess(videos);
-  }
-
-  function updateUI() {
-    var videoList = $expr('#video-list-container li');
-    if (videoList.length == 0) {
-      showEmptyVideoList(true);
-    }
-  }
-
-  function _addToVideoList(video) {
-    var groupId = parseDate(parseInt(video.date));
-    var groupContainer = $id('video-' + groupId);
+    var threadId = parseDate(parseInt(video.date));
+    var threadContainer = $id('video-' + threadId);
     var container = getListContainer();
-    if (groupContainer) {
-      var groupBody = groupContainer.getElementsByTagName('ul')[0];
-      groupBody.appendChild(_createVideoListItem(video));
-      groupContainer.dataset.length = 1 + parseInt(groupContainer.dataset.length);
-      var titles = $expr('.title', groupContainer);
-      titles[0].innerHTML = '<span>' + groupId + ' (' + groupContainer.dataset.length + ')</span>';
+    if (threadContainer) {
+      var threadBody = threadContainer.getElementsByTagName('ul')[0];
+      threadBody.appendChild(_createVideoListItem(video));
+      threadContainer.dataset.length = 1 + parseInt(threadContainer.dataset.length);
+      var title = threadContainer.getElementsByTagName('label')[0];
+      title.innerHTML = '<span>' + threadId + ' (' + threadContainer.dataset.length + ')</span>';
     } else {
-      groupContainer = document.createElement('div');
-      groupContainer.setAttribute('id', 'video-' + groupId);
-      groupContainer.classList.add('video-thread');
-      var header = document.createElement('div');
-      header.classList.add('header');
-      groupContainer.appendChild(header);
+      var templateData = {
+        id: 'video-' + threadId,
+        threadId: threadId
+      };
 
-      var title = document.createElement('label');
-      title.classList.add('title');
-      header.appendChild(title);
-      title.innerHTML = '<span>' + groupId + ' (' + 1 + ')</span>';
-      container.appendChild(groupContainer);
-      title.onclick = function onSelectGroup(e) {
+      var div = document.createElement('div');
+      div.innerHTML = tmpl('tmpl_video_thread_container', templateData);
+
+      var threads = $expr('.video-thread', container);
+      if (threads.length == 0) {
+        container.appendChild(div);
+      } else {
+        var dt = new Date(threadId);
+        var index = 0;
+        for (; index < threads.length; index++) {
+          var date = new Date(threads[index].dataset.threadId);
+          if (dt > date) {
+            container.insertBefore(div, threads[index].parentNode);
+            break;
+          }
+        }
+        if (index == threads.length) {
+          container.appendChild(div);
+        }
+      }
+
+      var title = $expr('label', div)[0];
+
+      title.onclick = function onSelectThread(e) {
         var target = e.target;
         if (target instanceof HTMLLabelElement) {
-          target.classList.toggle('group-checked');
-          var groupContainer = this.parentNode.parentNode;
-          var checkboxes = $expr('.video-unchecked',groupContainer);
-          var videoItems = $expr('li',groupContainer);
+          var threadContainer = this.parentNode.parentNode;
+          var videoItems = $expr('li', threadContainer);
 
-          if (target.classList.contains('group-checked')) {
-            groupContainer.dataset.checked = true;
-            checkboxes.forEach(function(item) {
-              item.classList.add('video-checked');
-            });
-
-            videoItems.forEach(function(item) {
-              item.dataset.checked = true;
-            });
-          } else {
-            groupContainer.dataset.checked = false;
-            checkboxes.forEach(function(cb) {
-              cb.classList.remove('video-checked');
-            });
-
+          if (threadContainer.dataset.checked == 'true') {
+            threadContainer.dataset.checked = false;
             videoItems.forEach(function(item) {
               item.dataset.checked = false;
             });
+          } else {
+            threadContainer.dataset.checked = true;
+            videoItems.forEach(function(item) {
+              item.dataset.checked = true;
+            });
           }
-           opStateChanged();
-         }
+
+          opStateChanged();
+        }
       };
 
-      var groupBody = document.createElement('ul');
-      groupBody.classList.add('body');
-      groupContainer.appendChild(groupBody);
-      groupContainer.dataset.length = 1;
-      groupContainer.dataset.checked = false;
-      groupContainer.dataset.groupId = groupId;
+      var threadBody = $expr('ul', div)[0];
+      threadBody.appendChild(_createVideoListItem(video));
+    }
+  }
 
-      groupBody.appendChild(_createVideoListItem(video));
+  function updateRemovedVideos(videos) {
+    if (!videos || !videos.length || videos.length < 1) {
+      return;
+    }
+    for (var i = 0; i < videos.length; i++) {
+      var video = $expr('li[data-video-url="' + videos[i] + '"]')[0];
+      if (!video) {
+        continue;
+      }
+      var threadBody = video.parentNode;
+      threadBody.removeChild(video);
+      var thread = threadBody.parentNode.parentNode;
+      if ($expr('li', threadBody).length == 0) {
+        getListContainer().removeChild(thread);
+      }
     }
   }
 
   function _createVideoListItem(video) {
-      var listItem = document.createElement('li');
-      listItem.dataset.checked = 'false';
-      listItem.dataset.videoUrl = video.name;
-      listItem.dataset.title = video.metadata.title;
-      listItem.dataset.date = video.date;
-      listItem.dataset.size = video.size;
+    var listItem = document.createElement('li');
+    listItem.dataset.checked = 'false';
+    listItem.dataset.videoUrl = video.name;
+    listItem.dataset.title = video.metadata.title;
+    listItem.dataset.date = video.date;
+    listItem.dataset.size = video.size;
 
-      listItem.innerHTML = '<img src="' + video.metadata.poster + '">';
+    var templateData = {
+      poster: video.metadata.poster
+    };
 
-      var itemCheckbox = document.createElement('div');
-      itemCheckbox.classList.add('video-unchecked');
-      listItem.appendChild(itemCheckbox);
+    listItem.innerHTML = tmpl('tmpl_video_item', templateData);
 
-      listItem.onclick = function item_click(e) {
-        itemCheckbox.classList.toggle('video-checked');
+    listItem.onclick = function onItemClick(e) {
+      if (this.dataset.checked == 'true') {
+        this.dataset.checked = 'false';
+      } else {
+        this.dataset.checked = 'true';
+      }
+      var threadBody = this.parentNode;
+      var threadContainer = threadBody.parentNode;
+      threadContainer.dataset.checked = $expr('li[data-checked=true]', threadBody).length == threadContainer.dataset.length;
+      opStateChanged();
+    };
 
-        if (itemCheckbox.classList.contains('video-checked')) {
-          this.dataset.checked = 'true';
-        } else {
-          this.dataset.checked = 'false';
-        }
+    listItem.onmouseover = function(e) {
+      var tip = $id('tip');
+      tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:' + parseDate(parseInt(this.dataset.date)) + '</div><div>size:' + toSizeInMB(this.dataset.size) + 'M' + '</div>';
+      tip.style.top = (e.target.parentNode.offsetTop + e.target.parentNode.offsetParent.offsetTop + e.target.parentNode.clientHeight - $id('video-list-container').scrollTop) + 'px';
+      tip.style.left = (e.target.parentNode.offsetParent.offsetLeft + e.target.parentNode.offsetLeft + e.target.parentNode.clientWidth / 2) + 'px';
+      tip.style.display = 'block';
+    };
 
-        var groupBody = this.parentNode;
-        var groupContainer = groupBody.parentNode;
-        var labels = groupContainer.getElementsByTagName('label');
-        if ($expr('.video-checked', groupBody).length == groupContainer.dataset.length) {
-          labels[0].classList.add('group-checked');
-          groupContainer.dataset.checked = true;
-        } else {
-          labels[0].classList.remove('group-checked');
-          groupContainer.dataset.checked = false;
-        }
-        opStateChanged();
-      };
-      listItem.onmouseover = function(e) {
-        var tip = document.createElement('div');
-        tip.setAttribute('id', 'video-tip');
-        tip.classList.add('video-tip');
-        tip.style.top = (e.target.parentNode.offsetTop + 80) + 'px';
-        tip.style.left = (e.target.parentNode.offsetLeft + 55) + 'px';
-        tip.innerHTML = '<div>name:' + this.dataset.title + '</div><div>date:'
-                         + parseDate(parseInt(this.dataset.date)) + '</div><div>size:'
-                         + parseSize(this.dataset.size) + 'M' + '</div>';
-        $id('video-view').appendChild(tip);
-      };
-      listItem.onmouseout = function(e) {
-        var tip = $id('video-tip');
-        if (tip) {
-          tip.parentNode.removeChild(tip);
-        }
-      };
-      return listItem;
+    listItem.onmouseout = function(e) {
+      var tip = $id('tip');
+      tip.style.display = 'none';
+    };
+    return listItem;
   }
 
   function opStateChanged() {
@@ -203,70 +142,37 @@ var Video = (function() {
       $id('selectAll-videos').dataset.disabled = true;
     } else {
       $id('selectAll-videos').dataset.checked =
-        $expr('#video-list-container li').length ===
-          $expr('#video-list-container li[data-checked="true"]').length;
+      $expr('#video-list-container li').length === $expr('#video-list-container li[data-checked="true"]').length;
       $id('selectAll-videos').dataset.disabled = false;
     }
 
     $id('remove-videos').dataset.disabled =
-      $expr('#video-list-container li[data-checked="true"]').length === 0;
+    $expr('#video-list-container li[data-checked="true"]').length === 0;
     $id('export-videos').dataset.disabled =
-      $expr('#video-list-container li[data-checked="true"]').length === 0;
+    $expr('#video-list-container li[data-checked="true"]').length === 0;
   }
 
   function checkVideoListIsEmpty() {
-    var isEmpty = $expr('#video-list-container li').length === 0 ;
-    if (isEmpty) {
-      $id('selectAll-videos').dataset.disabled = true;
-      showEmptyVideoList(true);
-    } else {
-      $id('selectAll-videos').dataset.disabled = false;
-      showEmptyVideoList(false);
-    }
+    var isEmpty = $expr('#video-list-container li').length === 0;
+    $id('selectAll-videos').dataset.disabled = isEmpty;
+    $id('empty-video-container').hidden = !isEmpty;
   }
 
-  function showEmptyVideoList(bFlag) {
-    if (bFlag) {
-      $id('empty-video-container').style.display = 'block';
-    } else {
-      $id('empty-video-container').style.display = 'none';
-    }
-  }
-
-  function selectAllVideos(select) {
-    $expr('#video-list-container .video-thread').forEach(function(group) {
-      selectVideosGroup(group, select);
+  function selectAllVideos(selected) {
+    $expr('#video-list-container .video-thread').forEach(function(thread) {
+      thread.dataset.checked = selected;
+      $expr('li', thread).forEach(function(item) {
+        item.dataset.checked = selected;
+      });
     });
 
     opStateChanged();
   }
 
-  function selectVideosGroup(group, selected) {
-    group.dataset.checked = selected;
-    $expr('li', group).forEach(function(videoItem) {
-      videoItem.dataset.checked = selected;
-    });
-
-    var groupCheckbox = $expr('.title', group)[0];
-
-    if (groupCheckbox) {
-      if (selected) {
-        groupCheckbox.classList.add('group-checked');
-        $expr('.video-unchecked', group).forEach(function(cb) {
-          cb.classList.add('video-checked');
-        });
-      } else {
-        groupCheckbox.classList.remove('group-checked');
-        $expr('.video-unchecked', group).forEach(function(cb) {
-          cb.classList.remove('video-checked');
-        });
-      }
-    }
-  }
-
   /**
    * Remove videos
    */
+
   function removeVideos(files) {
     var items = files || [];
     if (items.length <= 0) {
@@ -281,32 +187,32 @@ var Video = (function() {
     var oldFileIndex = 0;
     var steps = 0;
 
+    var pb = new ProcessBar({
+      sectionsNumber: files.length,
+      stepsPerSection: 50
+    });
+
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-videos-dialog-header',
-      processbar_l10n_id: 'processbar-remove-videos-promot' 
+      processbar_l10n_id: 'processbar-remove-videos-promot',
+      processbar: pb
     });
 
     var filesIndicator = $id('files-indicator');
-    var pb = $id('processbar');
-    var ratio = 0;
     filesIndicator.innerHTML = '0/' + items.length;
 
-    //processbar range for one file
-    var range = Math.round(100 / items.length);
-    var step = range / 50;
     var bTimer = false;
 
-    setTimeout(function removeVideo() {
+    setTimeout(function doRemoveVideo() {
       var cmd = 'adb shell rm "' + items[fileIndex] + '"';
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!bTimer) {
         bTimer = true;
         var timer = setInterval(function() {
           if (oldFileIndex == fileIndex) {
-            if (steps < 50) {
+            if (steps < 45) {
               steps++;
-              ratio+= step;
-              pb.style.width = ratio + '%';
+              pb.moveForward();
             }
           } else {
             oldFileIndex = fileIndex;
@@ -318,83 +224,70 @@ var Video = (function() {
       req.onsuccess = function(e) {
         filesToBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
           //updating UI after removing videos
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
-          removeVideosProcess(filesToBeRemoved);
+          updateRemovedVideos(filesToBeRemoved);
           checkVideoListIsEmpty();
           opStateChanged();
         } else {
-          removeVideo();
+          doRemoveVideo();
         }
       };
 
-      req.onerror = function (e) {
+      req.onerror = function(e) {
         filesCanNotBeRemoved.push(items[fileIndex]);
         fileIndex++;
-        ratio = Math.round(filesToBeRemoved.length * 100 / items.length);
-        pb.style.width = ratio + '%';
+        pb.finish(filesToBeRemoved.length);
         filesIndicator.innerHTML = filesToBeRemoved.length + '/' + items.length;
 
         if (fileIndex == items.length) {
           clearInterval(timer);
-          pb.style.width = '100%';
+          pb.finish(items.length);
           dialog.closeAll();
 
           //updating UI after removing videos
           if (filesCanNotBeRemoved.length > 0) {
             //TODO: tell user some files can't be removed
-            alert(filesCanNotBeRemoved.length + " files can't be removed");
+            new AlertDialog(filesCanNotBeRemoved.length + " files can't be removed");
           }
 
-          removeVideosProcess(filesToBeRemoved);
+          updateRemovedVideos(filesToBeRemoved);
           checkVideoListIsEmpty();
           opStateChanged();
         } else {
-          removeVideo();
+          doRemoveVideo();
         }
       };
     }, 0);
   }
 
-  function removeVideosProcess(filesToBeRemoved) {
-    for (var i = 0; i < filesToBeRemoved.length; i++) {
-      var video = $expr('li[data-video-url="' + filesToBeRemoved[i] + '"]')[0];
-      if (video) {
-        var groupBody = video.parentNode;
-        groupBody.removeChild(video);
-        var group = groupBody.parentNode;
-
-        if ($expr('li', groupBody).length == 0) {
-          getListContainer().removeChild(group);
-        }
-      }
-    }
-  }
-
   function importVideos() {
     if (navigator.mozFFOSAssistant.isWifiConnect) {
-      new WifiModePromptDialog({title_l10n_id: 'import-videos-dialog-header',
-                               prompt_l10n_id: 'wifi-mode-import-videos-promot'});
+      new WifiModePromptDialog({
+        title_l10n_id: 'import-videos-dialog-header',
+        prompt_l10n_id: 'wifi-mode-import-videos-promot'
+      });
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function (state, data) {
-      data = data.substr(0,data.length-1);
+    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(data) {
+      if (!data) {
+        return;
+      }
+      data = data.substr(0, data.length - 1);
       var videos = data.split(';');
-
       if (videos.length <= 0) {
         return;
       }
@@ -405,32 +298,33 @@ var Video = (function() {
       var oldFileIndex = 0;
       var steps = 0;
 
+      var pb = new ProcessBar({
+        sectionsNumber: videos.length,
+        stepsPerSection: 50
+      });
+
       var dialog = new FilesOPDialog({
         title_l10n_id: 'import-videos-dialog-header',
-        processbar_l10n_id: 'processbar-import-videos-promot'
+        processbar_l10n_id: 'processbar-import-videos-promot',
+        processbar: pb
       });
 
       var filesIndicator = $id('files-indicator');
-      var pb = $id('processbar');
-      var ratio = 0;
       filesIndicator.innerHTML = '0/' + videos.length;
 
-      var range = Math.round(100 / videos.length);
-      var step = range / 50;
       var bTimer = false;
 
-      setTimeout(function importVideo() {
-        var cmd = 'adb push "' + videos[fileIndex] + '" /sdcard/Movies/';
+      setTimeout(function doImportVideo() {
+        var cmd = 'adb push "' + videos[fileIndex] + '" /sdcard/Movies';
         var req = navigator.mozFFOSAssistant.runCmd(cmd);
 
         if (!bTimer) {
           bTimer = true;
           var timer = setInterval(function() {
             if (oldFileIndex == fileIndex) {
-              if (steps < 50) {
+              if (steps < 45) {
                 steps++;
-                ratio += step;
-                pb.style.width = ratio + '%';
+                pb.moveForward();
               }
             } else {
               oldFileIndex = fileIndex;
@@ -442,50 +336,49 @@ var Video = (function() {
         req.onsuccess = function(e) {
           filesToBeImported.push(videos[fileIndex]);
           fileIndex++;
-          ratio = Math.round(filesToBeImported.length * 100 / videos.length);
-          pb.style.width = ratio + '%';
+          pb.finish(filesToBeImported.length);
           filesIndicator.innerHTML = fileIndex + '/' + videos.length;
 
           if (fileIndex == videos.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(videos.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing videos
             FFOSAssistant.getAndShowAllVideos();
           } else {
-            importVideo();
+            doImportVideo();
           }
         };
 
-        req.onerror = function (e) {
+        req.onerror = function(e) {
           filesCanNotBeImported.push(videos[fileIndex]);
           fileIndex++;
 
           if (fileIndex == videos.length) {
             clearInterval(timer);
-            pb.style.width.innerHTML = '100%';
+            pb.finish(videos.length);
             dialog.closeAll();
 
             if (filesCanNotBeImported.length > 0) {
               //TODO: tell user some files can't be imported
-              alert(filesCanNotBeImported.length + " files can't be imported");
+              new AlertDialog(filesCanNotBeImported.length + " files can't be imported");
             }
             //TODO: update imported files insteadof refreshing videos
             FFOSAssistant.getAndShowAllVideos();
           } else {
-            importVideo();
+            doImportVideo();
           }
         };
       }, 0);
     }, {
-        title: _('import-video-title'),
-        fileType: 'VideoTypes'
-      });
+      title: _('import-video-title'),
+      fileType: 'Video'
+    });
   }
 
   window.addEventListener('load', function wnd_onload(event) {
@@ -493,11 +386,7 @@ var Video = (function() {
       if (this.dataset.disabled == "true") {
         return;
       }
-      if (this.dataset.checked == "false") {
-        selectAllVideos(true);
-      } else {
-        selectAllVideos(false);
-      }
+      selectAllVideos(this.dataset.checked == "false");
     });
 
     $id('remove-videos').addEventListener('click', function onclick_removeVideos(event) {
@@ -506,8 +395,10 @@ var Video = (function() {
       }
 
       if (navigator.mozFFOSAssistant.isWifiConnect) {
-        new WifiModePromptDialog({title_l10n_id: 'remove-videos-dialog-header',
-                                 prompt_l10n_id: 'wifi-mode-remove-videos-promot'});
+        new WifiModePromptDialog({
+          title_l10n_id: 'remove-videos-dialog-header',
+          prompt_l10n_id: 'wifi-mode-remove-videos-promot'
+        });
         return;
       }
 
@@ -516,9 +407,13 @@ var Video = (function() {
         files.push(item.dataset.videoUrl);
       });
 
-      if (window.confirm(_('delete-videos-confirm', {n: files.length}))) {
-        Video.removeVideos(files);
-      }
+      new AlertDialog(_('delete-videos-confirm', {
+          n: files.length
+        }), true, function (returnBtn) {
+        if(returnBtn) {
+          Video.removeVideos(files);
+        }
+      });
     });
 
     $id('refresh-videos').addEventListener('click', function onclick_refreshVideos(event) {
@@ -535,116 +430,105 @@ var Video = (function() {
       }
 
       if (navigator.mozFFOSAssistant.isWifiConnect) {
-        new WifiModePromptDialog({title_l10n_id: 'export-videos-dialog-header',
-                                 prompt_l10n_id: 'wifi-mode-export-videos-promot'});
+        new WifiModePromptDialog({
+          title_l10n_id: 'export-videos-dialog-header',
+          prompt_l10n_id: 'wifi-mode-export-videos-promot'
+        });
         return;
       }
 
       var videos = $expr('#video-list-container li[data-checked="true"]');
 
-      if (videos.length <= 0 ) {
+      if (videos.length <= 0) {
         return;
       }
 
-      navigator.mozFFOSAssistant.selectDirectory(function(status, dir) {
-        if (status) {
-          var filesToBeExported = [];
-          var filesCanNotBeExported = [];
+      navigator.mozFFOSAssistant.selectDirectory(function(dir) {
+        var filesToBeExported = [];
+        var filesCanNotBeExported = [];
+        var fileIndex = 0;
+        var oldFileIndex = 0;
+        var steps = 0;
 
-          var fileIndex = 0;
-          var oldFileIndex = 0;
-          var steps = 0;
+        var pb = new ProcessBar({
+          sectionsNumber: videos.length,
+          stepsPerSection: 50
+        });
 
-          var dialog = new FilesOPDialog({
-            title_l10n_id: 'export-videos-dialog-header',
-            processbar_l10n_id: 'processbar-export-videos-promot'
-          });
+        var dialog = new FilesOPDialog({
+          title_l10n_id: 'export-videos-dialog-header',
+          processbar_l10n_id: 'processbar-export-videos-promot',
+          processbar: pb
+        });
 
-          var filesIndicator = $id('files-indicator');
-          var pb = $id('processbar');
-          var ratio = 0;
-          filesIndicator.innerHTML = '0/' + videos.length;
+        var filesIndicator = $id('files-indicator');
+        filesIndicator.innerHTML = '0/' + videos.length;
 
-          //processbar range for one file
-          var range = Math.round(100 / videos.length);
-          var step = range / 50;
-          var bTimer = false;
+        var bTimer = false;
 
-          var os = (function() {
-            var oscpu = navigator.oscpu.toLowerCase();
-            return {
-              isWindows: /windows/.test(oscpu),
-              isLinux: /linux/.test(oscpu),
-              isMac: /mac/.test(oscpu)
-            };
-          })();
+        var newDir = dir;
+        if (navigator.mozFFOSAssistant.isWindows) {
+          newDir = dir.substring(1, dir.length);
+        }
 
-          var newDir = dir;
-          if (os.isWindows) {
-            newDir = dir.substring(1, dir.length);
+        setTimeout(function doExportVideo() {
+          var cmd = 'adb pull "' + videos[fileIndex].dataset.videoUrl + '" "' + decodeURI(newDir) + '/' + convertToOutputFileName(videos[fileIndex].dataset.videoUrl) + '"';
+
+          var req = navigator.mozFFOSAssistant.runCmd(cmd);
+
+          if (!bTimer) {
+            bTimer = true;
+            var timer = setInterval(function() {
+              if (oldFileIndex == fileIndex) {
+                if (steps < 45) {
+                  steps++;
+                  pb.moveForward();
+                }
+              } else {
+                oldFileIndex = fileIndex;
+                steps = 0;
+              }
+            }, 100);
           }
 
-          setTimeout(function exportVideo() {
-            var obj = convertFileName(videos[fileIndex].dataset.videoUrl);
-            var cmd = 'adb pull "' + videos[fileIndex].dataset.videoUrl + '" "' + decodeURI(newDir) + '/' + obj.folder + '_' + obj.file + '"';
+          req.onsuccess = function(e) {
+            filesToBeExported.push(videos[fileIndex]);
+            fileIndex++;
+            pb.finish(filesToBeExported.length);
+            filesIndicator.innerHTML = filesToBeExported.length + '/' + videos.length;
 
-            var req = navigator.mozFFOSAssistant.runCmd(cmd);
-            if (!bTimer) {
-              bTimer = true;
-              var timer = setInterval(function() {
-                if (oldFileIndex == fileIndex) {
-                  if (steps < 50) {
-                    steps++;
-                    ratio += step;
-                    pb.style.width = ratio + '%';
-                  }
-                } else {
-                  oldFileIndex = fileIndex;
-                  steps = 0;
-                }
-              }, 100);
+            if (fileIndex == videos.length) {
+              clearInterval(timer);
+              pb.finish(videos.length);
+              dialog.closeAll();
+
+              if (filesCanNotBeExported.length > 0) {
+                //TODO: tell user some files can't be exported
+                new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
+              }
+            } else {
+              doExportVideo();
             }
+          };
 
-            req.onsuccess = function(e) {
-              filesToBeExported.push(videos[fileIndex]);
-              fileIndex++;
-              ratio = Math.round(filesToBeExported.length * 100 / videos.length);
-              pb.style.width = ratio + '%';
-              filesIndicator.innerHTML = filesToBeExported.length + '/' + videos.length;
+          req.onerror = function(e) {
+            filesCanNotBeExported.push(videos[fileIndex]);
+            fileIndex++;
 
-              if (fileIndex == videos.length) {
-                clearInterval(timer);
-                pb.style.width = '100%';
-                dialog.closeAll();
+            if (fileIndex == videos.length) {
+              clearInterval(timer);
+              pb.finish(videos.length);
+              dialog.closeAll();
 
-                if (filesCanNotBeExported.length > 0) {
-                  //TODO: tell user some files can't be exported
-                  alert(filesCanNotBeExported.length + " files can't be exported");
-                }
-              } else {
-                exportVideo();
+              if (filesCanNotBeExported.length > 0) {
+                //TODO: tell user some files can't be exported
+                new AlertDialog(filesCanNotBeExported.length + " files can't be exported");
               }
-            };
-
-            req.onerror = function (e) {
-              filesCanNotBeExported.push(videos[fileIndex]);
-              fileIndex++;
-
-              if (fileIndex == videos.length) {
-                clearInterval(timer);
-                pb.style.width = '100%';
-                dialog.closeAll();
-
-                if (filesCanNotBeExported.length > 0) {
-                  //TODO: tell user some files can't be exported
-                  alert(filesCanNotBeExported.length + " files can't be exported");
-                }
-              } else {
-                exportVideo();
-              }
-            };
-          }, 0);
-        }
+            } else {
+              doExportVideo();
+            }
+          };
+        }, 0);
       }, {
         title: _('export-video-title'),
         fileType: 'Video'
@@ -655,8 +539,8 @@ var Video = (function() {
   return {
     init: init,
     addVideo: addVideo,
-    removeVideo: removeVideo,
-    updateUI: updateUI,
+    updateRemovedVideos: updateRemovedVideos,
+    checkVideoListIsEmpty: checkVideoListIsEmpty,
     selectAllVideos: selectAllVideos,
     removeVideos: removeVideos
   };

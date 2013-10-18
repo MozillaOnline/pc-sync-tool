@@ -8,8 +8,8 @@ html {
 }
 
 body {
-  font-size: 14px;
-  font-family: MozTT,sans-serif;
+  font-size: 1.4rem;
+  font-family: Arial, Helvetica, sans-serif, 宋体;
   color: #333333;
   padding-top: 1rem;
   overflow-y: scroll;
@@ -34,37 +34,23 @@ input[type="tel"],
 input[type="search"],
 input[type="number"],
 input[type="url"], textarea {
+  text-overflow: ellipsis;
   -moz-box-sizing: border-box;
   width: 100%;
   border: 0.1rem solid #CCCCCC;
   border-radius: 0.3rem 0.3rem 0.3rem 0.3rem;
   box-shadow: none;
   display: block;
-  font: 1.4rem/4rem "MozTT",Sans-serif;
+  font: 1.4rem/4rem;
   overflow: hidden;
   padding: 0 0.8rem;
   resize: none;
   height: 3rem;
-  margin: .5rem 0;
+  margin: 0.5rem 0;
 }
 
 .clear-fix {
   clear: both;
-}
-
-.table {
-  display: table;
-  width: 100%;
-}
-
-.table > div {
-  display: table-row;
-  width: 100%;
-}
-
-.table-cell {
-  display: table-cell;
-  height: 100%;
 }
 
 .coming-soon {
@@ -88,20 +74,24 @@ input[type="url"], textarea {
   background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
 }
 
+.button-ok {
+  width: 11rem;
+}
+
 .button-cancel {
   border: 0.1rem solid;
-  border-radius: 0.2rem 0.2rem 0.2rem 0.2rem;
-  color: gray;
+  border-radius: 0.2rem;
+  color: #808080;
   padding: 0.1rem 3rem;
   text-decoration: none;
 }
 
 #container {
   width: 96rem;
-  margin: 6rem auto;
+  margin: auto;
   overflow: hidden;
   background-color: #FFF;
-  box-shadow: 0 0 19px 0 #5F5F5F;
+  box-shadow: 0 0 1.9rem 0 #5F5F5F;
 }
 
 .title-bar {
@@ -134,17 +124,12 @@ input[type="url"], textarea {
 }
 
 #lang-settings label {
-  padding: 0 .5rem;
+  padding: 0 0.5rem;
   cursor: pointer;
 }
 
 #lang-settings label.current {
-  cursor: default;
   color: #952108;
-}
-
-#lang-settings .selected {
-  cursor: default;
 }
 
 #welcome-msg {
@@ -152,28 +137,29 @@ input[type="url"], textarea {
 }
 
 #welcome-msg span {
-  font-size: 25px;
+  font-size: 2.5rem;
   padding: 2rem 1rem 1rem 2rem;
 }
 
 #welcome-msg p {
-  margin: -15px 1rem;
+  margin: -1.5rem 1rem;
   color: #858585;
 }
 
 #user-guide {
   height: 40rem;
 }
+
 .connection-title {
   text-align: center;
-  font-size: 17px;
+  font-size: 1.7rem;
   margin-top: 3rem;
 }
 
 .connection-button {
   height: 19rem;
   text-align: center;
-  margin-top: 1px;
+  margin-top: 0.1rem;
 }
 
 .usb-connection-button-unselect {
@@ -183,12 +169,12 @@ input[type="url"], textarea {
   width: 17rem;
   text-align: center;
   vertical-align: text-bottom;
-  padding: 5px;
+  padding: 0.5rem;
   margin-left: 21rem;
-  margin-right: 10px;
-  margin-top: 5px;
+  margin-right: 1.0rem;
+  margin-top: 0.5rem;
   background-color: #F4F4F4;
-  border-radius: 8px;
+  border-radius: 0.8rem;
 }
 
 .usb-connection-button-unselect[data-checked=false]:hover {
@@ -206,10 +192,10 @@ input[type="url"], textarea {
   width: 17rem;
   text-align: center;
   vertical-align: text-bottom;
-  padding: 5px;
-  margin-top: 5px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
   background-color: #F4F4F4;
-  border-radius: 8px;
+  border-radius: 0.8rem;
 }
 
 .wifi-connection-button-unselect[data-checked=false]:hover {
@@ -224,9 +210,9 @@ input[type="url"], textarea {
   background-color: #e7f0f2;
   height: 17rem;
   text-align: center;
-  margin-right: 159px;
-  margin-left: 168px;
-  margin-top: 9px;
+  margin-right: 15.9rem;
+  margin-left: 16.8rem;
+  margin-top: 0.9rem;
 }
 
 .step-one-usb {
@@ -234,24 +220,24 @@ input[type="url"], textarea {
   float: left;
   height: 7rem;
   width: 12rem;
-  padding: 5px;
+  padding: 0.5rem;
   background-color: #e7f0f2;
-  margin-left: 50px;
-  margin-top: 18px;
+  margin-left: 5.0rem;
+  margin-top: 1.8rem;
 }
 
 .step-one-wifi {
   background: url("images/wificonnection.png") no-repeat center center transparent;
-  margin-left: 68px;
+  margin-left: 6.8rem;
   margin-top: 0;
 }
 
 #step-one span {
-  margin-left: -69px;
-  margin-top: 70px;
-  width: 135px;
+  margin-left: -6.9rem;
+  margin-top: 7.0rem;
+  width: 13.5rem;
   position: absolute;
-  font-size: 12px;
+  font-size: 1.2rem;
   color: #333333;
 }
 
@@ -260,7 +246,7 @@ input[type="url"], textarea {
   float: left;
   height: 6rem;
   width: 7rem;
-  padding: 5px;
+  padding: 0.5rem;
   background-color: #e7f0f2;
   margin-left: 1rem;
 }
@@ -270,9 +256,9 @@ input[type="url"], textarea {
   float: left;
   height: 6rem;
   width: 7rem;
-  padding: 5px;
+  padding: 0.5rem;
   background-color: #e7f0f2;
-  margin: 18px 3rem 0 -1rem;
+  margin: 1.8rem 3rem 0 -1rem;
 }
 
 .step-three-usb {
@@ -280,88 +266,91 @@ input[type="url"], textarea {
   float: left;
   height: 7rem;
   width: 12rem;
-  padding: 5px;
+  padding: 0.5rem;
   background-color: #e7f0f2;
   margin-left: -1.5rem;
-  margin-top: 18px;
+  margin-top: 1.8rem;
 }
 
 .step-three-wifi {
   background: url("images/client.png") no-repeat center center transparent;
-  margin-top: -3px;
+  margin-top: -0.3rem;
 }
 
 #step-three span {
-  margin-left: -80px;
-  margin-top: 73px;
-  width: 160px;
+  margin-left: -8.0rem;
+  margin-top: 7.3rem;
+  width: 16.0rem;
   position: absolute;
   color: #333333;
-  font-size: 12px;
+  font-size: 1.2rem;
 }
 
 #wifi-connection-code-input {
   width: 22rem;
   float: left;
-  margin-left: 64px;
-  margin-top: 36px;
+  margin-left: 6.4rem;
+  margin-top: 3.1rem;
   width: 22rem;
   color: #a6a6a6;
 }
 
 #wifi-connect-button {
-  height: 24px;
-  width: 90px;
+  height: 2.8rem;
+  width: 10rem;
   float: left;
-  font-size: 15px;
-  margin-left: 7px;
-  margin-top: 37px;
+  font-size: 1.5rem;
+  margin-left: 0.7rem;
+  margin-top: 3.7rem;
   text-align: center;
-  font-size: 14px;
-  padding: 5px 0 0 0 ;
+  font-size: 1.4rem;
 }
 
 .connection-step .usbarrow {
-  height: 11px;
-  left: 126px;
+  height: 1.1rem;
+  left: 12.6rem;
   position: relative;
-  width: 20px;
-  top: -12px;
+  width: 2.0rem;
+  top: -1.2rem;
 }
+
 .connection-step .usbarrow .side {
   background-color: #e7f0f2;
-  height: 20px;
+  height: 2.0rem;
   left: 0;
   position: absolute;
-  top: 3px;
+  top: 0.3rem;
   transform: rotate(45deg);
-  width: 20px;
+  width: 2.0rem;
 }
 
 .connection-step .wifiarrow {
-  height: 11px;
-  width: 20px;
-  left: 312px;
+  height: 1.1rem;
+  width: 2.0rem;
+  left: 31.2rem;
   position: relative;
-  top: -12px;
+  top: -1.2rem;
 }
+
 .connection-step .wifiarrow .side {
   background-color: #e7f0f2;
-  height: 20px;
+  height: 2.0rem;
   left: 0;
   position: absolute;
-  top: 3px;
+  top: 0.3rem;
   transform: rotate(45deg);
-  width: 20px;
+  width: 2.0rem;
 }
 
 /****** sidebar *******/
 .sidebar {
   width: 18rem;
   height: 100%;
-  box-shadow: 6px 0 0 0 #EFEFEF;
+  box-shadow: 0.6rem 0 0 0 #EFEFEF;
   background-color: #F4F4F4;
   vertical-align: top;
+  float: left;
+  height: 58rem;
 }
 
 .sidebar .list {
@@ -374,7 +363,7 @@ input[type="url"], textarea {
 
 .sidebar .list .header {
   padding: 1rem;
-  font-size: 20px;
+  font-size: 2.0rem;
   border-left: 0.3rem solid #E86000;
 }
 
@@ -487,6 +476,13 @@ input[type="url"], textarea {
 /******** content *********/
 .content {
   height: 100%;
+  float: left;
+  height: 58rem;
+  width: 75rem;
+}
+
+.narrow-content {
+  width: 47rem;
 }
 
 .content .view {
@@ -498,18 +494,19 @@ input[type="url"], textarea {
 }
 
 .content .view span.title {
-  display: block;
-  padding: 2rem 1rem 1rem 2rem;
-  font-size: 25px;
+  display: -moz-inline-box;
+  padding: 2rem 1.2rem 1rem 2rem;
+  font-size: 2.5rem;
 }
 
 /******** views ******/
 .views {
-  height: 100%;
-  width: 33%;
+  height: 58rem;
+  width: 29rem;
   background-color: #FAFAFA;
   padding: 0 1rem;
   vertical-align: top;
+  float: right;
 }
 
 .hidden-views {
@@ -517,6 +514,12 @@ input[type="url"], textarea {
 }
 
 /******** summary view ******/
+#device-disconnect {
+  display: -moz-inline-box;
+  color: #00c9f7;
+  font-size: 1.6rem;
+}
+
 #device-image {
   float: left;
   width: 50%;
@@ -538,6 +541,9 @@ input[type="url"], textarea {
   background: url("images/usb.png") no-repeat center top transparent;
 }
 
+#device-image .device-connect.wifiConnection {
+  background: url("images/wireless.png") no-repeat center top transparent;
+}
 
 #summary-infos {
   float: left;
@@ -581,7 +587,7 @@ input[type="url"], textarea {
   width: 0;
   height: 100%;
   float: left;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   background-color: #00C9F7;
   transition-property: width;
   transition-duration: 1s;
@@ -591,14 +597,14 @@ input[type="url"], textarea {
   height: 3rem;
 }
 
-#summary-infos .device-info > div:first-child {
+#summary-infos .device-info > span:first-child {
   font-size: 1.4rem;
   color: #868686;
   float: left;
   margin-top: 1rem;
 }
 
-#summary-infos .device-info  > div:last-child  {
+#summary-infos .device-info  > span:last-child  {
   float: left;
   margin-left: 0.8rem;
   margin-top: 1rem;
@@ -610,7 +616,7 @@ input[type="url"], textarea {
   height: 3rem;
 }
 
-#summary-infos .storage-detail > div:first-child {
+#summary-infos .storage-detail > span {
   font-size: 1.4rem;
   color: #868686;
   float: left;
@@ -651,7 +657,7 @@ div.modal-mask {
   background-color: #000;
   position: fixed;
   top: 0;
-  left: 0; 
+  left: 0;
   height: 100%;
   width: 100%;
   opacity: 0.3;
@@ -715,18 +721,18 @@ input.modal-btn {
 }
 
 .select-multi-files-dialog {
-  background:#fff;
-  border:1px #aaaaaa solid;
-  border-radius:5px;
-  box-shadow:0 2px 20px rgba(0,0,0,0.5);
-  cursor:default;
+  background: #fff;
+  border: 0.1rem #aaaaaa solid;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.2rem 2.0rem rgba(0,0,0,0.5);
+  cursor: default;
 }
 
 .select-multi-files-dialog-header {
-  border-radius:5px 5px 0 0;
-  border-bottom:1px #E86000 solid;
-  box-shadow:0 1px 0 #E86000 inset;
-  padding:7px 8px 7px 10px;
+  border-radius: 0.5rem 0.5rem 0 0;
+  border-bottom: 0.1rem #E86000 solid;
+  box-shadow: 0 0.1rem 0 #E86000 inset;
+  padding: 0.7rem 0.8rem 0.7rem 1.0rem;
   overflow: hidden;
   background-color: #E86000;
   color: #FFFFFF;
@@ -737,17 +743,16 @@ input.modal-btn {
 }
 
 .select-multi-files-dialog-header-x {
-  background-position:0 -8431px;
-  cursor:default;
-  height:16px;
-  width:16px;
+  cursor: default;
+  height: 1.6rem;
+  width: 1.6rem;
   float: right;
-  background: url("images/sms-cancel.png");
+  background: url("images/dialog-cancel.png");
 }
 
 .select-multi-files-dialog-body {
-  min-height:2em;
-  padding:15px 15px 10px;
+  min-height: 2em;
+  padding: 1.5rem 1.5rem 1.0rem;
 }
 
 .processbar-prompt {
@@ -759,45 +764,165 @@ input.modal-btn {
 }
 
 .processbar-container {
-  width:100%;
-  height:10px;
-  background-color:#E7E7E7;
-  border-radius: 5px;
+  width: 100%;
+  height: 1.0rem;
+  background-color: #E7E7E7;
+  border-radius: 0.5rem;
 }
 
 .processbar {
   width: 0%;
-  height:10px;
-  background-color:#00C9F7;
-  border-radius: 5px;
+  height: 1.0rem;
+  background-color: #00C9F7;
+  border-radius: 0.5rem;
 }
 
 .select-multi-files-dialog-footer {
-  padding:0 15px 15px
+  padding: 0 1.5rem 1.5rem;
 }
 
 .select-multi-files-dialog-footer-button-ctn {
-  text-align:right
+  text-align: right;
 }
 
 .select-multi-files-dialog-footer-button-ctn .button {
   background: -moz-linear-gradient(center top , #f3f3f3, #e9e9e9) repeat scroll 0 0 transparent;
-  border-color:#2c8e00;
-  box-shadow:inset 0 1px 0 0 rgba(255,255,255,0.2);
-  color:rgba(0,0,0,0.9);
-  text-shadow:0 1px 0 rgba(0,0,0,0.2);
-  border: 1px #999999 solid;
-  border-radius: 3px;
-  height: 26px;
-  min-width: 60px;
-  padding: 3px 10px;
+  border-color: #2c8e00;
+  box-shadow: inset 0 0.1rem 0 0 rgba(255,255,255,0.2);
+  color: rgba(0,0,0,0.9);
+  text-shadow: 0 0.1rem 0 rgba(0,0,0,0.2);
+  border: 0.1rem #999999 solid;
+  border-radius: 0.3rem;
+  height: 2.6rem;
+  min-width: 6.0rem;
+  padding: 0.3rem 1.0rem;
   vertical-align: middle;
-  font: 12px/1.5em Arial, Helvetica, Microsoft Yahei, sans-serif;
+  font: 1.2rem/1.5em;
   text-align: center;
-  cursor: default;
   background-color: buttonface;
   letter-spacing: normal;
   word-spacing: normal;
   display: inline-block;
-  margin-left: 4px
+  margin-left: 0.4rem
+}
+
+.loading-dialog {
+  height: 100%;
+  margin-left: 0.7rem;
+  position: absolute;
+  top: 0;
+  width: calc(100% - 0.7rem);
+  z-index: 2;
+  background: transparent;
+}
+
+.loading {
+  background: transparent;
+  position: relative;
+  left: 0;
+  margin: 0 auto;
+  top: 10.0rem;
+  width: 10rem;
+  height: 10rem;
+  font-size: 70px;
+  list-style: none;
+}
+
+.loading li {
+  background: url("images/loading.png") no-repeat;
+  width: 1em;
+  height: 1em;
+  -moz-animation:
+    rota 1.13s linear infinite,
+    opa 3.67s ease-in-out infinite alternate;
+}
+
+/* css3 keyframes - animation */
+@-moz-keyframes rota {
+  to { -moz-transform: rotate(360deg); }
+}
+
+@-moz-keyframes opa {
+  12.0% { opacity: 0.80; }
+  19.5% { opacity: 0.88; }
+  37.2% { opacity: 0.64; }
+  40.5% { opacity: 0.52; }
+  52.7% { opacity: 0.69; }
+  60.2% { opacity: 0.60; }
+  66.6% { opacity: 0.52; }
+  70.0% { opacity: 0.63; }
+  79.9% { opacity: 0.60; }
+  84.2% { opacity: 0.75; }
+  91.0% { opacity: 0.87; }
+}
+
+.alert {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border: 0.1rem #000 solid;
+  height: 17rem;
+  position: relative;
+  text-align: center;
+  width: 35rem;
+  cursor: default;
+  left: 0;
+  margin: 0 auto;
+  border-radius: 0.5rem;
+}
+
+.alert-dialog-header{
+  border-radius:0.5rem 0.5rem 0 0;
+  border-bottom:0.1rem #E86000 solid;
+  box-shadow:0 0.1rem 0 #E86000 inset;
+  padding:0.7rem 0.8rem 0.7rem 1.0rem;
+  overflow: hidden;
+  background-color: #E86000;
+  color: #FFFFFF;
+}
+
+.alert-dialog-header-title{
+  float: left
+}
+
+.alert-dialog-header-x{
+  cursor:default;
+  height:1.6rem;
+  width:1.6rem;
+  float: right;
+  background: url("images/dialog-cancel.png");
+}
+
+.alert-dialog-header-x:hover{
+  background: url("images/dialog-cancel-hover.png");
+}
+
+.alert-dialog-header-x:active{
+  background: url("images/dialog-cancel-active.png");
+}
+
+.alert-dialog-body{
+  height: 2.5em;
+  padding: 4.5rem 1.5rem 1.0rem;
+}
+
+.alert-dialog-footer{
+  border-radius:0 0 0.5rem 0.5rem;
+  padding:0 1.5rem 1.5rem;
+}
+
+.alert-dialog-footer .button{
+  color: #FFF;
+}
+
+.tip {
+  background-color: #000000;
+  color: #FFFFFF;
+  width: 10.6rem;
+  padding: 0.7rem;
+  position: absolute;
+  font-size: 0.9rem;
+  display: none;
+}
+
+.empty-container {
+  margin: 0 2rem 0 0.6rem;
 }

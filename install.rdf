@@ -3,10 +3,10 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
     <Description about="urn:mozilla:install-manifest">
         <em:id>ffosassistant@mozillaonline.com</em:id>
-        <em:name>FFOS Assistant</em:name>
-        <em:version>0.2</em:version>
-        <em:iconURL>chrome://ffosassistant/content/style/icons/pcsync64.png</em:iconURL>
-        <em:description></em:description>
+        <em:name>Firefox OS Assistant</em:name>
+        <em:version>1.2</em:version>
+        <em:iconURL>chrome://ffosassistant/content/style/icons/ffosassistant64.png</em:iconURL>
+        <em:description>Manage Firefox OS device</em:description>
         <em:creator>Mozilla Online Ltd.</em:creator>
         <em:homepageURL>http://www.firefox.com.cn/</em:homepageURL>
         <em:type>2</em:type> <!-- type=extension --> 

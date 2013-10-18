@@ -1,7 +1,3 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- License, v. 2.0. If a copy of the MPL was not distributed with this
- file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 function ContactField(options) {
   this.initialize(options);
 }
@@ -298,6 +294,7 @@ var ContactForm = (function() {
     var contactId = $id('contact-form-id').value;
     var updateContact = !! contactId;
     var contact = null;
+    var loadingGroupId = animationLoading.start();
 
     if (updateContact) {
       // Update contact
@@ -348,21 +345,23 @@ var ContactForm = (function() {
     }
 
     if (contact.givenName.length == 0) {
-      alert(navigator.mozL10n.get('EmptyForm'));
+      new AlertDialog(navigator.mozL10n.get('EmptyForm'));
       return;
     }
 
     if (updateContact) {
       // Save to device
       CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {
+        animationLoading.stop(loadingGroupId);
       }, function onerror_updatecontact(message) {
-        alert('Error occurs when updating contacts: ' + JSON.stringify(message));
+        animationLoading.stop(loadingGroupId);
       });
     } else {
       // Create new contact
       CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
+        animationLoading.stop(loadingGroupId);
       }, function onerror_addcontact(message) {
-        alert('Error occurs when adding contacts: ' + JSON.stringify(message));
+        animationLoading.stop(loadingGroupId);
       });
     }
   }
@@ -371,14 +370,10 @@ var ContactForm = (function() {
     var fullName = $id('fullName').value.trim();
     var mobile = $id('mobile').value.trim();
     if (fullName == '') {
-      alert(_('EmptyName'));
+      new AlertDialog(_('EmptyName'));
       return;
     }
-    /*
-    if (mobile == '') {
-      alert(_('EmptyPhone'));
-      return;
-    }*/
+    var loadingGroupId = animationLoading.start();
     contact = {
       id: null,
       photo: [],
@@ -419,8 +414,11 @@ var ContactForm = (function() {
       "carrier": ""
     }];
     CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
+      $id('fullName').value = '';
+      $id('mobile').value = '';
+      animationLoading.stop(loadingGroupId);
     }, function onerror_addcontact(message) {
-      alert('Error occurs when quick adding contact: ' + JSON.stringify(message));
+      animationLoading.stop(loadingGroupId);
     });
   }
 
@@ -493,7 +491,6 @@ var ContactForm = (function() {
 
       offscreenImage.onerror = function() {
         URL.revokeObjectURL(url);
-        alert('error');
       };
 
       offscreenImage.onload = function() {
