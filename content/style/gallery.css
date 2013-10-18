@@ -164,6 +164,16 @@
   margin-left: 0.3rem;
 }
 
+.picture-thread li img {
+  border: 0.2rem #FFFFFF solid;
+  height: 7.8rem;
+  width: 10.6rem;
+}
+
+.picture-thread li img:hover {
+  border: 0.2rem #00c8f0 solid;
+}
+
 .picture-thread li[data-checked=true] .item-check {
   width: 1.7rem;
   height: 1.7rem;
