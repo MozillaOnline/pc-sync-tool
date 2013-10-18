@@ -1,3 +1,12 @@
+
+function extractCarrier(tel) {
+  var ret = '';
+  if (/carrier=(.+)/i.test(tel)) {
+    ret = tel.match(/carrier=(.+)/i)[1];
+  }
+  return ret;
+}
+
 vCardConverter = {
   importContacts: function(data) {
     var items = vCard.initialize(data);
@@ -622,7 +631,7 @@ vCardConverter = {
     vcard += ';;;';
     vcard += '\nFN:';
 
-    if (contact.familyName) {
+    if (contact.familyName && contact.familyName != '') {
       vcard += contact.familyName + ' ';
     }
 

@@ -574,14 +574,6 @@ var ContactList = (function() {
     }
   }
 
-  function extractCarrier(tel) {
-    var ret = '';
-    if (/carrier=(.+)/i.test(tel)) {
-      ret = tel.match(/carrier=(.+)/i)[1];
-    }
-    return ret;
-  }
-
   window.addEventListener('load', function wnd_onload(event) {
     $id('selectAll-contacts').addEventListener('click', function selectAll_onclick(event) {
       if (this.dataset.disabled == "true") {
