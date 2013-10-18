@@ -152,11 +152,9 @@ var FFOSAssistant = (function() {
           var message = JSON.parse(recvData);
           if (message.type == 'sms') {
             ViewManager.callEvent('onMessage', 'sms', message);
-            //SmsList.onMessage(message);
           } else if (message.type == 'contact') {
             ViewManager.callEvent('onMessage', 'contact', message);
-            //ContactList.onMessage(message);
-            //SmsList.onMessage('updateAvatar');
+            ViewManager.callEvent('onMessage', 'sms', 'updateAvatar');
           }
         },
         onclose: function() {

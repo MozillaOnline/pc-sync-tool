@@ -3,6 +3,7 @@ var ContactList = (function() {
   var handler = null;
   var handlerEdit = null;
   var handlerSend = null;
+  var listenContactMessage = false;
 
   function getListContainer() {
     return $id('contact-list-container');
@@ -259,7 +260,10 @@ var ContactList = (function() {
     groupedList.render();
     updateAllAvatar();
     checkIfContactListEmpty();
-    ViewManager.addViewEventListener('contact', 'onMessage', onMessage);
+    if (listenContactMessage == false) {
+      ViewManager.addViewEventListener('contact', 'onMessage', onMessage);
+      listenContactMessage = true;
+    }
   }
 
 /*
@@ -726,7 +730,6 @@ var ContactList = (function() {
     init: initList,
     removeContact: removeContact,
     getContact: getContact,
-    selectAllContacts: selectAllContacts,
-    onMessage: onMessage
+    selectAllContacts: selectAllContacts
   };
 })();

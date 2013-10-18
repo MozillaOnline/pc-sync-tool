@@ -6,6 +6,7 @@ var SmsList = (function() {
   var messageList = null;
   var messageListContainer = null;
   var handlerHeaderButton = null;
+  var listenSmsMessage = false;
 
   function initSmsPage(smsThreads) {
     threadListContainer = $id('threads-list-container');
@@ -35,8 +36,10 @@ var SmsList = (function() {
     threadList.render();
     updateAvatar();
     showThreadList();
-    ViewManager.addViewEventListener('sms', 'onMessage', onMessage);
-    ViewManager.addViewEventListener('contact', 'onMessage', onMessage);
+    if(listenSmsMessage == false) {
+      ViewManager.addViewEventListener('sms', 'onMessage', onMessage);
+      listenSmsMessage = true;
+    }
   }
 
   function updateAvatar() {
@@ -61,19 +64,19 @@ var SmsList = (function() {
         var threadItem = $id('id-threads-data-' + threadInfo.id);
         var name = threadItem.getElementsByTagName('div')[2];
         name.childNodes[0].type = 'contact';
-        name.childNodes[0].nodeValue = contactData.name;
+        name.childNodes[0].nodeValue = contactData.name.join(' ');
 
         if (!$id('sms-select-view').hidden) {
           var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
           if ( !! selectViewName) {
-            selectViewName.childNodes[0].nodeValue = contactData.name;
+            selectViewName.childNodes[0].nodeValue = contactData.name.join(' ');
           }
         }
 
         if (!$id('sms-thread-view').hidden) {
           var messageViewName = $id('sms-thread-header-name');
           if ( !! messageViewName) {
-            messageViewName.textContent = contactData.name;
+            messageViewName.textContent = contactData.name.join(' ');
             var titleElem = $id('add-to-contact-' + threadInfo.id);
             if (titleElem) {
               titleElem.hidden = true;
@@ -854,7 +857,6 @@ var SmsList = (function() {
     init: initSmsPage,
     removeThread: removeThread,
     exportThreads: exportThreads,
-    onMessage: onMessage,
     selectAllSms: selectAllSms
   };
 })();

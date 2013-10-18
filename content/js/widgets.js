@@ -403,7 +403,7 @@ SendSMSDialog.prototype = {
     cancelBtn.hidden = false;
     cancelBtn.addEventListener('click', self.close.bind(self));
 
-    $id('content').addEventListener('keyup', function onclick_addNewSms(event) {
+    $id('sms-text-content').addEventListener('keyup', function onclick_addNewSms(event) {
       var header = _('text-sms-count', {
         n: this.value.length
       });
@@ -500,7 +500,7 @@ SendSMSDialog.prototype = {
   sendSingle: function() {
     var loadingGroupId = animationLoading.start();
     var tel = $id('select-contact-tel-button');
-    var message = $id('content');
+    var message = $id('sms-text-content');
     var sender = [tel.value];
     var self = this;
     message.readOnly = true;
@@ -524,7 +524,7 @@ SendSMSDialog.prototype = {
   send: function() {
     var loadingGroupId = animationLoading.start();
     var number = $id('address').value.split(';');
-    var message = $id('content');
+    var message = $id('sms-text-content');
     var sender = [];
     var self = this;
     message.readOnly = true;
