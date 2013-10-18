@@ -56,10 +56,10 @@ FFOSAssistant.prototype = {
     // TODO add privileges checking
     // TODO check if the page is privileged, if yes, the __exposedProps__ should not be set
 
-    const messages = ['ADBService:disconnect:Return:OK', 'ADBService:disconnect:Return:NO',
-                      'ADBService:statechange',
-                      'DriverDownloader:asyncCommand:Return:OK', 'DriverDownloader:asyncCommand:Return:NO',
-                      'DriverDownloader:message','ADBService:RunCmd:Return:OK'];
+    const messages = [{name:'ADBService:disconnect:Return:OK',strongRef:true}, {name:'ADBService:disconnect:Return:NO',strongRef:true},
+                      {name:'ADBService:statechange',strongRef:true},
+                      {name:'DriverDownloader:asyncCommand:Return:OK',strongRef:true}, {name:'DriverDownloader:asyncCommand:Return:NO',strongRef:true},
+                      {name:'DriverDownloader:message',strongRef:true},{name:'ADBService:RunCmd:Return:OK',strongRef:true}];
     this.initDOMRequestHelper(aWindow, messages);
   },
 
