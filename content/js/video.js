@@ -210,7 +210,7 @@ var Video = (function() {
         bTimer = true;
         var timer = setInterval(function() {
           if (oldFileIndex == fileIndex) {
-            if (steps < 50) {
+            if (steps < 45) {
               steps++;
               pb.moveForward();
             }
@@ -322,7 +322,7 @@ var Video = (function() {
           bTimer = true;
           var timer = setInterval(function() {
             if (oldFileIndex == fileIndex) {
-              if (steps < 50) {
+              if (steps < 45) {
                 steps++;
                 pb.moveForward();
               }
@@ -480,7 +480,7 @@ var Video = (function() {
             bTimer = true;
             var timer = setInterval(function() {
               if (oldFileIndex == fileIndex) {
-                if (steps < 50) {
+                if (steps < 45) {
                   steps++;
                   pb.moveForward();
                 }
