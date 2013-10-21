@@ -67,7 +67,7 @@ GroupedList.prototype = {
     var bSorter = b['dataSorterName'].toString();
     var length = aSorter.length < bSorter.length ? aSorter.length : bSorter.length;
     for (var i = 0; i < length; i++) {
-      if(aSorter[i] == bSorter[i]) {
+      if (aSorter[i] == bSorter[i]) {
         continue;
       } else if (aSorter[i] < bSorter[i]) {
         return -1;
@@ -75,7 +75,7 @@ GroupedList.prototype = {
         return 1;
       }
     }
-    if(aSorter.length == bSorter.length) {
+    if (aSorter.length == bSorter.length) {
       return 0;
     } else if (aSorter.length < bSorter.length) {
       return -1;
@@ -122,7 +122,7 @@ GroupedList.prototype = {
       group.dataList = [];
       this._groupedData.push(group);
     }
-    if(this.options.dataSorterName) {
+    if (this.options.dataSorterName) {
       dataObj['dataSorterName'] = dataObj[this.options.dataSorterName];
       group.dataList.push(dataObj);
       group.dataList.sort(this.options.dataSorter);
@@ -228,7 +228,7 @@ GroupedList.prototype = {
       var elem = this.options.renderFunc(dataObj);
       if (elem) {
         elem.dataset.dataIdentity = this.options.dataIdentifier(dataObj);
-        if(dataIndexInGroup + 1 < group.dataList.length) {
+        if (dataIndexInGroup + 1 < group.dataList.length) {
           var dataAfter = groupElem.childNodes[dataIndexInGroup + 1];
           groupElem.insertBefore(elem, dataAfter);
         } else {
@@ -259,7 +259,7 @@ GroupedList.prototype = {
     // remove whole group
     if (group.dataList.length === 0) {
       groupElem.parentNode.removeChild(groupElem);
-      this._groupedData.splice(this._groupedData.indexOf(group),1);
+      this._groupedData.splice(this._groupedData.indexOf(group), 1);
     } else {
       for (var i = 0; i < groupElem.childNodes.length; i++) {
         var child = groupElem.childNodes[i];
@@ -325,8 +325,8 @@ SendSMSDialog.prototype = {
     };
     if (this.options.type == 'single') {
       if (this.options.number && this.options.number.length > 0) {
-        for (var i=0;i<this.options.number.length;i++) {
-            templateData.number.push(this.options.number[i].value);
+        for (var i = 0; i < this.options.number.length; i++) {
+          templateData.number.push(this.options.number[i].value);
         }
       }
     } else {
@@ -736,7 +736,7 @@ function ProcessBar(options) {
 }
 
 ProcessBar.prototype = {
-  initialize: function (options) {
+  initialize: function(options) {
     this.options = extend({
       sectionsNumber: 0,
       stepsPerSection: 0
@@ -1171,7 +1171,7 @@ function AlertDialog(message, showCancelButton, callback) {
 }
 
 AlertDialog.prototype = {
-    initialize: function(message, showCancelButton, callback) {
+  initialize: function(message, showCancelButton, callback) {
     this._modalElement = null;
     this._mask = null;
     this._mask = document.createElement('div');
@@ -1238,14 +1238,14 @@ AlertDialog.prototype = {
   },
 
   okButtonCallback: function() {
-    if(this.callback){
+    if (this.callback) {
       this.callback(true);
     }
     this.close();
   },
 
   cancelButtonCallback: function() {
-    if(this.callback){
+    if (this.callback) {
       this.callback(false);
     }
     this.close();

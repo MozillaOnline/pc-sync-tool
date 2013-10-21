@@ -1,4 +1,3 @@
-
 function extractCarrier(tel) {
   var ret = '';
   if (/carrier=(.+)/i.test(tel)) {
@@ -614,7 +613,7 @@ vCardConverter = {
       CMD.Contacts.addContact(JSON.stringify(contact), null, null);
     })
   },
-  exportContact: function (contact) {
+  exportContact: function(contact) {
     var vcard = 'BEGIN:VCARD';
     vcard += '\nVERSION:3.0';
     vcard += '\nN:';

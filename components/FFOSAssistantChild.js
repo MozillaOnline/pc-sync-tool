@@ -5,14 +5,20 @@
 "use strict"
 
 let DEBUG = 0;
-if (DEBUG)
-  debug = function (s) { dump("-*- adbService: " + s + "\n"); };
+if (DEBUG) debug = function(s) {
+  dump("-*- adbService: " + s + "\n");
+};
 else
-  debug = function (s) { };
+debug = function(s) {};
 
 const LOCAL_PORT = 10010;
 
-const {classes: Cc, interfaces: Ci, utils: Cu, results: Cr} = Components;
+const {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu,
+  results: Cr
+} = Components;
 
 const ADBSERVICE_CONTRACT_ID = '@mozilla.org/adbservice;1';
 const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
@@ -22,18 +28,17 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
 
 let modules = {};
-XPCOMUtils.defineLazyServiceGetter(this, "cpmm",
-                                   "@mozilla.org/childprocessmessagemanager;1",
-                                   "nsISyncMessageSender");
-XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils',        'resource://gre/modules/FileUtils.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil',          'resource://gre/modules/NetUtil.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'Services',         'resource://gre/modules/Services.jsm');
+XPCOMUtils.defineLazyServiceGetter(this, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
+XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils', 'resource://gre/modules/FileUtils.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil', 'resource://gre/modules/NetUtil.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
-XPCOMUtils.defineLazyModuleGetter(this, 'utils',            'resource://ffosassistant/utils.jsm');
-XPCOMUtils.defineLazyServiceGetter(modules, "xulRuntime",   '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
+XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
+XPCOMUtils.defineLazyServiceGetter(modules, "xulRuntime", '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
 
 /***** Component definition *****/
-function FFOSAssistant() { }
+
+function FFOSAssistant() {}
 
 FFOSAssistant.prototype = {
   __proto__: DOMRequestIpcHelper.prototype,
@@ -41,25 +46,41 @@ FFOSAssistant.prototype = {
   classID: ADBSERVICE_CID,
 
   classInfo: XPCOMUtils.generateCI({
-               classID: ADBSERVICE_CID,
-               contractID: ADBSERVICE_CONTRACT_ID,
-               classDescription: "FFOS Assistant",
-               interfaces: [Ci.nsIFFOSAssistant],
-               flags: Ci.nsIClassInfo.DOM_OBJECT
-             }),
+    classID: ADBSERVICE_CID,
+    contractID: ADBSERVICE_CONTRACT_ID,
+    classDescription: "FFOS Assistant",
+    interfaces: [Ci.nsIFFOSAssistant],
+    flags: Ci.nsIClassInfo.DOM_OBJECT
+  }),
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIFFOSAssistant,
-                                         Ci.nsIDOMGlobalPropertyInitializer]),
+  QueryInterface: XPCOMUtils.generateQI([Ci.nsIFFOSAssistant, Ci.nsIDOMGlobalPropertyInitializer]),
 
   // nsIDOMGlobalPropertyInitializer implementation
   init: function(aWindow) {
     // TODO add privileges checking
     // TODO check if the page is privileged, if yes, the __exposedProps__ should not be set
-
-    const messages = [{name:'ADBService:disconnect:Return:OK',strongRef:true}, {name:'ADBService:disconnect:Return:NO',strongRef:true},
-                      {name:'ADBService:statechange',strongRef:true},
-                      {name:'DriverDownloader:asyncCommand:Return:OK',strongRef:true}, {name:'DriverDownloader:asyncCommand:Return:NO',strongRef:true},
-                      {name:'DriverDownloader:message',strongRef:true},{name:'ADBService:RunCmd:Return:OK',strongRef:true}];
+    const messages = [{
+      name: 'ADBService:disconnect:Return:OK',
+      strongRef: true
+    }, {
+      name: 'ADBService:disconnect:Return:NO',
+      strongRef: true
+    }, {
+      name: 'ADBService:statechange',
+      strongRef: true
+    }, {
+      name: 'DriverDownloader:asyncCommand:Return:OK',
+      strongRef: true
+    }, {
+      name: 'DriverDownloader:asyncCommand:Return:NO',
+      strongRef: true
+    }, {
+      name: 'DriverDownloader:message',
+      strongRef: true
+    }, {
+      name: 'ADBService:RunCmd:Return:OK',
+      strongRef: true
+    }];
     this.initDOMRequestHelper(aWindow, messages);
   },
 
@@ -100,46 +121,46 @@ FFOSAssistant.prototype = {
 
     let request = null;
     switch (aMessage.name) {
-      case 'ADBService:disconnect:Return:OK':
-        request = this.takeRequest(msg.rid);
-        if (!request) {
-          return;
-        }
-        Services.DOMRequest.fireSuccess(request, null);
-        break;
-      case 'ADBService:disconnect:Return:NO':
-        request = this.takeRequest(msg.rid);
-        if (!request) {
-          return;
-        }
-        Services.DOMRequest.fireError(request, "Failed to disconnect");
-        break;
-      case 'ADBService:statechange':
-        this._onStateChange();
-        break;
-      case 'DriverDownloader:asyncCommand:Return:OK':
-        request = this.takeRequest(msg.rid);
-        if (!request) {
-          return;
-        }
-        Services.DOMRequest.fireSuccess(request, msg.data);
-        break;
-      case 'DriverDownloader:asyncCommand:Return:NO':
-        request = this.takeRequest(msg.rid);
-        if (!request) {
-          return;
-        }
-        Services.DOMRequest.fireError(request, "Failed to excute async command");
-        break;
-      case 'ADBService:RunCmd:Return:OK':
-        request = this.takeRequest(msg.rid);
-        if (!request) {
-          return;
-        }
-        Services.DOMRequest.fireSuccess(request, msg.data);
-        break;
-      default:
-        break;
+    case 'ADBService:disconnect:Return:OK':
+      request = this.takeRequest(msg.rid);
+      if (!request) {
+        return;
+      }
+      Services.DOMRequest.fireSuccess(request, null);
+      break;
+    case 'ADBService:disconnect:Return:NO':
+      request = this.takeRequest(msg.rid);
+      if (!request) {
+        return;
+      }
+      Services.DOMRequest.fireError(request, "Failed to disconnect");
+      break;
+    case 'ADBService:statechange':
+      this._onStateChange();
+      break;
+    case 'DriverDownloader:asyncCommand:Return:OK':
+      request = this.takeRequest(msg.rid);
+      if (!request) {
+        return;
+      }
+      Services.DOMRequest.fireSuccess(request, msg.data);
+      break;
+    case 'DriverDownloader:asyncCommand:Return:NO':
+      request = this.takeRequest(msg.rid);
+      if (!request) {
+        return;
+      }
+      Services.DOMRequest.fireError(request, "Failed to excute async command");
+      break;
+    case 'ADBService:RunCmd:Return:OK':
+      request = this.takeRequest(msg.rid);
+      if (!request) {
+        return;
+      }
+      Services.DOMRequest.fireSuccess(request, msg.data);
+      break;
+    default:
+      break;
     }
   },
 
@@ -186,10 +207,9 @@ FFOSAssistant.prototype = {
     return this._isWifiConnect;
   },
 
-  selectDirectory: function (callback, options) {
+  selectDirectory: function(callback, options) {
     var nsIFilePicker = Ci.nsIFilePicker;
-    var filePicker = Cc["@mozilla.org/filepicker;1"]
-                       .createInstance(Ci.nsIFilePicker);
+    var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let title = options && options.title ? options.title : null;
     filePicker.init(this._window, title, Ci.nsIFilePicker.modeGetFolder);
     if (options && options.fileType) {
@@ -210,7 +230,7 @@ FFOSAssistant.prototype = {
       switch (returnCode) {
       case Ci.nsIFilePicker.returnOK:
         callback(filePicker.fileURL.path);
-         break;
+        break;
       case Ci.nsIFilePicker.returnCancel:
       default:
         break;
@@ -219,8 +239,7 @@ FFOSAssistant.prototype = {
   },
 
   saveToDisk: function(content, callback, options) {
-    var filePicker = Cc["@mozilla.org/filepicker;1"]
-                       .createInstance(Ci.nsIFilePicker);
+    var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let title = options && options.title ? options.title : null;
     filePicker.init(this._window, title, Ci.nsIFilePicker.modeSave);
     if (options) {
@@ -240,66 +259,66 @@ FFOSAssistant.prototype = {
 
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
-        case Ci.nsIFilePicker.returnOK:
-        case Ci.nsIFilePicker.returnReplace:
-          let file = filePicker.file;
-          var ostream = FileUtils.openSafeFileOutputStream(file);
+      case Ci.nsIFilePicker.returnOK:
+      case Ci.nsIFilePicker.returnReplace:
+        let file = filePicker.file;
+        var ostream = FileUtils.openSafeFileOutputStream(file);
 
-          var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter'].
-                            createInstance(Ci.nsIScriptableUnicodeConverter);
-          converter.charset = 'UTF-8';
-          var istream = converter.convertToInputStream(content);
+        var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter'].
+        createInstance(Ci.nsIScriptableUnicodeConverter);
+        converter.charset = 'UTF-8';
+        var istream = converter.convertToInputStream(content);
 
-          NetUtil.asyncCopy(istream, ostream, function(status) {
-            if (!Components.isSuccessCode(status)) {
-              // TODO report error
-              callback(false);
-            } else {
-              // Content has been written to the file.
-              callback(true);
-            }
-          });
-          break;
-        case Ci.nsIFilePicker.returnCancel:
-        default:
-          callback(false);
-          break;
+        NetUtil.asyncCopy(istream, ostream, function(status) {
+          if (!Components.isSuccessCode(status)) {
+            // TODO report error
+            callback(false);
+          } else {
+            // Content has been written to the file.
+            callback(true);
+          }
+        });
+        break;
+      case Ci.nsIFilePicker.returnCancel:
+      default:
+        callback(false);
+        break;
       }
     });
   },
 
   readFromDisk: function(callback) {
-    var filePicker = Cc["@mozilla.org/filepicker;1"]
-                       .createInstance(Ci.nsIFilePicker);
+    var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     filePicker.init(this._window, null, Ci.nsIFilePicker.modeOpen);
     filePicker.appendFilter('*.vcf', '*.vcf');
     filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
-        case Ci.nsIFilePicker.returnOK:
-        case Ci.nsIFilePicker.returnReplace:
-          let file = filePicker.file;
-          NetUtil.asyncFetch(file, function(inputStream, status) {
-            if (!Components.isSuccessCode(status)) {
-              //TODO report error
-              callback(false,null);
-            } else {
-              var data = NetUtil.readInputStreamToString(inputStream, inputStream.available(),{charset:'UTF-8'});
-              callback(true, data);
-            }
-          });
-          break;
-        case Ci.nsIFilePicker.returnCancel:
-        default:
-          callback(false, null);
+      case Ci.nsIFilePicker.returnOK:
+      case Ci.nsIFilePicker.returnReplace:
+        let file = filePicker.file;
+        NetUtil.asyncFetch(file, function(inputStream, status) {
+          if (!Components.isSuccessCode(status)) {
+            //TODO report error
+            callback(false, null);
+          } else {
+            var data = NetUtil.readInputStreamToString(inputStream, inputStream.available(), {
+              charset: 'UTF-8'
+            });
+            callback(true, data);
+          }
+        });
+        break;
+      case Ci.nsIFilePicker.returnCancel:
+      default:
+        callback(false, null);
       }
     });
   },
 
   selectMultiFilesFromDisk: function(callback, options) {
     var nsIFilePicker = Ci.nsIFilePicker;
-    var filePicker = Cc["@mozilla.org/filepicker;1"]
-                       .createInstance(Ci.nsIFilePicker);
+    var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let title = options && options.title ? options.title : null;
     filePicker.init(this._window, title, Ci.nsIFilePicker.modeOpenMultiple);
     if (options && options.fileType) {
@@ -319,24 +338,24 @@ FFOSAssistant.prototype = {
     }
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
-        case Ci.nsIFilePicker.returnOK:
-        case Ci.nsIFilePicker.returnReplace:
-          var files = filePicker.files;
-          var filePath = '';
-          while (files.hasMoreElements()) {
-            var file = files.getNext().QueryInterface(Components.interfaces.nsIFile);
-            filePath += file.path + ';';
-          }
-          callback(filePath);
-          break;
-        case Ci.nsIFilePicker.returnCancel:
-        default:
-          break;
+      case Ci.nsIFilePicker.returnOK:
+      case Ci.nsIFilePicker.returnReplace:
+        var files = filePicker.files;
+        var filePath = '';
+        while (files.hasMoreElements()) {
+          var file = files.getNext().QueryInterface(Components.interfaces.nsIFile);
+          filePath += file.path + ';';
+        }
+        callback(filePath);
+        break;
+      case Ci.nsIFilePicker.returnCancel:
+      default:
+        break;
       }
     });
   },
 
-  getGalleryCachedDir: function (pathArray) {
+  getGalleryCachedDir: function(pathArray) {
     var file = FileUtils.getDir("ProfD", pathArray, false);
     return file.path;
   },
@@ -347,4 +366,3 @@ FFOSAssistant.prototype = {
 };
 
 this.NSGetFactory = XPCOMUtils.generateNSGetFactory([FFOSAssistant]);
-

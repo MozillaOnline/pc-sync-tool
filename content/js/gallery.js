@@ -453,9 +453,9 @@ var Gallery = (function() {
       });
 
       new AlertDialog(_('delete-pictures-confirm', {
-          n: files.length
-        }), true, function (returnBtn) {
-        if(returnBtn) {
+        n: files.length
+      }), true, function(returnBtn) {
+        if (returnBtn) {
           Gallery.removePictures(files);
         }
       });

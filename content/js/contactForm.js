@@ -75,6 +75,8 @@ ContactField.prototype = {
     var self = this;
 
     // Fetch attribute, and return empty str if it's undefined.
+
+
     function _f(obj, key) {
       if (!obj) return '';
       return obj[key] ? obj[key] : '';
@@ -176,7 +178,7 @@ var ContactForm = (function() {
   var handlerAvatarAddEdit = null;
   var handlerAvatarInput = null;
 
-  /*
+/*
    * Edit the given contact in the form.
    * If the given contact is null, then adding contact is performed.
    */
@@ -426,61 +428,61 @@ var ContactForm = (function() {
     window.removeEventListener('load', onload);
 
     if (handlerSaveContact) {
-      $id('save-contact').removeEventListener('click', handlerSaveContact,false);
+      $id('save-contact').removeEventListener('click', handlerSaveContact, false);
     }
 
-    handlerSaveContact = function () {
+    handlerSaveContact = function() {
       saveContact();
       var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
       if (selectedItem === 0) {
         ViewManager.showViews('contact-quick-add-view');
-      } else if(selectedItem === 1){
+      } else if (selectedItem === 1) {
         ViewManager.showViews('show-contact-view');
       } else {
         ViewManager.showViews('show-multi-contacts');
       }
     };
-    $id('save-contact').addEventListener ('click', handlerSaveContact,false);
+    $id('save-contact').addEventListener('click', handlerSaveContact, false);
 
     if (handlerCancelEditContact) {
-      $id('cancel-edit-contact').removeEventListener('click', handlerCancelEditContact,false);
+      $id('cancel-edit-contact').removeEventListener('click', handlerCancelEditContact, false);
     }
 
-    handlerCancelEditContact = function () {
+    handlerCancelEditContact = function() {
       var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
       if (selectedItem === 0) {
         ViewManager.showViews('contact-quick-add-view');
-      } else if(selectedItem === 1){
+      } else if (selectedItem === 1) {
         ViewManager.showViews('show-contact-view');
       } else {
         ViewManager.showViews('show-multi-contacts');
       }
     };
-    $id('cancel-edit-contact').addEventListener ('click', handlerCancelEditContact,false);
+    $id('cancel-edit-contact').addEventListener('click', handlerCancelEditContact, false);
 
     if (handlerQuickSaveContact) {
-      $id('quick-save-contact').removeEventListener('click', handlerQuickSaveContact,false);
+      $id('quick-save-contact').removeEventListener('click', handlerQuickSaveContact, false);
     }
 
-    handlerQuickSaveContact = function () {
+    handlerQuickSaveContact = function() {
       quickSaveContact();
     };
-    $id('quick-save-contact').addEventListener ('click', handlerQuickSaveContact,false);
+    $id('quick-save-contact').addEventListener('click', handlerQuickSaveContact, false);
 
     if (handlerAvatarAddEdit) {
-      $id('avatar-add-edit').removeEventListener('click', handlerAvatarAddEdit,false);
+      $id('avatar-add-edit').removeEventListener('click', handlerAvatarAddEdit, false);
     }
 
-    handlerAvatarAddEdit = function () {
+    handlerAvatarAddEdit = function() {
       $id('avatar-input').click();
     };
-    $id('avatar-add-edit').addEventListener ('click', handlerAvatarAddEdit,false);
+    $id('avatar-add-edit').addEventListener('click', handlerAvatarAddEdit, false);
 
     if (handlerAvatarInput) {
-      $id('avatar-input').removeEventListener('change', handlerAvatarInput,false);
+      $id('avatar-input').removeEventListener('change', handlerAvatarInput, false);
     }
 
-    handlerAvatarInput = function () {
+    handlerAvatarInput = function() {
       var MAX_WIDTH = 320;
       var MAX_HEIGHT = 320;
       var pic = $id('avatar-add-edit');
@@ -521,7 +523,7 @@ var ContactForm = (function() {
         });
       };
     };
-    $id('avatar-input').addEventListener ('change', handlerAvatarInput,false);
+    $id('avatar-input').addEventListener('change', handlerAvatarInput, false);
   });
 
   return {

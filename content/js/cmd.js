@@ -68,8 +68,7 @@ var CMD = (function() {
 /*
    * All the available commands grouped by targets.
    */
-  return {
-    /***** Device commands *****/
+  return { /***** Device commands *****/
     Device: {
       /**
        * get the summary info of the device

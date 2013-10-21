@@ -105,7 +105,7 @@ function toSizeInMB(sizeInByte) {
   if (isNaN(sizeInByte)) {
     return 0.00;
   } else {
-    return parseInt(sizeInByte / 1024 /10.24) / 100;
+    return parseInt(sizeInByte / 1024 / 10.24) / 100;
   }
 }
 
@@ -118,7 +118,7 @@ function parseDate(date) {
   } else {
     strDate += (dt.getMonth() + 1) + '-';
   }
-  if(dt.getDay() < 9) {
+  if (dt.getDay() < 9) {
     strDate += '0' + (dt.getDay() + 1);
   } else {
     strDate += dt.getDay() + 1;
