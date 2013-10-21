@@ -12,7 +12,7 @@ interface nsIFFOSAssistant : nsISupports
   readonly attribute boolean adbConnected;
 
   /**
-   *
+   * Indicates whether the host is windows
    */
   readonly attribute boolean isWindows;
 
