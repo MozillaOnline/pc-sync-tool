@@ -580,8 +580,8 @@
           <div class="header" id="select-contact-tel-header">
             <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
             <select class="sendSms-button sendSms-menubutton" id="select-contact-tel-button">
-              <%for (var i=0; i<number.length; i++) {%>
-                  <option><%=number[i]%></option>
+              <%for (var i=0; i<tel.length; i++) {%>
+                  <option><%=tel[i]%></option>
               <%}%>
             </select>
           </div>
@@ -589,7 +589,7 @@
           <div class="header">
             <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
             <div class="address">
-              <input id="address" type="text" class="input-contact searchbox" value="<%=number%>">
+              <input id="address" type="text" class="input-contact searchbox" value="<%=tel%>">
             </div>
             <button id="button-add-contact" data-l10n-id="sms-add-contact" class="sms-icon-btn">
               <span class="icon add-grey"></span>

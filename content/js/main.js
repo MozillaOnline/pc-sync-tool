@@ -36,6 +36,7 @@ while (browserEnumerator.hasMoreElements()) {
 chromeWindow.switchToTabHavingURI('about:ffos', true);
 
 var animationLoading = null;
+
 var FFOSAssistant = (function() {
   var connPool = null;
   var connListenSocket = null;

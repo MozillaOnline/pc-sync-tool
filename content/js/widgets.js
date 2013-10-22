@@ -318,22 +318,22 @@ SendSMSDialog.prototype = {
     document.body.appendChild(this._mask);
     var templateData = {
       type: this.options.type,
-      number: [],
+      tel: [],
       body: '',
       textCount: '',
       senderCount: ''
     };
     if (this.options.type == 'single') {
-      if (this.options.number && this.options.number.length > 0) {
-        for (var i = 0; i < this.options.number.length; i++) {
-          templateData.number.push(this.options.number[i].value);
+      if (this.options.tel && this.options.tel.length > 0) {
+        for (var i = 0; i < this.options.tel.length; i++) {
+          templateData.tel.push(this.options.tel[i].value);
         }
       }
     } else {
-      if (this.options.number && this.options.number.length > 0) {
-        templateData.number.push(this.options.number[0]);
+      if (this.options.tel && this.options.tel.length > 0) {
+        templateData.tel.push(this.options.tel[0]);
         var senderNum = 0;
-        var senders = this.options.number[0].split(';');
+        var senders = this.options.tel[0].split(';');
         senderNum = senders.length;
         for (var i = 0; i < senders.length; i++) {
           if (senders[i] == "") {

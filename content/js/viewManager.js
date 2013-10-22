@@ -180,6 +180,27 @@ var ViewManager = (function() {
     callbacks[viewId][name].push(callback);
   }
 
+  function removeViewEventListener(viewId, name, callback) {
+    if (!callbacks[viewId]) {
+      return;
+    }
+
+    if (!callbacks[viewId][name]) {
+      return;
+    }
+
+    var index = 0;
+    for (; index < callbacks[viewId][name].length; index++) {
+      if (callbacks[viewId][name][index] == callback) {
+        break;
+      }
+    }
+
+    if (index < callbacks[viewId][name].length) {
+      callbacks[viewId][name][index] = null;
+    }
+  }
+
   function callEvent(name, viewId, viewData) {
     console.log('Call event ' + name + ' on ' + viewId);
 
@@ -225,6 +246,7 @@ var ViewManager = (function() {
     // Show the card view by given id, and hide all other sibling views
     showViews: showViews,
     callEvent: callEvent,
-    addViewEventListener: addViewEventListener
+    addViewEventListener: addViewEventListener,
+    removeViewEventListener: removeViewEventListener
   };
 })();

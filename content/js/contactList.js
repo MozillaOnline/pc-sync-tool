@@ -1,9 +1,6 @@
 var ContactList = (function() {
   var groupedList = null;
-  var handler = null;
-  var handlerEdit = null;
-  var handlerSend = null;
-  var listenContactMessage = false;
+  var DEFAULT_AVATAR = 'chrome://ffosassistant/content/style/images/avatar.jpeg';
 
   function getListContainer() {
     return $id('contact-list-container');
@@ -12,10 +9,19 @@ var ContactList = (function() {
   function toggleFavorite(item) {
     var favorite = item.classList.toggle('favorite');
     var contact = getContact(item.dataset.contactId);
-    contact.category = [];
 
     if (favorite) {
       contact.category.push('favorite');
+    } else {
+      var index = 0;
+      for(; index < contact.category.length; index++) {
+        if ('favorite' == contact.category[index]) {
+          break;
+        }
+      }
+      if (index < contact.category.length) {
+        contact.category.splice(index, 1);
+      }
     }
 
     // Update contact
@@ -59,71 +65,71 @@ var ContactList = (function() {
         contactItemClicked(elem);
       }
     };
-    var searchContent = $id('search-contact-input');
-    if (searchContent && searchContent.value.length > 0) {
-      var searchInfo = [];
-      var searchable = ['givenName', 'familyName', 'org'];
-      searchable.forEach(function(field) {
-        if (contact[field] && contact[field][0]) {
-          var value = String(contact[field][0]).trim();
-          if (value.length > 0) {
-            searchInfo.push(value);
-          }
-        }
-      });
 
-      if (contact.tel && contact.tel.length > 0) {
-        for (var i = contact.tel.length - 1; i >= 0; i--) {
-          var current = contact.tel[i];
-          searchInfo.push(current.value);
-        }
-      }
-
-      if (contact.email && contact.email.length > 0) {
-        for (var i = contact.email.length - 1; i >= 0; i--) {
-          var current = contact.email[i];
-          searchInfo.push(current.value);
-        }
-      }
-
-      var escapedValue = Text_escapeHTML(searchInfo.join(' '), true);
-      //search key word
-      var search = searchContent.value;
-
-      if ((escapedValue.length > 0) && (escapedValue.indexOf(search) >= 0)) {
-        elem.hidden = false;
-      } else {
-        elem.hidden = true;
-      }
-    } else {
+    var searchInput = $id('search-contact-input');
+    if (!searchInput || searchInput.value.trim().length == 0) {
       elem.hidden = false;
+      return elem;
     }
+
+    var searchInfo = [];
+    var searchTable = ['givenName', 'familyName', 'org'];
+    searchTable.forEach(function(field) {
+      if (contact[field] && contact[field][0]) {
+        var value = String(contact[field][0]).trim();
+        if (value.length > 0) {
+          searchInfo.push(value);
+        }
+      }
+    });
+
+    if (contact.tel && contact.tel.length > 0) {
+      for (var i = contact.tel.length - 1; i >= 0; i--) {
+        var current = contact.tel[i];
+        searchInfo.push(current.value);
+      }
+    }
+
+    if (contact.email && contact.email.length > 0) {
+      for (var i = contact.email.length - 1; i >= 0; i--) {
+        var current = contact.email[i];
+        searchInfo.push(current.value);
+      }
+    }
+
+    var escapedValue = Text_escapeHTML(searchInfo.join(' '), true);
+    //search key word
+    var key = searchInput.value;
+
+    elem.hidden = !escapedValue || escapedValue.indexOf(key) == -1;
+
     return elem;
   }
 
-/*
+  /**
    * Show the contact info in the contact card view
    */
-
   function showVcardInView(contact) {
     // Set focused dataset which means it's shown in the vcard view.
     $expr('.contact-list-item[data-focused=true]').forEach(function(item) {
       delete item.dataset.focused;
     });
-    $id('contact-' + contact.id).dataset.focused = true;
+    var contactElement = $id('contact-' + contact.id);
+    contactElement.dataset.focused = true;
 
     ViewManager.showCardView('contact-vcard-view');
     $id('contact-vcard-view').dataset.contactId = contact.id;
 
-    if ($id('contact-' + contact.id).dataset.avatar != '' && $id('contact-' + contact.id).dataset.avatar != DEFAULT_AVATAR) {
-      $id('avatar-s').src = $id('contact-' + contact.id).dataset.avatar;
+    var avatarShow = $id('avatar-s');
+    if (contactElement.dataset.avatar != '' && contactElement.dataset.avatar != DEFAULT_AVATAR) {
+      avatarShow.src = contactElement.dataset.avatar;
     } else {
-      if (( !! contact.photo) && (contact.photo.length > 0)) {
-        $id('avatar-s').src = contact.photo;
-        $id('contact-' + contact.id).dataset.avatar = contact.photo;
+      if ((!!contact.photo) && (contact.photo.length > 0)) {
+        avatarShow.src = contact.photo;
+        contactElement.dataset.avatar = contact.photo;
       } else {
-        $id('avatar-s').src = DEFAULT_AVATAR; //'style/images/avatar.jpeg';
-        $id('contact-' + contact.id).dataset.avatar = DEFAULT_AVATAR;
+        avatarShow.src = DEFAULT_AVATAR;
+        contactElement.dataset.avatar = DEFAULT_AVATAR;
       }
     }
     $expr('#vcard-basic-info-box .name')[0].textContent = contact.name.join(' ');
@@ -167,71 +173,63 @@ var ContactList = (function() {
     $id('selectAll-contacts').dataset.disabled = isEmpty;
     $id('empty-contact-container').hidden = !isEmpty;
 
-    var searchContent = $id('search-contact-input');
-    if ((searchContent) && (searchContent.value.length > 0)) {
+    var searchInput = $id('search-contact-input');
+    if (searchInput && searchInput.value.trim()) {
       var allContactData = groupedList.getGroupedData();
       allContactData.forEach(function(group) {
         var groupIndexItem = $id('id-grouped-data-' + group.index);
         if (groupIndexItem) {
           var child = groupIndexItem.childNodes[0];
-          if (searchContent.value.length > 0) {
-            child.hidden = true;
-          } else {
-            child.hidden = false;
-          }
+          child.hidden = !!searchInput.value.trim();
         }
       });
     }
   }
 
-  function updateAllAvatar() {
+  function updateAllAvatars() {
     groupedList.getGroupedData().forEach(function(group) {
-      group.dataList.forEach(function(contact) {
-        updateAvatar(contact);
-      });
+      group.dataList.forEach(updateAvatar(contact));
     });
   }
 
   function updateAvatar(contact) {
-    if (( !! contact.photo) && (contact.photo.length > 0)) {
-      var item = $id('contact-' + contact.id);
-      if ( !! item) {
-        var img = item.getElementsByTagName('img')[0];
-        img.src = contact.photo;
-        item.dataset.avatar = contact.photo;
-        img.classList.remove('avatar-default');
-      }
+    if (!contact.photo || (contact.photo.length == 0)) {
+      return;
     }
+
+    var item = $id('contact-' + contact.id);
+    if (!item) {
+      return;
+    }
+
+    var img = item.getElementsByTagName('img')[0];
+    img.src = contact.photo;
+    item.dataset.avatar = contact.photo;
+    img.classList.remove('avatar-default');
   }
 
   function initList(contacts, viewData) {
     var container = getListContainer();
     container.innerHTML = '';
-    var searchContent = $id('search-contact-input');
-    if ((searchContent) && (searchContent.value.length > 0)) {
-      searchContent.value = '';
+    var searchInput = $id('search-contact-input');
+    if (searchInput) {
+      searchInput.value = '';
     }
 
     var quickName = $id('fullName');
     var quickNumber = $id('mobile');
 
-    if (viewData) {
-      if (viewData.type == 'add') {
-        ViewManager.showViews('contact-quick-add-view');
-        if (quickName) {
-          quickName.value = '';
-        }
-        if (quickNumber) {
-          quickNumber.value = viewData.number;
-        }
-      }
-    } else {
-      ViewManager.showViews('contact-quick-add-view');
-      if (quickName) {
-        quickName.value = '';
-      }
+    ViewManager.showViews('contact-quick-add-view');
+    if (quickName) {
+      quickName.value = '';
+    }
+    if (quickNumber) {
+      quickNumber.value = '';
+    }
+
+    if (viewData && (viewData.type == 'add')) {
       if (quickNumber) {
-        quickNumber.value = '';
+        quickNumber.value = viewData.number;
       }
     }
 
@@ -258,19 +256,16 @@ var ContactList = (function() {
     });
 
     groupedList.render();
-    updateAllAvatar();
+    updateAllAvatars();
     checkIfContactListEmpty();
-    if (listenContactMessage == false) {
-      ViewManager.addViewEventListener('contact', 'onMessage', onMessage);
-      listenContactMessage = true;
-    }
+    ViewManager.removeViewEventListener('contact', 'onMessage', onMessage);
+    ViewManager.addViewEventListener('contact', 'onMessage', onMessage);
   }
 
-/*
+  /**
    * Remove contact from device
    * when success, onMessage will remove the item
    */
-
   function removeContact(id) {
     var loadingGroupId = animationLoading.start();
     CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
@@ -294,12 +289,13 @@ var ContactList = (function() {
 
   function contactItemClicked(elem) {
     $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(e) {
-      if (e != elem) {
-        e.dataset.checked = e.dataset.focused = false;
-        var item = $expr('label', e)[0];
-        if (item) {
-          item.dataset.checked = false;
-        }
+      if (e == elem) {
+        return;
+      }
+      e.dataset.checked = e.dataset.focused = false;
+      var item = $expr('label', e)[0];
+      if (item) {
+        item.dataset.checked = false;
       }
     });
 
@@ -308,14 +304,7 @@ var ContactList = (function() {
       item.dataset.checked = true;
     }
     elem.dataset.checked = elem.dataset.focused = true;
-    if ($expr('#contact-list-container .contact-list-item').length === 1) {
-      $id('selectAll-contacts').dataset.checked = true;
-    } else {
-      $id('selectAll-contacts').dataset.checked = false;
-    }
-    $id('remove-contacts').dataset.disabled = false;
-    $id('export-contacts').dataset.disabled = false;
-
+    opStateChanged();
     showContactInfo(JSON.parse(elem.dataset.contact));
   }
 
@@ -324,14 +313,12 @@ var ContactList = (function() {
     if (!item) {
       return;
     }
-    var select = false;
-    if (item.dataset.checked == 'false') {
-      select = true;
-    }
+    var select = item.dataset.checked == 'false';
+
     elem.dataset.checked = elem.dataset.focused = item.dataset.checked = select;
     opStateChanged();
     item = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
-    if (item.length <= 0) {
+    if (item.length == 0) {
       ViewManager.showViews('contact-quick-add-view');
     } else if (item.length == 1) {
       showContactInfo(JSON.parse(item[0].dataset.contact));
@@ -346,13 +333,13 @@ var ContactList = (function() {
       $id('selectAll-contacts').dataset.disabled = true;
     } else {
       $id('selectAll-contacts').dataset.checked =
-      $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+        $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
       $id('selectAll-contacts').dataset.disabled = false;
     }
     $id('remove-contacts').dataset.disabled =
-    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
     $id('export-contacts').dataset.disabled =
-    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
   }
 
   function showContactInfo(contact) {
@@ -391,30 +378,21 @@ var ContactList = (function() {
       });
     }
 
-    if (handlerEdit) {
-      $id('edit-contact').removeEventListener('click', handlerEdit, false);
-    }
-
-    handlerEdit = function() {
+    $id('edit-contact').onclick = function doEditContact() {
       ContactForm.editContact(contact);
     };
-    $id('edit-contact').addEventListener('click', handlerEdit, false);
 
-    if (handlerSend) {
-      $id('sms-send-incontact').removeEventListener('click', handlerSend, false);
-    }
-
-    handlerSend = function() {
-      if (contact.tel && contact.tel.length > 0) {
-        new SendSMSDialog({
-          type: 'single',
-          name: contact.name,
-          number: contact.tel
-        });
+    $id('sms-send-incontact').onclick = function doSendInContact() {
+      if (!contact.tel || !contact.tel.trim()) {
+        return;
       }
+      new SendSMSDialog({
+        type: 'single',
+        name: contact.name,
+        tel: contact.tel
+      });
     };
 
-    $id('sms-send-incontact').addEventListener('click', handlerSend, false);
     ViewManager.showViews('show-contact-view');
     var item = $id('contact-' + contact.id);
 
@@ -457,11 +435,7 @@ var ContactList = (function() {
 
     var btn = $id('sms-send-inmulticontact');
 
-    if (handler) {
-      btn.removeEventListener('click', handler, false);
-    }
-
-    handler = function() {
+    btn.onclick = function() {
       new SendSMSDialog({
         type: 'multi',
         number: [num],
@@ -469,28 +443,22 @@ var ContactList = (function() {
       });
     };
 
-    btn.addEventListener('click', handler, false);
     ViewManager.showViews('show-multi-contacts');
   }
 
-/*
+  /**
    * Add contact lists.
    */
-
   function addContact(contact) {
     if (!contact.id) {
       return;
     }
-    if (groupedList.count() == 0) {
-      getListContainer().innerHTML = '';
-    }
     groupedList.add(contact);
   }
 
-/*
+  /**
    * Update contact lists.
    */
-
   function updateContact(contact) {
     if (!contact.id) {
       return;
@@ -499,21 +467,24 @@ var ContactList = (function() {
     groupedList.remove(existingContact);
     groupedList.add(contact);
 
-    if (( !! contact.photo) && (contact.photo.length > 0)) {
-      var item = $id('contact-' + contact.id);
-      if ( !! item) {
-        var img = item.getElementsByTagName('img')[0];
-        img.src = contact.photo;
-        item.dataset.avatar = contact.photo;
-        img.classList.remove('avatar-default');
-      }
+    if (!contact.photo || (contact.photo.length == 0)) {
+      return;
     }
+
+    var item = $id('contact-' + contact.id);
+    if (!item) {
+      return;
+    }
+
+    var img = item.getElementsByTagName('img')[0];
+    img.src = contact.photo;
+    item.dataset.avatar = contact.photo;
+    img.classList.remove('avatar-default');
   }
 
-/*
+  /**
    * Get contact object by contact id
    */
-
   function getContact(id) {
     var contactItem = $id('contact-' + id);
 
@@ -540,11 +511,11 @@ var ContactList = (function() {
     switch (changeEvent.reason) {
     case 'remove':
       {
-        var item = $id('contact-' + changeEvent.contactID);
-        if (!item || !groupedList) {
+        var item = getContact(changeEvent.contactID);
+        if (!item) {
           return;
         }
-        groupedList.remove(getContact(changeEvent.contactID));
+        groupedList.remove(item);
         break;
       }
     case 'update':
@@ -601,51 +572,47 @@ var ContactList = (function() {
 
         if (groupIndexItem) {
           var child = groupIndexItem.childNodes[0];
-          if (self.value.length > 0) {
-            child.hidden = true;
-          } else {
-            child.hidden = false;
-          }
+          child.hidden = self.value.length > 0;
         }
 
         group.dataList.forEach(function(contact) {
           var contactItem = $id('contact-' + contact.id);
-          if ((contactItem) && (self.value.length > 0)) {
-            var searchInfo = [];
-            var searchable = ['givenName', 'familyName', 'org'];
-            searchable.forEach(function(field) {
-              if (contact[field] && contact[field][0]) {
-                var value = String(contact[field][0]).trim();
-                if (value.length > 0) {
-                  searchInfo.push(value);
-                }
-              }
-            });
-
-            if (contact.tel && contact.tel.length > 0) {
-              for (var i = contact.tel.length - 1; i >= 0; i--) {
-                var current = contact.tel[i];
-                searchInfo.push(current.value);
-              }
-            }
-
-            if (contact.email && contact.email.length > 0) {
-              for (var i = contact.email.length - 1; i >= 0; i--) {
-                var current = contact.email[i];
-                searchInfo.push(current.value);
-              }
-            }
-
-            var escapedValue = Text_escapeHTML(searchInfo.join(' '), true).toLowerCase();
-            // search key words
-            var search = self.value;
-            if ((escapedValue.length > 0) && (escapedValue.indexOf(search.toLowerCase()) >= 0)) {
-              contactItem.hidden = false;
-            } else {
-              contactItem.hidden = true;
-            }
-          } else {
+          if (!contactItem || (self.value.length <= 0)) {
             contactItem.hidden = false;
+            return;
+          }
+          var searchInfo = [];
+          var searchTable = ['givenName', 'familyName', 'org'];
+          searchTable.forEach(function(field) {
+            if (contact[field] && contact[field][0]) {
+              var value = String(contact[field][0]).trim();
+              if (value.length > 0) {
+                searchInfo.push(value);
+              }
+            }
+          });
+
+          if (contact.tel && contact.tel.length > 0) {
+            for (var i = contact.tel.length - 1; i >= 0; i--) {
+              var current = contact.tel[i];
+              searchInfo.push(current.value);
+            }
+          }
+
+          if (contact.email && contact.email.length > 0) {
+            for (var i = contact.email.length - 1; i >= 0; i--) {
+              var current = contact.email[i];
+              searchInfo.push(current.value);
+            }
+          }
+
+          var escapedValue = Text_escapeHTML(searchInfo.join(' '), true).toLowerCase();
+          // search key words
+          var search = self.value;
+          if ((escapedValue.length > 0) && (escapedValue.indexOf(search.toLowerCase()) >= 0)) {
+            contactItem.hidden = false;
+          } else {
+            contactItem.hidden = true;
           }
         });
       });
