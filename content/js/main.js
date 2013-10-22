@@ -119,10 +119,10 @@ var FFOSAssistant = (function() {
         if (navigator.mozFFOSAssistant) {
           heartBeatSocket = navigator.mozTCPSocket.open(ip, 10010);
           heartBeatSocket.onclose = function onclose_socket() {
-            navigator.mozFFOSAssistant.wifiConnected(false);
+            navigator.mozFFOSAssistant.isWifiConnected = false;
           };
           heartBeatSocket.onopen = function onclose_socket() {
-            navigator.mozFFOSAssistant.wifiConnected(true);
+            navigator.mozFFOSAssistant.isWifiConnected = true;
           };
         }
         connectToDevice(ip);
@@ -175,7 +175,7 @@ var FFOSAssistant = (function() {
       showConnectView();
       ViewManager.reset();
     });
-    if (navigator.mozFFOSAssistant.isWifiConnect) {
+    if (navigator.mozFFOSAssistant.isWifiConnected) {
       $id('device-image-connection').classList.add('wifiConnection');
     } else {
       $id('device-image-connection').classList.remove('wifiConnection');

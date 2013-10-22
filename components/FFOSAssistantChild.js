@@ -5,11 +5,12 @@
 "use strict"
 
 let DEBUG = 0;
-if (DEBUG) debug = function(s) {
-  dump("-*- adbService: " + s + "\n");
-};
-else
-debug = function(s) {};
+
+function debug(s) {
+  if (DEBUG) {
+    dump("-*- adbService: " + s + "\n");
+  }
+}
 
 const LOCAL_PORT = 10010;
 
@@ -25,16 +26,14 @@ const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
 const MANAGER_BINHOME = 'resource://ffosassistant-binhome';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
 
-let modules = {};
 XPCOMUtils.defineLazyServiceGetter(this, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
+XPCOMUtils.defineLazyServiceGetter(this, "xulRuntime", '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
 XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils', 'resource://gre/modules/FileUtils.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'NetUtil', 'resource://gre/modules/NetUtil.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
-XPCOMUtils.defineLazyServiceGetter(modules, "xulRuntime", '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
 
 /***** Component definition *****/
 
@@ -177,7 +176,7 @@ FFOSAssistant.prototype = {
   },
 
   get isWindows() {
-    return modules.xulRuntime.OS == 'WINNT';
+    return xulRuntime.OS == 'WINNT';
   },
 
   get adbffosDeviceName() {
@@ -188,14 +187,14 @@ FFOSAssistant.prototype = {
     this._onADBStateChange = callback;
   },
 
-  wifiConnected: function(isConnected) {
+  set isWifiConnected(isConnected) {
     // Write firefox path to the ini file
     try {
       if (isConnected) {
-        this._isWifiConnect = true;
+        this._isWifiConnected = true;
         cpmm.sendSyncMessage('ADBService:wifiConnected')[0];
       } else {
-        this._isWifiConnect = false;
+        this._isWifiConnected = false;
         cpmm.sendSyncMessage('ADBService:wifiUnconnected')[0];
       }
     } catch (e) {
@@ -203,8 +202,8 @@ FFOSAssistant.prototype = {
     }
   },
 
-  get isWifiConnect() {
-    return this._isWifiConnect;
+  get isWifiConnected() {
+    return this._isWifiConnected;
   },
 
   selectDirectory: function(callback, options) {
@@ -356,8 +355,7 @@ FFOSAssistant.prototype = {
   },
 
   getGalleryCachedDir: function(pathArray) {
-    var file = FileUtils.getDir("ProfD", pathArray, false);
-    return file.path;
+    return FileUtils.getDir("ProfD", pathArray, false).path;
   },
 
   runCmd: function(cmd) {

@@ -274,7 +274,7 @@ var Video = (function() {
   }
 
   function importVideos() {
-    if (navigator.mozFFOSAssistant.isWifiConnect) {
+    if (navigator.mozFFOSAssistant.isWifiConnected) {
       new WifiModePromptDialog({
         title_l10n_id: 'import-videos-dialog-header',
         prompt_l10n_id: 'wifi-mode-import-videos-promot'
@@ -394,7 +394,7 @@ var Video = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnect) {
+      if (navigator.mozFFOSAssistant.isWifiConnected) {
         new WifiModePromptDialog({
           title_l10n_id: 'remove-videos-dialog-header',
           prompt_l10n_id: 'wifi-mode-remove-videos-promot'
@@ -429,7 +429,7 @@ var Video = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnect) {
+      if (navigator.mozFFOSAssistant.isWifiConnected) {
         new WifiModePromptDialog({
           title_l10n_id: 'export-videos-dialog-header',
           prompt_l10n_id: 'wifi-mode-export-videos-promot'

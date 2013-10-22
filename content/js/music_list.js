@@ -305,7 +305,7 @@ var MusicList = (function() {
   }
 
   function importMusics() {
-    if (navigator.mozFFOSAssistant.isWifiConnect) {
+    if (navigator.mozFFOSAssistant.isWifiConnected) {
       new WifiModePromptDialog({
         title_l10n_id: 'import-musics-dialog-header',
         prompt_l10n_id: 'wifi-mode-import-musics-promot'
@@ -432,7 +432,7 @@ var MusicList = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnect) {
+      if (navigator.mozFFOSAssistant.isWifiConnected) {
         new WifiModePromptDialog({
           title_l10n_id: 'remove-musics-dialog-header',
           prompt_l10n_id: 'wifi-mode-remove-musics-promot'
@@ -467,7 +467,7 @@ var MusicList = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnect) {
+      if (navigator.mozFFOSAssistant.isWifiConnected ) {
         new WifiModePromptDialog({
           title_l10n_id: 'export-musics-dialog-header',
           prompt_l10n_id: 'wifi-mode-export-musics-promot'

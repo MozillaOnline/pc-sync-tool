@@ -21,7 +21,7 @@ interface nsIFFOSAssistant : nsISupports
    */
   readonly attribute jsval adbffosDeviceName;
 
-  readonly attribute boolean isWifiConnect;
+  attribute boolean isWifiConnected;
 
   /* Fired when USB cable or ADB forward disconnected */
   attribute nsIDOMEventListener onadbstatechange;
@@ -63,7 +63,5 @@ interface nsIFFOSAssistant : nsISupports
    * Run command from local host
    */
   nsIDOMDOMRequest runCmd(in DOMString cmd);
-
-  void wifiConnected(in boolean isConnected);
 };
 

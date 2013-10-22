@@ -318,7 +318,7 @@ var Gallery = (function() {
   }
 
   function importPictures() {
-    if (navigator.mozFFOSAssistant.isWifiConnect) {
+    if (navigator.mozFFOSAssistant.isWifiConnected ) {
       new WifiModePromptDialog({
         title_l10n_id: 'import-pictures-dialog-header',
         prompt_l10n_id: 'wifi-mode-import-pictures-promot'
@@ -439,7 +439,7 @@ var Gallery = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnect) {
+      if (navigator.mozFFOSAssistant.isWifiConnected ) {
         new WifiModePromptDialog({
           title_l10n_id: 'remove-pictures-dialog-header',
           prompt_l10n_id: 'wifi-mode-remove-pictures-promot'
@@ -474,7 +474,7 @@ var Gallery = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnect) {
+      if (navigator.mozFFOSAssistant.isWifiConnected ) {
         new WifiModePromptDialog({
           title_l10n_id: 'export-pictures-dialog-header',
           prompt_l10n_id: 'wifi-mode-export-pictures-promot'
