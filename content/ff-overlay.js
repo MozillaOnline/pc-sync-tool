@@ -12,8 +12,8 @@
 
   function debug(s) {
     if (DEBUG) {
-      this.console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-      this.console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
+      let console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+      console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
     }
   }
 
@@ -21,31 +21,32 @@
 
   var modules = {};
   XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
-  XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
+  XPCOMUtils.defineLazyModuleGetter(modules, 'utils', 'resource://ffosassistant/utils.jsm');
+  XPCOMUtils.defineLazyModuleGetter(modules, 'ADBService', 'resource://ffosassistant/ADBService.jsm');
+  XPCOMUtils.defineLazyModuleGetter(modules, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
+  XPCOMUtils.defineLazyModuleGetter(modules, 'DriverManager', 'resource://ffosassistant/driverManager.jsm');
+  XPCOMUtils.defineLazyModuleGetter(modules, 'AddonManager', 'resource://gre/modules/AddonManager.jsm');
 
   function startADBService() {
     isDisabled = false;
-    ADBService.startAdbServer();
-    ADBService.startDeviceDetecting(true);
-    DriverManager.startDriverManager();
+    modules.ADBService.startAdbServer();
+    modules.ADBService.startDeviceDetecting(true);
+    modules.DriverManager.startDriverManager();
     connectToDriverManager();
   }
 
   function stopADBService() {
     isDisabled = true;
-    if ( !! client && client.isConnected()) client.sendCommand('shutdown', function() {});
-    ADBService.startDeviceDetecting(false);
-    ADBService.killAdbServer();
+    if (client && client.isConnected()) {
+      client.sendCommand('shutdown', function() {});
+    }
+    modules.ADBService.startDeviceDetecting(false);
+    modules.ADBService.killAdbServer();
   }
 
   function init() {
     // Import ADB Service module
     debug('Import adbService module');
-    Components.utils.import('resource://ffosassistant/ADBService.jsm');
-    Components.utils.import('resource://ffosassistant/driverDownloader.jsm');
-    Components.utils.import('resource://ffosassistant/driverManager.jsm');
-    Components.utils.import('resource://ffosassistant/utils.jsm');
-    Components.utils.import("resource://gre/modules/AddonManager.jsm");
 
     // Register messages
     const messages = ['ADBService:statechange'];
@@ -53,40 +54,44 @@
       modules.cpmm.addMessageListener(msgName, messageHandler)
     });
 
-    let libPath = utils.getChromeFileURI(LIB_FILE_URL);
-    let adbPath = utils.getChromeFileURI(ADB_FILE_URL);
-    ADBService.initAdbService(navigator.mozFFOSAssistant.isWindows, libPath.file.path, adbPath.file.path);
-    if (navigator.mozFFOSAssistant.isWindows) {
-      this._addonListener = {
-        onUninstalling: function(addon) {
-          if (addon.id == ADDON_ID) {
-            stopADBService();
-          }
-        },
-        onDisabling: function(addon, needsRestart) {
-          if (addon.id == ADDON_ID) {
-            stopADBService();
-          }
-        },
-        onEnabling: function(addon, needsRestart) {
-          if (addon.id == ADDON_ID) {
-            startADBService();
-          }
-        },
-        onOperationCancelled: function(addon, needsRestart) {
-          if (addon.id == ADDON_ID && isDisabled == true) {
-            startADBService();
-          }
-        }
-      };
-      setAddonInfo(true);
-      AddonManager.addAddonListener(this._addonListener);
-      DriverManager.startDriverManager();
-      connectToDriverManager();
-    }
+    let libPath = modules.utils.getChromeFileURI(LIB_FILE_URL);
+    let adbPath = modules.utils.getChromeFileURI(ADB_FILE_URL);
+    modules.ADBService.initAdbService(navigator.mozFFOSAssistant.isWindows, libPath.file.path, adbPath.file.path);
+
     checkFirstRun();
-    ADBService.startDeviceDetecting(true);
+    modules.ADBService.startDeviceDetecting(true);
+
+    if (!navigator.mozFFOSAssistant.isWindows) {
+      return;
+    }
+
+    modules.AddonManager.addAddonListener({
+      onUninstalling: function(addon) {
+        if (addon.id == ADDON_ID) {
+          stopADBService();
+        }
+      },
+      onDisabling: function(addon, needsRestart) {
+        if (addon.id == ADDON_ID) {
+          stopADBService();
+        }
+      },
+      onEnabling: function(addon, needsRestart) {
+        if (addon.id == ADDON_ID) {
+          startADBService();
+        }
+      },
+      onOperationCancelled: function(addon, needsRestart) {
+        if (addon.id == ADDON_ID && isDisabled == true) {
+          startADBService();
+        }
+      }
+    });
+    setAddonInfo(true);
+    modules.DriverManager.startDriverManager();
+    connectToDriverManager();
   }
+
 
   function checkFirstRun() {
     var firstRunPref = 'extensions.' + ADDON_ID + '.firstrun';
@@ -153,13 +158,13 @@
 
   function setAddonInfo(isRun) {
     try {
-      let file = utils.getChromeFileURI(DRIVER_MANAGER_HOME).file;
+      let file = modules.utils.getChromeFileURI(DRIVER_MANAGER_HOME).file;
       file.append(DRIVER_MANAGER_INI_FILE_NAME);
       if (!file.exists()) {
         file.create(Ci.nsIFile.NORMAL_FILE_TYPE, '0644');
       }
-      utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
-      utils.saveIniValue(file, 'status', 'isRun', isRun);
+      modules.utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
+      modules.utils.saveIniValue(file, 'status', 'isRun', isRun);
     } catch (e) {
       debug(e);
     }
@@ -168,14 +173,14 @@
   function getDriverManagerPort() {
     // Read port number from driver_manager.ini
     try {
-      let file = utils.getChromeFileURI(DRIVER_MANAGER_HOME).file;
+      let file = modules.utils.getChromeFileURI(DRIVER_MANAGER_HOME).file;
       file.append(DRIVER_MANAGER_INI_FILE_NAME);
       if (!file.exists()) {
         debug('No ini file is found');
         return 0;
       }
 
-      return parseInt(utils.getIniValue(file, 'socket', 'port'));
+      return parseInt(modules.utils.getIniValue(file, 'socket', 'port'));
     } catch (e) {
       debug(e);
       return 0;
@@ -244,40 +249,41 @@
       var serverIP = aMessage.json.serverip;
       debug('Receive message: ' + connected);
       if (connected) {
-        ADBService.startDeviceDetecting(false);
+        modules.ADBService.startDeviceDetecting(false);
         // Establish a heart-beat socket, and stop usb querying interval
         heartBeatSocket = navigator.mozTCPSocket.open(serverIP, 10010);
         heartBeatSocket.onclose = function onclose_socket() {
           // Restart usb querying interval
           if (isDisabled == false) {
-            ADBService.startDeviceDetecting(true);
+            modules.ADBService.startDeviceDetecting(true);
           }
         };
-      } else {
-        if (navigator.mozFFOSAssistant.isWindows) {
-          var otherAdbService = navigator.mozFFOSAssistant.runCmd('listAdbService');
-          otherAdbService.onsuccess = function on_success(event) {
-            if (event.target.result.indexOf('ffosadb.exe') >= 0) {
-              return;
+        return;
+      }
+
+      if (!navigator.mozFFOSAssistant.isWindows) {
+        return;
+      }
+
+      var otherAdbService = navigator.mozFFOSAssistant.runCmd('listAdbService');
+      otherAdbService.onsuccess = function on_success(event) {
+        if (event.target.result.indexOf('ffosadb.exe') >= 0) {
+          return;
+        }
+        var message = _('NOTIFICATION_MESSAGE') + event.target.result;
+        if (!("Notification" in window)) {
+          return;
+        } else if (Notification.permission === "granted") {
+          new Notification(message);
+        } else {
+          Notification.requestPermission(function (permission) {
+            if (!('permission' in Notification)) {
+              Notification.permission = permission;
             }
-            var message = messgae = 'adb端口被占用，如果Firefox OS设备连接失败，请关闭以下进程后再试： ' + event.target.result;
-            if (!"Notification" in window) {
-              return;
+            if (permission === "granted") {
+              new Notification(message);
             }
-            else if (Notification.permission === "granted") {
-              var notification = new Notification(message);
-            }
-            else if (Notification.permission !== 'denied') {
-              Notification.requestPermission(function (permission) {
-                if(!('permission' in Notification)) {
-                  Notification.permission = permission;
-                }
-                if (permission === "granted") {
-                  var notification = new Notification(message);
-                }
-              });
-            }
-          }
+          });
         }
       }
     }
@@ -287,18 +293,19 @@
 
   function connectToDriverManager() {
     var port = getDriverManagerPort();
-    if (port) {
-      client = new TelnetClient({
-        host: '127.0.0.1',
-        port: port,
-        onmessage: handleMessage,
-        onopen: onopen,
-        onclose: onclose
-      }).connect();
-    } else {
+    if (!port) {
       window.setTimeout(connectToDriverManager, 1000);
       debug("DriverManager process is not running, try to connect it again!");
+      return;
     }
+
+    client = new TelnetClient({
+      host: '127.0.0.1',
+      port: port,
+      onmessage: handleMessage,
+      onopen: onopen,
+      onclose: onclose
+    }).connect();
   }
 
   function handleMessage(msg) {
@@ -308,7 +315,7 @@
     switch (msg.type) {
     case 'notification':
       debug('Got an notification');
-      checkNotification();
+      client.sendCommand('message', handleMessage);
       break;
     case 'deviceChanged':
       onDeviceChanged(msg);
@@ -335,24 +342,21 @@
     // We don't need to fire device-ready-event here, we will might receive a
     // device-change event if driver is installed successfully.
     if (msg.data.errorName && !navigator.mozFFOSAssistant.adbConnected) {
-      //todo: handle driver installation error
+      //TODO: handle driver installation error
     } else {
       // Sometimes we can't receive a device-change event, we need to set a timeout
       // to fire fail-to-install event
       failToInstallTimeout = window.setTimeout(function() {
-        //todo: handle failure of driver installation
+        //TODO: handle failure of driver installation
       }, 5000);
     }
   }
+
   var _doubleCheckTimeout = null;
 
   function checkDriverStatus() {
     client.sendCommand('list', function(message) {
-      if (message.data.length == 0) {
-        return;
-      }
-      // TODO handle all devices
-      if (message.data[0].state == 'installed') {
+      if (message.data.length == 0 || message.data[0].state == 'installed') {
         return;
       }
 
@@ -369,14 +373,11 @@
   function doCheckAndInstallDrivers() {
     debug('Double check the driver installation state.');
     client.sendCommand('list', function(message) {
-      if (message.data.length == 0) {
-        return;
-      }
-      if (message.data[0].state == 'installed') {
+      if (message.data.length == 0 || message.data[0].state == 'installed') {
         return;
       }
       var instanceId = message.data[0].deviceInstanceId;
-      var driverPath = DriverDownloader.getInstallerPath(instanceId);
+      var driverPath = modules.DriverDownloader.getInstallerPath(instanceId);
       client.sendCommand('install', instanceId, driverPath, function(message) {
         debug('Receive install message: ' + JSON.stringify(message));
       });
@@ -393,11 +394,6 @@
 
   function onclose() {
     debug('telnet client is closed.');
-  }
-
-  function checkNotification() {
-    // Check the message, and decide what to do next.
-    client.sendCommand('message', handleMessage);
   }
 
   window.addEventListener('load', function wnd_onload(e) {
@@ -418,12 +414,12 @@
 
   TelnetClient.prototype = {
     initialize: function tc_init(options) {
-      this.options = utils.extend({
+      this.options = modules.utils.extend({
         host: 'localhost',
         port: 0,
-        onmessage: utils.emptyFunction,
-        onopen: utils.emptyFunction,
-        onclose: utils.emptyFunction
+        onmessage: modules.utils.emptyFunction,
+        onopen: modules.utils.emptyFunction,
+        onclose: modules.utils.emptyFunction
       }, options);
 
       if (!this.options.port) {
