@@ -4,7 +4,7 @@
 
 'use strict';
 
-let DEBUG = 1;
+let DEBUG = 0;
 
 function debug(s) {
   if (DEBUG) {

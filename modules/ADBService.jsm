@@ -76,7 +76,6 @@ let messageReceiver = {
       return ADBService.startDeviceDetecting(false);
     case 'ADBService:wifiUnconnected':
       // This message is sync
-
       return ADBService.startDeviceDetecting(true);
     case 'ADBService:connected':
       // This message is sync
@@ -139,8 +138,6 @@ var ADBService = {
       isWindows: isWindows,
       libPath: libPath,
       adbPath: adbPath
-    }, function initAdbService_callback() {
-      // pass
     });
   },
 
@@ -148,25 +145,20 @@ var ADBService = {
     controlMessage({
       cmd: 'startDeviceDetecting',
       start: start
-    }, function startDeviceDetecting_callback() {
-      // pass
     });
   },
 
   startAdbServer: function startAdbServer() {
     controlMessage({
       cmd: 'startAdbServer'
-    }, function startAdbServer_callback() {
-      // pass
     });
   },
 
   killAdbServer: function killAdbServer() {
     controlMessage({
       cmd: 'killAdbServer'
-    }, function killAdbServer_callback() {
-      // pass
     });
   }
 };
+
 debug('ADBService module is inited.');
