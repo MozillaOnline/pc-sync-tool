@@ -351,7 +351,7 @@ var FFOSAssistant = (function() {
       if (music.callbackID == 'enumerate-done') {
         CMD.Musics.getChangedMusicsInfo(function onresponse_getChangedMusics(changedMusicInfo) {
           var changedMusic = JSON.parse(changedMusicInfo.data);
-          if (changedMusic.callbackID == 'oncreated') {
+          if (changedMusic.callbackID == 'enumerate') {
             MusicList.addMusic(changedMusic.detail);
             return;
           }
@@ -359,7 +359,7 @@ var FFOSAssistant = (function() {
             MusicList.removeMusic(changedMusic.detail);
             return;
           }
-          if (changedMusic.callbackID == 'onscanend') {
+          if (changedMusic.callbackID == 'enumerate-done') {
             // Make sure the 'select-all' box is not checked.
             MusicList.selectAllMusics(false);
             MusicList.updateUI();
@@ -389,7 +389,7 @@ var FFOSAssistant = (function() {
       if (picture.callbackID == 'enumerate-done') {
         CMD.Pictures.getChangedPicturesInfo(function onresponse_getChangedPictures(changedPictureInfo) {
           var changedPicture = JSON.parse(changedPictureInfo.data);
-          if (changedPicture.callbackID == 'oncreated') {
+          if (changedPicture.callbackID == 'enumerate') {
             Gallery.addPicture(changedPicture.detail);
             return;
           }
@@ -397,7 +397,7 @@ var FFOSAssistant = (function() {
             Gallery.updateRemovedPictures(changedPicture.detail);
             return;
           }
-          if (changedPicture.callbackID == 'onscanend') {
+          if (changedPicture.callbackID == 'enumerate-done') {
             Gallery.selectAllPictures(false);
             Gallery.checkGalleryIsEmpty();
             animationLoading.stop(loadingGroupId);
@@ -427,7 +427,7 @@ var FFOSAssistant = (function() {
       if (video.callbackID == 'enumerate-done') {
         CMD.Videos.getChangedVideosInfo(function onresponse_getChangedVideos(changedVideoInfo) {
           var changedVideo = JSON.parse(changedVideoInfo.data);
-          if (changedVideo.callbackID == 'oncreated') {
+          if (changedVideo.callbackID == 'enumerate') {
             Video.addVideo(changedVideo.detail);
             return;
           }
@@ -435,7 +435,7 @@ var FFOSAssistant = (function() {
             Video.updateRemovedVideos(changedVideo.detail);
             return;
           }
-          if (changedVideo.callbackID == 'onscanend') {
+          if (changedVideo.callbackID == 'enumerate-done') {
             // Make sure the 'select-all' box is not checked.
             Video.selectAllVideos(false);
             Video.checkVideoListIsEmpty();
