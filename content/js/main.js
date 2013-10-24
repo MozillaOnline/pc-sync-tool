@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
+/*
 var chromeWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                          .getInterface(Components.interfaces.nsIWebNavigation)
                          .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
@@ -34,7 +34,7 @@ while (browserEnumerator.hasMoreElements()) {
 }
 
 chromeWindow.switchToTabHavingURI('about:ffos', true);
-
+*/
 var animationLoading = null;
 
 var FFOSAssistant = (function() {
@@ -340,44 +340,6 @@ var FFOSAssistant = (function() {
     });
   }
 
-  function getAndShowAllMusics() {
-    var loadingGroupId = animationLoading.start();
-    MusicList.init();
-    CMD.Musics.getOldMusicsInfo(function onresponse_getOldMusicsInfo(oldMusic) {
-      var music = JSON.parse(oldMusic.data);
-      if (music.callbackID == 'enumerate') {
-        MusicList.addMusic(music.detail);
-        return;
-      }
-      if (music.callbackID == 'enumerate-done') {
-        CMD.Musics.getChangedMusicsInfo(function onresponse_getChangedMusics(changedMusicInfo) {
-          var changedMusic = JSON.parse(changedMusicInfo.data);
-          if (changedMusic.callbackID == 'enumerate') {
-            MusicList.addMusic(changedMusic.detail);
-            return;
-          }
-          if (changedMusic.callbackID == 'ondeleted') {
-            MusicList.removeMusic(changedMusic.detail);
-            return;
-          }
-          if (changedMusic.callbackID == 'enumerate-done') {
-            // Make sure the 'select-all' box is not checked.
-            MusicList.selectAllMusics(false);
-            MusicList.updateUI();
-            animationLoading.stop(loadingGroupId);
-            return;
-          }
-        }, function onerror_getChangedMusics(e) {
-          animationLoading.stop(loadingGroupId);
-          log('Error occurs when fetching changed musics.');
-        })
-      }
-    }, function onerror_getOldMusicsInfo(e) {
-      animationLoading.stop(loadingGroupId);
-      log('Error occurs when fetching all musics.');
-    });
-  }
-
   function getAndShowGallery() {
     var loadingGroupId = animationLoading.start();
     Gallery.init();
@@ -521,7 +483,7 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('contact-view', 'othershow', getAndShowAllContacts);
     ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSThreads);
     ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
-    ViewManager.addViewEventListener('music-view', 'firstshow', getAndShowAllMusics);
+    ViewManager.addViewEventListener('music-view', 'firstshow', MusicList.init);
     ViewManager.addViewEventListener('gallery-view', 'firstshow', getAndShowGallery);
     ViewManager.addViewEventListener('video-view', 'firstshow', getAndShowAllVideos);
   }
@@ -568,7 +530,6 @@ var FFOSAssistant = (function() {
     getAndShowAllContacts: getAndShowAllContacts,
     getAndShowAllSMSThreads: getAndShowAllSMSThreads,
     getAndShowAllVideos: getAndShowAllVideos,
-    getAndShowAllMusics: getAndShowAllMusics,
     getAndShowGallery: getAndShowGallery,
     updateSMSThreads: updateSMSThreads
   };

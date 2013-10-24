@@ -781,12 +781,102 @@ FilesOPDialog.prototype = {
       onclose: emptyFunction,
       title_l10n_id: '',
       processbar_l10n_id: '',
-      processbar: null
+      processbar: null,
+      type: -1,
+      files: [],
+      dir: '',
+      callback: emptyFunction,
+      alert_prompt: '',
+      max_steps: 0
     }, options);
 
     this._modalElement = null;
     this._mask = null;
+    this._oldFileIndex = 0;
+    this._fileIndex = 0;
+    this._timer = null;
+    this._steps = 0;
     this._build();
+  },
+
+  start: function() {
+    var filesToBeDone = [];
+    var filesCannotBeDone = [];
+    var self = this;
+    var filesIndicator = $id('files-indicator');
+    filesIndicator.innerHTML = '0/' + this.options.files.length;
+
+    setTimeout(function doCmd() {
+      var cmd = '';
+      switch (self.options.type) {
+        case 0 :
+          cmd = 'adb shell rm "' + self.options.files[self._fileIndex] + '"';
+          break;
+        case 1:
+          var cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Audio/';
+          break;
+        case 2:
+          cmd ='adb pull "' + self.options.files[self._fileIndex].dataset.id + '" "' + decodeURI(self.options.dir) + '/' +
+                self.options.files[self._fileIndex].dataset.name + '.' + self.options.files[self._fileIndex].dataset.type + '"';
+          break;
+      }
+      var req = navigator.mozFFOSAssistant.runCmd(cmd);
+      if (!self._timer) {
+        self._timer = setInterval(function() {
+          if (self._oldFileIndex == self._fileIndex) {
+            if (self._steps < self.options.max_steps) {
+              self._steps++;
+              self.options.processbar.moveForward();
+            }
+          } else {
+            self._oldFileIndex = self._fileIndex;
+            self._steps = 0;
+          }
+        }, 100);
+      }
+
+      req.onsuccess = function(e) {
+        filesToBeDone.push(self.options.files[self._fileIndex]);
+        self._fileIndex++;
+        self.options.processbar.finish(filesToBeDone.length);
+        filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
+
+        if (self._fileIndex != self.options.files.length) {
+          doCmd();
+          return;
+        }
+        clearInterval(self._timer);
+        self.options.processbar.finish(self.options.files.length);
+        self.closeAll();
+
+        if (filesCannotBeDone.length > 0) {
+          new AlertDialog(_(self.options.alert_prompt, {n:filesCannotBeDone.length}));
+        }
+
+        self.options.callback(filesToBeDone);
+      };
+
+      req.onerror = function(e) {
+        filesCannotBeDone.push(self.options.files[self._fileIndex]);
+        self._fileIndex++;
+        self.options.processbar.finish(filesToBeDone.length);
+        filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
+
+        if (self._fileIndex != self.options.files.length) {
+          doCmd();
+          return;
+        }
+        clearInterval(self._timer);
+        self.options.processbar.finish(self.options.files.length);
+        self.closeAll();
+
+        if (filesCannotBeDone.length > 0) {
+          new AlertDialog(_(self.options.alert_prompt, {n:filesCannotBeDone.length}));
+        }
+
+        self.options.callback(filesToBeDone);
+      };
+    }, 0);
   },
 
   closeAll: function() {
@@ -1238,16 +1328,13 @@ AlertDialog.prototype = {
   },
 
   okButtonCallback: function() {
-    if (this.callback) {
-      this.callback(true);
-    }
     this.close();
+    if (this.callback) {
+      this.callback();
+    }
   },
 
   cancelButtonCallback: function() {
-    if (this.callback) {
-      this.callback(false);
-    }
     this.close();
   },
 

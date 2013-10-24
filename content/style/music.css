@@ -210,8 +210,7 @@
   float: left;
 }
 
-.music-list-item >label {
-  background-image: url("images/checkbox.png");
+.music-list-item .checkbox {
   background-position: right center;
   background-repeat: no-repeat;
   height: 2.8rem;
@@ -219,11 +218,23 @@
   float: left;
 }
 
-.music-list-item >label[data-checked=true] {
+.music-list-item[data-checked=true] label {
   background-image: url("images/checkbox-checked.png");
 }
 
+.music-list-item[data-checked=false] label {
+  background-image: url("images/checkbox.png");
+}
+
 .music-list-item {
+}
+
+.music-list-item:nth-child(odd) {
+  background-color: #F6F6F6;
+}
+
+.music-list-item:nth-child(even) {
+  background-color: #FFFFFF;
 }
 
 .music-list-item:hover {

@@ -26,6 +26,7 @@ const ADBSERVICE_CID = Components.ID('{ed7c329e-5b45-4e99-bdae-f4d159a8edc8}');
 const MANAGER_BINHOME = 'resource://ffosassistant-binhome';
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/DOMRequestHelper.jsm");
 
 XPCOMUtils.defineLazyServiceGetter(this, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
 XPCOMUtils.defineLazyServiceGetter(this, "xulRuntime", '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
