@@ -65,7 +65,7 @@ var MusicList = (function() {
         }
         return;
       }
-      if (changedMusic.callbackID == 'onscanend') {
+      if (changedMusic.callbackID == 'enumerate-done') {
         updateUI();
         return;
       }
@@ -75,7 +75,7 @@ var MusicList = (function() {
   }
 
   function updateUI() {
-    $id('empty-music-container').hidden = !$expr('#music-list-container .music-list-item').length == 0;
+    $id('empty-music-container').hidden = !$expr('#music-list-container .music-list-item').length;
     selectAllMusics(false);
   }
 
@@ -149,9 +149,6 @@ var MusicList = (function() {
     updateControls();
   }
 
-  /**
-   * Remove musics
-   */
   function removeMusics(files) {
     var items = files || [];
     if (items.length == 0) {
@@ -159,32 +156,17 @@ var MusicList = (function() {
       return;
     }
 
-    var maxSteps = 50;
-    var pb = new ProcessBar({
-      sectionsNumber: items.length,
-      stepsPerSection: maxSteps
-    });
-
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-musics-dialog-header',
       processbar_l10n_id: 'processbar-remove-musics-promot',
-      processbar: pb,
       type: 0,
       files: items,
-      callback: updateMusicsList,
+      callback: updateChangedMusics,
       alert_prompt: 'files-cannot-be-removed',
-      max_steps: maxSteps * 0.9
+      maxSteps: 50
     });
 
     dialog.start();
-  }
-
-  function updateMusicsList(FilestoBeRemoved) {
-    FilestoBeRemoved.forEach(function(item) {
-      var music = $id(item);
-      $id('music-list-container').removeChild(music);
-    });
-    updateUI();
   }
 
   function importMusics() {
@@ -207,25 +189,17 @@ var MusicList = (function() {
         return;
       }
 
-      var maxSteps = 50;
-      var pb = new ProcessBar({
-        sectionsNumber: musics.length,
-        stepsPerSection: maxSteps
-      });
-
       var dialog = new FilesOPDialog({
         title_l10n_id: 'import-musics-dialog-header',
         processbar_l10n_id: 'processbar-import-musics-promot',
-        processbar: pb,
         type: 1,
         files: musics,
         callback: updateChangedMusics,
         alert_prompt: 'files-cannot-be-imported',
-        max_steps: maxSteps * 0.9
+        maxSteps: 50
       });
 
       dialog.start();
-      updateUI();
     }, {
       title: _('import-music-title'),
       fileType: 'Audio'
@@ -293,21 +267,14 @@ var MusicList = (function() {
       }
 
       navigator.mozFFOSAssistant.selectDirectory(function(dir) {
-        var maxSteps = 50;
-        var pb = new ProcessBar({
-          sectionsNumber: musics.length,
-          stepsPerSection: maxSteps
-        });
-
         var dialog = new FilesOPDialog({
           title_l10n_id: 'export-musics-dialog-header',
           processbar_l10n_id: 'processbar-export-musics-promot',
-          processbar: pb,
           dir: dir,
           type: 2,
           files: musics,
           alert_prompt: 'files-cannot-be-exported',
-          max_steps: maxSteps * 0.9
+          maxSteps: 50
         });
 
         dialog.start();

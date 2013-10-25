@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*
+
 var chromeWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                          .getInterface(Components.interfaces.nsIWebNavigation)
                          .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
@@ -34,7 +34,7 @@ while (browserEnumerator.hasMoreElements()) {
 }
 
 chromeWindow.switchToTabHavingURI('about:ffos', true);
-*/
+
 var animationLoading = null;
 
 var FFOSAssistant = (function() {
@@ -378,44 +378,6 @@ var FFOSAssistant = (function() {
     });
   }
 
-  function getAndShowAllVideos() {
-    var loadingGroupId = animationLoading.start();
-    Video.init();
-    CMD.Videos.getOldVideosInfo(function onresponse_getOldVideosInfo(oldVideo) {
-      var video = JSON.parse(oldVideo.data);
-      if (video.callbackID == 'enumerate') {
-        Video.addVideo(video.detail);
-        return;
-      }
-      if (video.callbackID == 'enumerate-done') {
-        CMD.Videos.getChangedVideosInfo(function onresponse_getChangedVideos(changedVideoInfo) {
-          var changedVideo = JSON.parse(changedVideoInfo.data);
-          if (changedVideo.callbackID == 'enumerate') {
-            Video.addVideo(changedVideo.detail);
-            return;
-          }
-          if (changedVideo.callbackID == 'ondeleted') {
-            Video.updateRemovedVideos(changedVideo.detail);
-            return;
-          }
-          if (changedVideo.callbackID == 'enumerate-done') {
-            // Make sure the 'select-all' box is not checked.
-            Video.selectAllVideos(false);
-            Video.checkVideoListIsEmpty();
-            animationLoading.stop(loadingGroupId);
-            return;
-          }
-        }, function onerror_getChangedVideo(e) {
-          animationLoading.stop(loadingGroupId);
-          log('Error occurs when fetching changed videos.');
-        });
-      }
-    }, function onerror_getOldVideosInfo(e) {
-      animationLoading.stop(loadingGroupId);
-      log('Error occurs when fetching old videos.');
-    });
-  }
-
   function connectToDevice(serverIP) {
     var timeout = null;
 
@@ -485,7 +447,7 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
     ViewManager.addViewEventListener('music-view', 'firstshow', MusicList.init);
     ViewManager.addViewEventListener('gallery-view', 'firstshow', getAndShowGallery);
-    ViewManager.addViewEventListener('video-view', 'firstshow', getAndShowAllVideos);
+    ViewManager.addViewEventListener('video-view', 'firstshow', Video.init);
   }
 
   window.addEventListener('load', function window_onload(event) {
@@ -529,7 +491,6 @@ var FFOSAssistant = (function() {
 
     getAndShowAllContacts: getAndShowAllContacts,
     getAndShowAllSMSThreads: getAndShowAllSMSThreads,
-    getAndShowAllVideos: getAndShowAllVideos,
     getAndShowGallery: getAndShowGallery,
     updateSMSThreads: updateSMSThreads
   };

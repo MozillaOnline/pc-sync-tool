@@ -747,27 +747,23 @@ ProcessBar.prototype = {
       return;
     }
 
-    this.container = document.createElement('div');
-    this.container.classList.add('processbar-container');
-    this.processBar = document.createElement('div');
-    this.processBar.classList.add('processbar');
-    this.container.appendChild(this.processBar);
-    this.ratio = 0;
-    this.step = Math.round(100 / this.options.sectionsNumber) / this.options.stepsPerSection;
+    this.processbar = document.createElement('div');
+    this.processbar.classList.add('processbar-container');
+    this._pbDiv = document.createElement('div');
+    this._pbDiv.classList.add('processbar');
+    this.processbar.appendChild(this._pbDiv);
+    this._ratio = 0;
+    this._step = Math.round(100 / this.options.sectionsNumber) / this.options.stepsPerSection;
   },
 
   moveForward: function() {
-    this.ratio += this.step;
-    this.processBar.style.width = this.ratio + '%';
+    this._ratio += this._step;
+    this._pbDiv.style.width = this._ratio + '%';
   },
 
   finish: function(count) {
-    this.ratio = Math.round(count * 100 / this.options.sectionsNumber);
-    this.processBar.style.width = this.ratio + '%';
-  },
-
-  getContent: function() {
-    return this.container;
+    this._ratio = Math.round(count * 100 / this.options.sectionsNumber);
+    this._pbDiv.style.width = this._ratio + '%';
   }
 };
 
@@ -781,13 +777,12 @@ FilesOPDialog.prototype = {
       onclose: emptyFunction,
       title_l10n_id: '',
       processbar_l10n_id: '',
-      processbar: null,
       type: -1,
       files: [],
       dir: '',
       callback: emptyFunction,
       alert_prompt: '',
-      max_steps: 0
+      maxSteps: 0
     }, options);
 
     this._modalElement = null;
@@ -796,6 +791,7 @@ FilesOPDialog.prototype = {
     this._fileIndex = 0;
     this._timer = null;
     this._steps = 0;
+    this._processbar = null,
     this._build();
   },
 
@@ -813,20 +809,27 @@ FilesOPDialog.prototype = {
           cmd = 'adb shell rm "' + self.options.files[self._fileIndex] + '"';
           break;
         case 1:
-          var cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Audio/';
+          var cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Music/';
           break;
         case 2:
           cmd ='adb pull "' + self.options.files[self._fileIndex].dataset.id + '" "' + decodeURI(self.options.dir) + '/' +
                 self.options.files[self._fileIndex].dataset.name + '.' + self.options.files[self._fileIndex].dataset.type + '"';
+          break;
+        case 3:
+          var cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Movies/';
+          break;
+        case 4:
+          var cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.videoUrl + '" "' + decodeURI(self.options.dir) + '/' +
+              convertToOutputFileName(self.options.files[self._fileIndex].dataset.videoUrl) + '"';
           break;
       }
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!self._timer) {
         self._timer = setInterval(function() {
           if (self._oldFileIndex == self._fileIndex) {
-            if (self._steps < self.options.max_steps) {
+            if (self._steps < self.options.maxSteps * 0.9) {
               self._steps++;
-              self.options.processbar.moveForward();
+              self._processbar.moveForward();
             }
           } else {
             self._oldFileIndex = self._fileIndex;
@@ -838,7 +841,7 @@ FilesOPDialog.prototype = {
       req.onsuccess = function(e) {
         filesToBeDone.push(self.options.files[self._fileIndex]);
         self._fileIndex++;
-        self.options.processbar.finish(filesToBeDone.length);
+        self._processbar.finish(filesToBeDone.length);
         filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
 
         if (self._fileIndex != self.options.files.length) {
@@ -846,7 +849,7 @@ FilesOPDialog.prototype = {
           return;
         }
         clearInterval(self._timer);
-        self.options.processbar.finish(self.options.files.length);
+        self._processbar.finish(self.options.files.length);
         self.closeAll();
 
         if (filesCannotBeDone.length > 0) {
@@ -859,7 +862,7 @@ FilesOPDialog.prototype = {
       req.onerror = function(e) {
         filesCannotBeDone.push(self.options.files[self._fileIndex]);
         self._fileIndex++;
-        self.options.processbar.finish(filesToBeDone.length);
+        self._processbar.finish(filesToBeDone.length);
         filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
 
         if (self._fileIndex != self.options.files.length) {
@@ -867,7 +870,7 @@ FilesOPDialog.prototype = {
           return;
         }
         clearInterval(self._timer);
-        self.options.processbar.finish(self.options.files.length);
+        self._processbar.finish(self.options.files.length);
         self.closeAll();
 
         if (filesCannotBeDone.length > 0) {
@@ -904,7 +907,11 @@ FilesOPDialog.prototype = {
     }
     this._modalElement.innerHTML = tmpl('tmpl_fileOP_dialog', templateData);
     var dlgBody = $expr('.select-multi-files-dialog-body', this._modalElement)[0];
-    dlgBody.appendChild(this.options.processbar.getContent());
+    this._processbar = new ProcessBar({
+      sectionsNumber: this.options.files.length,
+      stepsPerSection: this.options.maxSteps
+    });
+    dlgBody.appendChild(this._processbar.processbar);
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
     this._makeDialogCancelable();
@@ -1345,5 +1352,34 @@ AlertDialog.prototype = {
     this._modalElement = null;
     document.removeEventListener('AlertDialog:show', this._onModalDialogShown);
     window.removeEventListener('resize', this._onWindowResize)
+  }
+};
+
+function Tip(options) {
+  this.initialize(options);
+}
+
+Tip.prototype = {
+  initialize: function(options) {
+    this.options = extend({
+      element: null,
+      innerHTML: ''
+    }, options);
+    if (!this.options.element) {
+      return;
+    }
+
+    var self = this;
+    var tip = $id('tip');
+    this.options.element.onmouseover = function(e) {
+      tip.innerHTML = self.options.innerHTML;
+      navigator.mozL10n.translate(tip);
+      tip.style.top = (e.target.parentNode.offsetTop + e.target.parentNode.offsetParent.offsetTop + e.target.parentNode.clientHeight - $id('video-list-container').scrollTop) + 'px';
+      tip.style.left = (e.target.parentNode.offsetParent.offsetLeft + e.target.parentNode.offsetLeft + e.target.parentNode.clientWidth / 2) + 'px';
+      tip.hidden = false;
+    };
+    this.options.element.onmouseout = function() {
+      tip.hidden = true;
+    };
   }
 };

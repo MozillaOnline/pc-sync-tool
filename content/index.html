@@ -359,7 +359,7 @@
             <div id="video-list-container">
             </div>
           </section>
-          <div class="tip" id="tip"></div>
+          <div class="tip" id="tip" hidden="true"></div>
         </div>
         <div id="views" class="views hidden-views">
           <section id="contact-view-sub" class="sub-view">
@@ -705,6 +705,9 @@
       </div>
     </div>
   </script>
+  <script type="text/html" id="tmpl_video_thread_title">
+    <span><%=threadId%> (<%=length%>)</span>
+  </script>
   <script type="text/html" id="tmpl_video_thread_container">
     <div id=<%=id%> class="video-thread" data-length="1" data-checked="false" data-thread-id=<%=threadId%>>
       <div class="header">
@@ -745,6 +748,21 @@
     </div>
     <div class="music-size item">
       <span><%=size%> MB</span>
+    </div>
+  </script>
+
+  <script type="text/html" id="tmpl_tip">
+    <div>
+      <label data-l10n-id="tip_name"></label>
+      <label><%=name%></label>
+    </div>
+    <div>
+      <label data-l10n-id="tip_date"></label>
+      <label><%=date%></label>
+    </div>
+    <div>
+      <label data-l10n-id="tip_size"></label>
+      <label><%=size%>M</label>
     </div>
   </script>
 
