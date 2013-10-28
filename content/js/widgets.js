@@ -822,6 +822,10 @@ FilesOPDialog.prototype = {
           var cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.videoUrl + '" "' + decodeURI(self.options.dir) + '/' +
               convertToOutputFileName(self.options.files[self._fileIndex].dataset.videoUrl) + '"';
           break;
+        case 5:
+          var cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.picUrl + '" "' + decodeURI(self.options.dir) + '/' +
+              convertToOutputFileName(self.options.files[self._fileIndex].dataset.picUrl) + '"';
+          break;
       }
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!self._timer) {
@@ -1065,7 +1069,7 @@ ImageViewer.prototype = {
     this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
       if (!bCached) {
         $id('pic-content').setAttribute('src', '');
-        new AlertDialog('Cache picture failed');
+        new AlertDialog('load cached picture failed');
         return;
       }
       $id('pic-content').setAttribute('src', cachedUrl);

@@ -340,44 +340,6 @@ var FFOSAssistant = (function() {
     });
   }
 
-  function getAndShowGallery() {
-    var loadingGroupId = animationLoading.start();
-    Gallery.init();
-    CMD.Pictures.getOldPicturesInfo(function onresponse_getOldMusicsInfo(oldPicture) {
-      var picture = JSON.parse(oldPicture.data);
-      if (picture.callbackID == 'enumerate') {
-        Gallery.addPicture(picture.detail);
-        return;
-      }
-      if (picture.callbackID == 'enumerate-done') {
-        CMD.Pictures.getChangedPicturesInfo(function onresponse_getChangedPictures(changedPictureInfo) {
-          var changedPicture = JSON.parse(changedPictureInfo.data);
-          if (changedPicture.callbackID == 'enumerate') {
-            Gallery.addPicture(changedPicture.detail);
-            return;
-          }
-          if (changedPicture.callbackID == 'ondeleted') {
-            Gallery.updateRemovedPictures(changedPicture.detail);
-            return;
-          }
-          if (changedPicture.callbackID == 'enumerate-done') {
-            Gallery.selectAllPictures(false);
-            Gallery.checkGalleryIsEmpty();
-            animationLoading.stop(loadingGroupId);
-            return;
-          }
-        }, function onerror_getChangedPictures(e) {
-          animationLoading.stop(loadingGroupId);
-          log('Error occurs when fetching changed pictures.');
-        });
-        return;
-      }
-    }, function onerror_getOldMusicsInfo(e) {
-      animationLoading.stop(loadingGroupId);
-      log('Error occurs when fetching old pictures.');
-    });
-  }
-
   function connectToDevice(serverIP) {
     var timeout = null;
 
@@ -446,7 +408,7 @@ var FFOSAssistant = (function() {
     ViewManager.addViewEventListener('sms-view', 'firstshow', getAndShowAllSMSThreads);
     ViewManager.addViewEventListener('sms-view', 'othershow', updateSMSThreads);
     ViewManager.addViewEventListener('music-view', 'firstshow', MusicList.init);
-    ViewManager.addViewEventListener('gallery-view', 'firstshow', getAndShowGallery);
+    ViewManager.addViewEventListener('gallery-view', 'firstshow', Gallery.init);
     ViewManager.addViewEventListener('video-view', 'firstshow', Video.init);
   }
 
@@ -459,7 +421,6 @@ var FFOSAssistant = (function() {
     document.documentElement.lang = navigator.mozL10n.language.code;
     document.documentElement.dir = navigator.mozL10n.language.direction;
     document.body.hidden = false;
-
     $expr('#lang-settings .language-code-button').forEach(function(label) {
       if (label.dataset.languageCode == navigator.mozL10n.language.code) {
         label.classList.add('current');
@@ -491,7 +452,6 @@ var FFOSAssistant = (function() {
 
     getAndShowAllContacts: getAndShowAllContacts,
     getAndShowAllSMSThreads: getAndShowAllSMSThreads,
-    getAndShowGallery: getAndShowGallery,
     updateSMSThreads: updateSMSThreads
   };
 })();

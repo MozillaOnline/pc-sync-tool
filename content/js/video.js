@@ -9,7 +9,7 @@ var Video = (function() {
     getAllVideos();
   }
 
-  function getAllVideos(args) {
+  function getAllVideos() {
     CMD.Videos.getOldVideosInfo(function(oldVideo) {
       var video = JSON.parse(oldVideo.data);
       if (video.callbackID == 'enumerate') {
@@ -37,9 +37,8 @@ var Video = (function() {
       }
       if (changedVideo.callbackID == 'enumerate-done') {
         updateUI();
-        return;
       }
-    }, function onerror_getChangedVideo(e) {
+    }, function(e) {
       log('Error occurs when updating changed videos.');
     });
   }
@@ -60,59 +59,63 @@ var Video = (function() {
         threadId : threadId,
         length: threadContainer.dataset.length
       };
-      title.innerHTML = tmpl('tmpl_video_thread_title', templateData);
+      title.innerHTML = tmpl('tmpl_thread_title', templateData);
+      return;
+    }
+
+    var templateData = {
+      id: 'video-' + threadId,
+      threadId: threadId
+    };
+
+    var div = document.createElement('div');
+    div.innerHTML = tmpl('tmpl_video_thread_container', templateData);
+
+    var threads = $expr('.video-thread', container);
+    if (threads.length == 0) {
+      container.appendChild(div);
     } else {
-      var templateData = {
-        id: 'video-' + threadId,
-        threadId: threadId
-      };
-
-      var div = document.createElement('div');
-      div.innerHTML = tmpl('tmpl_video_thread_container', templateData);
-
-      var threads = $expr('.video-thread', container);
-      if (threads.length == 0) {
-        container.appendChild(div);
-      } else {
-        var dt = new Date(threadId);
-        var index = 0;
-        for (; index < threads.length; index++) {
-          var date = new Date(threads[index].dataset.threadId);
-          if (dt > date) {
-            container.insertBefore(div, threads[index].parentNode);
-            break;
-          }
-        }
-        if (index == threads.length) {
-          container.appendChild(div);
+      var dt = new Date(threadId);
+      var index = 0;
+      for (; index < threads.length; index++) {
+        var date = new Date(threads[index].dataset.threadId);
+        if (dt > date) {
+          container.insertBefore(div, threads[index].parentNode);
+          break;
         }
       }
-
-      var title = $expr('label', div)[0];
-
-      title.onclick = function onSelectThread(e) {
-        var target = e.target;
-        if (target instanceof HTMLLabelElement) {
-          var threadContainer = this.parentNode.parentNode;
-          var videoItems = $expr('li', threadContainer);
-
-          var bChcked = threadContainer.dataset.checked == 'true';
-          threadContainer.dataset.checked = !bChcked;
-          videoItems.forEach(function(item) {
-            item.dataset.checked = !bChcked;
-          });
-
-          updateControls();
-        }
-      };
-
-      var threadBody = $expr('ul', div)[0];
-      threadBody.appendChild(createVideoListItem(video));
+      if (index == threads.length) {
+        container.appendChild(div);
+      }
     }
+
+    var title = $expr('label', div)[0];
+
+    title.onclick = function onSelectThread(e) {
+      var target = e.target;
+
+      if (!(target instanceof HTMLLabelElement)) {
+        return;
+      }
+
+      var threadContainer = this.parentNode.parentNode;
+      var videoItems = $expr('li', threadContainer);
+
+      var bChecked = threadContainer.dataset.checked == 'true';
+      threadContainer.dataset.checked = !bChecked;
+      videoItems.forEach(function(item) {
+        item.dataset.checked = !bChecked;
+      });
+
+      updateControls();
+    };
+
+    var threadBody = $expr('ul', div)[0];
+    threadBody.appendChild(createVideoListItem(video));
   }
 
   function updateRemovedVideos(videos) {
-    if (!videos || !videos.length || videos.length < 1) {
+    if (!videos || !videos.length) {
       return;
     }
     for (var i = 0; i < videos.length; i++) {
@@ -182,7 +185,7 @@ var Video = (function() {
   }
 
   function updateUI() {
-    $id('empty-video-container').hidden = !$expr('#video-list-container li').length;
+    $id('empty-video-container').hidden = !!$expr('#video-list-container li').length;
     selectAllVideos(false);
   }
 
@@ -200,7 +203,7 @@ var Video = (function() {
   function removeVideos(files) {
     var items = files || [];
     if (items.length == 0) {
-      // TODO: prompt select videos to be removed...
+      // TODO: prompt selecting videos to remove...
       return;
     }
 
