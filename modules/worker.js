@@ -178,7 +178,7 @@ self.onmessage = function(e) {
   case 'RunCmd':
     postMessage({
       id: id,
-      result: libadb.runLocalCmd(e.data.data);
+      result: libadb.runLocalCmd(e.data.data)
     });
     break;
   default:
@@ -249,7 +249,7 @@ function startDetecting(start) {
     device = devices[0];
     debug(device);
     var ret = libadb.setupDevice(device);
-    setConnecte(!/error|failed/ig.test(ret));
+    setConnected(!/error|failed/ig.test(ret));
   }, 2000);
 }
 
