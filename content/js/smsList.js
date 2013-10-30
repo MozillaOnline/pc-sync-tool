@@ -7,38 +7,45 @@ var SmsList = (function() {
   var messageListContainer = null;
   var listenSmsMessage = false;
 
-  function initSmsPage(smsThreads) {
-    threadListContainer = $id('threads-list-container');
-    threadListContainer.innerHTML = '';
-    selectedListContainer = $id('show-sms-container');
-    selectedListContainer.innerHTML = '';
-    messageListContainer = $id('message-list-container');
-    messageListContainer.innerHTML = '';
-    ViewManager.showViews('sms-send-view');
-    threadList = new GroupedList({
-      dataList: smsThreads,
-      dataIndexer: function getIndex(smsThread) {
-        return smsThread.timestamp;
-      },
-      indexSorter: function dictSorter(a, b) {
-        if (a.index === b.index) {
-          return 0;
-        } else if (a.index > b.index) {
-          return -1;
-        }
-        return 1;
-      },
-      disableDataIndexer: true,
-      renderFunc: createGroupThreadList,
-      container: threadListContainer
+  function init() {
+    CMD.SMS.getThreads(function onresponse_getThreads(messages) {
+      // Make sure the 'select-all' box is not checked.
+      selectAllSms(false);
+      var dataJSON = JSON.parse(messages.data);
+      threadListContainer = $id('threads-list-container');
+      threadListContainer.innerHTML = '';
+      selectedListContainer = $id('show-sms-container');
+      selectedListContainer.innerHTML = '';
+      messageListContainer = $id('message-list-container');
+      messageListContainer.innerHTML = '';
+      ViewManager.showViews('sms-send-view');
+      threadList = new GroupedList({
+        dataList: dataJSON,
+        dataIndexer: function getIndex(smsThread) {
+          return smsThread.timestamp;
+        },
+        indexSorter: function dictSorter(a, b) {
+          if (a.index === b.index) {
+            return 0;
+          } else if (a.index > b.index) {
+            return -1;
+          }
+          return 1;
+        },
+        disableDataIndexer: true,
+        renderFunc: createGroupThreadList,
+        container: threadListContainer
+      });
+      threadList.render();
+      updateAvatar();
+      showThreadList();
+      if (!listenSmsMessage) {
+        ViewManager.addViewEventListener('sms', 'onMessage', onMessage);
+        listenSmsMessage = true;
+      }
+    }, function onerror_getThreads(messages) {
+      log('Error occurs when fetching all messages' + messages.message);
     });
-    threadList.render();
-    updateAvatar();
-    showThreadList();
-    if (!listenSmsMessage) {
-      ViewManager.addViewEventListener('sms', 'onMessage', onMessage);
-      listenSmsMessage = true;
-    }
   }
 
   function updateAvatar() {
@@ -724,7 +731,7 @@ var SmsList = (function() {
           n: ids.length
         }), true, function() {
         ids.forEach(function(item) {
-          SmsList.removeThread(item);
+          removeThread(item);
         });
         ViewManager.showViews('sms-send-view');
       });
@@ -804,7 +811,7 @@ var SmsList = (function() {
       new AlertDialog(_('export-sms-confirm', {
           n: ids.length
         }), true, function() {
-        SmsList.exportThreads(ids);
+        exportThreads(ids);
       });
     });
 
@@ -843,9 +850,6 @@ var SmsList = (function() {
   });
 
   return {
-    init: initSmsPage,
-    removeThread: removeThread,
-    exportThreads: exportThreads,
-    selectAllSms: selectAllSms
+    init: init
   };
 })();

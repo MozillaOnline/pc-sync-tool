@@ -137,7 +137,7 @@ var ContactList = (function() {
     var editButton = $expr('#vcard-basic-info-box .edit')[0];
     editButton.dataset.contactId = contact.id;
     editButton.onclick = function(event) {
-      var contact = ContactList.getContact(this.dataset.contactId);
+      var contact = getContact(this.dataset.contactId);
       contact.photo = $id('avatar-s').src;
       ContactForm.editContact(contact);
     };
@@ -206,6 +206,18 @@ var ContactList = (function() {
     img.src = contact.photo;
     item.dataset.avatar = contact.photo;
     img.classList.remove('avatar-default');
+  }
+
+  function init(viewData) {
+    ViewManager.showViews('contact-quick-add-view');
+    CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
+      // Make sure the 'select-all' box is not checked.
+      selectAllContacts(false);
+      var dataJSON = JSON.parse(message.data);
+      initList(dataJSON, viewData);
+    }, function onerror_getAllContacts(message) {
+      log('Error occurs when fetching all contacts.');
+    });
   }
 
   function initList(contacts, viewData) {
@@ -637,7 +649,7 @@ var ContactList = (function() {
             $id('selectAll-contacts').dataset.checked = false;
           }
           ids.forEach(function(item) {
-            ContactList.removeContact(item);
+            removeContact(item);
           });
           ViewManager.showViews('contact-quick-add-view');
         }
@@ -649,7 +661,7 @@ var ContactList = (function() {
     });
 
     $id('refresh-contacts').addEventListener('click', function onclick_refreshContacts(event) {
-      FFOSAssistant.getAndShowAllContacts();
+      init();
     });
 
     $id('import-contacts').addEventListener('click', function onclick_importContacts(event) {
@@ -686,9 +698,7 @@ var ContactList = (function() {
   });
 
   return {
-    init: initList,
-    removeContact: removeContact,
-    getContact: getContact,
-    selectAllContacts: selectAllContacts
+    init: init,
+    getContact: getContact
   };
 })();

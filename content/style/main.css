@@ -562,17 +562,17 @@ input[type="url"], textarea {
 }
 
 
-#summary-infos .storage-totle{
+#summary-infos .storage-total{
   height: 2.5rem;
 }
 
-#summary-infos .storage-totle > div:first-child {
+#summary-infos .storage-total > div:first-child {
   float: left;
   font-size: 1.8rem;
   color: #090909;
 }
 
-#summary-infos .storage-totle > div:last-child {
+#summary-infos .storage-total > div:last-child {
   float: right;
 }
 
@@ -633,6 +633,7 @@ input[type="url"], textarea {
 
 #summary-infos .storage-detailgraph .storage-used {
   width: 0;
+  min-width: 1%;
   height: 0.5rem;
   border-radius: .5rem;
   background-color: #7FC80E;
