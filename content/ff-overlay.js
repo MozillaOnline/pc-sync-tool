@@ -289,7 +289,7 @@
     }
   };
   // Add tcp socket permissions for debugging
-  if(Services.prefs.getBoolPref('extensions.ffosassistant@mozillaonline.com.debug'))
+/*  if(Services.prefs.getBoolPref('extensions.ffosassistant@mozillaonline.com.debug'))
   {
     let domain = Services.prefs.getCharPref('extensions.ffosassistant@mozillaonline.com.tcp_socket_allow_domain');
     var ios = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
@@ -297,6 +297,7 @@
 
     Services.perms.add(uri, 'tcp-socket', Components.interfaces.nsIPermissionManager.ALLOW_ACTION);
   }
+*/
 
   var client = null;
 
