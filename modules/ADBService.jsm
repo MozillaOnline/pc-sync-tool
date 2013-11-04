@@ -28,8 +28,10 @@ XPCOMUtils.defineLazyServiceGetter(this, "ppmm", "@mozilla.org/parentprocessmess
 XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
 
 let connected = false;
+let isWifiConnected = false;
 let ffosDeviceName = 'Unknown';
 let libWorker = null;
+let serverPort = 10010;
 
 function worker_onMessage(e) {
   let data = e.data;
@@ -71,17 +73,9 @@ let messageReceiver = {
 
     var self = this;
     switch (aMessage.name) {
-    case 'ADBService:wifiConnected':
-      // This message is sync
-      return ADBService.startDeviceDetecting(false);
-    case 'ADBService:wifiUnconnected':
-      // This message is sync
-      return ADBService.startDeviceDetecting(true);
     case 'ADBService:connected':
-      // This message is sync
       return connected;
     case 'ADBService:ffosDeviceName':
-      // This message is sync
       return ffosDeviceName;
     case 'ADBService:disconnect':
       // Not implemented
@@ -96,6 +90,27 @@ let messageReceiver = {
         self._sendMessage('ADBService:RunCmd:Return', true, data.result, msg);
       });
       break;
+    case 'ADBService:getWifiConnectionState':
+      return isWifiConnected;
+      break;
+    case 'ADBService:setWifiConnectionState':
+      isWifiConnected = msg.state;
+      ADBService.startDeviceDetecting(!isWifiConnected);
+      break;
+    case 'ADBService:switchConnectionMode':
+      if (msg.mode == 'USB' && connected) {
+        return;
+      }
+      if (msg.mode == 'WIFI' && isWifiConnected) {
+        return;
+      }
+      ppmm.broadcastAsyncMessage('ADBService:statechange', {
+        mode: msg.mode,
+        connected: true,
+        serverip: msg.serverip,
+        port: serverPort
+      });
+      break;
     }
     return null;
   },
@@ -108,8 +123,10 @@ let messageReceiver = {
       connected = msg.connected;
       ffosDeviceName = msg.device;
       ppmm.broadcastAsyncMessage('ADBService:statechange', {
+        mode: 'USB',
         connected: connected,
-        serverip: msg.serverip
+        serverip: msg.serverip,
+        port: serverPort
       });
       break;
     default:
@@ -126,7 +143,8 @@ let messageReceiver = {
   }
 };
 
-const messages = ['ADBService:connected', 'ADBService:ffosDeviceName', 'ADBService:RunCmd', 'ADBService:wifiConnected', 'ADBService:wifiUnconnected'];
+const messages = ['ADBService:connected', 'ADBService:ffosDeviceName', 'ADBService:RunCmd', 'ADBService:setWifiConnectionState',
+                  'ADBService:getWifiConnectionState', 'ADBService:switchConnectionMode'];
 messages.forEach(function(msgName) {
   ppmm.addMessageListener(msgName, messageReceiver);
 });

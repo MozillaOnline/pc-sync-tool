@@ -183,7 +183,6 @@
       return parseInt(modules.utils.getIniValue(file, 'socket', 'port'));
     } catch (e) {
       debug(e);
-      return 0;
     }
     return 0;
   }
@@ -243,22 +242,42 @@
   }
 
   let heartBeatSocket = null;
+  let mode;
+  let connected;
+  let serverIP;
+  let port;
+
+  function onclose_heartBeatSocket() {
+    heartBeatSocket = null;
+    if (isDisabled) {
+      return;
+    }
+    if (mode == 'USB') {
+      modules.ADBService.startDeviceDetecting(true);
+    }
+    if (mode == 'WIFI') {
+      heartBeatSocket = navigator.mozTCPSocket.open(serverIP, port);
+      heartBeatSocket.onclose = onclose_heartBeatSocket;
+    }
+  };
+
   let messageHandler = {
     receiveMessage: function(aMessage) {
-      var connected = aMessage.json.connected;
-      var serverIP = aMessage.json.serverip;
-      debug('Receive message: ' + connected);
+      mode = aMessage.json.mode;
+      connected = aMessage.json.connected;
+      serverIP = aMessage.json.serverip;
+      port = aMessage.json.port;
+
+      if (heartBeatSocket) {
+        heartBeatSocket.close();
+        return;
+      }
+
       if (connected) {
         modules.ADBService.startDeviceDetecting(false);
         // Establish a heart-beat socket, and stop usb querying interval
-        heartBeatSocket = navigator.mozTCPSocket.open(serverIP, 10010);
-        heartBeatSocket.onclose = function onclose_socket() {
-          // Restart usb querying interval
-          if (isDisabled == false) {
-            modules.ADBService.startDeviceDetecting(true);
-          }
-        };
-        return;
+        heartBeatSocket = navigator.mozTCPSocket.open(serverIP, port);
+        heartBeatSocket.onclose = onclose_heartBeatSocket;
       }
 
       if (!navigator.mozFFOSAssistant.isWindows) {
@@ -288,16 +307,6 @@
       }
     }
   };
-  // Add tcp socket permissions for debugging
-/*  if(Services.prefs.getBoolPref('extensions.ffosassistant@mozillaonline.com.debug'))
-  {
-    let domain = Services.prefs.getCharPref('extensions.ffosassistant@mozillaonline.com.tcp_socket_allow_domain');
-    var ios = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService);
-    uri = ios.newURI(domain, null, null);
-
-    Services.perms.add(uri, 'tcp-socket', Components.interfaces.nsIPermissionManager.ALLOW_ACTION);
-  }
-*/
 
   var client = null;
 
@@ -352,12 +361,12 @@
     // We don't need to fire device-ready-event here, we will might receive a
     // device-change event if driver is installed successfully.
     if (msg.data.errorName && !navigator.mozFFOSAssistant.adbConnected) {
-      //TODO: handle driver installation error
+      // TODO: handle driver installation error
     } else {
       // Sometimes we can't receive a device-change event, we need to set a timeout
       // to fire fail-to-install event
       failToInstallTimeout = window.setTimeout(function() {
-        //TODO: handle failure of driver installation
+        // TODO: handle failure of driver installation
       }, 5000);
     }
   }

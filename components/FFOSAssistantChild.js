@@ -188,23 +188,21 @@ FFOSAssistant.prototype = {
     this._onADBStateChange = callback;
   },
 
-  set isWifiConnected(isConnected) {
-    // Write firefox path to the ini file
-    try {
-      if (isConnected) {
-        this._isWifiConnected = true;
-        cpmm.sendSyncMessage('ADBService:wifiConnected')[0];
-      } else {
-        this._isWifiConnected = false;
-        cpmm.sendSyncMessage('ADBService:wifiUnconnected')[0];
-      }
-    } catch (e) {
-      debug(e);
-    }
+  get isWifiConnected() {
+    return cpmm.sendSyncMessage('ADBService:getWifiConnectionState')[0];
   },
 
-  get isWifiConnected() {
-    return this._isWifiConnected;
+  set isWifiConnected(isConnected) {
+    cpmm.sendSyncMessage('ADBService:setWifiConnectionState', {
+      state: isConnected
+    })[0];
+  },
+
+  switchConnectionMode: function(mode, ip) {
+    cpmm.sendSyncMessage('ADBService:switchConnectionMode', {
+      mode: mode,
+      serverip: ip
+    })[0];
   },
 
   selectDirectory: function(callback, options) {

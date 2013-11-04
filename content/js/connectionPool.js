@@ -123,7 +123,7 @@ TCPConnectionPool.prototype = {
     }
   },
 
-/*
+  /**
    * The callback function to be called in the wrapper
    * @see TCPSocketWrapper
    */
@@ -171,7 +171,7 @@ TCPConnectionPool.prototype = {
       callback.onerror(e);
     }
     // Reset socket state
-    //this._setSocketWrapperIdle(wrapper);
+    // this._setSocketWrapperIdle(wrapper);
   },
 
   _getAvailableSocketWrapper: function tc_getAvailableSocketWrapper() {
@@ -225,7 +225,7 @@ TCPConnectionPool.prototype = {
     wrapper.send(obj.cmd, obj.cmd.data);
   },
 
-/*
+  /**
    * obj = {
    *   cmd: { id: 1, command: 1, type: 1},
    *   data: null,

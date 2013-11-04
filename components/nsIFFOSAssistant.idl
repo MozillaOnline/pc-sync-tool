@@ -23,7 +23,9 @@ interface nsIFFOSAssistant : nsISupports
 
   attribute boolean isWifiConnected;
 
-  /* Fired when USB cable or ADB forward disconnected */
+  /**
+   * Fired when USB cable or ADB forward disconnected
+   */
   attribute nsIDOMEventListener onadbstatechange;
 
   /**
@@ -54,14 +56,16 @@ interface nsIFFOSAssistant : nsISupports
    */
   void selectMultiFilesFromDisk(in jsval callback, in jsval options);
 
-  /**
-   *
-   */
   string getGalleryCachedDir(in jsval pathArray);
 
   /**
    * Run command from local host
    */
   nsIDOMDOMRequest runCmd(in DOMString cmd);
+
+  /**
+   * Switch connection between USB and WIFI modes
+   */
+  void switchConnectionMode(in jsval mode, [optional] in jsval ip);
 };
 

@@ -65,6 +65,7 @@ var FFOSAssistant = (function() {
       $id('step-three-span').textContent = _('usb-step-three');
       $id('step-one-span').dataset.l10nId = 'usb-step-one';
       $id('step-three-span').dataset.l10nId = 'usb-step-three';
+      navigator.mozFFOSAssistant.switchConnectionMode('USB', 'localhost');
     };
 
     $id('wifi-connection-button').onclick = function() {
@@ -88,7 +89,7 @@ var FFOSAssistant = (function() {
 
     $id('wifi-connect-button').onclick = function() {
       var wifiCode = $id('wifi-connection-code');
-      if (!wifiCode || wifiCode.value.trim()) {
+      if (!wifiCode || !wifiCode.value.trim()) {
         return;
       }
 
@@ -101,15 +102,7 @@ var FFOSAssistant = (function() {
       var elem = $id('mgmt-list');
       $expr('.header', elem)[0].textContent = wifiCode.value;
 
-      if (navigator.mozFFOSAssistant) {
-        heartBeatSocket = navigator.mozTCPSocket.open(ip, 10010);
-        heartBeatSocket.onclose = function onclose_socket() {
-          navigator.mozFFOSAssistant.isWifiConnected = false;
-        };
-        heartBeatSocket.onopen = function onclose_socket() {
-          navigator.mozFFOSAssistant.isWifiConnected = true;
-        };
-      }
+      navigator.mozFFOSAssistant.switchConnectionMode('WIFI', ip);
       connectToDevice(ip);
     };
 

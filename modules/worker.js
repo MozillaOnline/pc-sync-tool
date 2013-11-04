@@ -143,7 +143,7 @@ var libadb = (function() {
 
 let connected = false;
 
-self.onmessage = function(e) {
+onmessage = function(e) {
   debug('Receive message: ' + e.data.cmd);
   let id = e.data.id;
   let cmd = e.data.cmd;
