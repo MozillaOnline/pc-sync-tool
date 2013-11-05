@@ -182,6 +182,13 @@ var Video = (function() {
       $expr('#video-list-container li[data-checked="true"]').length === 0;
     $id('export-videos').dataset.disabled =
       $expr('#video-list-container li[data-checked="true"]').length === 0;
+    $id('import-videos').dataset.disabled = false;
+
+    if (navigator.mozFFOSAssistant.isWifiConnected) {
+      $id('remove-videos').dataset.disabled = true;
+      $id('import-videos').dataset.disabled = true;
+      $id('export-videos').dataset.disabled = true;
+    }
   }
 
   function updateUI() {
@@ -209,7 +216,7 @@ var Video = (function() {
 
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-videos-dialog-header',
-      processbar_l10n_id: 'processbar-remove-videos-promot',
+      processbar_l10n_id: 'processbar-remove-videos-prompt',
       type: 0,
       files: items,
       callback: updateChangedVideos,
@@ -221,11 +228,7 @@ var Video = (function() {
   }
 
   function importVideos() {
-    if (navigator.mozFFOSAssistant.isWifiConnected) {
-      new WifiModePromptDialog({
-        title_l10n_id: 'import-videos-dialog-header',
-        prompt_l10n_id: 'wifi-mode-import-videos-promot'
-      });
+    if (this.dataset.disabled == 'true') {
       return;
     }
 
@@ -242,7 +245,7 @@ var Video = (function() {
 
       var dialog = new FilesOPDialog({
         title_l10n_id: 'import-videos-dialog-header',
-        processbar_l10n_id: 'processbar-import-videos-promot',
+        processbar_l10n_id: 'processbar-import-videos-prompt',
         type: 3,
         files: videos,
         callback: updateChangedVideos,
@@ -273,7 +276,7 @@ var Video = (function() {
       if (navigator.mozFFOSAssistant.isWifiConnected) {
         new WifiModePromptDialog({
           title_l10n_id: 'remove-videos-dialog-header',
-          prompt_l10n_id: 'wifi-mode-remove-videos-promot'
+          prompt_l10n_id: 'wifi-mode-remove-videos-prompt'
         });
         return;
       }
@@ -306,7 +309,7 @@ var Video = (function() {
       if (navigator.mozFFOSAssistant.isWifiConnected) {
         new WifiModePromptDialog({
           title_l10n_id: 'export-videos-dialog-header',
-          prompt_l10n_id: 'wifi-mode-export-videos-promot'
+          prompt_l10n_id: 'wifi-mode-export-videos-prompt'
         });
         return;
       }
@@ -320,7 +323,7 @@ var Video = (function() {
       navigator.mozFFOSAssistant.selectDirectory(function(dir) {
         var dialog = new FilesOPDialog({
           title_l10n_id: 'export-videos-dialog-header',
-          processbar_l10n_id: 'processbar-export-videos-promot',
+          processbar_l10n_id: 'processbar-export-videos-prompt',
           dir: dir,
           type: 4,
           files: videos,

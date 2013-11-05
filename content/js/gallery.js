@@ -222,6 +222,13 @@ var Gallery = (function() {
       $expr('#picture-list-container li[data-checked="true"]').length === 0;
     $id('export-pictures').dataset.disabled =
       $expr('#picture-list-container li[data-checked="true"]').length === 0;
+    $id('import-pictures').dataset.disabled = false;
+
+    if (navigator.mozFFOSAssistant.isWifiConnected) {
+      $id('remove-pictures').dataset.disabled = true;
+      $id('import-pictures').dataset.disabled = true;
+      $id('export-pictures').dataset.disabled = true;
+    }
   }
 
   function updateUI() {
@@ -261,11 +268,7 @@ var Gallery = (function() {
   }
 
   function importPictures() {
-    if (navigator.mozFFOSAssistant.isWifiConnected ) {
-      new WifiModePromptDialog({
-        title_l10n_id: 'import-pictures-dialog-header',
-        prompt_l10n_id: 'wifi-mode-import-pictures-promot'
-      });
+    if (this.dataset.disabled == 'true') {
       return;
     }
 
@@ -282,7 +285,7 @@ var Gallery = (function() {
 
       var dialog = new FilesOPDialog({
         title_l10n_id: 'import-pictures-dialog-header',
-        processbar_l10n_id: 'processbar-import-pictures-promot',
+        processbar_l10n_id: 'processbar-import-pictures-prompt',
         type: 3,
         files: pictures,
         callback: updateChangedPictures,
@@ -310,10 +313,10 @@ var Gallery = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnected ) {
+      if (navigator.mozFFOSAssistant.isWifiConnected) {
         new WifiModePromptDialog({
           title_l10n_id: 'remove-pictures-dialog-header',
-          prompt_l10n_id: 'wifi-mode-remove-pictures-promot'
+          prompt_l10n_id: 'wifi-mode-remove-pictures-prompt'
         });
         return;
       }
@@ -343,10 +346,10 @@ var Gallery = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnected ) {
+      if (navigator.mozFFOSAssistant.isWifiConnected) {
         new WifiModePromptDialog({
           title_l10n_id: 'export-pictures-dialog-header',
-          prompt_l10n_id: 'wifi-mode-export-pictures-promot'
+          prompt_l10n_id: 'wifi-mode-export-pictures-prompt'
         });
         return;
       }
@@ -360,7 +363,7 @@ var Gallery = (function() {
       navigator.mozFFOSAssistant.selectDirectory(function(dir) {
         var dialog = new FilesOPDialog({
           title_l10n_id: 'export-pictures-dialog-header',
-          processbar_l10n_id: 'processbar-export-pictures-promot',
+          processbar_l10n_id: 'processbar-export-pictures-prompt',
           dir: dir,
           type: 5,
           files: pictures,

@@ -202,7 +202,8 @@ function setConnected(newState) {
       cmd: 'statechange',
       connected: connected,
       device: device,
-      serverip: 'localhost'
+      serverip: 'localhost',
+      port: REMOTE_PORT
     });
   }
 }

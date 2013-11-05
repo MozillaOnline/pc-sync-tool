@@ -79,6 +79,7 @@
 #export-musics[data-disabled=true] {
   background-image: url("images/export-disabled.png");
   color: #CCCCCC;
+  cursor: default;
 }
 
 #export-musics[data-disabled=false] {
@@ -99,7 +100,13 @@
   color: #018CAB;
 }
 
-#import-musics {
+#import-musics[data-disabled=true] {
+  background-image: url("images/import-disabled.png");
+  color: #CCCCCC;
+  cursor: default;
+}
+
+#import-musics[data-disabled=false] {
   background-image: url("images/import-default.png");
 }
 
@@ -107,12 +114,12 @@
   cursor: default;
 }
 
-#import-musics:hover {
+#import-musics[data-disabled=false]:hover {
   background-image: url("images/import-highlighted.png");
   color: #00CAF2;
 }
 
-#import-musics:active {
+#import-musics[data-disabled=false]:active {
   background-image: url("images/import-selected.png");
   color: #018CAB;
 }
@@ -157,7 +164,7 @@
   float: left;
   height: 2rem;
   width: 12rem;
-  margin: 1.2rem 0 0 31rem;
+  margin: 1.2rem 0 0 29.5rem;
   padding: 1rem 1rem;
 }
 

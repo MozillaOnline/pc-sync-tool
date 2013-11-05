@@ -126,7 +126,7 @@ let messageReceiver = {
         mode: 'USB',
         connected: connected,
         serverip: msg.serverip,
-        port: serverPort
+        port: msg.port
       });
       break;
     default:

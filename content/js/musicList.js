@@ -75,7 +75,7 @@ var MusicList = (function() {
   }
 
   function updateUI() {
-    $id('empty-music-container').hidden = !$expr('#music-list-container .music-list-item').length;
+    $id('empty-music-container').hidden = !!$expr('#music-list-container .music-list-item').length;
     selectAllMusics(false);
   }
 
@@ -128,6 +128,13 @@ var MusicList = (function() {
       $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
     $id('export-musics').dataset.disabled =
       $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
+    $id('import-musics').dataset.disabled = false;
+
+    if (navigator.mozFFOSAssistant.isWifiConnected) {
+      $id('remove-musics').dataset.disabled = true;
+      $id('import-musics').dataset.disabled = true;
+      $id('export-musics').dataset.disabled = true;
+    }
   }
 
   function musicItemClicked(elem) {
@@ -158,7 +165,7 @@ var MusicList = (function() {
 
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-musics-dialog-header',
-      processbar_l10n_id: 'processbar-remove-musics-promot',
+      processbar_l10n_id: 'processbar-remove-musics-prompt',
       type: 0,
       files: items,
       callback: updateChangedMusics,
@@ -170,11 +177,7 @@ var MusicList = (function() {
   }
 
   function importMusics() {
-    if (navigator.mozFFOSAssistant.isWifiConnected) {
-      new WifiModePromptDialog({
-        title_l10n_id: 'import-musics-dialog-header',
-        prompt_l10n_id: 'wifi-mode-import-musics-promot'
-      });
+    if (this.dataset.disabled == 'true') {
       return;
     }
 
@@ -191,7 +194,7 @@ var MusicList = (function() {
 
       var dialog = new FilesOPDialog({
         title_l10n_id: 'import-musics-dialog-header',
-        processbar_l10n_id: 'processbar-import-musics-promot',
+        processbar_l10n_id: 'processbar-import-musics-prompt',
         type: 1,
         files: musics,
         callback: updateChangedMusics,
@@ -223,7 +226,7 @@ var MusicList = (function() {
       if (navigator.mozFFOSAssistant.isWifiConnected) {
         new WifiModePromptDialog({
           title_l10n_id: 'remove-musics-dialog-header',
-          prompt_l10n_id: 'wifi-mode-remove-musics-promot'
+          prompt_l10n_id: 'wifi-mode-remove-musics-prompt'
         });
         return;
       }
@@ -255,7 +258,7 @@ var MusicList = (function() {
       if (navigator.mozFFOSAssistant.isWifiConnected ) {
         new WifiModePromptDialog({
           title_l10n_id: 'export-musics-dialog-header',
-          prompt_l10n_id: 'wifi-mode-export-musics-promot'
+          prompt_l10n_id: 'wifi-mode-export-musics-prompt'
         });
         return;
       }
@@ -269,7 +272,7 @@ var MusicList = (function() {
       navigator.mozFFOSAssistant.selectDirectory(function(dir) {
         var dialog = new FilesOPDialog({
           title_l10n_id: 'export-musics-dialog-header',
-          processbar_l10n_id: 'processbar-export-musics-promot',
+          processbar_l10n_id: 'processbar-export-musics-prompt',
           dir: dir,
           type: 2,
           files: musics,

@@ -1,6 +1,5 @@
 var ContactList = (function() {
   var groupedList = null;
-  var DEFAULT_AVATAR = 'chrome://ffosassistant/content/style/images/avatar.jpeg';
 
   function getListContainer() {
     return $id('contact-list-container');
@@ -106,68 +105,6 @@ var ContactList = (function() {
     return elem;
   }
 
-  /**
-   * Show the contact info in the contact card view
-   */
-  function showVcardInView(contact) {
-    // Set focused dataset which means it's shown in the vcard view.
-    $expr('.contact-list-item[data-focused=true]').forEach(function(item) {
-      delete item.dataset.focused;
-    });
-    var contactElement = $id('contact-' + contact.id);
-    contactElement.dataset.focused = true;
-
-    ViewManager.showCardView('contact-vcard-view');
-    $id('contact-vcard-view').dataset.contactId = contact.id;
-
-    var avatarShow = $id('avatar-s');
-    if (contactElement.dataset.avatar != '' && contactElement.dataset.avatar != DEFAULT_AVATAR) {
-      avatarShow.src = contactElement.dataset.avatar;
-    } else {
-      if ((!!contact.photo) && (contact.photo.length > 0)) {
-        avatarShow.src = contact.photo;
-        contactElement.dataset.avatar = contact.photo;
-      } else {
-        avatarShow.src = DEFAULT_AVATAR;
-        contactElement.dataset.avatar = DEFAULT_AVATAR;
-      }
-    }
-    $expr('#vcard-basic-info-box .name')[0].textContent = contact.name.join(' ');
-    $expr('#vcard-basic-info-box .company')[0].textContent = (contact.org && contact.org.length) > 0 ? contact.org[0] : 'unknown';
-    var editButton = $expr('#vcard-basic-info-box .edit')[0];
-    editButton.dataset.contactId = contact.id;
-    editButton.onclick = function(event) {
-      var contact = getContact(this.dataset.contactId);
-      contact.photo = $id('avatar-s').src;
-      ContactForm.editContact(contact);
-    };
-
-    function _createInfoElem(type, value) {
-      var elem = document.createElement('div');
-      elem.innerHTML = tmpl('tmpl_contact_vcard_info_element', {
-        type: type,
-        localizedType: _(type),
-        value: value
-      });
-      return elem;
-    }
-
-    var infoTable = $expr('#vcard-contact-ways .info-table')[0];
-    infoTable.innerHTML = '';
-
-    if (contact.tel) {
-      contact.tel.forEach(function(t) {
-        infoTable.appendChild(_createInfoElem(t.type, t.value));
-      });
-    }
-
-    if (contact.email) {
-      contact.email.forEach(function(e) {
-        infoTable.appendChild(_createInfoElem(e.type, e.value));
-      });
-    }
-  }
-
   function checkIfContactListEmpty() {
     var isEmpty = groupedList.count() == 0;
     $id('selectAll-contacts').dataset.disabled = isEmpty;
@@ -180,7 +117,11 @@ var ContactList = (function() {
         var groupIndexItem = $id('id-grouped-data-' + group.index);
         if (groupIndexItem) {
           var child = groupIndexItem.childNodes[0];
-          child.hidden = !!searchInput.value.trim();
+          if (child.length > 0) {
+            child.style.display = 'block';
+          } else {
+            child.style.display = 'none';
+          }
         }
       });
     }
@@ -188,7 +129,9 @@ var ContactList = (function() {
 
   function updateAllAvatars() {
     groupedList.getGroupedData().forEach(function(group) {
-      group.dataList.forEach(updateAvatar(contact));
+      group.dataList.forEach(function(contact) {
+        updateAvatar(contact);
+      });
     });
   }
 
@@ -300,6 +243,7 @@ var ContactList = (function() {
   }
 
   function contactItemClicked(elem) {
+    // Uncheck all the other items
     $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(e) {
       if (e == elem) {
         return;
@@ -311,6 +255,7 @@ var ContactList = (function() {
       }
     });
 
+    // Check the clicked item
     item = $expr('label', elem)[0];
     if (item) {
       item.dataset.checked = true;

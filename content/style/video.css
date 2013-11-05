@@ -72,6 +72,7 @@
 #export-videos[data-disabled=true] {
   background-image: url("images/export-disabled.png");
   color: #CCCCCC;
+  cursor: default;
 }
 
 #export-videos[data-disabled=false] {
@@ -96,16 +97,22 @@
   background-image: url("images/import-default.png");
 }
 
+#import-videos[data-disabled=true] {
+  background-image: url("images/import-disabled.png");
+  cursor: default;
+  color: #CCCCCC;
+}
+
 #import-videos[data-disabled=true] > label {
   cursor: default;
 }
 
-#import-videos:hover {
+#import-videos[data-disabled=false]:hover {
   background-image: url("images/import-highlighted.png");
   color: #00CAF2;
 }
 
-#import-videos:active {
+#import-videos[data-disabled=false]:active {
   background-image: url("images/import-selected.png");
   color: #018CAB;
 }
@@ -228,7 +235,6 @@
 }
 
 #empty-video-container {
-  display: none;
 }
 
 .empty-videos {
@@ -249,6 +255,6 @@
   float: left;
   height: 2rem;
   width: 12rem;
-  margin: 1rem 0 0 31rem;
+  margin: 1rem 0 0 29.5rem;
   padding: 0.1rem 1rem;
 }
