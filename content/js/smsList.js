@@ -5,7 +5,6 @@ var SmsList = (function() {
   var selectedListContainer = null;
   var messageList = null;
   var messageListContainer = null;
-  var listenSmsMessage = false;
 
   function init() {
     CMD.SMS.getThreads(function onresponse_getThreads(messages) {
@@ -39,10 +38,8 @@ var SmsList = (function() {
       threadList.render();
       updateAvatar();
       showThreadList();
-      if (!listenSmsMessage) {
-        ViewManager.addViewEventListener('sms', 'onMessage', onMessage);
-        listenSmsMessage = true;
-      }
+      customEventElement.removeEventListener('dataChange', onMessage);
+      customEventElement.addEventListener('dataChange', onMessage);
     }, function onerror_getThreads(messages) {
       log('Error occurs when fetching all messages' + messages.message);
     });
@@ -504,12 +501,16 @@ var SmsList = (function() {
     opStateChanged();
   }
 
-  function onMessage(msg) {
-    if (!threadList) {
+  function onMessage(e) {
+    if(e.detail.type == 'contact') {
+      updateAvatar();
       return;
     }
-    if (msg == 'updateAvatar') {
-      updateAvatar();
+    if(e.detail.type != 'sms') {
+      return;
+    }
+    var msg = e.detail.data;
+    if (!threadList) {
       return;
     }
     var threadListData = threadList.getGroupedData();

@@ -36,7 +36,7 @@ while (browserEnumerator.hasMoreElements()) {
 chromeWindow.switchToTabHavingURI('about:ffos', true);
 
 var animationLoading = null;
-
+var customEventElement = document;
 var FFOSAssistant = (function() {
   var connPool = null;
   var connListenSocket = null;
@@ -50,41 +50,20 @@ var FFOSAssistant = (function() {
 
     $id('usb-connection-button').onclick = function() {
       $id('wifi-connection-button').dataset.checked = false;
-      $id('usb-connection-button').dataset.checked = true;
-      $id('wifi-arrow').classList.add('hiddenElement');
-      $id('usb-arrow').classList.remove('hiddenElement');
-      $id('wifi-connection-code-input').classList.add('hiddenElement');
-      $id('wifi-connect-button').classList.add('hiddenElement');
       $id('wifi-connection-button').classList.remove('wifi-connection-button-select');
+      $id('usb-connection-button').dataset.checked = true;
       $id('usb-connection-button').classList.add('usb-connection-button-select');
-      $id('step-one').classList.remove('step-one-wifi');
-      $id('step-two').classList.remove('step-two-wifi');
-      $id('step-two').classList.add('step-two-usb');
-      $id('step-three').classList.remove('step-three-wifi');
-      $id('step-one-span').textContent = _('usb-step-one');
-      $id('step-three-span').textContent = _('usb-step-three');
-      $id('step-one-span').dataset.l10nId = 'usb-step-one';
-      $id('step-three-span').dataset.l10nId = 'usb-step-three';
-      navigator.mozFFOSAssistant.switchConnectionMode('USB', 'localhost');
+      $id('wifi-connection-settings').classList.add('hiddenElement');
+      $id('usb-connection-settings').classList.remove('hiddenElement');
     };
 
     $id('wifi-connection-button').onclick = function() {
       $id('wifi-connection-button').dataset.checked = true;
-      $id('usb-connection-button').dataset.checked = false;
-      $id('usb-arrow').classList.add('hiddenElement');
-      $id('wifi-arrow').classList.remove('hiddenElement');
-      $id('wifi-connection-code-input').classList.remove('hiddenElement');
-      $id('wifi-connect-button').classList.remove('hiddenElement');
       $id('wifi-connection-button').classList.add('wifi-connection-button-select');
+      $id('usb-connection-button').dataset.checked = false;
       $id('usb-connection-button').classList.remove('usb-connection-button-select');
-      $id('step-one').classList.add('step-one-wifi');
-      $id('step-two').classList.remove('step-two-usb');
-      $id('step-two').classList.add('step-two-wifi');
-      $id('step-three').classList.add('step-three-wifi');
-      $id('step-one-span').textContent = _('wifi-step-one');
-      $id('step-three-span').textContent = _('wifi-step-three');
-      $id('step-one-span').dataset.l10nId = 'wifi-step-one';
-      $id('step-three-span').dataset.l10nId = 'wifi-step-three';
+      $id('usb-connection-settings').classList.add('hiddenElement');
+      $id('wifi-connection-settings').classList.remove('hiddenElement');
     };
 
     $id('wifi-connect-button').onclick = function() {
@@ -119,25 +98,20 @@ var FFOSAssistant = (function() {
       binaryType: 'arraybuffer'
     });
     socket.onopen = function tc_onSocketOpened(event) {
-      var socketWrapper = new TCPSocketWrapper({
+      connListenSocket = new TCPSocketWrapper({
         socket: event.target,
         onmessage: function(socket, jsonCmd, sendCallback, recvData) {
           if (connListenSocket == null) {
             return;
           }
           var message = JSON.parse(recvData);
-          if (message.type == 'sms') {
-            ViewManager.callEvent('onMessage', 'sms', message);
-          } else if (message.type == 'contact') {
-            ViewManager.callEvent('onMessage', 'contact', message);
-            ViewManager.callEvent('onMessage', 'sms', 'updateAvatar');
-          }
+          var event = new CustomEvent('dataChange',{'detail': {'type': message.type, 'data': message}});
+          customEventElement.dispatchEvent(event);
         },
         onclose: function() {
           connListenSocket = null;
         }
       });
-      connListenSocket = socketWrapper;
       CMD.Listen.listenMessage(null, null);
     };
     $id('device-disconnect').addEventListener('click', function onclick_disconnect(event) {
@@ -175,79 +149,46 @@ var FFOSAssistant = (function() {
     return sizeInMega.toFixed(2) + 'M';
   }
 
-  function fillDeviceStorageSummaryInfo(info) {
-    var elem = $id('device-storage-summary');
-    var total = info.usedInBytes + info.freeInBytes;
-    if (total > 0) {
-      var usedInP = Math.floor(info.usedInBytes / total * 100) + '%';
-      $expr('.storage-number', elem)[0].textContent =
-        formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
-      $expr('.storage-graph .used', elem)[0].style.width = usedInP;
-    } else {
-      $expr('.storage-number', elem)[0].textContent = '0.00M/0.00M';
-      $expr('.storage-graph .used', elem)[0].style.width = '0%';
-    }
-  }
-
-  function fillSdcardStorageSummaryInfo(info) {
-    var elem = $id('sdcard-storage-summary');
-    var total = info.usedInBytes + info.freeInBytes;
-    if (total > 0) {
-      var usedInP = Math.floor(info.usedInBytes / total * 100) + '%';
-      $expr('.storage-number', elem)[0].textContent =
-        formatStorage(info.usedInBytes) + '/' + formatStorage(total) + ' ' + usedInP;
-      $expr('.storage-graph .used', elem)[0].style.width = usedInP;
-      var subInP = Math.floor(info.picture / info.usedInBytes * 100);
-      $expr('.storage-used', elem)[0].style.width = subInP + '%';
-      subInP = Math.floor(info.music / info.usedInBytes * 100);
-      $expr('.storage-used', elem)[1].style.width = subInP + '%';
-      subInP = Math.floor(info.video / info.usedInBytes * 100);
-      $expr('.storage-used', elem)[2].style.width = subInP + '%';
-      subInP = Math.floor((info.usedInBytes - info.music - info.picture - info.video) / info.usedInBytes * 100);
-      $expr('.storage-used', elem)[3].style.width = subInP + '%';
-    } else {
-      $expr('.storage-number', elem)[0].textContent = '0.00M/0.00M';
-      $expr('.storage-graph .used', elem)[0].style.width = '0%';
-      var storageIndicators = $expr('.storage-used', elem);
-      for (var i = 0; i < 4; i++) {
-        storageIndicators[i].style.width = '0%';
-      }
-    }
-  }
-
   function getAndShowStorageInfo() {
     var loadingGroupId = animationLoading.start();
     CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
-      var deviceInfo = {
-        usedInBytes: 0,
-        freeInBytes: 0
-      };
-      var sdcardInfo = {
-        usedInBytes: 0,
-        freeInBytes: 0,
-        picture: 0,
-        music: 0,
-        video: 0
-      };
 
       var dataJSON = JSON.parse(message.data);
-      for (var i = 0; i < dataJSON.length; i++) {
-        if (dataJSON[i].storageName == 'apps') {
-          deviceInfo.usedInBytes = dataJSON[i].usedSpace;
-          deviceInfo.freeInBytes = dataJSON[i].freeSpace;
-        } else if (dataJSON[i].storageName == 'sdcard') {
-          sdcardInfo.usedInBytes = dataJSON[i].usedSpace;
-          sdcardInfo.freeInBytes = dataJSON[i].freeSpace;
-        } else if (dataJSON[i].storageName == 'pictures') {
-          sdcardInfo.picture = dataJSON[i].usedSpace;
-        } else if (dataJSON[i].storageName == 'music') {
-          sdcardInfo.music = dataJSON[i].usedSpace;
-        } else if (dataJSON[i].storageName == 'videos') {
-          sdcardInfo.video = dataJSON[i].usedSpace;
+      var elem = $id('device-storage-summary');
+      var total = dataJSON.apps.usedSpace + dataJSON.apps.freeSpace;
+      if (total > 0) {
+        var usedInP = Math.floor(dataJSON.apps.usedSpace / total * 100) + '%';
+        $expr('.storage-number', elem)[0].textContent =
+          formatStorage(dataJSON.apps.usedSpace) + '/' + formatStorage(total) + ' ' + usedInP;
+        $expr('.storage-graph .used', elem)[0].style.width = usedInP;
+      } else {
+        $expr('.storage-number', elem)[0].textContent = '0.00M/0.00M';
+        $expr('.storage-graph .used', elem)[0].style.width = '0%';
+      }
+
+      elem = $id('sdcard-storage-summary');
+      total = dataJSON.sdcard.usedSpace + dataJSON.sdcard.freeSpace;
+      if (total > 0) {
+        var usedInP = Math.floor(dataJSON.sdcard.usedSpace / total * 100) + '%';
+        $expr('.storage-number', elem)[0].textContent =
+          formatStorage(dataJSON.sdcard.usedSpace) + '/' + formatStorage(total) + ' ' + usedInP;
+        $expr('.storage-graph .used', elem)[0].style.width = usedInP;
+        var subInP = Math.floor(dataJSON.pictures.usedSpace / dataJSON.sdcard.usedSpace * 100);
+        $expr('.storage-used', elem)[0].style.width = subInP + '%';
+        subInP = Math.floor(dataJSON.music.usedSpace / dataJSON.sdcard.usedSpace * 100);
+        $expr('.storage-used', elem)[1].style.width = subInP + '%';
+        subInP = Math.floor(dataJSON.videos.usedSpace / dataJSON.sdcard.usedSpace * 100);
+        $expr('.storage-used', elem)[2].style.width = subInP + '%';
+        subInP = Math.floor((dataJSON.sdcard.usedSpace - dataJSON.music.usedSpace - dataJSON.pictures.usedSpace - dataJSON.videos.usedSpace) / dataJSON.sdcard.usedSpace * 100);
+        $expr('.storage-used', elem)[3].style.width = subInP + '%';
+      } else {
+        $expr('.storage-number', elem)[0].textContent = '0.00M/0.00M';
+        $expr('.storage-graph .used', elem)[0].style.width = '0%';
+        var storageIndicators = $expr('.storage-used', elem);
+        for (var i = 0; i < 4; i++) {
+          storageIndicators[i].style.width = '0%';
         }
       }
-      fillDeviceStorageSummaryInfo(deviceInfo);
-      fillSdcardStorageSummaryInfo(sdcardInfo);
       animationLoading.stop(loadingGroupId);
     }, function onerror_getStorage(message) {
       animationLoading.stop(loadingGroupId);
@@ -330,17 +271,45 @@ var FFOSAssistant = (function() {
         connectToDevice('localhost');
       }
     }
-
-    // Register view event callbacks
-    ViewManager.addViewEventListener('summary-view', 'firstshow', getAndShowSummaryInfo);
-    ViewManager.addViewEventListener('summary-view', 'othershow', getAndShowStorageInfo);
-    ViewManager.addViewEventListener('contact-view', 'firstshow', ContactList.init);
-    ViewManager.addViewEventListener('contact-view', 'othershow', ContactList.init);
-    ViewManager.addViewEventListener('sms-view', 'firstshow', SmsList.init);
-    ViewManager.addViewEventListener('sms-view', 'othershow', SmsList.init);
-    ViewManager.addViewEventListener('music-view', 'firstshow', MusicList.init);
-    ViewManager.addViewEventListener('gallery-view', 'firstshow', Gallery.init);
-    ViewManager.addViewEventListener('video-view', 'firstshow', Video.init);
+    customEventElement.addEventListener('firstshow', function(e) {
+      switch(e.detail.type) {
+      case 'summary-view':
+        getAndShowSummaryInfo(e.detail.data);
+        break;
+      case 'contact-view':
+        ContactList.init(e.detail.data);
+        break;
+      case 'sms-view':
+        SmsList.init(e.detail.data);
+        break;
+      case 'music-view':
+        MusicList.init(e.detail.data);
+        break;
+      case 'gallery-view':
+        Gallery.init(e.detail.data);
+        break;
+      case 'video-view':
+        Video.init(e.detail.data);
+        break;
+      default:
+        break;
+      }
+    });
+    customEventElement.addEventListener('othershow', function(e) {
+      switch(e.detail.type) {
+      case 'summary-view':
+        getAndShowStorageInfo(e.detail.data);
+        break;
+      case 'contact-view':
+        ContactList.init(e.detail.data);
+        break;
+      case 'sms-view':
+        SmsList.init(e.detail.data);
+        break;
+      default:
+        break;
+      }
+    });
   }
 
   window.addEventListener('load', function window_onload(event) {

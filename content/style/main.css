@@ -206,13 +206,31 @@ input[type="url"], textarea {
   background: url("images/wificonnectionbuttonselect.png") no-repeat center center #e86000;
 }
 
-.connection-step {
+.usb-connection-step {
   background-color: #e7f0f2;
   height: 17rem;
   text-align: center;
   margin-right: 15.9rem;
   margin-left: 16.8rem;
   margin-top: 0.9rem;
+}
+
+.usb-connection-step .usbarrow {
+  height: 1.1rem;
+  left: 12.6rem;
+  position: relative;
+  width: 2.0rem;
+  top: -1.2rem;
+}
+
+.usb-connection-step .usbarrow .side {
+  background-color: #e7f0f2;
+  height: 2.0rem;
+  left: 0;
+  position: absolute;
+  top: 0.3rem;
+  transform: rotate(45deg);
+  width: 2.0rem;
 }
 
 .step-one-usb {
@@ -226,29 +244,13 @@ input[type="url"], textarea {
   margin-top: 1.8rem;
 }
 
-.step-one-wifi {
-  background: url("images/wificonnection.png") no-repeat center center transparent;
-  margin-left: 6.8rem;
-  margin-top: 0;
-}
-
-#step-one span {
+#usb-step-one span {
   margin-left: -6.9rem;
   margin-top: 7.0rem;
   width: 13.5rem;
   position: absolute;
   font-size: 1.2rem;
   color: #333333;
-}
-
-.step-two-wifi {
-  background: url("images/arrowto.png") no-repeat center center transparent;
-  float: left;
-  height: 6rem;
-  width: 7rem;
-  padding: 0.5rem;
-  background-color: #e7f0f2;
-  margin-left: 1rem;
 }
 
 .step-two-usb {
@@ -272,12 +274,84 @@ input[type="url"], textarea {
   margin-top: 1.8rem;
 }
 
+#usb-step-three span {
+  margin-left: -8.0rem;
+  margin-top: 7.3rem;
+  width: 16.0rem;
+  position: absolute;
+  color: #333333;
+  font-size: 1.2rem;
+}
+
+.wifi-connection-step {
+  background-color: #e7f0f2;
+  height: 17rem;
+  text-align: center;
+  margin-right: 15.9rem;
+  margin-left: 16.8rem;
+  margin-top: 0.9rem;
+}
+
+.wifi-connection-step .wifiarrow {
+  height: 1.1rem;
+  width: 2.0rem;
+  left: 31.2rem;
+  position: relative;
+  top: -1.2rem;
+}
+
+.wifi-connection-step .wifiarrow .side {
+  background-color: #e7f0f2;
+  height: 2.0rem;
+  left: 0;
+  position: absolute;
+  top: 0.3rem;
+  transform: rotate(45deg);
+  width: 2.0rem;
+}
+
+.step-one-wifi {
+  background: url("images/wificonnection.png") no-repeat center center transparent;
+  float: left;
+  height: 7rem;
+  width: 12rem;
+  padding: 0.5rem;
+  background-color: #e7f0f2;
+  margin-left: 6.8rem;
+  margin-top: 0;
+}
+
+#wifi-step-one span {
+  margin-left: -6.9rem;
+  margin-top: 7.0rem;
+  width: 13.5rem;
+  position: absolute;
+  font-size: 1.2rem;
+  color: #333333;
+}
+
+.step-two-wifi {
+  background: url("images/arrowto.png") no-repeat center center transparent;
+  float: left;
+  height: 6rem;
+  width: 7rem;
+  padding: 0.5rem;
+  background-color: #e7f0f2;
+  margin-left: 1rem;
+}
+
 .step-three-wifi {
   background: url("images/client.png") no-repeat center center transparent;
+  float: left;
+  height: 7rem;
+  width: 12rem;
+  padding: 0.5rem;
+  background-color: #e7f0f2;
+  margin-left: -1.5rem;
   margin-top: -0.3rem;
 }
 
-#step-three span {
+#wifi-step-three span {
   margin-left: -8.0rem;
   margin-top: 7.3rem;
   width: 16.0rem;
@@ -304,42 +378,6 @@ input[type="url"], textarea {
   margin-top: 3.7rem;
   text-align: center;
   font-size: 1.4rem;
-}
-
-.connection-step .usbarrow {
-  height: 1.1rem;
-  left: 12.6rem;
-  position: relative;
-  width: 2.0rem;
-  top: -1.2rem;
-}
-
-.connection-step .usbarrow .side {
-  background-color: #e7f0f2;
-  height: 2.0rem;
-  left: 0;
-  position: absolute;
-  top: 0.3rem;
-  transform: rotate(45deg);
-  width: 2.0rem;
-}
-
-.connection-step .wifiarrow {
-  height: 1.1rem;
-  width: 2.0rem;
-  left: 31.2rem;
-  position: relative;
-  top: -1.2rem;
-}
-
-.connection-step .wifiarrow .side {
-  background-color: #e7f0f2;
-  height: 2.0rem;
-  left: 0;
-  position: absolute;
-  top: 0.3rem;
-  transform: rotate(45deg);
-  width: 2.0rem;
 }
 
 /****** sidebar *******/

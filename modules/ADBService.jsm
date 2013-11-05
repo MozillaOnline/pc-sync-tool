@@ -4,7 +4,7 @@
 
 'use strict';
 
-let DEBUG = 1;
+let DEBUG = 0;
 
 debug = function(s) {
   if (DEBUG) {
@@ -150,12 +150,13 @@ messages.forEach(function(msgName) {
 });
 
 var ADBService = {
-  initAdbService: function initAdbService(isWindows, libPath, adbPath) {
+  initAdbService: function initAdbService(isWindows, libPath, adbPath, profilePath) {
     controlMessage({
       cmd: 'initAdbService',
       isWindows: isWindows,
       libPath: libPath,
-      adbPath: adbPath
+      adbPath: adbPath,
+      profilePath: profilePath
     });
   },
 

@@ -27,6 +27,14 @@
   XPCOMUtils.defineLazyModuleGetter(modules, 'DriverManager', 'resource://ffosassistant/driverManager.jsm');
   XPCOMUtils.defineLazyModuleGetter(modules, 'AddonManager', 'resource://gre/modules/AddonManager.jsm');
 
+  var _bundles = Cc["@mozilla.org/intl/stringbundle;1"].
+          getService(Ci.nsIStringBundleService).
+          createBundle("chrome://ffosassistant/locale/browser.properties");
+
+  function getString(key) {
+    return _bundles.GetStringFromName(key);
+  }
+
   function startADBService() {
     isDisabled = false;
     modules.ADBService.startAdbServer();
@@ -56,7 +64,8 @@
 
     let libPath = modules.utils.getChromeFileURI(LIB_FILE_URL);
     let adbPath = modules.utils.getChromeFileURI(ADB_FILE_URL);
-    modules.ADBService.initAdbService(navigator.mozFFOSAssistant.isWindows, libPath.file.path, adbPath.file.path);
+    let profilePath = Services.dirsvc.get('ProfD', Ci.nsIFile);
+    modules.ADBService.initAdbService(navigator.mozFFOSAssistant.isWindows, libPath.file.path, adbPath.file.path, profilePath.path);
 
     checkFirstRun();
     modules.ADBService.startDeviceDetecting(true);
@@ -163,6 +172,7 @@
       if (!file.exists()) {
         file.create(Ci.nsIFile.NORMAL_FILE_TYPE, '0644');
       }
+      // USB monitor will launch firefox corresponding to the path
       modules.utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
       modules.utils.saveIniValue(file, 'status', 'isRun', isRun);
     } catch (e) {
@@ -289,24 +299,28 @@
         if (event.target.result.indexOf('ffosadb.exe') >= 0) {
           return;
         }
-        var message = _('NOTIFICATION_MESSAGE') + event.target.result;
-        if (!("Notification" in window)) {
-          return;
-        } else if (Notification.permission === "granted") {
-          new Notification(message);
-        } else {
-          Notification.requestPermission(function (permission) {
-            if (!('permission' in Notification)) {
-              Notification.permission = permission;
-            }
-            if (permission === "granted") {
-              new Notification(message);
-            }
-          });
-        }
+        var message = getString('list-adb-service') + event.target.result;
+        showNotification(message);
       }
     }
   };
+
+  function showNotification(message) {
+    if (!("Notification" in window)) {
+      return;
+    } else if (Notification.permission === "granted") {
+      new Notification(message);
+    } else {
+      Notification.requestPermission(function (permission) {
+        if (!('permission' in Notification)) {
+          Notification.permission = permission;
+        }
+        if (permission === "granted") {
+          new Notification(message);
+        }
+      });
+    }
+  }
 
   var client = null;
 
@@ -360,13 +374,14 @@
     //
     // We don't need to fire device-ready-event here, we will might receive a
     // device-change event if driver is installed successfully.
+    var message = getString('error-install-driver');
     if (msg.data.errorName && !navigator.mozFFOSAssistant.adbConnected) {
-      // TODO: handle driver installation error
+        showNotification(message);
     } else {
       // Sometimes we can't receive a device-change event, we need to set a timeout
       // to fire fail-to-install event
       failToInstallTimeout = window.setTimeout(function() {
-        // TODO: handle failure of driver installation
+        showNotification(message);
       }, 5000);
     }
   }

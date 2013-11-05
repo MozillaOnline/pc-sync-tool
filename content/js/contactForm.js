@@ -19,7 +19,7 @@ ContactField.prototype = {
     }
 
     if (!this.options.id || this.options.fields.length == 0) {
-      throw "Options is not valid.";
+      throw new Error("Options is not valid.");
     }
   },
 
@@ -33,7 +33,7 @@ ContactField.prototype = {
 
   render: function cf_render() {
     if ($id(this._getElemId())) {
-      throw "Field " + this.options.id + " is duplicated.";
+      throw new Error("Field " + this.options.id + " is duplicated.");
     }
 
     // FIXME escape
@@ -72,54 +72,22 @@ ContactField.prototype = {
 
   addNewField: function cf_addNewField(initValue) {
     var section = document.createElement('section');
-    var self = this;
-
-    // Fetch attribute, and return empty str if it's undefined.
-
-
-    function _f(obj, key) {
-      if (!obj) return '';
-      return obj[key] ? obj[key] : '';
-    }
-
-    var html = '';
-    html += '  <div>';
-    html += '    <fieldset class="form-row">';
-
-    // Show legend only when typeList is defined.
-    if (this.options.typeList && this.options.typeList.length > 0) {
-      html += '      <legend class="action">';
-      html += '        <select name="type">';
-      this.options.typeList.forEach(function(type) {
-        var selected = (initValue && initValue.type && type.toLowerCase() === initValue.type[0].toLowerCase()) ? true : false;
-        html += '        <option value="' + type + '" data-l10n-id="' + type + '"' + (selected ? ' selected' : '') + '>';
-        html += _(type);
-        html += '        </option>';
-      });
-      html += '        </select>';
-      html += '      </legend>';
-    }
-
-    html += '      <section>';
-    this.options.fields.forEach(function(f) {
-      html += '      <p>';
-      if (self.options.fieldType == 'string') {
-        html += '      <input data-l10n-id="' + f.l10nId + '" type="' + f.type + '" value="' + initValue + '"></input>';
-      } else {
-        html += '      <input data-name="' + f.name + '" type="' + f.type + '" data-l10n-id="' + f.l10nId + '" value="' + _f(initValue, f.name) + '"></input>';
+    var templateData = {
+      typeList: this.options.typeList,
+      fieldType: this.options.fieldType,
+      fields: this.options.fields,
+      initValue: initValue,
+      selectedIndex: 0
+    };
+    for (var i = 0; i < this.options.typeList.length; i++) {
+      if (initValue && initValue.type && this.options.typeList[i].toLowerCase() === initValue.type[0].toLowerCase()) {
+        templateData.selectedIndex = i;
+        break;
       }
-      html += '      </p>';
-    });
-
-    html += '      <section>';
-    html += '    </fieldset>';
-    html += '    <div class="action-delete"></div>';
-    html += '  </div>';
-
-    section.innerHTML = html;
+    }
+    section.innerHTML = tmpl('tmpl_contact_add_item', templateData);;
 
     this.elem.insertBefore(section, this._getAddNewButton());
-
     // Translate the fields
     navigator.mozL10n.translate(section);
 

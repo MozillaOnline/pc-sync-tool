@@ -37,30 +37,18 @@ var DriverManager = {
   },
 
   isDriverManagerRunning: function isDriverManagerRunning() {
-    try {
-      // Trying to get and release the MUTEX which is supposed to
-      // be acquired by DriverManager, if failed, then it means the
-      // Driver Manager is running.
-      let mutex = new WinMutex(this.dmMutexName);
-      mutex.release();
-      mutex.close();
-    } catch (e) {
-      return true;
-    }
-    return false;
+    return WinMutex(this.dmMutexName);
   },
 
   startDriverManager: function startDriverManager() {
-    if (this.isDriverManagerRunning()) {
-      debug("The process is already running.");
-      return;
+    var isRunning = this.isDriverManagerRunning();
+    if (isRunning == 'false') {
+      var managerFile = utils.getChromeFileURI(this.managerExe).file;
+      this.process = Cc['@mozilla.org/process/util;1'].createInstance(Ci.nsIProcess);
+      this.process.init(managerFile);
+      var args = ['install'];
+      this.process.runAsync(args, args.length, this.processObserver);
     }
-
-    var managerFile = utils.getChromeFileURI(this.managerExe).file;
-    this.process = Cc['@mozilla.org/process/util;1'].createInstance(Ci.nsIProcess);
-    this.process.init(managerFile);
-    var args = ['install'];
-    this.process.runAsync(args, args.length, this.processObserver);
   }
 };
 

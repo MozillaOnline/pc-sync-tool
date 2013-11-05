@@ -8,6 +8,9 @@ resource ffosassistant modules/
 
 resource ffosassistant-binary components/binary/
 
+locale ffosassistant en-US locale/en-US/
+locale ffosassistant zh-CN locale/zh-CN/
+
 # libadbservice
 resource ffosassistant-libadbservice components/binary/linux/libadbservice.so os=Linux
 resource ffosassistant-libadbservice components/binary/mac/libadbservice.so   os=Darwin

@@ -30,13 +30,9 @@ var libadb = (function() {
       runCmd = library.declare('runCmd', ctypes.default_abi, ctypes.char.ptr, ctypes.char.ptr);
     },
 
-    copyAdb: function() {
-      if (runCmd && ADB_PATH != '') {
-        var oldPath = ADB_PATH;
-        ADB_PATH = oldPath.replace('extensions\\ffosassistant@mozillaonline.com\\components\\binary\\win\\adb.exe', 'ffosadb.exe')
-        runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinApi.dll') + '/B ' + ADB_PATH.replace('ffosadb.exe', 'AdbWinApi.dll') + '/B');
-        runCmd('cmd.exe /c copy/Y ' + oldPath.replace('adb.exe', 'AdbWinUsbApi.dll') + '/B ' + ADB_PATH.replace('ffosadb.exe', 'AdbWinUsbApi.dll') + '/B');
-        runCmd('cmd.exe /c copy/Y ' + oldPath + '/B ' + ADB_PATH + '/B');
+    copyAdb: function(oldPath, newPath) {
+      if (runCmd) {
+        runCmd('cmd.exe /c copy/Y ' + oldPath + '/B ' + newPath + '/B');
       }
       return;
     },
@@ -132,6 +128,7 @@ var libadb = (function() {
           return result;
         }
         return null;
+      // |listAdbService| only works on Windows.
       case 'listAdbService':
         return this.listAdbService();
       default:
@@ -170,7 +167,7 @@ onmessage = function(e) {
     libadb.killAdbServer();
     break;
   case 'initAdbService':
-    initAdbService(e.data.isWindows, e.data.libPath, e.data.adbPath);
+    initAdbService(e.data.isWindows, e.data.libPath, e.data.adbPath, e.data.profilePath);
     break;
   case 'startDeviceDetecting':
     startDetecting(e.data.start);
@@ -208,14 +205,18 @@ function setConnected(newState) {
   }
 }
 
-function initAdbService(isWindows, libPath, adbPath) {
+function initAdbService(isWindows, libPath, adbPath, profilePath) {
   // Load adb service library
   libadb.loadLib(libPath);
   // Set the path of adb executive file
-  ADB_PATH = '"' + adbPath + '"';
   if (isWindows) {
+    ADB_PATH = '"' + profilePath + '\\ffosadb.exe"';
     // Move adb to profiles, so the addon can be removed when adb is running.
-    libadb.copyAdb();
+    libadb.copyAdb(adbPath, ADB_PATH);
+    libadb.copyAdb(adbPath.replace('adb.exe', 'AdbWinApi.dll'), ADB_PATH.replace('ffosadb.exe', 'AdbWinApi.dll'));
+    libadb.copyAdb(adbPath.replace('adb.exe', 'AdbWinUsbApi.dll'), ADB_PATH.replace('ffosadb.exe', 'AdbWinUsbApi.dll'));
+  } else {
+    ADB_PATH = '"' + adbPath + '"';
   }
 }
 
@@ -233,7 +234,6 @@ function startDetecting(start) {
   libadb.startAdbServer();
   detectingInterval = setInterval(function checkConnectState() {
     var devicesStr = libadb.findDevice();
-
     var regExp = /\n([0-9a-z]+)\tdevice/ig;
     var devices = [];
     var result = null;

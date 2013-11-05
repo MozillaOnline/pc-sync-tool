@@ -13,7 +13,7 @@ var ContactList = (function() {
       contact.category.push('favorite');
     } else {
       var index = 0;
-      for(; index < contact.category.length; index++) {
+      for (; index < contact.category.length; index++) {
         if ('favorite' == contact.category[index]) {
           break;
         }
@@ -71,39 +71,39 @@ var ContactList = (function() {
       return elem;
     }
 
-    var searchInfo = [];
-    var searchTable = ['givenName', 'familyName', 'org'];
+    var searchInfo = getSearchString(contact);
+    var escapedValue = escapeHTML(searchInfo.join(' '), true);
+    //search key word
+    var key = searchInput.value;
+    elem.hidden = !escapedValue || escapedValue.indexOf(key) == -1;
+    return elem;
+  }
+
+  function getSearchString(contact) {
+    var searchString = [];
+    var searchTable = ['givenName', 'familyName', 'org', 'tel', 'email'];
     searchTable.forEach(function(field) {
-      if (contact[field] && contact[field][0]) {
-        var value = String(contact[field][0]).trim();
-        if (value.length > 0) {
-          searchInfo.push(value);
+      if (!contact[field] || contact[field].length <= 0) {
+        return;
+      }
+      for (var i = contact[field].length - 1; i >= 0; i--) {
+        var current = contact[field][i];
+        if (!current) {
+          continue;
+        }
+        if (field == 'tel' || field == 'email') {
+          searchString.push(current.value);
+        } else {
+          var value = String(current).trim();
+          if (value.length > 0) {
+            searchString.push(value);
+          }
         }
       }
     });
-
-    if (contact.tel && contact.tel.length > 0) {
-      for (var i = contact.tel.length - 1; i >= 0; i--) {
-        var current = contact.tel[i];
-        searchInfo.push(current.value);
-      }
-    }
-
-    if (contact.email && contact.email.length > 0) {
-      for (var i = contact.email.length - 1; i >= 0; i--) {
-        var current = contact.email[i];
-        searchInfo.push(current.value);
-      }
-    }
-
-    var escapedValue = Text_escapeHTML(searchInfo.join(' '), true);
-    //search key word
-    var key = searchInput.value;
-
-    elem.hidden = !escapedValue || escapedValue.indexOf(key) == -1;
-
-    return elem;
+    return searchString;
   }
+
 
   function checkIfContactListEmpty() {
     var isEmpty = groupedList.count() == 0;
@@ -117,11 +117,7 @@ var ContactList = (function() {
         var groupIndexItem = $id('id-grouped-data-' + group.index);
         if (groupIndexItem) {
           var child = groupIndexItem.childNodes[0];
-          if (child.length > 0) {
-            child.style.display = 'block';
-          } else {
-            child.style.display = 'none';
-          }
+          child.hidden = true;
         }
       });
     }
@@ -213,14 +209,10 @@ var ContactList = (function() {
     groupedList.render();
     updateAllAvatars();
     checkIfContactListEmpty();
-    ViewManager.removeViewEventListener('contact', 'onMessage', onMessage);
-    ViewManager.addViewEventListener('contact', 'onMessage', onMessage);
+    customEventElement.removeEventListener('dataChange', onMessage);
+    customEventElement.addEventListener('dataChange', onMessage);
   }
 
-  /**
-   * Remove contact from device
-   * when success, onMessage will remove the item
-   */
   function removeContact(id) {
     var loadingGroupId = animationLoading.start();
     CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
@@ -243,7 +235,6 @@ var ContactList = (function() {
   }
 
   function contactItemClicked(elem) {
-    // Uncheck all the other items
     $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(e) {
       if (e == elem) {
         return;
@@ -255,7 +246,6 @@ var ContactList = (function() {
       }
     });
 
-    // Check the clicked item
     item = $expr('label', elem)[0];
     if (item) {
       item.dataset.checked = true;
@@ -290,13 +280,13 @@ var ContactList = (function() {
       $id('selectAll-contacts').dataset.disabled = true;
     } else {
       $id('selectAll-contacts').dataset.checked =
-        $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+      $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
       $id('selectAll-contacts').dataset.disabled = false;
     }
     $id('remove-contacts').dataset.disabled =
-      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
     $id('export-contacts').dataset.disabled =
-      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
   }
 
   function showContactInfo(contact) {
@@ -403,9 +393,6 @@ var ContactList = (function() {
     ViewManager.showViews('show-multi-contacts');
   }
 
-  /**
-   * Add contact lists.
-   */
   function addContact(contact) {
     if (!contact.id) {
       return;
@@ -413,9 +400,6 @@ var ContactList = (function() {
     groupedList.add(contact);
   }
 
-  /**
-   * Update contact lists.
-   */
   function updateContact(contact) {
     if (!contact.id) {
       return;
@@ -439,22 +423,19 @@ var ContactList = (function() {
     img.classList.remove('avatar-default');
   }
 
-  /**
-   * Get contact object by contact id
-   */
   function getContact(id) {
     var contactItem = $id('contact-' + id);
 
     if (!contactItem) {
-      throw 'No contact item is found!';
+      return null;
     }
 
     return JSON.parse(contactItem.dataset.contact);
   }
 
-  function Text_escapeHTML(str, escapeQuotes) {
+  function escapeHTML(str, escapeQuotes) {
     if (Array.isArray(str)) {
-      return Text_escapeHTML(str.join(' '), escapeQuotes);
+      return escapeHTML(str.join(' '), escapeQuotes);
     }
 
     if (!str || typeof str != 'string') return '';
@@ -464,7 +445,11 @@ var ContactList = (function() {
     return escaped;
   }
 
-  function onMessage(changeEvent) {
+  function onMessage(e) {
+    if (e.detail.type != 'contact') {
+      return;
+    }
+    var changeEvent = e.detail.data;
     switch (changeEvent.reason) {
     case 'remove':
       {
@@ -538,32 +523,8 @@ var ContactList = (function() {
             contactItem.hidden = false;
             return;
           }
-          var searchInfo = [];
-          var searchTable = ['givenName', 'familyName', 'org'];
-          searchTable.forEach(function(field) {
-            if (contact[field] && contact[field][0]) {
-              var value = String(contact[field][0]).trim();
-              if (value.length > 0) {
-                searchInfo.push(value);
-              }
-            }
-          });
-
-          if (contact.tel && contact.tel.length > 0) {
-            for (var i = contact.tel.length - 1; i >= 0; i--) {
-              var current = contact.tel[i];
-              searchInfo.push(current.value);
-            }
-          }
-
-          if (contact.email && contact.email.length > 0) {
-            for (var i = contact.email.length - 1; i >= 0; i--) {
-              var current = contact.email[i];
-              searchInfo.push(current.value);
-            }
-          }
-
-          var escapedValue = Text_escapeHTML(searchInfo.join(' '), true).toLowerCase();
+          var searchInfo = getSearchString(contact);
+          var escapedValue = escapeHTML(searchInfo.join(' '), true).toLowerCase();
           // search key words
           var search = self.value;
           if ((escapedValue.length > 0) && (escapedValue.indexOf(search.toLowerCase()) >= 0)) {
@@ -587,9 +548,9 @@ var ContactList = (function() {
       });
 
       new AlertDialog(_('delete-contacts-confirm', {
-          n: ids.length
-        }), true, function (returnBtn) {
-        if(returnBtn) {
+        n: ids.length
+      }), true, function(returnBtn) {
+        if (returnBtn) {
           if ($id('selectAll-contacts').dataset.checked == "true") {
             $id('selectAll-contacts').dataset.checked = false;
           }

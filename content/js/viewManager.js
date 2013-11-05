@@ -119,15 +119,12 @@ var ViewManager = (function() {
     var event;
     if (viewElem.dataset.firstshown != "true") {
       viewElem.dataset.firstshown = true;
-      event = 'firstshow';
+      event = new CustomEvent('firstshow',{'detail': {'type': viewId, 'data': showData}});
     } else {
-      event = 'othershow';
+      event = new CustomEvent('othershow',{'detail': {'type': viewId, 'data': showData}});
     }
-    callEvent(event, viewId, showData);
+    customEventElement.dispatchEvent(event);
   }
-  /**
-   * show sub-views related to content
-   */
 
   function _showViews(viewId) {
     var subView = $id(viewId);
@@ -158,58 +155,6 @@ var ViewManager = (function() {
       } else {
         cv.hidden = true;
       }
-    });
-  }
-
-  var callbacks = {};
-
-  /**
-   * Supported event name:
-   *   firstshow
-   */
-
-  function addViewEventListener(viewId, name, callback) {
-    if (!callbacks[viewId]) {
-      callbacks[viewId] = {};
-    }
-
-    if (!callbacks[viewId][name]) {
-      callbacks[viewId][name] = [];
-    }
-
-    callbacks[viewId][name].push(callback);
-  }
-
-  function removeViewEventListener(viewId, name, callback) {
-    if (!callbacks[viewId]) {
-      return;
-    }
-
-    if (!callbacks[viewId][name]) {
-      return;
-    }
-
-    var index = 0;
-    for (; index < callbacks[viewId][name].length; index++) {
-      if (callbacks[viewId][name][index] == callback) {
-        break;
-      }
-    }
-
-    if (index < callbacks[viewId][name].length) {
-      callbacks[viewId][name][index] = null;
-    }
-  }
-
-  function callEvent(name, viewId, viewData) {
-    console.log('Call event ' + name + ' on ' + viewId);
-
-    if (!callbacks[viewId] || !callbacks[viewId][name]) {
-      return;
-    }
-
-    callbacks[viewId][name].forEach(function(callback) {
-      callback(viewData);
     });
   }
 
@@ -244,9 +189,6 @@ var ViewManager = (function() {
     showContent: showContent,
     setTitle: setTitle,
     // Show the card view by given id, and hide all other sibling views
-    showViews: showViews,
-    callEvent: callEvent,
-    addViewEventListener: addViewEventListener,
-    removeViewEventListener: removeViewEventListener
+    showViews: showViews
   };
 })();
