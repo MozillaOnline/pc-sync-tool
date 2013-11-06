@@ -223,14 +223,6 @@ var MusicList = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnected) {
-        new WifiModePromptDialog({
-          title_l10n_id: 'remove-musics-dialog-header',
-          prompt_l10n_id: 'wifi-mode-remove-musics-prompt'
-        });
-        return;
-      }
-
       var files = [];
       $expr('#music-list-container .music-list-item[data-checked="true"]').forEach(function(item) {
         files.push(JSON.parse(item.dataset.music).name);
@@ -252,14 +244,6 @@ var MusicList = (function() {
 
     $id('export-musics').addEventListener('click', function(event) {
       if (this.dataset.disabled == 'true') {
-        return;
-      }
-
-      if (navigator.mozFFOSAssistant.isWifiConnected ) {
-        new WifiModePromptDialog({
-          title_l10n_id: 'export-musics-dialog-header',
-          prompt_l10n_id: 'wifi-mode-export-musics-prompt'
-        });
         return;
       }
 

@@ -273,14 +273,6 @@ var Video = (function() {
         return;
       }
 
-      if (navigator.mozFFOSAssistant.isWifiConnected) {
-        new WifiModePromptDialog({
-          title_l10n_id: 'remove-videos-dialog-header',
-          prompt_l10n_id: 'wifi-mode-remove-videos-prompt'
-        });
-        return;
-      }
-
       var files = [];
       $expr('#video-list-container li[data-checked="true"]').forEach(function(item) {
         files.push(item.dataset.videoUrl);
@@ -303,14 +295,6 @@ var Video = (function() {
 
     $id('export-videos').addEventListener('click', function onclick_exportVideos(event) {
       if (this.dataset.disabled == 'true') {
-        return;
-      }
-
-      if (navigator.mozFFOSAssistant.isWifiConnected) {
-        new WifiModePromptDialog({
-          title_l10n_id: 'export-videos-dialog-header',
-          prompt_l10n_id: 'wifi-mode-export-videos-prompt'
-        });
         return;
       }
 

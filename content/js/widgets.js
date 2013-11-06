@@ -826,6 +826,9 @@ FilesOPDialog.prototype = {
           var cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.picUrl + '" "' + decodeURI(self.options.dir) + '/' +
               convertToOutputFileName(self.options.files[self._fileIndex].dataset.picUrl) + '"';
           break;
+        case 6:
+          var cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/DCIM/';
+          break;
       }
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!self._timer) {

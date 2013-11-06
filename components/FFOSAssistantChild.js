@@ -227,7 +227,11 @@ FFOSAssistant.prototype = {
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
       case Ci.nsIFilePicker.returnOK:
-        callback(filePicker.fileURL.path);
+        var path = filePicker.fileURL.path;
+        if (xulRuntime.OS == 'WINNT') {
+          path = path.substr(1);
+        }
+        callback(path);
         break;
       case Ci.nsIFilePicker.returnCancel:
       default:

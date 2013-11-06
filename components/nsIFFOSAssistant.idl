@@ -31,7 +31,7 @@ interface nsIFFOSAssistant : nsISupports
   /**
    * select directory for exporting pictures, musics and videos
    */
-  boolean selectDirectory(in jsval callback, in jsval options);
+  boolean selectDirectory(in jsval callback, [optional] in jsval options);
 
   /**
    * Save content to disk
@@ -54,7 +54,7 @@ interface nsIFFOSAssistant : nsISupports
   /**
    * Get file names from directory
    */
-  void selectMultiFilesFromDisk(in jsval callback, in jsval options);
+  void selectMultiFilesFromDisk(in jsval callback, [optional] in jsval options);
 
   string getGalleryCachedDir(in jsval pathArray);
 
