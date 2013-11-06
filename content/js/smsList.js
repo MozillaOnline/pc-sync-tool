@@ -49,7 +49,7 @@ var SmsList = (function() {
     if (!threadList) {
       return;
     }
-   threadList.getGroupedData().forEach(function(thread) {
+    threadList.getGroupedData().forEach(function(thread) {
       thread.dataList.forEach(function(item) {
         updateThreadAvatar(item);
       });
@@ -94,7 +94,7 @@ var SmsList = (function() {
         }
       }
 
-      if (!!contactData.photo && contactData.photo.length > 0) {
+      if ( !!contactData.photo && contactData.photo.length > 0) {
         var threadItem = $id('id-threads-data-' + threadInfo.id);
         var img = threadItem.getElementsByTagName('img')[0];
         img.src = contactData.photo;
@@ -103,7 +103,7 @@ var SmsList = (function() {
 
         if (!$id('sms-thread-view').hidden) {
           var selectItem = $id('show-multi-sms-' + threadInfo.id);
-          if (!!selectItem) {
+          if ( !!selectItem) {
             img = selectItem.getElementsByTagName('img')[0];
             img.src = contactData.photo;;
             selectItem.dataset.avatar = contactData.photo;;
@@ -113,7 +113,7 @@ var SmsList = (function() {
 
         if (!$id('sms-select-view').hidden) {
           var messageViewimg = $id('sms-thread-header-img');
-          if (!!messageViewimg && messageViewimg.value == threadInfo.id) {
+          if ( !!messageViewimg && messageViewimg.value == threadInfo.id) {
             messageViewimg.src = contactData.photo;
             messageViewimg.classList.remove('avatar-default');
           }
@@ -289,7 +289,7 @@ var SmsList = (function() {
           renderFunc: createThreadDialogView,
           container: messageListContainer,
           ondatachange: function() {
-            if (!!messageListContainer) {
+            if ( !!messageListContainer) {
               messageListContainer.scrollTop = messageListContainer.scrollTopMax;
             }
           }
@@ -379,11 +379,12 @@ var SmsList = (function() {
         templateData.date = '';
       }
     }
-    if (messageData.delivery == "received") {
-    } else if (messageData.delivery == "error") {
-      elem.classList.add('from-me-error');
-    } else {
-      elem.classList.add('from-me');
+    if (messageData.delivery != "received") {
+      if (messageData.delivery == "error") {
+        elem.classList.add('from-me-error');
+      } else {
+        elem.classList.add('from-me');
+      }
     }
     templateData.time += formatTime(messageData.timestamp);;
 
@@ -502,11 +503,11 @@ var SmsList = (function() {
   }
 
   function onMessage(e) {
-    if(e.detail.type == 'contact') {
+    if (e.detail.type == 'contact') {
       updateAvatar();
       return;
     }
-    if(e.detail.type != 'sms') {
+    if (e.detail.type != 'sms') {
       return;
     }
     var msg = e.detail.data;
@@ -615,40 +616,18 @@ var SmsList = (function() {
     ids.forEach(function(item) {
       var threadId = item.threadIndex;
       CMD.SMS.getThreadMessagesById(threadId, function onresponse_getThreadMessagesById(messages) {
-        var result = [];
         var msg = JSON.parse(messages.data);
         threadnum++;
         for (var i = 0; i < msg.length; i++) {
-          if (result.type == 'sms') {
-            content += msg[i].type + ';';
-            content += msg[i].id + ';';
-            content += msg[i].threadId + ';';
-            content += msg[i].delivery + ';';
-            content += msg[i].deliveryStatus + ';';
-            content += msg[i].sender + ';';
-            content += msg[i].receiver + ';';
-            content += msg[i].body + ';';
-            content += msg[i].messageClass + ';';
-            content += msg[i].timestamp + ';';
-            content += msg[i].read + '\n';
-          } else if (result.type == 'mms') {
-            content += msg[i].type + ';';
-            content += msg[i].id + ';';
-            content += msg[i].threadId + ';';
-            content += msg[i].delivery + ';';
-            content += msg[i].deliveryStatus + ';';
-            content += msg[i].sender + ';';
-            content += msg[i].receivers + ';';
-            content += msg[i].subject + ';';
-            content += msg[i].smil + ';';
-            content += msg[i].expiryDate + ';';
-            for (var i = 0; i < msg[i].attachments.length; i++) {
-              content += msg[i].attachments[i].id + ';';
-              content += msg[i].attachments[i].location + ';';
-              content += msg[i].attachments[i].content + ';';
-            }
-            content += msg[i].timestamp + ';';
-            content += msg[i].read + '\n';
+          if (msg[i].type == 'sms') {
+            content += msg[i].delivery + ',';
+            content += msg[i].deliveryStatus + ',';
+            content += msg[i].sender + ',';
+            content += msg[i].receiver + ',';
+            content += '"' + msg[i].body.replace('"', '""') + '",';
+            content += msg[i].messageClass + ',';
+            content += formatDate(msg[i].timestamp) + ' ' + formatTime(msg[i].timestamp) + ',';
+            content += '\n';
           }
         }
         if (threadnum == ids.length) {
@@ -659,13 +638,13 @@ var SmsList = (function() {
             }
           }, {
             title: _('export-sms-success'),
-            name: 'sms.vcf',
-            extension: 'vcf'
+            name: 'sms.csv',
+            extension: 'csv'
           });
         }
       }, function onerror_getThreadMessagesById(messages) {
         animationLoading.stop(loadingGroupId);
-        log('Error occurs when fetching all messages' + messages.message);
+        new AlertDialog(_('export-sms-failure'));
       });
     });
   }
@@ -729,8 +708,8 @@ var SmsList = (function() {
       });
 
       new AlertDialog(_('delete-sms-confirm', {
-          n: ids.length
-        }), true, function() {
+        n: ids.length
+      }), true, function() {
         ids.forEach(function(item) {
           removeThread(item);
         });
@@ -756,7 +735,7 @@ var SmsList = (function() {
 
     var elemSendInput = $id('sender-ctn-input');
     var elemMessageContainer = $id('message-list-container');
-    var getStyle = function (elem, name) {
+    var getStyle = function(elem, name) {
       if (elem.currentStyle) {
         var val = elem.currentStyle[name];
         if (name === 'height' && val.search(/px/i) !== 1) {
@@ -767,15 +746,14 @@ var SmsList = (function() {
       } else {
         return getComputedStyle(elem, null)[name];
       }
-    },
-    minHeight = parseFloat(getStyle(elemSendInput, 'height')),
-    maxHeight = 5 * parseFloat(getStyle(elemSendInput, 'height')),
-    messageListContainerHeight = parseFloat(getStyle(elemMessageContainer, 'height'));
+    };
+    var minHeight = parseFloat(getStyle(elemSendInput, 'height'));
+    var maxHeight = 5 * parseFloat(getStyle(elemSendInput, 'height'));
+    var messageListContainerHeight = parseFloat(getStyle(elemMessageContainer, 'height'));
     elemSendInput.addEventListener('keyup', function onclick_addNewSms(event) {
       var scrollTop;
       this.style.maxHeight = this.style.resize = 'none';
-      if (this._length === this.value.length)
-        return;
+      if (this._length === this.value.length) return;
 
       this._length = this.value.length;
       scrollTop = this.scrollTop;
@@ -810,8 +788,8 @@ var SmsList = (function() {
         ids.push(item.dataset);
       });
       new AlertDialog(_('export-sms-confirm', {
-          n: ids.length
-        }), true, function() {
+        n: ids.length
+      }), true, function() {
         exportThreads(ids);
       });
     });
