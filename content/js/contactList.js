@@ -549,16 +549,14 @@ var ContactList = (function() {
 
       new AlertDialog(_('delete-contacts-confirm', {
         n: ids.length
-      }), true, function(returnBtn) {
-        if (returnBtn) {
-          if ($id('selectAll-contacts').dataset.checked == "true") {
-            $id('selectAll-contacts').dataset.checked = false;
-          }
-          ids.forEach(function(item) {
-            removeContact(item);
-          });
-          ViewManager.showViews('contact-quick-add-view');
+      }), true, function() {
+        if ($id('selectAll-contacts').dataset.checked == "true") {
+          $id('selectAll-contacts').dataset.checked = false;
         }
+        ids.forEach(function(item) {
+          removeContact(item);
+        });
+        ViewManager.showViews('contact-quick-add-view');
       });
     });
 
