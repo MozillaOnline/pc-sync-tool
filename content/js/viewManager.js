@@ -69,6 +69,7 @@ var ViewManager = (function() {
           new AlertDialog(_('send-sms-confirm'), true, function () {
             $id(viewOldId).dataset.shown = false;
             switchContent(viewId, showData, viewElem);
+            sub.value = '';
           });
           return;
         }

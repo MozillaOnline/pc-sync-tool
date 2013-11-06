@@ -6,7 +6,15 @@ var SmsList = (function() {
   var messageList = null;
   var messageListContainer = null;
 
+  function clearView() {
+    var inputSms = $id('sender-ctn-input');
+    if (inputSms) {
+      inputSms.value = '';
+    }
+  }
+
   function init() {
+    clearView();
     CMD.SMS.getThreads(function onresponse_getThreads(messages) {
       // Make sure the 'select-all' box is not checked.
       selectAllSms(false);
@@ -232,6 +240,7 @@ var SmsList = (function() {
     var loadingGroupId = animationLoading.start();
     var index = item[0].dataset.threadIndex;
     var SmsThreadsData = threadList.getGroupedData();
+    clearView();
     messageListContainer.innerHTML = '';
     for (var j = 0; j < SmsThreadsData.length; j++) {
       if (SmsThreadsData[j].dataList.length == 0 || index != SmsThreadsData[j].dataList[0].id) {
