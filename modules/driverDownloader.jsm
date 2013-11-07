@@ -39,15 +39,20 @@ var DriverDownloader = {
     let downloadURL = null;
     for (var i = 0; i < this.driverList.devices.length; i++) {
       if (deviceInstanceId == this.driverList.devices[i].device_instance_id) {
-        downloadURL = this.driverList.devices[i].driver_download_url;
-        // Check 32 or 64 bit
-        if (typeof downloadURL == 'object' && !! downloadURL['32'] && !! downloadURL['64']) {
-          var oscpu = Cc["@mozilla.org/network/protocol;1?name=http"].getService(Ci.nsIHttpProtocolHandler).oscpu;
-          dump('oscpu: ' + oscpu + '\n');
-          if (oscpu.contains('64')) {
-            downloadURL = downloadURL['64'];
-          } else {
-            downloadURL = downloadURL['32'];
+        let drivers = this.driverList.devices[i].drivers;
+        // Check 32 or 64 bit or win8
+        var oscpu = Cc["@mozilla.org/network/protocol;1?name=http"].getService(Ci.nsIHttpProtocolHandler).oscpu;
+        debug('oscpu: ' + oscpu + '\n');
+        if (oscpu.contains('6.2')) {
+          oscpu = oscpu.contains('64') ? 'amd64.6.2' : 'x86.6.2';
+        } else {
+          oscpu = oscpu.contains('64') ? 'amd64' : 'x86';
+        }
+        for (var i = 0; i < drivers.length; i++) {
+          var driver = drivers[i];
+          if (driver.OS == 'all' || driver.OS == oscpu) {
+            downloadURL = driver.download_url;
+            break;
           }
         }
         break;

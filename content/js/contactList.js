@@ -263,13 +263,13 @@ var ContactList = (function() {
       $id('selectAll-contacts').dataset.disabled = true;
     } else {
       $id('selectAll-contacts').dataset.checked =
-        $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+      $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
       $id('selectAll-contacts').dataset.disabled = false;
     }
     $id('remove-contacts').dataset.disabled =
-      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
     $id('export-contacts').dataset.disabled =
-      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
   }
 
   function showContactInfo(contact) {
