@@ -105,7 +105,7 @@ var ContactList = (function() {
   }
 
 
-  function checkIfContactListEmpty() {
+  function updateUI() {
     var isEmpty = groupedList.count() == 0;
     $id('selectAll-contacts').dataset.disabled = isEmpty;
     $id('empty-contact-container').hidden = !isEmpty;
@@ -203,12 +203,12 @@ var ContactList = (function() {
       dataSorterName: 'name',
       renderFunc: createContactListItem,
       container: container,
-      ondatachange: checkIfContactListEmpty
+      ondatachange: updateUI
     });
 
     groupedList.render();
     updateAllAvatars();
-    checkIfContactListEmpty();
+    updateUI();
     customEventElement.removeEventListener('dataChange', onMessage);
     customEventElement.addEventListener('dataChange', onMessage);
   }
@@ -224,14 +224,10 @@ var ContactList = (function() {
 
   function selectAllContacts(select) {
     $expr('#contact-list-container .contact-list-item').forEach(function(elem) {
-      var item = $expr('label', elem)[0];
-      if (!item) {
-        return;
-      }
-      item.dataset.checked = elem.dataset.checked = elem.dataset.focused = select;
+      elem.dataset.checked = elem.dataset.focused = select;
     });
 
-    opStateChanged();
+    updateControls();
   }
 
   function contactItemClicked(elem) {
@@ -240,30 +236,17 @@ var ContactList = (function() {
         return;
       }
       e.dataset.checked = e.dataset.focused = false;
-      var item = $expr('label', e)[0];
-      if (item) {
-        item.dataset.checked = false;
-      }
     });
 
-    item = $expr('label', elem)[0];
-    if (item) {
-      item.dataset.checked = true;
-    }
     elem.dataset.checked = elem.dataset.focused = true;
-    opStateChanged();
+    updateControls();
     showContactInfo(JSON.parse(elem.dataset.contact));
   }
 
   function toggleContactItem(elem) {
-    var item = $expr('label', elem)[0];
-    if (!item) {
-      return;
-    }
-    var select = item.dataset.checked == 'false';
-
-    elem.dataset.checked = elem.dataset.focused = item.dataset.checked = select;
-    opStateChanged();
+    var select = elem.dataset.checked == 'false';
+    elem.dataset.checked = elem.dataset.focused = select;
+    updateControls();
     item = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
     if (item.length == 0) {
       ViewManager.showViews('contact-quick-add-view');
@@ -274,19 +257,19 @@ var ContactList = (function() {
     }
   }
 
-  function opStateChanged() {
+  function updateControls() {
     if ($expr('#contact-list-container .contact-list-item').length == 0) {
       $id('selectAll-contacts').dataset.checked = false;
       $id('selectAll-contacts').dataset.disabled = true;
     } else {
       $id('selectAll-contacts').dataset.checked =
-      $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+        $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
       $id('selectAll-contacts').dataset.disabled = false;
     }
     $id('remove-contacts').dataset.disabled =
-    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
     $id('export-contacts').dataset.disabled =
-    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
   }
 
   function showContactInfo(contact) {

@@ -265,7 +265,7 @@
   width: 2rem;
 }
 
-.contact-list-item > label[data-checked=true] {
+.contact-list-item[data-checked=true] > label {
   background-image: url("images/checkbox-checked.png");
 }
 
