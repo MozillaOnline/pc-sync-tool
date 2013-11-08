@@ -14,6 +14,7 @@ var SmsList = (function() {
   }
 
   function init() {
+    var loadingGroupId = animationLoading.start();
     clearView();
     CMD.SMS.getThreads(function onresponse_getThreads(messages) {
       // Make sure the 'select-all' box is not checked.
@@ -48,8 +49,10 @@ var SmsList = (function() {
       showThreadList();
       customEventElement.removeEventListener('dataChange', onMessage);
       customEventElement.addEventListener('dataChange', onMessage);
+      animationLoading.stop(loadingGroupId);
     }, function onerror_getThreads(messages) {
       log('Error occurs when fetching all messages' + messages.message);
+      animationLoading.stop(loadingGroupId);
     });
   }
 

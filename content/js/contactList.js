@@ -37,7 +37,8 @@ var ContactList = (function() {
 
     var templateData = {
       fullName: contact.name ? contact.name.join(' ') : '',
-      tel: ''
+      tel: '',
+      img: null,
     };
 
     if (contact.tel) {
@@ -45,13 +46,17 @@ var ContactList = (function() {
         templateData.tel += (index == 0 ? '' : ',') + value.value;
       });
     }
-
+    elem.dataset.avatar = '';
+    if (contact.photo && contact.photo.length > 0) {
+      templateData.img = contact.photo;
+      elem.dataset.avatar = contact.photo;
+    }
+	
     elem.innerHTML = tmpl('tmpl_contact_list_item', templateData);
 
     elem.dataset.contact = JSON.stringify(contact);
     elem.dataset.contactId = contact.id;
     elem.id = 'contact-' + contact.id;
-    elem.dataset.avatar = '';
     elem.dataset.checked = false;
 
     elem.onclick = function onclick_contact_list(event) {
@@ -123,14 +128,6 @@ var ContactList = (function() {
     }
   }
 
-  function updateAllAvatars() {
-    groupedList.getGroupedData().forEach(function(group) {
-      group.dataList.forEach(function(contact) {
-        updateAvatar(contact);
-      });
-    });
-  }
-
   function updateAvatar(contact) {
     if (!contact.photo || (contact.photo.length == 0)) {
       return;
@@ -148,14 +145,17 @@ var ContactList = (function() {
   }
 
   function init(viewData) {
+    var loadingGroupId = animationLoading.start();
     ViewManager.showViews('contact-quick-add-view');
+    selectAllContacts(false);
     CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
       // Make sure the 'select-all' box is not checked.
-      selectAllContacts(false);
       var dataJSON = JSON.parse(message.data);
       initList(dataJSON, viewData);
+      animationLoading.stop(loadingGroupId);
     }, function onerror_getAllContacts(message) {
       log('Error occurs when fetching all contacts.');
+      animationLoading.stop(loadingGroupId);
     });
   }
 
@@ -207,7 +207,6 @@ var ContactList = (function() {
     });
 
     groupedList.render();
-    updateAllAvatars();
     updateUI();
     customEventElement.removeEventListener('dataChange', onMessage);
     customEventElement.addEventListener('dataChange', onMessage);
