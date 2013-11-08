@@ -40,7 +40,6 @@ var customEventElement = document;
 var FFOSAssistant = (function() {
   var connPool = null;
   var connListenSocket = null;
-  var heartBeatSocket = null;
 
   function showConnectView() {
     animationLoading.reset();
@@ -118,9 +117,6 @@ var FFOSAssistant = (function() {
       if (connPool) {
         connPool.finalize();
         connPool = null;
-      }
-      if (heartBeatSocket) {
-        heartBeatSocket.close();
       }
       showConnectView();
       ViewManager.reset();

@@ -265,10 +265,6 @@
     if (mode == 'USB') {
       modules.ADBService.startDeviceDetecting(true);
     }
-    if (mode == 'WIFI') {
-      heartBeatSocket = navigator.mozTCPSocket.open(serverIP, port);
-      heartBeatSocket.onclose = onclose_heartBeatSocket;
-    }
   };
 
   let messageHandler = {

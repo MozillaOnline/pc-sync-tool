@@ -228,6 +228,7 @@ function startDetecting(start) {
   }
 
   if (!start) {
+    connected = false;
     return;
   }
 
@@ -248,7 +249,6 @@ function startDetecting(start) {
     // TODO: Select the first device now. If multi-devices plugged-in, it should
     // popup a dialog for users to choose which device would be connected.
     device = devices[0];
-    debug(device);
     var ret = libadb.setupDevice(device);
     setConnected(!/error|failed/ig.test(ret));
   }, 2000);
