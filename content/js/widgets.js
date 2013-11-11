@@ -1370,9 +1370,10 @@ Tip.prototype = {
   initialize: function(options) {
     this.options = extend({
       element: null,
-      innerHTML: ''
+      innerHTML: '',
+      container: null
     }, options);
-    if (!this.options.element) {
+    if (!this.options.element || !this.options.container) {
       return;
     }
 
@@ -1381,7 +1382,7 @@ Tip.prototype = {
     this.options.element.onmouseover = function(e) {
       tip.innerHTML = self.options.innerHTML;
       navigator.mozL10n.translate(tip);
-      tip.style.top = (e.target.parentNode.offsetTop + e.target.parentNode.offsetParent.offsetTop + e.target.parentNode.clientHeight - $id('video-list-container').scrollTop) + 'px';
+      tip.style.top = (e.target.parentNode.offsetTop + e.target.parentNode.offsetParent.offsetTop + e.target.parentNode.clientHeight - self.options.container.scrollTop) + 'px';
       tip.style.left = (e.target.parentNode.offsetParent.offsetLeft + e.target.parentNode.offsetLeft + e.target.parentNode.clientWidth / 2) + 'px';
       tip.hidden = false;
     };

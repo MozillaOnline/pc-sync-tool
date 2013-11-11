@@ -184,7 +184,8 @@ var Gallery = (function() {
 
     new Tip({
       element: listItem,
-      innerHTML: tmpl('tmpl_tip', templateData)
+      innerHTML: tmpl('tmpl_tip', templateData),
+      container: $id('picture-list-container')
     });
 
     return listItem;
