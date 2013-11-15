@@ -10,6 +10,9 @@
   const ADDON_ID = 'ffosassistant@mozillaonline.com';
   let DEBUG = 0;
 
+  var jsm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                   .getService(Components.interfaces.nsIWindowMediator);
+
   function debug(s) {
     if (DEBUG) {
       let console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
@@ -228,7 +231,7 @@
         return true;
       }
 
-      var winEnum = jsm.windowMediator.getEnumerator("navigator:browser");
+      var winEnum = jsm.getEnumerator("navigator:browser");
       while (winEnum.hasMoreElements()) {
         var browserWin = winEnum.getNext();
         if (browserWin.closed || browserWin == window) {
@@ -427,8 +430,11 @@
   }
 
   window.addEventListener('load', function wnd_onload(e) {
-    window.removeEventListener('load', wnd_onload);
-    window.setTimeout(init, 1000);
+    var winEnum = jsm.getEnumerator("navigator:browser");
+    if (winEnum.hasMoreElements() && winEnum.getNext() && !winEnum.hasMoreElements()) {
+      window.removeEventListener('load', wnd_onload);
+      window.setTimeout(init, 1000);
+    }
   });
 
   window.addEventListener('unload', function wnd_onunload(e) {
