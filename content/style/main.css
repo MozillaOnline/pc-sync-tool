@@ -156,6 +156,11 @@ input[type="url"], textarea {
   margin-top: 3rem;
 }
 
+.help {
+  margin-left: 1rem;
+  font-size: 1.2rem;
+}
+
 .connection-button {
   height: 19rem;
   text-align: center;

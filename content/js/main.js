@@ -84,6 +84,16 @@ var FFOSAssistant = (function() {
       connectToDevice(ip);
     };
 
+    $id('help_btn').onclick = function(e) {
+      var url = '';
+      if (navigator.language == 'zh-CN') {
+        url = 'http://os.firefox.com.cn/zh-CN/about/help.html');
+      } else {
+        url = 'http://os.firefox.com.cn/en-US/about/help.html');
+      }
+      window.open(url);
+    };
+
     ViewManager.showContent('connect-view');
   }
 
