@@ -109,23 +109,6 @@ function toSizeInMB(sizeInByte) {
   }
 }
 
-function parseDate(date) {
-  var dt = new Date(date);
-  var strDate = dt.getFullYear() + '-';
-
-  if (dt.getMonth() < 9) {
-    strDate += '0' + (dt.getMonth() + 1) + '-';
-  } else {
-    strDate += (dt.getMonth() + 1) + '-';
-  }
-  if (dt.getDay() < 9) {
-    strDate += '0' + (dt.getDay() + 1);
-  } else {
-    strDate += dt.getDay() + 1;
-  }
-  return strDate;
-}
-
 function formatDate(timestamp) {
   var dt = new Date(timestamp);
   var year = dt.getFullYear();

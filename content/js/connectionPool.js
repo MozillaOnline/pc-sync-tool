@@ -134,6 +134,9 @@ TCPConnectionPool.prototype = {
         return;
       }
       var callback = this._fetchRequestCallback(jsonCmd.id);
+      if (!callback) {
+        return;
+      }
       if (jsonCmd.result != RS_MIDDLE) {
         this._deleteRequestCallback(jsonCmd.id);
         if (callback.json) {

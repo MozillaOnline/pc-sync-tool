@@ -86,15 +86,18 @@ var SmsList = (function() {
       var name = threadItem.getElementsByTagName('div')[2];
       name.childNodes[0].type = 'contact';
       name.childNodes[0].nodeValue = contactData.name.join(' ');
-
-      if (!$id('sms-select-view').hidden) {
-        var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
-        if (selectViewName) {
-          selectViewName.childNodes[0].nodeValue = contactData.name.join(' ');
-        }
+      if ( !!contactData.photo && contactData.photo.length > 0) {
+        var threadItem = $id('id-threads-data-' + threadInfo.id);
+        var img = threadItem.getElementsByTagName('img')[0];
+        img.src = contactData.photo;
+        threadItem.dataset.avatar = contactData.photo;
+        img.classList.remove('avatar-default');
       }
-
-      if (!$id('sms-thread-view').hidden) {
+      var ids = [];
+      $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(item) {
+        ids.push(item.dataset.threadIndex);
+      });
+      if (ids.length == 1 && ids[0] == threadInfo.id && !$id('sms-thread-view').hidden) {
         var messageViewName = $id('sms-thread-header-name');
         if (messageViewName) {
           messageViewName.textContent = contactData.name.join(' ');
@@ -103,30 +106,25 @@ var SmsList = (function() {
             titleElem.hidden = true;
           }
         }
-      }
-
-      if ( !!contactData.photo && contactData.photo.length > 0) {
-        var threadItem = $id('id-threads-data-' + threadInfo.id);
-        var img = threadItem.getElementsByTagName('img')[0];
-        img.src = contactData.photo;
-        threadItem.dataset.avatar = contactData.photo;
-        img.classList.remove('avatar-default');
-
-        if (!$id('sms-thread-view').hidden) {
+        if ( !!contactData.photo && contactData.photo.length > 0) {
+          var messageViewimg = $id('sms-thread-header-img');
+          if ( !!messageViewimg) {
+            messageViewimg.src = contactData.photo;
+            messageViewimg.classList.remove('avatar-show-default');
+          }
+        }
+      } else if (ids.length > 1 && ids.indexOf(threadInfo.id) && !$id('sms-select-view').hidden) {
+        var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
+        if (selectViewName) {
+          selectViewName.childNodes[0].nodeValue = contactData.name.join(' ');
+        }
+        if ( !!contactData.photo && contactData.photo.length > 0) {
           var selectItem = $id('show-multi-sms-' + threadInfo.id);
           if ( !!selectItem) {
             img = selectItem.getElementsByTagName('img')[0];
             img.src = contactData.photo;;
             selectItem.dataset.avatar = contactData.photo;;
             img.classList.remove('avatar-default');
-          }
-        }
-
-        if (!$id('sms-select-view').hidden) {
-          var messageViewimg = $id('sms-thread-header-img');
-          if ( !!messageViewimg && messageViewimg.value == threadInfo.id) {
-            messageViewimg.src = contactData.photo;
-            messageViewimg.classList.remove('avatar-default');
           }
         }
       }
@@ -260,10 +258,13 @@ var SmsList = (function() {
 
       $id('sms-thread-header').value = SmsThreadsData.id;
       var headerImg = $id('sms-thread-header-img');
-      if (threadImg.src) {
+      if (!!threadImg.src) {
         headerImg.src = threadImg.src;
         headerImg.dataset.avatar = threadImg.src;
-        headerImg.classList.remove('avatar-default');
+        headerImg.classList.remove('avatar-show-default');
+      } else {
+        headerImg.removeAttribute('src');
+        headerImg.classList.add('avatar-show-default');
       }
       var headerName = $id('sms-thread-header-name');
       headerName.textContent = threadName.childNodes[0].nodeValue;
@@ -313,7 +314,7 @@ var SmsList = (function() {
           forwardBtns[j].addEventListener('click', function onclick_replySms(event) {
             new SendSMSDialog({
               type: 'multi',
-              number: null,
+              tel: null,
               bodyText: this.value
             });
           });
@@ -732,7 +733,7 @@ var SmsList = (function() {
     $id('add-new-sms').addEventListener('click', function onclick_addNewSms(event) {
       new SendSMSDialog({
         type: 'multi',
-        number: null,
+        tel: null,
         bodyText: null
       });
     });
@@ -740,7 +741,7 @@ var SmsList = (function() {
     $id('sms-send-button').addEventListener('click', function onclick_addNewSms(event) {
       new SendSMSDialog({
         type: 'multi',
-        number: null,
+        tel: null,
         bodyText: null
       });
     });

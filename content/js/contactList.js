@@ -312,7 +312,7 @@ var ContactList = (function() {
     };
 
     $id('sms-send-incontact').onclick = function doSendInContact() {
-      if (!contact.tel || !contact.tel.trim()) {
+      if (!contact.tel || contact.tel.length <= 0) {
         return;
       }
       new SendSMSDialog({
@@ -367,7 +367,7 @@ var ContactList = (function() {
     btn.onclick = function() {
       new SendSMSDialog({
         type: 'multi',
-        number: [num],
+        tel: [num],
         bodyText: null
       });
     };

@@ -47,7 +47,7 @@ var Video = (function() {
     if (!video) {
       return;
     }
-    var threadId = parseDate(parseInt(video.date));
+    var threadId = formatDate(parseInt(video.date));
     var threadContainer = $id('video-' + threadId);
     var container = getListContainer();
     if (threadContainer) {
@@ -156,7 +156,7 @@ var Video = (function() {
 
     templateData = {
       name: listItem.dataset.title,
-      date: parseDate(parseInt(listItem.dataset.date)),
+      date: formatDate(parseInt(listItem.dataset.date)),
       size: toSizeInMB(listItem.dataset.size)
     };
 

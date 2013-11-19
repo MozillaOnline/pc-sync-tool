@@ -316,7 +316,8 @@ var ContactForm = (function() {
 
     if (contact.givenName.length == 0) {
       new AlertDialog(navigator.mozL10n.get('EmptyForm'));
-      return;
+      animationLoading.stop(loadingGroupId);
+      return false;
     }
 
     if (updateContact) {
@@ -334,6 +335,7 @@ var ContactForm = (function() {
         animationLoading.stop(loadingGroupId);
       });
     }
+    return true;
   }
 
   function quickSaveContact() {
@@ -400,14 +402,15 @@ var ContactForm = (function() {
     }
 
     handlerSaveContact = function() {
-      saveContact();
-      var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
-      if (selectedItem === 0) {
-        ViewManager.showViews('contact-quick-add-view');
-      } else if (selectedItem === 1) {
-        ViewManager.showViews('show-contact-view');
-      } else {
-        ViewManager.showViews('show-multi-contacts');
+      if (saveContact()) {
+        var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+        if (selectedItem === 0) {
+          ViewManager.showViews('contact-quick-add-view');
+        } else if (selectedItem === 1) {
+          ViewManager.showViews('show-contact-view');
+        } else {
+          ViewManager.showViews('show-multi-contacts');
+        }
       }
     };
     $id('save-contact').addEventListener('click', handlerSaveContact, false);
@@ -496,7 +499,6 @@ var ContactForm = (function() {
 
   return {
     // If contact object is not given, perform adding a new contact
-    editContact: editContact,
-    saveContact: saveContact
+    editContact: editContact
   };
 })();

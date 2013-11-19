@@ -52,7 +52,7 @@ var Gallery = (function() {
       return;
     }
 
-    var threadId = parseDate(parseInt(picture.date));
+    var threadId = formatDate(parseInt(picture.date));
     var threadContainer = $id('pic-' + threadId);
     var container = getListContainer();
 
@@ -178,7 +178,7 @@ var Gallery = (function() {
 
     templateData = {
       name: listItem.dataset.title,
-      date: parseDate(parseInt(listItem.dataset.date)),
+      date: formatDate(parseInt(listItem.dataset.date)),
       size: toSizeInMB(listItem.dataset.size)
     };
 
