@@ -198,14 +198,6 @@ FFOSAssistant.prototype = {
     })[0];
   },
 
-  get isDeviceDriverInstalled() {
-    return this._isDeviceDriverInstalled;
-  },
-
-  set isDeviceDriverInstalled(isInstalled) {
-    this._isDeviceDriverInstalled = isInstalled;
-  },
-
   switchConnectionMode: function(mode, ip) {
     cpmm.sendSyncMessage('ADBService:switchConnectionMode', {
       mode: mode,

@@ -349,15 +349,20 @@
 
     switch (msg[0].InstallState) {
     case 0: // device driver installed
-	  navigator.mozFFOSAssistant.isDeviceDriverInstaled = true;
 	  modules.ADBService.startDeviceDetecting(true);
       break;
 	case 1: // device driver needs reinstalling
 	case 2: // device driver failed installing
 	case 3: // device driver finishes installation
 	default:
-      navigator.mozFFOSAssistant.isDeviceDriverInstaled = false;
 	  modules.ADBService.startDeviceDetecting(false);
+      let url = '';
+      if (navigator.language == 'zh-CN') {
+        url = 'http://os.firefox.com.cn/zh-CN/about/help.html';
+      } else {
+        url = 'http://os.firefox.com.cn/en-US/about/help.html';
+      }
+      openUILinkIn(url, "tab");
       break;
     }
   }
