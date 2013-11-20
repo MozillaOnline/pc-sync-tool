@@ -805,29 +805,35 @@ FilesOPDialog.prototype = {
     setTimeout(function doCmd() {
       var cmd = '';
       switch (self.options.type) {
-        case 0 :
-          cmd = 'adb shell rm "' + self.options.files[self._fileIndex] + '"';
-          break;
         case 1:
-          var cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Music/';
+          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Music/';
           break;
         case 2:
           cmd ='adb pull "' + self.options.files[self._fileIndex].dataset.id + '" "' + decodeURI(self.options.dir) + '/' +
                 self.options.files[self._fileIndex].dataset.name + '.' + self.options.files[self._fileIndex].dataset.type + '"';
           break;
         case 3:
-          var cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Movies/';
+          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Movies/';
           break;
         case 4:
-          var cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.videoUrl + '" "' + decodeURI(self.options.dir) + '/' +
+          cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.videoUrl + '" "' + decodeURI(self.options.dir) + '/' +
               convertToOutputFileName(self.options.files[self._fileIndex].dataset.videoUrl) + '"';
           break;
         case 5:
-          var cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.picUrl + '" "' + decodeURI(self.options.dir) + '/' +
+          cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.picUrl + '" "' + decodeURI(self.options.dir) + '/' +
               convertToOutputFileName(self.options.files[self._fileIndex].dataset.picUrl) + '"';
           break;
         case 6:
-          var cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/DCIM/';
+          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/DCIM/';
+          break;
+        case 7 :
+          CMD.Pictures.deletePicture(self.options.files[self._fileIndex], null, null);
+          break;
+        case 8 :
+          CMD.Musics.deleteMusic(self.options.files[self._fileIndex], null, null);
+          break;
+        case 9 :
+          CMD.Videos.deleteVideo(self.options.files[self._fileIndex], null, null);
           break;
       }
       var req = navigator.mozFFOSAssistant.runCmd(cmd);

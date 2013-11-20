@@ -51,7 +51,6 @@ var ContactList = (function() {
       templateData.img = contact.photo;
       elem.dataset.avatar = contact.photo;
     }
-	
     elem.innerHTML = tmpl('tmpl_contact_list_item', templateData);
 
     elem.dataset.contact = JSON.stringify(contact);

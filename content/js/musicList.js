@@ -166,7 +166,7 @@ var MusicList = (function() {
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-musics-dialog-header',
       processbar_l10n_id: 'processbar-remove-musics-prompt',
-      type: 0,
+      type: 8,
       files: items,
       callback: updateChangedMusics,
       alert_prompt: 'files-cannot-be-removed',

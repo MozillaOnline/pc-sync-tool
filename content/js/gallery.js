@@ -258,7 +258,7 @@ var Gallery = (function() {
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-pictures-dialog-header',
       processbar_l10n_id: 'processbar-remove-pictures-prompt',
-      type: 0,
+      type: 7,
       files: items,
       callback: updateChangedPictures,
       alert_prompt: 'files-cannot-be-removed',

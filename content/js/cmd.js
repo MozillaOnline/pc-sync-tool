@@ -123,19 +123,22 @@ var CMD = (function() {
     /***** Picture commands ******/
     Pictures: {
       getOldPicturesInfo: createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getOldPicturesInfo),
-      getChangedPicturesInfo: createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getChangedPicturesInfo)
+      getChangedPicturesInfo: createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getChangedPicturesInfo),
+      deletePicture: createCommand(CMD_TYPE.picture, PICTURE_COMMAND.deletePicture)
     },
 
     /***** Videos commands ******/
     Videos: {
       getOldVideosInfo: createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getOldVideosInfo),
-      getChangedVideosInfo: createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getChangedVideosInfo)
+      getChangedVideosInfo: createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getChangedVideosInfo),
+      deleteVideo: createCommand(CMD_TYPE.video, VIDEO_COMMAND.deleteVideo)
     },
 
     /***** Musics commands ******/
     Musics: {
       getOldMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getOldMusicsInfo),
-      getChangedMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getChangedMusicsInfo)
+      getChangedMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getChangedMusicsInfo),
+      deleteMusic: createCommand(CMD_TYPE.music, MUSIC_COMMAND.deleteMusic)
     },
 
     /***** SMS commands *****/

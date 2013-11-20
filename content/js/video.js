@@ -136,6 +136,11 @@ var Video = (function() {
     var listItem = document.createElement('li');
     listItem.dataset.checked = 'false';
     listItem.dataset.videoUrl = video.name;
+    if (video.metadata.preview && video.metadata.preview.filename) {
+      listItem.dataset.previewName = video.metadata.preview.filename;
+    } else {
+      listItem.dataset.previewName = '';
+    }
     listItem.dataset.title = video.metadata.title;
     listItem.dataset.date = video.date;
     listItem.dataset.size = video.size;
@@ -218,7 +223,7 @@ var Video = (function() {
     var dialog = new FilesOPDialog({
       title_l10n_id: 'remove-videos-dialog-header',
       processbar_l10n_id: 'processbar-remove-videos-prompt',
-      type: 0,
+      type: 9,
       files: items,
       callback: updateChangedVideos,
       alert_prompt: 'files-cannot-be-removed',
@@ -276,7 +281,11 @@ var Video = (function() {
 
       var files = [];
       $expr('#video-list-container li[data-checked="true"]').forEach(function(item) {
-        files.push(item.dataset.videoUrl);
+        var fileInfo = {
+          'fileName': item.dataset.videoUrl,
+          'previewName': item.dataset.previewName
+        };
+        files.push(JSON.stringify(fileInfo));
       });
 
       new AlertDialog(_('delete-videos-confirm', {
