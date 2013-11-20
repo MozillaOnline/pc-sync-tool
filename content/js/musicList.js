@@ -28,7 +28,16 @@ var MusicList = (function() {
   function init() {
     getListContainer().innerHTML = '';
     $id('empty-music-container').hidden = true;
+    customEventElement.removeEventListener('dataChange', onMessage);
+    customEventElement.addEventListener('dataChange', onMessage);
     getAllMusics();
+  }
+
+  function onMessage(e) {
+    if (e.detail.type != 'music') {
+      return;
+    }
+    var msg = e.detail.data;
   }
 
   function getAllMusics() {

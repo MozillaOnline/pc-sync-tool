@@ -9,42 +9,53 @@ var Gallery = (function() {
   function init() {
     getListContainer().innerHTML = '';
     $id('empty-picture-container').hidden = true;
+    customEventElement.removeEventListener('dataChange', onMessage);
+    customEventElement.addEventListener('dataChange', onMessage);
     getAllPictures();
   }
 
+  function onMessage(e) {
+    if (e.detail.type != 'picture') {
+      return;
+    }
+    var msg = e.detail.data;
+    switch (msg.callbackID) {
+    case 'ondeleted':
+      updateRemovedPictures(msg.detail);
+      break;
+    case 'enumerate':
+      addPicture(msg.detail);
+      break;
+    default:
+      break;
+    }
+  }
+
   function getAllPictures() {
+    var getPicturesIndex = 0;
+    var picturesCount = 0;
+    var loadingGroupId = animationLoading.start();
     CMD.Pictures.getOldPicturesInfo(function(oldPicture) {
       var picture = JSON.parse(oldPicture.data);
       if (picture.callbackID == 'enumerate') {
-       addPicture(picture.detail);
-       return;
+        getPicturesIndex++;
+        addPicture(picture.detail);
+        if (getPicturesIndex == picturesCount) {
+          animationLoading.stop(loadingGroupId);
+        }
+        return;
       }
       if (picture.callbackID == 'enumerate-done') {
-        updateChangedPictures();
+        picturesCount = picture.detail;
+        return;
       }
-    }, function(e) {
-      alert(e);
-      log('Error occurs when getting all pictures.');
+    }, function onerror() {
+      animationLoading.stop(loadingGroupId);
     });
   }
 
   function updateChangedPictures() {
-    CMD.Pictures.getChangedPicturesInfo(function(changedPictureInfo) {
-      var changedPicture = JSON.parse(changedPictureInfo.data);
-      if (changedPicture.callbackID == 'enumerate') {
-        addPicture(changedPicture.detail);
-        return;
-      }
-      if (changedPicture.callbackID == 'ondeleted') {
-        updateRemovedPictures(changedPicture.detail);
-        return;
-      }
-      if (changedPicture.callbackID == 'enumerate-done') {
-        updateUI();
-      }
-    }, function(e) {
-      log('Error occurs when updating changed pictures.');
-    });
+    CMD.Pictures.getChangedPicturesInfo(null, null);
   }
 
   function addPicture(picture) {

@@ -6,7 +6,16 @@ var Video = (function() {
   function init() {
     getListContainer().innerHTML = '';
     $id('empty-video-container').hidden = true;
+    customEventElement.removeEventListener('dataChange', onMessage);
+    customEventElement.addEventListener('dataChange', onMessage);
     getAllVideos();
+  }
+
+  function onMessage(e) {
+    if (e.detail.type != 'video') {
+      return;
+    }
+    var msg = e.detail.data;
   }
 
   function getAllVideos() {
