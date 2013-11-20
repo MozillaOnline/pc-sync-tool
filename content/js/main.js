@@ -35,6 +35,17 @@ while (browserEnumerator.hasMoreElements()) {
 
 chromeWindow.switchToTabHavingURI('about:ffos', true);
 
+var timer = window.setInterval(function() {
+  if (navigator.mozFFOSAssistant.isDeviceDriverInstalled == undefined) {
+    return;
+  }
+  window.clearInterval(timer);
+  if (!navigator.mozFFOSAssistant.isDeviceDriverInstalled) {
+	// TODO: modify the url to the devices drivers description page
+	window.open('http://website/to/devices/drivers');
+  }
+}, 1000);
+
 var animationLoading = null;
 var customEventElement = document;
 var FFOSAssistant = (function() {

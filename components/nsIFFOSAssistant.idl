@@ -23,6 +23,8 @@ interface nsIFFOSAssistant : nsISupports
 
   attribute boolean isWifiConnected;
 
+  attribute boolean isDeviceDriverInstalled;
+
   /**
    * Fired when USB cable or ADB forward disconnected
    */

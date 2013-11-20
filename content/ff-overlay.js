@@ -40,8 +40,6 @@
 
   function startADBService() {
     isDisabled = false;
-    modules.ADBService.startAdbServer();
-    modules.ADBService.startDeviceDetecting(true);
     modules.DriverManager.startDriverManager();
     connectToDriverManager();
   }
@@ -49,7 +47,7 @@
   function stopADBService() {
     isDisabled = true;
     if (client && client.isConnected()) {
-      client.sendCommand('shutdown', function() {});
+      client.sendCommand('shutdown');
     }
     modules.ADBService.startDeviceDetecting(false);
     modules.ADBService.killAdbServer();
@@ -71,7 +69,6 @@
     modules.ADBService.initAdbService(navigator.mozFFOSAssistant.isWindows, libPath.file.path, adbPath.file.path, profilePath.path);
 
     checkFirstRun();
-    modules.ADBService.startDeviceDetecting(true);
 
     if (!navigator.mozFFOSAssistant.isWindows) {
       return;
@@ -344,85 +341,29 @@
     if (!msg) {
       return;
     }
-    switch (msg.type) {
-    case 'notification':
-      debug('Got an notification');
-      client.sendCommand('message', handleMessage);
+
+	if (msg.length == 0) {
+	  modules.ADBService.startDeviceDetecting(false);
+	  return;
+	}
+
+    switch (msg[0].InstallState) {
+    case 0: // device driver installed
+	  navigator.mozFFOSAssistant.isDeviceDriverInstaled = true;
+	  modules.ADBService.startDeviceDetecting(true);
       break;
-    case 'deviceChanged':
-      onDeviceChanged(msg);
-      break;
-    case 'driverInstalled':
-      onDriverInstalled(msg);
+	case 1: // device driver needs reinstalling
+	case 2: // device driver failed installing
+	case 3: // device driver finishes installation
+	default:
+      navigator.mozFFOSAssistant.isDeviceDriverInstaled = false;
+	  modules.ADBService.startDeviceDetecting(false);
       break;
     }
-  }
-
-  function onDeviceChanged(msg) {
-    window.clearTimeout(failToInstallTimeout);
-    checkDriverStatus();
-  }
-
-  var failToInstallTimeout = null;
-
-  function onDriverInstalled(msg) {
-    // `driverInstalled` means the driver installer running completes, however it
-    // does not mean the driver for the plugged device is installed, so it's not
-    // a reliable event for ensuring driver-failed-to-be-installed, we need to try
-    // to connect to the device and double check `adbConnected`.
-    //
-    // We don't need to fire device-ready-event here, we will might receive a
-    // device-change event if driver is installed successfully.
-    var message = getString('error-install-driver');
-    if (msg.data.errorName && !navigator.mozFFOSAssistant.adbConnected) {
-        showNotification(message);
-    } else {
-      // Sometimes we can't receive a device-change event, we need to set a timeout
-      // to fire fail-to-install event
-      failToInstallTimeout = window.setTimeout(function() {
-        showNotification(message);
-      }, 5000);
-    }
-  }
-
-  var _doubleCheckTimeout = null;
-
-  function checkDriverStatus() {
-    client.sendCommand('list', function(message) {
-      if (message.data.length == 0 || message.data[0].state == 'installed') {
-        return;
-      }
-
-      // Windows need to load the driver when USB connected, so sometimes
-      // the message told us it's not installed, we need wait for seconds
-      // and query again to double check the status.
-      if (_doubleCheckTimeout) {
-        window.clearTimeout(_doubleCheckTimeout);
-      }
-      _doubleCheckTimeout = window.setTimeout(doCheckAndInstallDrivers, 5000);
-    });
-  }
-
-  function doCheckAndInstallDrivers() {
-    debug('Double check the driver installation state.');
-    client.sendCommand('list', function(message) {
-      if (message.data.length == 0 || message.data[0].state == 'installed') {
-        return;
-      }
-      var instanceId = message.data[0].deviceInstanceId;
-      var driverPath = modules.DriverDownloader.getInstallerPath(instanceId);
-      client.sendCommand('install', instanceId, driverPath, function(message) {
-        debug('Receive install message: ' + JSON.stringify(message));
-      });
-    });
   }
 
   function onopen() {
     debug('Telnet client is opened.');
-    client.sendCommand("info", function(message) {
-      debug("info: " + message);
-    });
-    checkDriverStatus();
   }
 
   function onclose() {
@@ -462,8 +403,6 @@
         throw Error('No port is specified.');
       }
 
-      this._callback = null;
-      this._queue = [];
       this._connected = false;
       this._socket = null;
     },
@@ -480,64 +419,21 @@
       debug('Connection is closed.');
       this._connected = false;
       this._socket = null;
-      this._callback = null;
-      this._queue = [];
       this.options.onclose(event);
     },
 
     _ondata: function ondata(event) {
       debug('Received data: ' + event.data);
-      var recvData = this._filterNotification(event.data);
       var data = null;
       try {
-        data = JSON.parse(recvData);
+        data = JSON.parse(event.data);
       } catch (e) {
         debug('Not a valid JSON string.');
         return;
       }
-      // Check if the _callback is null, if yes, it means the message
-      // is the echo for last command.
-      try {
-        if (this._callback) {
-          this._callback(data);
-        } else {
-          this.options.onmessage(data);
-        }
-      } catch (e) {
-        debug('Error occurs when invoking callback: ' + e);
-      } finally {
-        this._callback = null;
-        this._sendQueuedCommand();
-      }
+	  this.options.onmessage(data);
     },
 
-    _filterNotification: function(str) {
-      // Tranverse the event.data, if we received '\b' (charcode: 7), it
-      // means we received a notification.
-      var filteredStr = '';
-
-      for (var i = 0; i < str.length; i++) {
-        var charCode = str.charCodeAt(i);
-        if (charCode == 7) {
-          // We got a notification.
-          this.options.onmessage({
-            type: 'notification'
-          });
-        } else {
-          filteredStr += str.charAt(i);
-        }
-      }
-
-      return filteredStr;
-    },
-
-    _sendQueuedCommand: function() {
-      if (this._queue.length > 0) {
-        this.sendCommand.apply(this, this._queue.shift());
-      }
-    },
-
-    /* Interfaces */
     isConnected: function() {
       return !!this._connected;
     },
@@ -566,41 +462,12 @@
       }
     },
 
-    /**
-     * arguments:
-     *   command, arg1, arg2 ... argn, callback
-     *
-     * The last argument should be the callback function to receive
-     * the echo message.
-     */
     sendCommand: function tc_sendCommand() {
       if (!this.isConnected()) {
         throw Error('Server is disconnected.');
       }
 
-      // One command at a time.
-      if (this._callback) {
-        this._queue.push(arguments);
-        return;
-      }
-
-      // There will be an echo sent back whenever we send a command,
-      // so we need cache the callback here.
-      var args = [];
-      for (var i = 0; i < arguments.length; i++) {
-        if (typeof arguments[i] == 'function') {
-          this._callback = arguments[i];
-          break;
-        }
-        args.push(arguments[i]);
-      }
-
-      // Check if the callback is null, if yes, set it with emptyFunction
-      // which means the next message is an echo for this command, not an
-      // initiative message from the server.
-      this._callback = this._callback || emptyFunction;
-
-      var command = args.join("\t") + "\n";
+      var command = arguments.join("\t") + "\n";
       this._socket.send(command);
     }
   };
