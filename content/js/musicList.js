@@ -38,49 +38,51 @@ var MusicList = (function() {
       return;
     }
     var msg = e.detail.data;
+    switch (msg.callbackID) {
+    case 'ondeleted':
+      if (!msg.detail || !msg.detail.length || msg.detail.length < 1) {
+        return;
+      }
+      for (var index = 0; index < msg.detail.length; index++) {
+        var item = $id(msg.detail[index]);
+        if (item) {
+          getListContainer().removeChild(item);
+        }
+      }
+      break;
+    case 'enumerate':
+      getListContainer().appendChild(createMusicListItem(msg.detail));
+      break;
+    default:
+      break;
+    }
   }
 
   function getAllMusics() {
+    var getMusicsIndex = 0;
+    var musicsCount = 0;
+    var loadingGroupId = animationLoading.start();
     CMD.Musics.getOldMusicsInfo(function(oldMusic) {
       var music = JSON.parse(oldMusic.data);
       if (music.callbackID == 'enumerate') {
+        getMusicsIndex++;
         getListContainer().appendChild(createMusicListItem(music.detail));
+        if (getMusicsIndex == musicsCount) {
+          animationLoading.stop(loadingGroupId);
+        }
         return;
       }
       if (music.callbackID == 'enumerate-done') {
-        updateChangedMusics();
+        musicsCount = music.detail;
+        return;
       }
-    }, function onerror_getOldMusicsInfo(e) {
-      log('Error occurs when getting all musics.');
+    }, function onerror() {
+      animationLoading.stop(loadingGroupId);
     });
   }
 
   function updateChangedMusics() {
-    CMD.Musics.getChangedMusicsInfo(function(changedMusicInfo) {
-      var changedMusic = JSON.parse(changedMusicInfo.data);
-      if (changedMusic.callbackID == 'enumerate') {
-        getListContainer().appendChild(createMusicListItem(changedMusic.detail));
-        return;
-      }
-      if (changedMusic.callbackID == 'ondeleted') {
-        if (!changedMusic.detail || !changedMusic.detail.length || changedMusic.detail.length < 1) {
-          return;
-        }
-        for (var index = 0; index < changedMusic.detail.length; index++) {
-          var item = $id(changedMusic.detail[index]);
-          if (item) {
-            getListContainer().removeChild(item);
-          }
-        }
-        return;
-      }
-      if (changedMusic.callbackID == 'enumerate-done') {
-        updateUI();
-        return;
-      }
-    }, function onerror_getChangedMusics(e) {
-      log('Error occurs when updating changed musics.');
-    })
+    CMD.Musics.getChangedMusicsInfo(null, null);
   }
 
   function updateUI() {

@@ -16,40 +16,43 @@ var Video = (function() {
       return;
     }
     var msg = e.detail.data;
+    switch (msg.callbackID) {
+    case 'ondeleted':
+      updateRemovedVideos(msg.detail);
+      break;
+    case 'enumerate':
+      addVideo(msg.detail);
+      break;
+    default:
+      break;
+    }
   }
 
   function getAllVideos() {
+    var getVideosIndex = 0;
+    var videosCount = 0;
+    var loadingGroupId = animationLoading.start();
     CMD.Videos.getOldVideosInfo(function(oldVideo) {
       var video = JSON.parse(oldVideo.data);
       if (video.callbackID == 'enumerate') {
+        getVideosIndex++;
         addVideo(video.detail);
+        if (getVideosIndex == videosCount) {
+          animationLoading.stop(loadingGroupId);
+        }
         return;
       }
       if (video.callbackID == 'enumerate-done') {
-        updateChangedVideos();
+        videosCount = video.detail;
+        return;
       }
-    }, function(e) {
-      log('Error occurs when getting all videos.');
+    }, function onerror() {
+      animationLoading.stop(loadingGroupId);
     });
   }
 
   function updateChangedVideos() {
-    CMD.Videos.getChangedVideosInfo(function(changedVideoInfo) {
-      var changedVideo = JSON.parse(changedVideoInfo.data);
-      if (changedVideo.callbackID == 'enumerate') {
-        addVideo(changedVideo.detail);
-        return;
-      }
-      if (changedVideo.callbackID == 'ondeleted') {
-        updateRemovedVideos(changedVideo.detail);
-        return;
-      }
-      if (changedVideo.callbackID == 'enumerate-done') {
-        updateUI();
-      }
-    }, function(e) {
-      log('Error occurs when updating changed videos.');
-    });
+    CMD.Videos.getChangedVideosInfo(null, null);
   }
 
   function addVideo(video) {

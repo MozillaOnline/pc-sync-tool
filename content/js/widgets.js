@@ -826,15 +826,9 @@ FilesOPDialog.prototype = {
         case 6:
           cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/DCIM/';
           break;
-        case 7 :
-          CMD.Pictures.deletePicture(self.options.files[self._fileIndex], null, null);
-          break;
-        case 8 :
-          CMD.Musics.deleteMusic(self.options.files[self._fileIndex], null, null);
-          break;
-        case 9 :
-          CMD.Videos.deleteVideo(self.options.files[self._fileIndex], null, null);
-          break;
+      }
+      if (!cmd) {
+        return;
       }
       var req = navigator.mozFFOSAssistant.runCmd(cmd);
       if (!self._timer) {
