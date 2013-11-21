@@ -71,6 +71,7 @@
     checkFirstRun();
 
     if (!navigator.mozFFOSAssistant.isWindows) {
+      modules.ADBService.startDeviceDetecting(true);
       return;
     }
 
@@ -342,28 +343,28 @@
       return;
     }
 
-	if (msg.length == 0) {
-	  modules.ADBService.startDeviceDetecting(false);
-	  return;
-	}
+    if (msg.length == 0) {
+      modules.ADBService.startDeviceDetecting(false);
+      return;
+    }
 
     switch (msg[0].InstallState) {
-    case 0: // device driver installed
-	  modules.ADBService.startDeviceDetecting(true);
-      break;
-	case 1: // device driver needs reinstalling
-	case 2: // device driver failed installing
-	case 3: // device driver finishes installation
-	default:
-	  modules.ADBService.startDeviceDetecting(false);
-      let url = '';
-      if (navigator.language == 'zh-CN') {
-        url = 'http://os.firefox.com.cn/zh-CN/about/help.html';
-      } else {
-        url = 'http://os.firefox.com.cn/en-US/about/help.html';
-      }
-      openUILinkIn(url, "tab");
-      break;
+      case 0: // device driver installed
+        modules.ADBService.startDeviceDetecting(true);
+        break;
+      case 1: // device driver needs reinstalling
+      case 2: // device driver failed installing
+      case 3: // device driver finishes installation
+      default:
+        modules.ADBService.startDeviceDetecting(false);
+        let url = '';
+        if (navigator.language == 'zh-CN') {
+          url = 'http://os.firefox.com.cn/zh-CN/about/help.html';
+        } else {
+          url = 'http://os.firefox.com.cn/en-US/about/help.html';
+        }
+        openUILinkIn(url, "tab");
+        break;
     }
   }
 
