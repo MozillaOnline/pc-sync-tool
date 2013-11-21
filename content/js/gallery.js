@@ -40,14 +40,13 @@ var Gallery = (function() {
       if (picture.callbackID == 'enumerate') {
         getPicturesIndex++;
         addPicture(picture.detail);
-        if (getPicturesIndex == picturesCount) {
-          animationLoading.stop(loadingGroupId);
-        }
-        return;
       }
-      if (picture.callbackID == 'enumerate-done') {
+      else if (picture.callbackID == 'enumerate-done') {
         picturesCount = picture.detail;
-        return;
+      }
+      if (getPicturesIndex == picturesCount) {
+        updateChangedPictures();
+        animationLoading.stop(loadingGroupId);
       }
     }, function onerror() {
       animationLoading.stop(loadingGroupId);
