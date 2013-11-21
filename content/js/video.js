@@ -37,14 +37,13 @@ var Video = (function() {
       if (video.callbackID == 'enumerate') {
         getVideosIndex++;
         addVideo(video.detail);
-        if (getVideosIndex == videosCount) {
-          animationLoading.stop(loadingGroupId);
-        }
-        return;
       }
-      if (video.callbackID == 'enumerate-done') {
+      else if (video.callbackID == 'enumerate-done') {
         videosCount = video.detail;
-        return;
+      }
+      if (getVideosIndex == videosCount) {
+        updateChangedVideos();
+        animationLoading.stop(loadingGroupId);
       }
     }, function onerror() {
       animationLoading.stop(loadingGroupId);

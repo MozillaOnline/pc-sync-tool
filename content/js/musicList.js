@@ -67,14 +67,13 @@ var MusicList = (function() {
       if (music.callbackID == 'enumerate') {
         getMusicsIndex++;
         getListContainer().appendChild(createMusicListItem(music.detail));
-        if (getMusicsIndex == musicsCount) {
-          animationLoading.stop(loadingGroupId);
-        }
-        return;
       }
-      if (music.callbackID == 'enumerate-done') {
+      else if (music.callbackID == 'enumerate-done') {
         musicsCount = music.detail;
-        return;
+      }
+      if (getMusicsIndex == musicsCount) {
+        updateChangedMusics();
+        animationLoading.stop(loadingGroupId);
       }
     }, function onerror() {
       animationLoading.stop(loadingGroupId);
