@@ -437,7 +437,7 @@
         debug('Not a valid JSON string.');
         return;
       }
-	  this.options.onmessage(data);
+      this.options.onmessage(data);
     },
 
     isConnected: function() {
@@ -468,12 +468,12 @@
       }
     },
 
-    sendCommand: function tc_sendCommand() {
+    sendCommand: function tc_sendCommand(command) {
       if (!this.isConnected()) {
         throw Error('Server is disconnected.');
       }
 
-      var command = arguments.join("\t") + "\n";
+      command = command + "\n";
       this._socket.send(command);
     }
   };
