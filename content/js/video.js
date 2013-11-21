@@ -236,7 +236,6 @@ var Video = (function() {
       processbar_l10n_id: 'processbar-remove-videos-prompt',
       type: 9,
       files: items,
-      callback: updateChangedVideos,
       alert_prompt: 'files-cannot-be-removed',
       maxSteps: 50
     });

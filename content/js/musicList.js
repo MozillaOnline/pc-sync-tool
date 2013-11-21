@@ -178,7 +178,6 @@ var MusicList = (function() {
       processbar_l10n_id: 'processbar-remove-musics-prompt',
       type: 8,
       files: items,
-      callback: updateChangedMusics,
       alert_prompt: 'files-cannot-be-removed',
       maxSteps: 50
     });

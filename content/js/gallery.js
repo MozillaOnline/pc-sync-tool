@@ -40,13 +40,14 @@ var Gallery = (function() {
       if (picture.callbackID == 'enumerate') {
         getPicturesIndex++;
         addPicture(picture.detail);
+        if (getPicturesIndex == picturesCount) {
+          animationLoading.stop(loadingGroupId);
+        }
+        return;
       }
-      else if (picture.callbackID == 'enumerate-done') {
+      if (picture.callbackID == 'enumerate-done') {
         picturesCount = picture.detail;
-      }
-      if (getPicturesIndex == picturesCount) {
-        updateChangedPictures();
-        animationLoading.stop(loadingGroupId);
+        return;
       }
     }, function onerror() {
       animationLoading.stop(loadingGroupId);
@@ -270,7 +271,6 @@ var Gallery = (function() {
       processbar_l10n_id: 'processbar-remove-pictures-prompt',
       type: 7,
       files: items,
-      callback: updateChangedPictures,
       alert_prompt: 'files-cannot-be-removed',
       maxSteps: 50
     });

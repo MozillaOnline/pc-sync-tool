@@ -826,11 +826,22 @@ FilesOPDialog.prototype = {
         case 6:
           cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/DCIM/';
           break;
+        case 7:
+          CMD.Pictures.deletePicture(self.options.files[self._fileIndex], success, error);
+          break;
+        case 8:
+          CMD.Musics.deleteMusic(self.options.files[self._fileIndex], success, error);
+          break;
+        case 9:
+          CMD.Videos.deleteVideo(self.options.files[self._fileIndex], success, error);
+          break;
       }
-      if (!cmd) {
-        return;
+      if (cmd) {
+        var req = navigator.mozFFOSAssistant.runCmd(cmd);
+        req.onsuccess = success;
+        req.onerror = error;
       }
-      var req = navigator.mozFFOSAssistant.runCmd(cmd);
+
       if (!self._timer) {
         self._timer = setInterval(function() {
           if (self._oldFileIndex == self._fileIndex) {
@@ -845,7 +856,7 @@ FilesOPDialog.prototype = {
         }, 100);
       }
 
-      req.onsuccess = function(e) {
+      function success(e) {
         filesToBeDone.push(self.options.files[self._fileIndex]);
         self._fileIndex++;
         self._processbar.finish(filesToBeDone.length);
@@ -864,9 +875,9 @@ FilesOPDialog.prototype = {
         }
 
         self.options.callback(filesToBeDone);
-      };
+      }
 
-      req.onerror = function(e) {
+      function error(e) {
         filesCannotBeDone.push(self.options.files[self._fileIndex]);
         self._fileIndex++;
         self._processbar.finish(filesToBeDone.length);
@@ -885,7 +896,7 @@ FilesOPDialog.prototype = {
         }
 
         self.options.callback(filesToBeDone);
-      };
+      }
     }, 0);
   },
 
