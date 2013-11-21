@@ -545,6 +545,9 @@ var SmsList = (function() {
           messageListData = messageListData[0].dataList;
           if (messageListData.length > 0 && msg.threadId == messageListData[0].threadId) {
             msg['nearDate'] = messageListData[messageListData.length - 1].timestamp;
+            if (messageListData[messageListData.length - 1].id == msg.id) {
+              messageList.remove(messageListData[messageListData.length - 1]);
+            }
             messageList.add(msg);
             if (msg.delivery == "received") {
               threadListData.unreadCount = 0;
