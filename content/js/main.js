@@ -307,10 +307,10 @@ var FFOSAssistant = (function() {
         getAndShowStorageInfo(e.detail.data);
         break;
       case 'contact-view':
-        ContactList.init(e.detail.data);
+        ContactList.show();
         break;
       case 'sms-view':
-        SmsList.init(e.detail.data);
+        SmsList.show();
         break;
       default:
         break;

@@ -158,6 +158,11 @@ var ContactList = (function() {
     });
   }
 
+  function show() {
+    ViewManager.showViews('contact-quick-add-view');
+    selectAllContacts(false);
+  }
+
   function initList(contacts, viewData) {
     var container = getListContainer();
     container.innerHTML = '';
@@ -584,6 +589,7 @@ var ContactList = (function() {
 
   return {
     init: init,
+    show: show,
     getContact: getContact
   };
 })();

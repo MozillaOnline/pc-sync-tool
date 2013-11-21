@@ -56,6 +56,11 @@ var SmsList = (function() {
     });
   }
 
+  function show() {
+    clearView();
+    selectAllSms(false);
+  }
+
   function updateAvatar() {
     if (!threadList) {
       return;
@@ -845,6 +850,7 @@ var SmsList = (function() {
   });
 
   return {
-    init: init
+    init: init,
+    show: show
   };
 })();
