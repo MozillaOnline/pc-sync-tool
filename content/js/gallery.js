@@ -22,9 +22,11 @@ var Gallery = (function() {
     switch (msg.callbackID) {
     case 'ondeleted':
       updateRemovedPictures(msg.detail);
+      updateUI();
       break;
     case 'enumerate':
       addPicture(msg.detail);
+      updateUI();
       break;
     default:
       break;
@@ -46,6 +48,7 @@ var Gallery = (function() {
       }
       if (getPicturesIndex == picturesCount) {
         updateChangedPictures();
+        updateUI();
         animationLoading.stop(loadingGroupId);
       }
     }, function onerror() {
@@ -54,7 +57,7 @@ var Gallery = (function() {
   }
 
   function updateChangedPictures() {
-    CMD.Pictures.getChangedPicturesInfo(null, null);
+    CMD.Pictures.getChangedPicturesInfo();
   }
 
   function addPicture(picture) {

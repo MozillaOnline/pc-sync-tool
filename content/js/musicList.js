@@ -49,9 +49,11 @@ var MusicList = (function() {
           getListContainer().removeChild(item);
         }
       }
+      updateUI();
       break;
     case 'enumerate':
       getListContainer().appendChild(createMusicListItem(msg.detail));
+      updateUI();
       break;
     default:
       break;
@@ -73,6 +75,7 @@ var MusicList = (function() {
       }
       if (getMusicsIndex == musicsCount) {
         updateChangedMusics();
+        updateUI();
         animationLoading.stop(loadingGroupId);
       }
     }, function onerror() {
@@ -81,7 +84,7 @@ var MusicList = (function() {
   }
 
   function updateChangedMusics() {
-    CMD.Musics.getChangedMusicsInfo(null, null);
+    CMD.Musics.getChangedMusicsInfo();
   }
 
   function updateUI() {

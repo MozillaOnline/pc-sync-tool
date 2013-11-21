@@ -19,9 +19,11 @@ var Video = (function() {
     switch (msg.callbackID) {
     case 'ondeleted':
       updateRemovedVideos(msg.detail);
+      updateUI();
       break;
     case 'enumerate':
       addVideo(msg.detail);
+      updateUI();
       break;
     default:
       break;
@@ -43,6 +45,7 @@ var Video = (function() {
       }
       if (getVideosIndex == videosCount) {
         updateChangedVideos();
+        updateUI();
         animationLoading.stop(loadingGroupId);
       }
     }, function onerror() {
@@ -51,7 +54,7 @@ var Video = (function() {
   }
 
   function updateChangedVideos() {
-    CMD.Videos.getChangedVideosInfo(null, null);
+    CMD.Videos.getChangedVideosInfo();
   }
 
   function addVideo(video) {
