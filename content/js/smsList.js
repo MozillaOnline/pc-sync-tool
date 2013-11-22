@@ -128,6 +128,10 @@ var SmsList = (function() {
             titleElem.hidden = true;
           }
         }
+        var headerButton = $id('sms-thread-header-button');
+        if (headerButton) {
+          headerButton.hidden = true;
+        }
         if ( !!contactData.photo && contactData.photo.length > 0) {
           var messageViewimg = $id('sms-thread-header-img');
           if ( !!messageViewimg) {
