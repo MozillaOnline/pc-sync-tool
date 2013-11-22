@@ -678,48 +678,49 @@
   padding: 0.3rem 0.3rem;
   width: 1.6rem;
 }
+
 .messages-list-item .actions button.button-delete{
-  background: url("images/sms-delete.png");
+  background: url("images/sms-delete.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-delete:hover{
-  background: url("images/sms-delete-hover.png");
+  background: url("images/sms-delete-hover.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-delete:active{
-  background: url("images/sms-delete-active.png");
+  background: url("images/sms-delete-active.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-forward{
-  background: url("images/sms-reply.png");
+  background: url("images/sms-reply.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-forward:hover{
-  background: url("images/sms-reply-hover.png");
+  background: url("images/sms-reply-hover.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-forward:active{
-  background: url("images/sms-reply-active.png");
+  background: url("images/sms-reply-active.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-resend{
-  background: url("images/sms-resend.png");
+  background: url("images/sms-resend.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-resend:hover{
-  background: url("images/sms-resend-hover.png");
+  background: url("images/sms-resend-hover.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-resend:active{
-  background: url("images/sms-resend-active.png");
+  background: url("images/sms-resend-active.png") no-repeat;
   background-size: cover;
 }
 

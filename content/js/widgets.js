@@ -345,8 +345,12 @@ SendSMSDialog.prototype = {
         });
       }
     }
+    var textLen = 0;
+    if (this.options.bodyText) {
+      textLen = this.options.bodyText.length;
+    }
     templateData.textCount = _('text-sms-count', {
-      n: 0
+      n: textLen
     });
     if (this.options.bodyText) {
       templateData.body = this.options.bodyText;
@@ -498,11 +502,15 @@ SendSMSDialog.prototype = {
   },
 
   sendSingle: function() {
-    var loadingGroupId = animationLoading.start();
     var tel = $id('select-contact-tel-button');
     var message = $id('sms-text-content');
     var sender = [tel.value];
     var self = this;
+    if (!tel.value) {
+      new AlertDialog(_('EmptyPhone'));
+      return;
+    }
+    var loadingGroupId = animationLoading.start();
     message.readOnly = true;
     CMD.SMS.sendSMS(JSON.stringify({
       number: sender,
@@ -518,11 +526,12 @@ SendSMSDialog.prototype = {
         animationLoading.stop(loadingGroupId);
         self.options.onclose();
       }
-    }, null);
+    }, function onError_sendSms(event) {
+      animationLoading.stop(loadingGroupId);
+    });
   },
 
   send: function() {
-    var loadingGroupId = animationLoading.start();
     var number = $id('address').value.split(';');
     var message = $id('sms-text-content');
     var sender = [];
@@ -537,6 +546,11 @@ SendSMSDialog.prototype = {
         sender.push(item);
       }
     });
+    if (!sender.length) {
+      new AlertDialog(_('EmptyPhone'));
+      return;
+    }
+    var loadingGroupId = animationLoading.start();
     CMD.SMS.sendSMS(JSON.stringify({
       number: sender,
       message: message.value

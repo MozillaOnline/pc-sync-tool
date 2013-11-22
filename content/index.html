@@ -612,9 +612,15 @@
       <div class="side"></div>
     </div>
     <div class="actions">
-      <button id="sms-resend-<%=id%>" hidden="<%=showResendButton%>" value="<%=resendValue%>" class="button-resend" title="重发"></button>
-      <button id="sms-reply-<%=id%>" hidden="<%=showReplyButton%>" value="<%=replyValue%>" class="button-forward" title="转发"></button>
-      <button id="sms-delete-<%=id%>" hidden="<%=showDeleteButton%>" value="<%=deleteValue%>" class="button-delete" title="删除"></button>
+      <%if (showResendButton == 'true') {%>
+        <button id="sms-resend-<%=id%>" value="<%=resendValue%>" class="button-resend" title="重发"></button>
+      <%}%>
+      <%if (showReplyButton == 'true') {%>
+        <button id="sms-reply-<%=id%>" value="<%=replyValue%>" class="button-forward" title="转发"></button>
+      <%}%>
+      <%if (showReplyButton == 'true') {%>
+        <button id="sms-delete-<%=id%>" value="<%=deleteValue%>" class="button-delete" title="删除"></button>
+      <%}%>
     </div>
   </script>
 
