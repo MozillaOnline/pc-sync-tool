@@ -556,11 +556,7 @@ var SmsList = (function() {
         if (threadListData[i].dataList.length == 0 || threadListData[i].dataList[0].id != msg.threadId) {
           continue;
         }
-        threadListData = threadListData[i].dataList[0];
-        threadList.remove(threadListData);
-        if (msg.delivery == "received") {
-          threadListData.unreadCount += 1;
-        }
+        var threadData = threadListData[i].dataList[0];
         if (messageList) {
           var messageListData = messageList.getGroupedData();
           messageListData = messageListData[0].dataList;
@@ -570,25 +566,36 @@ var SmsList = (function() {
               messageList.remove(messageListData[messageListData.length - 1]);
             }
             messageList.add(msg);
-            if (msg.delivery == "received") {
-              threadListData.unreadCount = 0;
-            }
           }
         }
-        for (var j = 0; j < threadListData.length; j++) {
+        for (var j = 0; j < allMessagesList[msg.threadId].length; j++) {
           if (allMessagesList[msg.threadId][j].id == msg.id) {
             allMessagesList[msg.threadId].splice(j,1);
             break;
           }
         }
         allMessagesList[msg.threadId].push(msg);
-        threadListData.body = msg.body;
-        threadListData.timestamp = msg.timestamp;
-        threadListData.lastMessageType = msg.type;
-        threadList.add(threadListData);
-        updateThreadAvatar(threadListData);
+        threadList.remove(threadData);
+        if (msg.delivery == "received") {
+          if (messageList) {
+            threadData.unreadCount = 0;
+          } else {
+            threadData.unreadCount += 1;
+          }
+        }
+        threadData.body = msg.body;
+        threadData.timestamp = msg.timestamp;
+        threadData.lastMessageType = msg.type;
+        threadList.add(threadData);
+        updateThreadAvatar(threadData);
         showThreadList();
         return;
+      }
+    }
+    for (var j = 0; j < allMessagesList[msg.threadId].length; j++) {
+      if (allMessagesList[msg.threadId][j].id == msg.id) {
+        allMessagesList[msg.threadId].splice(j,1);
+        break;
       }
     }
     allMessagesList[msg.threadId].push(msg);

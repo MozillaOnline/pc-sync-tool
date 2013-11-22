@@ -429,13 +429,16 @@ SendSMSDialog.prototype = {
         $id('sender-count').innerHTML = header;
       });
       $id('button-add-contact').addEventListener('click', function(event) {
+        var loadingGroupId = animationLoading.start();
         CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
+          animationLoading.stop(loadingGroupId);
           var dataJSON = JSON.parse(message.data);
           new SelectContactsDialog({
             contactList: dataJSON,
             onok: self._selectContacts
           });
         }, function onerror_getAllContacts(message) {
+          animationLoading.stop(loadingGroupId);
           log('Error occurs when fetching all contacts.');
         });
       });
