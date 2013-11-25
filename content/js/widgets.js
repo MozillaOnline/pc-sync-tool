@@ -383,6 +383,9 @@ SendSMSDialog.prototype = {
       self._adjustModalPosition();
     };
     window.addEventListener('resize', this._onWindowResize);
+    window.addEventListener('CloseWidget', function() {
+      self.close();
+    });
   },
 
   _makeDialogCancelable: function() {
@@ -628,6 +631,9 @@ SelectContactsDialog.prototype = {
       self.close();
     }
     document.addEventListener('SelectContactsDialog:show', this._onModalDialogShown);
+    window.addEventListener('CloseWidget', function() {
+      self.close();
+    });
     // Make sure other modal dialog has a chance to close itself.
     this._fireEvent('SelectContactsDialog:show');
 
@@ -974,6 +980,9 @@ FilesOPDialog.prototype = {
       self._adjustModalPosition();
     };
     window.addEventListener('resize', this._onWindowResize);
+    window.addEventListener('CloseWidget', function() {
+      self.close();
+    });
   },
 
   _makeDialogCancelable: function() {
@@ -1087,6 +1096,9 @@ ImageViewer.prototype = {
         }
       }
       document.addEventListener('ImageViewer:show', this._onImageViewerShown);
+      window.addEventListener('CloseWidget', function() {
+        self.close();
+      });
 
       this._fireEvent('ImageViewer:show');
     }.bind(this));
@@ -1216,6 +1228,9 @@ WifiModePromptDialog.prototype = {
       self._adjustModalPosition();
     };
     window.addEventListener('resize', this._onWindowResize);
+    window.addEventListener('CloseWidget', function() {
+      self.close();
+    });
   },
 
   _makeDialogCancelable: function() {
@@ -1340,6 +1355,9 @@ AlertDialog.prototype = {
       self._adjustModalPosition();
     };
     window.addEventListener('resize', this._onWindowResize);
+    window.addEventListener('CloseWidget', function() {
+      self.close();
+    });
   },
 
   _makeDialogCancelable: function() {

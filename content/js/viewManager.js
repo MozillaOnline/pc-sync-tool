@@ -8,6 +8,10 @@ var ViewManager = (function() {
   }
 
   function reset() {
+    var evt = document.createEvent('Event');
+    evt.initEvent('CloseWidget', true, true);
+    document.dispatchEvent(evt);
+
     $expr('#container .item').forEach(function reset_func(elem) {
       var viewId = elem.dataset.linkedView;
       if (!viewId) {
