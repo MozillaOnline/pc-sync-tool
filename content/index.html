@@ -625,6 +625,15 @@
   </script>
 
   <!-- templates for widgets list view -->
+  <script type="text/javascript">
+    function deleteNode(form) {
+      form.parentNode.removeChild(form);
+    }
+  </script>
+  <script type="text/html" id="tmpl_select_contacts_item">
+    <span title="<%=title%>"><%=title%></span>
+    <div class="button-delete" onClick="deleteNode(this.parentNode)"></div>
+  </script>
   <script type="text/html" id="tmpl_sendSms_dialog">
     <div class="sendSms-dialog">
       <header class="sendSms-dialog-header">
@@ -644,8 +653,14 @@
         <%} else {%>
           <div class="header">
             <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
-            <div class="address">
-              <input id="address" type="text" class="input-contact searchbox" value="<%=tel%>">
+            <div class="address" id="senders-list">
+              <%for (var i=0; i<tel.length; i++) {%>
+                <li class="select-contacts-item">
+                  <span title="<%=tel[i]%>"><%=tel[i]%></span>
+                  <div class="button-delete" onClick="deleteNode(this.parentNode)"></div>
+              </li>
+              <%}%>
+              <input id="address" type="text" class="input-contact searchbox">
             </div>
             <button id="button-add-contact" data-l10n-id="sms-add-contact" class="sms-icon-btn">
               <span class="icon add-grey"></span>

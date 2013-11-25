@@ -310,7 +310,7 @@ var FFOSAssistant = (function() {
         ContactList.show();
         break;
       case 'sms-view':
-        SmsList.show();
+        SmsList.resetView();
         break;
       default:
         break;

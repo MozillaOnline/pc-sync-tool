@@ -1106,3 +1106,33 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.select-contacts-item {
+  background-color: #f9f9f9;
+  border: 0.1rem #cacaca solid;
+  border-radius: 0.2rem;
+  cursor: default;
+  display: inline-block;
+  line-height: 1.8rem;
+  margin: 0.1rem 0.3rem 0.1rem 0;
+  padding: 0 2rem 0 1rem;
+  position: relative;
+  text-shadow: 0 0.1rem 0 #fff;
+}
+
+.select-contacts-item .button-delete {
+  background-image: url("images/dialog-cancel-active.png");
+  background-position: center;
+  cursor: default;
+  height: 1.6rem;
+  width: 1.6rem;
+  display: none;
+  margin-top: -0.8rem;
+  position: absolute;
+  right: 0.2rem;
+  top: 50%;
+}
+
+.select-contacts-item:hover .button-delete {
+  display: block;
+}

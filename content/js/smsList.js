@@ -1,32 +1,25 @@
 var SmsList = (function() {
   var threadList = null;
-  var threadListContainer = null;
-  var selectedList = null;
-  var selectedListContainer = null;
   var messageList = null;
-  var messageListContainer = null;
   var allMessagesList = {};
-  function clearView() {
+
+  function resetView() {
     var inputSms = $id('sender-ctn-input');
     if (inputSms) {
       inputSms.value = '';
     }
+    selectAllSms(false);
+    ViewManager.showViews('sms-send-view');
   }
 
   function init() {
     var loadingGroupId = animationLoading.start();
-    clearView();
+    resetView();
+    $id('threads-list-container').innerHTML = '';
+    $id('show-sms-container').innerHTML = '';
+    $id('message-list-container').innerHTML = '';
     CMD.SMS.getThreads(function onresponse_getThreads(messages) {
-      // Make sure the 'select-all' box is not checked.
-      selectAllSms(false);
       var dataJSON = JSON.parse(messages.data);
-      threadListContainer = $id('threads-list-container');
-      threadListContainer.innerHTML = '';
-      selectedListContainer = $id('show-sms-container');
-      selectedListContainer.innerHTML = '';
-      messageListContainer = $id('message-list-container');
-      messageListContainer.innerHTML = '';
-      ViewManager.showViews('sms-send-view');
       for (var i=0; i<dataJSON.length; i++) {
         allMessagesList[dataJSON[i].id] = [];
       }
@@ -45,7 +38,7 @@ var SmsList = (function() {
         },
         disableDataIndexer: true,
         renderFunc: createGroupThreadList,
-        container: threadListContainer
+        container: $id('threads-list-container')
       });
       CMD.SMS.getAllMessages(function onresponse(messages) {
         var allMessages = JSON.parse(messages.data);
@@ -73,11 +66,6 @@ var SmsList = (function() {
     return allMessagesList[id];
   }
 
-  function show() {
-    clearView();
-    selectAllSms(false);
-  }
-
   function updateAvatar() {
     if (!threadList) {
       return;
@@ -102,7 +90,6 @@ var SmsList = (function() {
       if (!result.data) {
         return;
       }
-
       var contactData = JSON.parse(result.data);
       var threadItem = $id('id-threads-data-' + threadInfo.id);
       var name = threadItem.getElementsByTagName('div')[2];
@@ -161,6 +148,9 @@ var SmsList = (function() {
     var isEmpty = threadList.count() == 0;
     $id('selectAll-sms').dataset.disabled = isEmpty;
     $id('empty-sms-container').hidden = !isEmpty;
+    if (isEmpty) {
+      $id('threads-list-container').innerHTML = '';
+    }
   }
 
   function createGroupThreadList(threadData) {
@@ -192,7 +182,8 @@ var SmsList = (function() {
     elem.dataset.groupId = threadData.id;
     elem.id = 'id-threads-data-' + threadData.id;
     elem.dataset.threadIndex = threadData.id;
-
+    elem.dataset.body = templateData.body;
+    elem.dataset.unread = templateData.unread;
     elem.onclick = function onclick_sms_list(event) {
       var target = event.target;
       if (target instanceof HTMLLabelElement) {
@@ -207,57 +198,34 @@ var SmsList = (function() {
   }
 
   function showSelectView(item) {
-    selectedList = item;
     var header = _('sms-selected', {
       n: item.length
     });
     $id('select-threads-count').innerHTML = header;
-
-    selectedListContainer.innerHTML = '';
+    $id('show-sms-container').innerHTML = '';
     for (var i = 0; i < item.length; i++) {
       var elem = document.createElement('div');
       elem.classList.add('show-sms-item');
       var index = item[i].dataset.threadIndex;
-      var SmsThreadsData = threadList.getGroupedData();
-      for (var j = 0; j < SmsThreadsData.length; j++) {
-        if (SmsThreadsData[j].dataList.length == 0 || index != SmsThreadsData[j].dataList[0].id) {
-          continue;
-        }
-        SmsThreadsData = SmsThreadsData[j].dataList[0];
-        var threadItem = $id('id-threads-data-' + SmsThreadsData.id);
-        var threadName = threadItem.getElementsByTagName('div')[2];
-        var threadImg = threadItem.getElementsByTagName('img')[0];
-
-        var name = threadName.childNodes[0].nodeValue;
-        if (SmsThreadsData.unreadCount > 0) {
-          var header = _('sms-unread-count', {
-            n: SmsThreadsData.unreadCount
-          });
-          name += header;
-        }
-        var body;
-        if (SmsThreadsData.lastMessageType == 'mms') {
-          body = _('MMS');
-        } else {
-          body = SmsThreadsData.body;
-        }
-        var templateData = {
-          name: name,
-          body: body
-        };
-        elem.innerHTML = tmpl('tmpl_sms_select_item', templateData);
-        elem.id = 'show-multi-sms-' + SmsThreadsData.id;
-        navigator.mozL10n.translate(elem);
-        selectedListContainer.appendChild(elem);
-
-        if (threadImg.src) {
-          var selectItem = $id('show-multi-sms-' + SmsThreadsData.id);
-          var img = selectItem.getElementsByTagName('img')[0];
-          img.src = threadImg.src;
-          selectItem.dataset.avatar = threadImg.src;
-          img.classList.remove('avatar-default');
-        }
-        break;
+      var threadItem = $id('id-threads-data-' + index);
+      var threadName = threadItem.getElementsByTagName('div')[2];
+      var threadImg = threadItem.getElementsByTagName('img')[0];
+      var name = threadName.childNodes[0].nodeValue;
+      name += item[i].dataset.unread;
+      var templateData = {
+        name: name,
+        body: item[i].dataset.body
+      };
+      elem.innerHTML = tmpl('tmpl_sms_select_item', templateData);
+      elem.id = 'show-multi-sms-' + index;
+      navigator.mozL10n.translate(elem);
+      $id('show-sms-container').appendChild(elem);
+      if (threadImg.src) {
+        var selectItem = $id('show-multi-sms-' + index);
+        var img = selectItem.getElementsByTagName('img')[0];
+        img.src = threadImg.src;
+        selectItem.dataset.avatar = threadImg.src;
+        img.classList.remove('avatar-default');
       }
     }
     ViewManager.showViews('sms-select-view');
@@ -266,125 +234,120 @@ var SmsList = (function() {
   function showThreadView(item) {
     var loadingGroupId = animationLoading.start();
     var index = item[0].dataset.threadIndex;
-    var SmsThreadsData = threadList.getGroupedData();
-    clearView();
-    messageListContainer.innerHTML = '';
-    for (var j = 0; j < SmsThreadsData.length; j++) {
-      if (SmsThreadsData[j].dataList.length == 0 || index != SmsThreadsData[j].dataList[0].id) {
-        continue;
-      }
-      SmsThreadsData = SmsThreadsData[j].dataList[0];
-      var threadGroup = $id('id-threads-data-' + SmsThreadsData.id);
-      threadGroup.classList.remove('unread');
-      var sp = threadGroup.getElementsByTagName('div');
-      sp[3].innerHTML = '';
-      var threadItem = $id('id-threads-data-' + SmsThreadsData.id);
-      var threadName = threadItem.getElementsByTagName('div')[2];
-      var threadImg = threadItem.getElementsByTagName('img')[0];
+    var inputSms = $id('sender-ctn-input');
+    if (inputSms) {
+      inputSms.value = '';
+    }
+    $id('message-list-container').innerHTML = '';
+    var threadGroup = $id('id-threads-data-' + index);
+    threadGroup.classList.remove('unread');
+    var sp = threadGroup.getElementsByTagName('div');
+    sp[3].innerHTML = '';
+    var threadItem = $id('id-threads-data-' + index);
+    var threadName = threadItem.getElementsByTagName('div')[2];
+    var threadImg = threadItem.getElementsByTagName('img')[0];
 
-      $id('sms-thread-header').value = SmsThreadsData.id;
-      var headerImg = $id('sms-thread-header-img');
-      if (!!threadImg.src) {
-        headerImg.src = threadImg.src;
-        headerImg.dataset.avatar = threadImg.src;
-        headerImg.classList.remove('avatar-show-default');
+    $id('sms-thread-header').value = index;
+    var headerImg = $id('sms-thread-header-img');
+    if (!!threadImg.src) {
+      headerImg.src = threadImg.src;
+      headerImg.dataset.avatar = threadImg.src;
+      headerImg.classList.remove('avatar-show-default');
+    } else {
+      headerImg.removeAttribute('src');
+      headerImg.classList.add('avatar-show-default');
+    }
+    var headerName = $id('sms-thread-header-name');
+    headerName.textContent = threadName.childNodes[0].nodeValue;
+    var headerButton = $id('sms-thread-header-button');
+    if (headerButton) {
+      if (threadName.childNodes[0].type == 'contact') {
+        headerButton.hidden = true;
       } else {
-        headerImg.removeAttribute('src');
-        headerImg.classList.add('avatar-show-default');
-      }
-      var headerName = $id('sms-thread-header-name');
-      headerName.textContent = threadName.childNodes[0].nodeValue;
-      var headerButton = $id('sms-thread-header-button');
-      if (headerButton) {
-        if (threadName.childNodes[0].type == 'contact') {
-          headerButton.hidden = true;
-        } else {
-          headerButton.hidden = false;
-          headerButton.onclick = function() {
-            var addContactData = {
-              type: 'add',
-              number: threadName.childNodes[0].nodeValue
-            }
-            ViewManager.showContent('contact-view', addContactData);
-          };
-        }
-      }
-      var MessageListData = getMessagesByThreadId(SmsThreadsData.id);
-      for (var i = 0; i < MessageListData.length; i++) {
-        var nearDate = null;
-        if (i > 0) {
-          MessageListData[i]['nearDate'] = MessageListData[i - 1].timestamp;
-        } else {
-          MessageListData[i]['nearDate'] = 0;
-        }
-      }
-      messageList = new GroupedList({
-        dataList: MessageListData,
-        dataIndexer: function() {
-          return 'messagelist';
-        },
-        disableDataIndexer: true,
-        renderFunc: createThreadDialogView,
-        container: messageListContainer,
-        ondatachange: function() {
-          if ( !!messageListContainer) {
-            messageListContainer.scrollTop = messageListContainer.scrollTopMax;
+        headerButton.hidden = false;
+        headerButton.onclick = function() {
+          var addContactData = {
+            type: 'add',
+            number: threadName.childNodes[0].nodeValue
           }
+          ViewManager.showContent('contact-view', addContactData);
+        };
+      }
+    }
+    var MessageListData = getMessagesByThreadId(index);
+    for (var i = 0; i < MessageListData.length; i++) {
+      var nearDate = null;
+      if (i > 0) {
+        MessageListData[i]['nearDate'] = MessageListData[i - 1].timestamp;
+      } else {
+        MessageListData[i]['nearDate'] = 0;
+      }
+    }
+    messageList = new GroupedList({
+      dataList: MessageListData,
+      dataIndexer: function() {
+        return 'messagelist';
+      },
+      disableDataIndexer: true,
+      renderFunc: createThreadDialogView,
+      container: $id('message-list-container'),
+      ondatachange: function() {
+        if ( !!$id('message-list-container')) {
+          $id('message-list-container').scrollTop = $id('message-list-container').scrollTopMax;
         }
+      }
+    });
+    messageList.render();
+    var forwardBtns = $expr('.button-forward', $id('message-list-container'));
+    for (var j = 0; j < forwardBtns.length; j++) {
+      forwardBtns[j].hidden = false;
+      forwardBtns[j].addEventListener('click', function onclick_replySms(event) {
+        new SendSMSDialog({
+          type: 'multi',
+          tel: null,
+          bodyText: this.value
+        });
       });
-      messageList.render();
-      var forwardBtns = $expr('.button-forward', messageListContainer);
-      for (var j = 0; j < forwardBtns.length; j++) {
-        forwardBtns[j].hidden = false;
-        forwardBtns[j].addEventListener('click', function onclick_replySms(event) {
-          new SendSMSDialog({
-            type: 'multi',
-            tel: null,
-            bodyText: this.value
-          });
-        });
-      }
-      var resendBtns = $expr('.button-resend', messageListContainer);
-      for (var j = 0; j < resendBtns.length; j++) {
-        resendBtns[j].hidden = false;
-        resendBtns[j].addEventListener('click', function onclick_resendSms(event) {
-          var smsId = this.id.split("-");
-          var num;
-          if (MessageListData[0].delivery == "received") {
-            num = MessageListData[0].sender;
+    }
+    var resendBtns = $expr('.button-resend', $id('message-list-container'));
+    for (var j = 0; j < resendBtns.length; j++) {
+      resendBtns[j].hidden = false;
+      resendBtns[j].addEventListener('click', function onclick_resendSms(event) {
+        var smsId = this.id.split("-");
+        var num;
+        if (MessageListData[0].delivery == "received") {
+          num = MessageListData[0].sender;
+        } else {
+          if (MessageListData[0].type == "mms") {
+            num = MessageListData[0].receivers;
           } else {
-            if (MessageListData[0].type == "mms") {
-              num = MessageListData[0].receivers;
-            } else {
-              num = MessageListData[0].receiver;
-            }
+            num = MessageListData[0].receiver;
           }
-          var resendSMS = {
-            'type': 'sms',
-            'id': smsId[2],
-            'number': num,
-            'body': this.value
-          };
-          CMD.SMS.resendMessage(JSON.stringify(resendSMS), function onSuccess(event) {
-            removeMessage(smsId[2], smsId[3]);
-          }, null);
-        });
-      }
-      var deleteBtns = $expr('.button-delete', messageListContainer);
-      for (var j = 0; j < deleteBtns.length; j++) {
-        deleteBtns[j].hidden = false;
-        deleteBtns[j].addEventListener('click', function onclick_deleteSms(event) {
-          var self = this;
-          var smsId = this.id.split("-");
-          var deleteSMS = {
-            'id': smsId[2]
-          };
-          CMD.SMS.deleteMessageById(JSON.stringify(deleteSMS), function onSuccess(event) {
-            removeMessage(smsId[2], smsId[3]);
-          }, null);
-        });
-      }
-      break;
+        }
+        var resendSMS = {
+          'type': 'sms',
+          'id': smsId[2],
+          'number': num,
+          'body': this.value
+        };
+        CMD.SMS.resendMessage(JSON.stringify(resendSMS), function onSuccess(event) {
+          removeMessage(smsId[2], smsId[3]);
+        }, null);
+      });
+    }
+    var deleteBtns = $expr('.button-delete', $id('message-list-container'));
+    for (var j = 0; j < deleteBtns.length; j++) {
+      deleteBtns[j].hidden = false;
+      deleteBtns[j].addEventListener('click', function onclick_deleteSms(event) {
+        var self = this;
+        var smsId = this.id.split("-");
+        var deleteSMS = {
+          'id': smsId[2]
+        };
+        CMD.SMS.deleteMessageById(JSON.stringify(deleteSMS), function onSuccess(event) {
+          removeMessage(smsId[2], smsId[3]);
+        }, null);
+      });
     }
     animationLoading.stop(loadingGroupId);
     ViewManager.showViews('sms-thread-view');
@@ -473,7 +436,7 @@ var SmsList = (function() {
         item.dataset.checked = false;
       }
     });
-    item = $expr('label', elem)[0];
+    var item = $expr('label', elem)[0];
     if (item) {
       item.dataset.checked = true;
     }
@@ -553,9 +516,8 @@ var SmsList = (function() {
       allMessagesList[msg.threadId] = [];
     }
     var threadListData = threadList.getGroupedData();
-    if (threadListData.length == 0) {
-      threadListContainer.innerHTML = '';
-    } else {
+    showThreadList();
+    if (threadListData.length > 0) {
       for (var i = 0; i < threadListData.length; i++) {
         if (threadListData[i].dataList.length == 0 || threadListData[i].dataList[0].id != msg.threadId) {
           continue;
@@ -579,6 +541,13 @@ var SmsList = (function() {
           }
         }
         allMessagesList[msg.threadId].push(msg);
+        var checked = false;
+        var checkedItems = $expr('#threads-list-container .threads-list-item[data-checked="true"]');
+        checkedItems.forEach(function(e) {
+          if (e.dataset.threadIndex == threadData.id) {
+            checked = true;
+          }
+        });
         threadList.remove(threadData);
         if (msg.delivery == "received") {
           if (messageList) {
@@ -591,8 +560,17 @@ var SmsList = (function() {
         threadData.timestamp = msg.timestamp;
         threadData.lastMessageType = msg.type;
         threadList.add(threadData);
+        if (checked) {
+          var uncheckedItems = $expr('#threads-list-container .threads-list-item');
+          uncheckedItems.forEach(function(e) {
+            if (e.dataset.threadIndex == threadData.id) {
+              var item = $expr('label', e)[0];
+              item.dataset.checked = e.dataset.checked = e.dataset.focused = true;
+            }
+          });
+          opStateChanged();
+        }
         updateThreadAvatar(threadData);
-        showThreadList();
         return;
       }
     }
@@ -730,11 +708,28 @@ var SmsList = (function() {
             threadList.remove(threadListData);
             ViewManager.showViews('sms-send-view');
           } else {
+            var checked = false;
+            var checkedItems = $expr('#threads-list-container .threads-list-item[data-checked="true"]');
+            checkedItems.forEach(function(e) {
+              if (e.dataset.threadIndex == threadListData.id) {
+                checked = true;
+              }
+            });
             threadList.remove(threadListData);
             threadListData.body = messageListData[i-1].body;
             threadListData.timestamp = messageListData[i-1].timestamp;
             threadListData.lastMessageType = messageListData[i-1].type;
             threadList.add(threadListData);
+            if (checked) {
+              var uncheckedItems = $expr('#threads-list-container .threads-list-item');
+              uncheckedItems.forEach(function(e) {
+                if (e.dataset.threadIndex == threadListData.id) {
+                  var item = $expr('label', e)[0];
+                  item.dataset.checked = e.dataset.checked = e.dataset.focused = true;
+                }
+              });
+              opStateChanged();
+            }
             updateThreadAvatar(threadListData);
           }
           break;
@@ -889,6 +884,6 @@ var SmsList = (function() {
 
   return {
     init: init,
-    show: show
+    resetView: resetView
   };
 })();

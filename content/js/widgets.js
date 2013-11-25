@@ -331,17 +331,14 @@ SendSMSDialog.prototype = {
       }
     } else {
       if (this.options.tel && this.options.tel.length > 0) {
-        templateData.tel.push(this.options.tel[0]);
-        var senderNum = 0;
         var senders = this.options.tel[0].split(';');
-        senderNum = senders.length;
         for (var i = 0; i < senders.length; i++) {
-          if (senders[i] == "") {
-            senderNum--;
+          if (senders[i] != "") {
+            templateData.tel.push(senders[i]);
           }
         }
         templateData.senderCount = _('send-sms-count', {
-          n: senderNum
+          n: templateData.tel.length
         });
       }
     }
@@ -418,18 +415,24 @@ SendSMSDialog.prototype = {
     });
 
     if (self.options.type != 'single') {
-      $id('address').addEventListener('keydown', function onclick_addNewSms(event) {
-        var senders = this.value.split(';');
-        var senderNum = senders.length;
-        for (var i = 0; i < senders.length; i++) {
-          if (senders[i] == "") {
-            senderNum--;
-          }
+      $id('address').addEventListener('keyup', function onclick_addNewSms(event) {
+        if (this.value.length <= 0) {
+          return;
         }
-        var header = _('send-sms-count', {
-          n: senderNum
-        });
-        $id('sender-count').innerHTML = header;
+        if (this.value[this.value.length-1] == ';'
+            || this.value[this.value.length-1] == ','
+            || this.value[this.value.length-1] == ' ') {
+          var sender = this.value.split(this.value[this.value.length-1]);
+          self.addToSenders(sender[0]);
+          this.value = '';
+        }
+      });
+      $id('address').addEventListener('blur', function onblur_addNewSms(event) {
+        if (this.value.length <= 0) {
+          return;
+        }
+        self.addToSenders(this.value);
+        this.value = '';
       });
       $id('button-add-contact').addEventListener('click', function(event) {
         var loadingGroupId = animationLoading.start();
@@ -438,7 +441,7 @@ SendSMSDialog.prototype = {
           var dataJSON = JSON.parse(message.data);
           new SelectContactsDialog({
             contactList: dataJSON,
-            onok: self._selectContacts
+            onok: self._selectContacts.bind(self)
           });
         }, function onerror_getAllContacts(message) {
           animationLoading.stop(loadingGroupId);
@@ -450,6 +453,32 @@ SendSMSDialog.prototype = {
     okBtn.focus();
   },
 
+  addToSenders: function(sender) {
+    var titleElem = $expr('.input-contact', this._modalElement)[0];
+    var senderList = $id('senders-list');
+    var templateData = {
+      'title': sender
+    };
+    var selectedContactItems = $expr('.select-contacts-item', this._modalElement);
+    var index;
+    for (index=0; index<selectedContactItems.length; index++) {
+      if (selectedContactItems[index].children[0].title == templateData.title) {
+        break;
+      }
+    }
+    if (index < selectedContactItems.length) {
+      return;
+    }
+    var contactItem = document.createElement('li');
+    contactItem.className = 'select-contacts-item';
+    contactItem.innerHTML = tmpl('tmpl_select_contacts_item', templateData);
+    senderList.insertBefore(contactItem, titleElem);
+    var header = _('send-sms-count', {
+      n: $expr('.select-contacts-item', this._modalElement).length
+    });
+    $id('sender-count').innerHTML = header;
+  },
+
   _adjustModalPosition: function() {
     var container = $expr('.sendSms-dialog', this._modalElement)[0];
     var documentHeight = document.documentElement.clientHeight;
@@ -458,35 +487,14 @@ SendSMSDialog.prototype = {
   },
 
   _selectContacts: function(data) {
-    var titleElem = $expr('.input-contact', this._modalElement)[0];
-    if ((titleElem.value.length > 0) && (titleElem.value[titleElem.value.length - 1] != ";")) {
-      titleElem.value += ';';
-    }
     for (var i = 0; i < data.length; i++) {
       var contact = JSON.parse(data[i]);
-      if (contact.tel && contact.tel.length > 0) {
-        var sendStr = contact.name + "(" + contact.tel[0].value + ");";
-        var searchStr = contact.tel[0].value + ";";
-        if (titleElem.value.contains(searchStr)) {
-          titleElem.value = titleElem.value.replace(searchStr, sendStr);
-        } else {
-          if (!titleElem.value.contains("(" + contact.tel[0].value + ")")) {
-            titleElem.value += sendStr;
-          }
-        }
+      if (!contact.tel || contact.tel.length <= 0) {
+        continue;
       }
+      var sender = contact.name + '(' + contact.tel[0].value + ')';
+      this.addToSenders(sender);
     }
-    var senders = titleElem.value.split(';');
-    var senderNum = senders.length;
-    for (var i = 0; i < senders.length; i++) {
-      if (senders[i] == "") {
-        senderNum--;
-      }
-    }
-    var header = _('send-sms-count', {
-      n: senderNum
-    });
-    $id('sender-count').innerHTML = header;
   },
 
   _fireEvent: function(name, data) {
@@ -538,18 +546,20 @@ SendSMSDialog.prototype = {
   },
 
   send: function() {
-    var number = $id('address').value.split(';');
     var message = $id('sms-text-content');
     var sender = [];
     var self = this;
     message.readOnly = true;
-    number.forEach(function(item) {
-      var start = item.indexOf("(");
-      var end = item.indexOf(")");
+    var selectedContactItems = $expr('.select-contacts-item', this._modalElement);
+
+    selectedContactItems.forEach(function(item) {
+      var tel = item.children[0].title;
+      var start = tel.indexOf("(");
+      var end = tel.indexOf(")");
       if (start >= 0 && end > 0) {
-        sender.push(item.slice(start + 1, end));
-      } else if (item != "") {
-        sender.push(item);
+        sender.push(tel.slice(start + 1, end));
+      } else if (tel != "") {
+        sender.push(tel);
       }
     });
     if (!sender.length) {
