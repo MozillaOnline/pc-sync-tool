@@ -92,9 +92,6 @@ var FFOSAssistant = (function() {
       }
       window.open(url);
     };
-    if (!navigator.mozFFOSAssistant.isWindows) {
-      navigator.mozFFOSAssistant.isWifiConnected = false;
-    }
     ViewManager.showContent('connect-view');
   }
 
@@ -130,6 +127,9 @@ var FFOSAssistant = (function() {
       if (connPool) {
         connPool.finalize();
         connPool = null;
+      }
+      if ((!navigator.mozFFOSAssistant.isWindows) ) {
+        navigator.mozFFOSAssistant.isWifiConnected = false;
       }
       showConnectView();
       ViewManager.reset();
@@ -232,7 +232,7 @@ var FFOSAssistant = (function() {
 
     connPool = new TCPConnectionPool({
       host: serverIP,
-      size: 2,
+      size: 1,
       onenable: function onenable() {
         timeout = window.setTimeout(function imedb_cacheTimeout() {
           showSummaryView(serverIP);
@@ -241,6 +241,9 @@ var FFOSAssistant = (function() {
       ondisable: function ondisable() {
         log('USB Socket is closed');
         window.clearTimeout(timeout);
+        if ((!navigator.mozFFOSAssistant.isWindows) ) {
+          navigator.mozFFOSAssistant.isWifiConnected = false;
+        }
         showConnectView();
         ViewManager.reset();
       }
