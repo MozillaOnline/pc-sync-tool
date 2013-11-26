@@ -35,17 +35,11 @@ TCPConnectionPool.prototype = {
   },
 
   finalize: function tc_finalize() {
-    this.options = null;
     this._connPool.forEach(function(wrapper) {
       wrapper.socket.close();
     });
-    this._connPool = null;
-    this._currentId = null;
-    this._callbacks = null;
-    this._messageQueue = null;
     if (this._messageSendingTimer) {
       window.clearInterval(this._messageSendingTimer);
-      this._messageSendingTimer = null;
     }
   },
 

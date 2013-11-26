@@ -70,7 +70,6 @@ var FFOSAssistant = (function() {
       if (!wifiCode || !wifiCode.value.trim()) {
         return;
       }
-
       var ip = '';
       var dataArray = new ArrayBuffer(4);
       var int8Array = new Uint8Array(dataArray);
@@ -126,7 +125,7 @@ var FFOSAssistant = (function() {
     $id('device-disconnect').addEventListener('click', function onclick_disconnect(event) {
       if (connPool) {
         connPool.finalize();
-        connPool = null;
+	connPool = null;
       }
       showConnectView();
       ViewManager.reset();
@@ -239,7 +238,6 @@ var FFOSAssistant = (function() {
         log('USB Socket is closed');
         window.clearTimeout(timeout);
         showConnectView();
-        socket = null;
         ViewManager.reset();
       }
     });

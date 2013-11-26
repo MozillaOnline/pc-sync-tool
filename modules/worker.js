@@ -252,11 +252,11 @@ function startDetecting(start) {
   }
 
   if (!start) {
-    connected = false;
     return;
   }
 
   libadb.startAdbServer();
+  setConnected(false);
   detectingInterval = setInterval(function checkConnectState() {
     var devicesStr = libadb.findDevice();
     var regExp = /\n([0-9a-z]+)\tdevice/ig;
@@ -267,7 +267,6 @@ function startDetecting(start) {
     }
 
     if (devices.length == 0) {
-      setConnected(false);
       return;
     }
     // TODO: Select the first device now. If multi-devices plugged-in, it should
