@@ -92,16 +92,20 @@ var FFOSAssistant = (function() {
       }
       window.open(url);
     };
-
+    if (!navigator.mozFFOSAssistant.isWindows) {
+      navigator.mozFFOSAssistant.isWifiConnected = false;
+    }
     ViewManager.showContent('connect-view');
   }
 
   function showSummaryView(serverIP) {
+    if (serverIP != 'localhost') {
+      navigator.mozFFOSAssistant.isWifiConnected = true;
+    }
     if (connListenSocket) {
       connListenSocket.socket.close();
       connListenSocket = null;
     }
-
     var socket = navigator.mozTCPSocket.open(serverIP, 10010, {
       binaryType: 'arraybuffer'
     });
@@ -125,7 +129,7 @@ var FFOSAssistant = (function() {
     $id('device-disconnect').addEventListener('click', function onclick_disconnect(event) {
       if (connPool) {
         connPool.finalize();
-	connPool = null;
+        connPool = null;
       }
       showConnectView();
       ViewManager.reset();

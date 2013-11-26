@@ -252,21 +252,10 @@
     }
   }
 
-  let heartBeatSocket = null;
   let mode;
   let connected;
   let serverIP;
   let port;
-
-  function onclose_heartBeatSocket() {
-    heartBeatSocket = null;
-    if (isDisabled) {
-      return;
-    }
-    if (mode == 'USB') {
-      modules.ADBService.startDeviceDetecting(true);
-    }
-  };
 
   let messageHandler = {
     receiveMessage: function(aMessage) {
@@ -275,16 +264,8 @@
       serverIP = aMessage.json.serverip;
       port = aMessage.json.port;
 
-      if (heartBeatSocket) {
-        heartBeatSocket.close();
-        return;
-      }
-
       if (connected) {
         modules.ADBService.startDeviceDetecting(false);
-        // Establish a heart-beat socket, and stop usb querying interval
-        heartBeatSocket = navigator.mozTCPSocket.open(serverIP, port);
-        heartBeatSocket.onclose = onclose_heartBeatSocket;
       }
 
       if (!navigator.mozFFOSAssistant.isWindows) {
