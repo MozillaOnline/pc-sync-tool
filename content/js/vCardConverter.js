@@ -221,8 +221,8 @@ vCardConverter = {
             var fullName = item.fn;
             var index = fullName.indexOf(' ');
             if (index > 0) {
-              contact.familyName = fullName.substr(index + 1, fullName.length);
-              contact.givenName = fullName.substr(0, index);
+              contact.givenName = fullName.substr(index + 1, fullName.length);
+              contact.familyName = fullName.substr(0, index);
               contact.name = [fullName];
             } else {
               contact.givenName = fullName;
@@ -422,8 +422,8 @@ vCardConverter = {
             var fullName = decodeURIComponent(item.fn.replace(/=/g, '%'));
             var index = fullName.indexOf(' ');
             if (index > 0) {
-              contact.familyName = fullName.substr(index + 1, fullName.length);
-              contact.givenName = fullName.substr(0, index);
+              contact.givenName = fullName.substr(index + 1, fullName.length);
+              contact.familyName = fullName.substr(0, index);
               contact.name = [fullName];
             } else {
               contact.givenName = fullName;
@@ -621,7 +621,7 @@ vCardConverter = {
             for (var e in item.photo) {
               if (e.indexOf('encoding=base64') != -1) {
                 contact.photo = 'data:image/jpeg;base64,';
-                contact.photo += item.photo[e][0];
+                contact.photo += item.photo[e].join('');
                 break;
               }
             }
@@ -705,12 +705,12 @@ vCardConverter = {
     }
 
     if (contact.photo && contact.photo.length > 0) {
-      vcard += '\nphoto;';
+      vcard += '\nPHOTO;';
       var cur1 = contact.photo.indexOf('/');
       var cur2 = contact.photo.indexOf(';');
       var cur3 = contact.photo.indexOf(',');
-      vcard += 'type=' + contact.photo.substring(cur1 + 1, cur2);
-      vcard += ';encoding=' + contact.photo.substring(cur2 + 1, cur3);
+      vcard += 'TYPE=' + contact.photo.substring(cur1 + 1, cur2);
+      vcard += ';ENCODING=' + contact.photo.substring(cur2 + 1, cur3);
       vcard += ':' + contact.photo.substr(cur3 + 1);
     }
 

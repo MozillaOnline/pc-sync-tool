@@ -82,6 +82,7 @@ vCard = {
   parse: function(_input, list) {
     var fields = {};
     var bParsing = false;
+    var bMultiLines = false;
     var regexps = {
       begin: /^BEGIN:VCARD/i,
       end: /^END:VCARD/i,
@@ -95,6 +96,10 @@ vCard = {
     var lines = _input.split(/\r?\n/);
     for (n in lines) {
       line = lines[n];
+      line = line.replace(/(^\s*)|(\s*$)/g, "");
+      if (line.length == 0) {
+        continue;
+      }
       if (regexps['begin'].test(line)) {
         bParsing = true;
         fields = {};
@@ -106,6 +111,7 @@ vCard = {
       if (regexps['end'].test(line)) {
         list.push(fields);
         bParsing = false;
+        bMultiLines = false;
         continue;
       }
       if (regexps['key2'].test(line)) {
@@ -134,6 +140,14 @@ vCard = {
         fields[key] = fields[key] || {};
         fields[key][type] = fields[key][type] || [];
         fields[key][type] = fields[key][type].concat(value);
+
+        if (key == 'photo') {
+          bMultiLines = true;
+        } else {
+          bMultiLines = false;
+        }
+      } else if (bMultiLines && line.length > 0) {
+        fields[key][type] = fields[key][type].concat(line);
       }
     }
   }
