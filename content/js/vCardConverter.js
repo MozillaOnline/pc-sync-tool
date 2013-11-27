@@ -704,6 +704,16 @@ vCardConverter = {
       });
     }
 
+    if (contact.photo && contact.photo.length > 0) {
+      vcard += '\nphoto;';
+      var cur1 = contact.photo.indexOf('/');
+      var cur2 = contact.photo.indexOf(';');
+      var cur3 = contact.photo.indexOf(',');
+      vcard += 'type=' + contact.photo.substring(cur1 + 1, cur2);
+      vcard += ';encoding=' + contact.photo.substring(cur2 + 1, cur3);
+      vcard += ':' + contact.photo.substr(cur3 + 1);
+    }
+
     if (contact.note && contact.note.length > 0) {
       vcard += '\nnote:';
       contact.note.forEach(function(note) {
@@ -711,9 +721,6 @@ vCardConverter = {
       });
     }
 
-    if (contact.photo && contact.photo.length > 0) {
-      vcard += contact.photo.replace('data:image/jpeg;base64,', '\nPHOTO;ENCODING=BASE64;JPEG:');
-    }
     vcard += '\nEND:VCARD';
     return vcard;
   }
