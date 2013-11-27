@@ -646,6 +646,11 @@ var SmsList = (function() {
     if (ids.length > 0) {
       loadingGroupId = animationLoading.start();
     }
+    //add BOM for windowsing.
+    content += String.fromCharCode(65279);
+    content += String.fromCharCode(13);
+    content += String.fromCharCode(10);
+
     ids.forEach(function(item) {
       var threadId = item.threadIndex;
       var msg = getMessagesByThreadId(threadId);
