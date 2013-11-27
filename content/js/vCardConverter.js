@@ -407,6 +407,15 @@ vCardConverter = {
               });
             }
           }
+          if (item.photo) {
+            for (var e in item.photo) {
+              if (e.indexOf('encoding=base64') != -1) {
+                contact.photo = 'data:image/jpeg;base64,';
+                contact.photo += item.photo[e][0];
+                break;
+              }
+            }
+          }
         }
         if (item.version == '2.1') {
           if (item.fn != '') {
@@ -608,6 +617,15 @@ vCardConverter = {
               });
             }
           }
+          if (item.photo) {
+            for (var e in item.photo) {
+              if (e.indexOf('encoding=base64') != -1) {
+                contact.photo = 'data:image/jpeg;base64,';
+                contact.photo += item.photo[e][0];
+                break;
+              }
+            }
+          }
         }
       }
       CMD.Contacts.addContact(JSON.stringify(contact), null, null);
@@ -694,7 +712,7 @@ vCardConverter = {
     }
 
     if (contact.photo && contact.photo.length > 0) {
-      vcard += contact.photo.replace('data:image/jpeg;base64,', '\nPHOTO;ENCODING=BASE64;JPEG:');;
+      vcard += contact.photo.replace('data:image/jpeg;base64,', '\nPHOTO;ENCODING=BASE64;JPEG:');
     }
     vcard += '\nEND:VCARD';
     return vcard;
