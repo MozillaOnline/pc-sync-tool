@@ -693,6 +693,9 @@ vCardConverter = {
       });
     }
 
+    if (contact.photo && contact.photo.length > 0) {
+      vcard += contact.photo.replace('data:image/jpeg;base64,', '\nPHOTO;ENCODING=BASE64;JPEG:');;
+    }
     vcard += '\nEND:VCARD';
     return vcard;
   }
