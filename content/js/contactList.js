@@ -113,7 +113,7 @@ var ContactList = (function() {
     var isEmpty = groupedList.count() == 0;
     $id('selectAll-contacts').dataset.disabled = isEmpty;
     $id('empty-contact-container').hidden = !isEmpty;
-
+    updateControls();
     var searchInput = $id('search-contact-input');
     if (searchInput && searchInput.value.trim()) {
       var allContactData = groupedList.getGroupedData();
@@ -158,7 +158,22 @@ var ContactList = (function() {
     });
   }
 
-  function show() {
+  function show(viewData) {
+    var searchInput = $id('search-contact-input');
+    searchInput.value = '';
+    showSearchList(searchInput.value);
+    var quickName = $id('fullName');
+    var quickNumber = $id('mobile');
+    if (quickName) {
+      quickName.value = '';
+    }
+    if (quickNumber) {
+      if (viewData && (viewData.type == 'add')) {
+        quickNumber.value = viewData.number;
+      } else {
+        quickNumber.value = '';
+      }
+    }
     ViewManager.showViews('contact-quick-add-view');
     selectAllContacts(false);
   }
@@ -431,6 +446,35 @@ var ContactList = (function() {
     return escaped;
   }
 
+  function showSearchList (value) {
+    var allContactData = groupedList.getGroupedData();
+    allContactData.forEach(function(group) {
+      var groupIndexItem = $id('id-grouped-data-' + group.index);
+
+      if (groupIndexItem) {
+        var child = groupIndexItem.childNodes[0];
+        child.hidden = value.length > 0;
+      }
+
+      group.dataList.forEach(function(contact) {
+        var contactItem = $id('contact-' + contact.id);
+        if (!contactItem || (value.length <= 0)) {
+          contactItem.hidden = false;
+          return;
+        }
+        var searchInfo = getSearchString(contact);
+        var escapedValue = escapeHTML(searchInfo.join(' '), true).toLowerCase();
+        // search key words
+        var search = value;
+        if ((escapedValue.length > 0) && (escapedValue.indexOf(search.toLowerCase()) >= 0)) {
+          contactItem.hidden = false;
+        } else {
+          contactItem.hidden = true;
+        }
+      });
+    });
+  }
+
   function onMessage(e) {
     if (e.detail.type != 'contact') {
       return;
@@ -493,33 +537,7 @@ var ContactList = (function() {
     });
 
     $id('search-contact-input').addEventListener('keyup', function onclick_searchContact(event) {
-      var self = this;
-      var allContactData = groupedList.getGroupedData();
-      allContactData.forEach(function(group) {
-        var groupIndexItem = $id('id-grouped-data-' + group.index);
-
-        if (groupIndexItem) {
-          var child = groupIndexItem.childNodes[0];
-          child.hidden = self.value.length > 0;
-        }
-
-        group.dataList.forEach(function(contact) {
-          var contactItem = $id('contact-' + contact.id);
-          if (!contactItem || (self.value.length <= 0)) {
-            contactItem.hidden = false;
-            return;
-          }
-          var searchInfo = getSearchString(contact);
-          var escapedValue = escapeHTML(searchInfo.join(' '), true).toLowerCase();
-          // search key words
-          var search = self.value;
-          if ((escapedValue.length > 0) && (escapedValue.indexOf(search.toLowerCase()) >= 0)) {
-            contactItem.hidden = false;
-          } else {
-            contactItem.hidden = true;
-          }
-        });
-      });
+      showSearchList(this.value);
     });
 
     $id('remove-contacts').addEventListener('click', function onclick_removeContact(event) {

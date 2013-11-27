@@ -857,28 +857,49 @@ var SmsList = (function() {
       var num;
       var MessageListData = messageList.getGroupedData();
       MessageListData = MessageListData[0].dataList;
-      if (MessageListData.length > 0) {
-        var loadingGroupId = animationLoading.start();
-        if (MessageListData[0].delivery == "received") {
-          num = MessageListData[0].sender;
-        } else {
-          if (MessageListData[0].type == "mms") {
-            num = MessageListData[0].receivers;
-          } else {
-            num = MessageListData[0].receiver;
-          }
-        }
-        var body = $id('sender-ctn-input');
-        CMD.SMS.sendSMS(JSON.stringify({
-          number: num,
-          message: body.value
-        }), function onSuccess_sendSms(sms) {
-          animationLoading.stop(loadingGroupId);
-        }, function onError_sendSms(e) {
-          animationLoading.stop(loadingGroupId);
-        });
-        body.value = '';
+      if (MessageListData.length <= 0) {
+        return;
       }
+      var loadingGroupId = animationLoading.start();
+      if (MessageListData[0].delivery == "received") {
+        num = MessageListData[0].sender;
+      } else {
+        if (MessageListData[0].type == "mms") {
+          num = MessageListData[0].receivers;
+        } else {
+          num = MessageListData[0].receiver;
+        }
+      }
+      var body = $id('sender-ctn-input');
+      CMD.SMS.sendSMS(JSON.stringify({
+        number: num,
+        message: body.value
+      }), function onSuccess_sendSms(sms) {
+        animationLoading.stop(loadingGroupId);
+      }, function onError_sendSms(e) {
+        animationLoading.stop(loadingGroupId);
+      });
+      body.value = '';
+
+      var scrollTop;
+      body.style.maxHeight = body.style.resize = 'none';
+      if (body._length === body.value.length) return;
+      body._length = body.value.length;
+      scrollTop = body.scrollTop;
+      body.style.height = minHeight + 'px';
+      if (body.scrollHeight > minHeight) {
+        if (maxHeight && body.scrollHeight > maxHeight) {
+          body.style.height = maxHeight + 'px';
+          body.style.overflowY = 'auto';
+        } else {
+          body.style.height = body.scrollHeight + 'px';
+          body.style.overflowY = 'hidden';
+        }
+        scrollTop += parseInt(body.style.height) - body.currHeight;
+        body.scrollTop = scrollTop;
+        body.currHeight = parseInt(body.style.height);
+      }
+      elemMessageContainer.style.height = messageListContainerHeight - parseFloat(getStyle(elemSendInput, 'height')) + minHeight + 'px';
     });
   });
 
