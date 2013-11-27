@@ -966,6 +966,10 @@ input.modal-btn {
   font-size: 0.9rem;
 }
 
+.tip >div {
+  word-wrap: break-word;
+}
+
 .empty-container {
   margin: 0 2rem 0 0.6rem;
 }
