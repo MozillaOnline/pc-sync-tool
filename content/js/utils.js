@@ -123,7 +123,16 @@ function formatDate(timestamp) {
   if (curYear == year && curMonth == month && curDate == date) {
     return _('today');
   } else {
-    return year + '-' + month + '-' + date;
+    var strDate = year + '-';
+    if (month <= 9) {
+      strDate += '0';
+    }
+    strDate += month + '-';
+    if (date <= 9) {
+      strDate += '0';
+    }
+    strDate += date;
+    return strDate;
   }
 }
 
