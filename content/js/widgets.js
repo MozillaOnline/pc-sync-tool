@@ -839,14 +839,14 @@ FilesOPDialog.prototype = {
       var cmd = '';
       switch (self.options.type) {
         case 1:
-          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Music/';
+          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" "/sdcard/Music/' + getFileName(self.options.files[self._fileIndex]) + '"';
           break;
         case 2:
           cmd ='adb pull "' + self.options.files[self._fileIndex].dataset.id + '" "' + decodeURI(self.options.dir) + '/' +
                 self.options.files[self._fileIndex].dataset.name + '.' + self.options.files[self._fileIndex].dataset.type + '"';
           break;
         case 3:
-          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/Movies/';
+          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" "/sdcard/Movies/' + getFileName(self.options.files[self._fileIndex]) + '"';
           break;
         case 4:
           cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.videoUrl + '" "' + decodeURI(self.options.dir) + '/' +
@@ -857,7 +857,7 @@ FilesOPDialog.prototype = {
               convertToOutputFileName(self.options.files[self._fileIndex].dataset.picUrl) + '"';
           break;
         case 6:
-          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" /sdcard/DCIM/';
+          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" "/sdcard/DCIM/' + getFileName(self.options.files[self._fileIndex]) + '"';
           break;
         case 7:
           CMD.Pictures.deletePicture(self.options.files[self._fileIndex], success, error);
