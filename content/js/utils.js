@@ -97,6 +97,11 @@ function convertToOutputFileName(path) {
 }
 
 function getFileName(path) {
+  if (navigator.mozFFOSAssistant.isWindows) {
+    var arrayPath = path.split('\\');
+    return arrayPath[arrayPath.length - 1];
+  }
+
   var arrayPath = path.split('/');
   return arrayPath[arrayPath.length - 1];
 }
