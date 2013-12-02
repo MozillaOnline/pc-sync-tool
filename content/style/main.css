@@ -600,7 +600,7 @@ input[type="url"], textarea {
 }
 
 #summary-infos > div:last-child{
-  margin-top: 1rem;
+  margin-top: 3rem;
   height: 20rem;
 }
 
@@ -615,8 +615,18 @@ input[type="url"], textarea {
   color: #090909;
 }
 
-#summary-infos .storage-total > div:last-child {
-  float: right;
+.collapsed {
+  background-image: url("images/collapsed.png");
+  background-position: 24rem -1.5rem;
+  background-repeat: no-repeat;
+  background-size: 16% auto;
+}
+
+.expanded {
+  background-image: url("images/expanded.png");
+  background-position: 24rem -1.55555rem;
+  background-repeat: no-repeat;
+  background-size: 16% auto;
 }
 
 #summary-infos .storage-graph {

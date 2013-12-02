@@ -205,6 +205,32 @@ var FFOSAssistant = (function() {
     });
   }
 
+  function summaryHeadMouseOver(self, body) {
+    if (body.classList.contains('hiddenElement')) {
+      self.classList.add('expanded');
+      self.classList.remove('collapsed');
+    } else {
+      self.classList.add('collapsed');
+      self.classList.remove('expanded');
+    }
+  }
+
+  function summaryHeadMouseout() {
+    this.classList.remove('collapsed');
+    this.classList.remove('expanded');
+  }
+
+  function summaryHeadClick(self, body) {
+    body.classList.toggle('hiddenElement');
+    if (body.classList.contains('hiddenElement')) {
+      self.classList.remove('collapsed');
+      self.classList.add('expanded');
+    } else {
+      self.classList.remove('expanded');
+      self.classList.add('collapsed');
+    }
+  }
+
   function getAndShowSummaryInfo() {
     var loadingGroupId = animationLoading.start();
     getAndShowStorageInfo();
@@ -215,6 +241,23 @@ var FFOSAssistant = (function() {
       $expr('.device-hardware-revision-number', elem)[0].textContent = dataJSON["deviceinfo.hardware"];
       $expr('.device-platform-version-number', elem)[0].textContent = dataJSON["deviceinfo.platform_version"];
       $expr('.device-build-identifier-number', elem)[0].textContent = dataJSON["deviceinfo.platform_build_id"];
+      $id('device-info-head').onmouseover = function() {
+        var body = $id('device-info-body');
+        summaryHeadMouseOver(this, body);
+      };
+      $id('device-storage-head').onmouseover = function() {
+        var body = $id('device-storage-body');
+        summaryHeadMouseOver(this, body);
+      };
+      $id('device-info-head').onmouseout = $id('device-storage-head').onmouseout = summaryHeadMouseout;
+      $id('device-info-head').onclick = function() {
+        var body = $id('device-info-body');
+        summaryHeadClick(this, body);
+      };
+      $id('device-storage-head').onclick = function() {
+        var body = $id('device-storage-body');
+        summaryHeadClick(this, body);
+      };
       animationLoading.stop(loadingGroupId);
     }, function onerror_getSettings(message) {
       animationLoading.stop(loadingGroupId);
