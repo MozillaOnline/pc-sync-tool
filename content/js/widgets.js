@@ -521,7 +521,9 @@ SendSMSDialog.prototype = {
     var sender = [tel.value];
     var self = this;
     if (!tel.value) {
-      new AlertDialog(_('EmptyPhone'));
+      new AlertDialog({
+        message: _('EmptyPhone')
+      });
       return;
     }
     var loadingGroupId = animationLoading.start();
@@ -563,7 +565,9 @@ SendSMSDialog.prototype = {
       }
     });
     if (!sender.length) {
-      new AlertDialog(_('EmptyPhone'));
+      new AlertDialog({
+        message: _('EmptyPhone')
+      });
       return;
     }
     var loadingGroupId = animationLoading.start();
@@ -776,7 +780,9 @@ ProcessBar.prototype = {
     }, options);
 
     if (!this.options.sectionsNumber || !this.options.stepsPerSection) {
-      new AlertDialog("Process bar initialize failed");
+      new AlertDialog({
+        message: "Process bar initialize failed"
+      });
       return;
     }
 
@@ -904,7 +910,9 @@ FilesOPDialog.prototype = {
         self.closeAll();
 
         if (filesCannotBeDone.length > 0) {
-          new AlertDialog(_(self.options.alert_prompt, {n:filesCannotBeDone.length}));
+          new AlertDialog({
+            message: _(self.options.alert_prompt, {n:filesCannotBeDone.length})
+          });
         }
 
         self.options.callback(filesToBeDone);
@@ -925,7 +933,9 @@ FilesOPDialog.prototype = {
         self.closeAll();
 
         if (filesCannotBeDone.length > 0) {
-          new AlertDialog(_(self.options.alert_prompt, {n:filesCannotBeDone.length}));
+          new AlertDialog({
+            message: _(self.options.alert_prompt, {n:filesCannotBeDone.length})
+          });
         }
 
         self.options.callback(filesToBeDone);
@@ -1047,7 +1057,9 @@ ImageViewer.prototype = {
     }, options);
 
     if (this.options.count <= 0) {
-      new AlertDialog("selected picture doesn't exist");
+      new AlertDialog({
+        message: "selected picture doesn't exist"
+      });
       return;
     }
     this._modalElement = null;
@@ -1064,7 +1076,9 @@ ImageViewer.prototype = {
   _build: function() {
     this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
       if (!bCached) {
-        new AlertDialog('Cache picture failed');
+        new AlertDialog({
+          message: 'Cache picture failed'
+        });
         return;
       }
 
@@ -1122,7 +1136,9 @@ ImageViewer.prototype = {
     this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
       if (!bCached) {
         $id('pic-content').setAttribute('src', '');
-        new AlertDialog('load cached picture failed');
+        new AlertDialog({
+          message: 'load cached picture failed'
+        });
         return;
       }
       $id('pic-content').setAttribute('src', cachedUrl);
@@ -1137,7 +1153,9 @@ ImageViewer.prototype = {
     this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
       if (!bCached) {
         $id('pic-content').setAttribute('src', '');
-        new AlertDialog('Cache picture failed');
+        new AlertDialog({
+          message: 'Cache picture failed'
+        });
         return;
       }
       $id('pic-content').setAttribute('src', cachedUrl);;
@@ -1323,12 +1341,19 @@ animationLoadingDialog.prototype = {
   },
 };
 
-function AlertDialog(message, showCancelButton, callback) {
-  this.initialize(message, showCancelButton, callback);
+function AlertDialog(options) {
+  this.initialize(options);
 }
 
 AlertDialog.prototype = {
-  initialize: function(message, showCancelButton, callback) {
+  initialize: function(options) {
+    this.options = extend({
+      showCancelButton: false,
+      message: {},
+      callback: emptyFunction,
+      id: 'tmpl_alert_dialog',
+      titleL10nId: 'alert-dialog-title'
+    }, options);
     this._modalElement = null;
     this._mask = null;
     this._mask = document.createElement('div');
@@ -1336,12 +1361,11 @@ AlertDialog.prototype = {
     document.body.appendChild(this._mask);
     this._modalElement = document.createElement('div');
     this._modalElement.className = 'modal-dialog';
-    this.callback = callback;
-    this.showCancelButton = showCancelButton;
     var templateData = {
-      message: message
+      titleL10nId: this.options.titleL10nId,
+      message: this.options.message
     };
-    this._modalElement.innerHTML = tmpl('tmpl_alert_dialog', templateData);
+    this._modalElement.innerHTML = tmpl(this.options.id, templateData);
     document.body.appendChild(this._modalElement);
     this._adjustModalPosition();
     this._makeDialogCancelable();
@@ -1375,7 +1399,7 @@ AlertDialog.prototype = {
     okBtn.addEventListener('click', this.okButtonCallback.bind(this));
 
     var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-    cancelBtn.hidden = !this.showCancelButton;
+    cancelBtn.hidden = !this.options.showCancelButton;
     cancelBtn.addEventListener('click', this.cancelButtonCallback.bind(this));
 
     var closeBtn = $expr('.alert-dialog-header-x', this._modalElement)[0];
@@ -1399,8 +1423,8 @@ AlertDialog.prototype = {
 
   okButtonCallback: function() {
     this.close();
-    if (this.callback) {
-      this.callback();
+    if (this.options.callback) {
+      this.options.callback();
     }
   },
 

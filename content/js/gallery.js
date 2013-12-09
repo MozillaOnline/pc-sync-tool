@@ -331,10 +331,14 @@ var Gallery = (function() {
         files.push(item.dataset.picUrl);
       });
 
-      new AlertDialog(_('delete-pictures-confirm', {
-        n: files.length
-        }), true, function() {
-        removePictures(files);
+      new AlertDialog({
+        message: _('delete-pictures-confirm', {
+          n: files.length
+        }),
+        showCancelButton: true,
+        callback: function() {
+          removePictures(files);
+        }
       });
     });
 

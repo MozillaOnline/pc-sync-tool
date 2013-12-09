@@ -669,9 +669,11 @@ var SmsList = (function() {
       }
       if (threadnum == ids.length) {
         animationLoading.stop(loadingGroupId);
-        navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
+        saveToDisk(content, function(status) {
           if (status) {
-            new AlertDialog(_('export-sms-success'));
+            new AlertDialog({
+              message: _('export-sms-success')
+            });
           }
         }, {
           title: _('export-sms-success'),
@@ -767,14 +769,17 @@ var SmsList = (function() {
       $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(item) {
         ids.push(item.dataset);
       });
-
-      new AlertDialog(_('delete-sms-confirm', {
-        n: ids.length
-      }), true, function() {
-        ids.forEach(function(item) {
-          removeThread(item);
-        });
-        ViewManager.showViews('sms-send-view');
+      new AlertDialog({
+        message: _('delete-sms-confirm', {
+          n: ids.length
+        }),
+        showCancelButton: true,
+        callback: function() {
+          ids.forEach(function(item) {
+            removeThread(item);
+          });
+          ViewManager.showViews('sms-send-view');
+        }
       });
     });
 
@@ -848,10 +853,14 @@ var SmsList = (function() {
       $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(item) {
         ids.push(item.dataset);
       });
-      new AlertDialog(_('export-sms-confirm', {
-        n: ids.length
-      }), true, function() {
-        exportThreads(ids);
+      new AlertDialog({
+        message: _('export-sms-confirm', {
+          n: ids.length
+        }),
+        showCancelButton: true,
+        callback: function() {
+          exportThreads(ids);
+        }
       });
     });
 

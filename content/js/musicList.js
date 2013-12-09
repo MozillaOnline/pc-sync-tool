@@ -240,10 +240,14 @@ var MusicList = (function() {
         files.push(JSON.parse(item.dataset.music).name);
       });
 
-      new AlertDialog(_('delete-musics-confirm', {
+      new AlertDialog({
+        message: _('delete-musics-confirm', {
           n: files.length
-        }), true, function() {
-        removeMusics(files);
+        }),
+        showCancelButton: true,
+        callback: function() {
+          removeMusics(files);
+        }
       });
     });
 

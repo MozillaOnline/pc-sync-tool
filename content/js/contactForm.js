@@ -315,7 +315,9 @@ var ContactForm = (function() {
     }
 
     if (contact.givenName.length == 0) {
-      new AlertDialog(navigator.mozL10n.get('EmptyForm'));
+      new AlertDialog({
+        message: _('EmptyForm')
+      });
       animationLoading.stop(loadingGroupId);
       return false;
     }
@@ -342,7 +344,9 @@ var ContactForm = (function() {
     var fullName = $id('fullName').value.trim();
     var mobile = $id('mobile').value.trim();
     if (fullName == '') {
-      new AlertDialog(_('EmptyName'));
+      new AlertDialog({
+        message: _('EmptyName')
+      });
       return;
     }
     var loadingGroupId = animationLoading.start();

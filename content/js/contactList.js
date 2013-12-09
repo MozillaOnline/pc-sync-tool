@@ -551,16 +551,20 @@ var ContactList = (function() {
         ids.push(item.dataset.contactId);
       });
 
-      new AlertDialog(_('delete-contacts-confirm', {
-        n: ids.length
-      }), true, function() {
-        if ($id('selectAll-contacts').dataset.checked == "true") {
-          $id('selectAll-contacts').dataset.checked = false;
+      new AlertDialog({
+        message: _('delete-contacts-confirm', {
+          n: ids.length
+        }),
+        showCancelButton: true,
+        callback: function() {
+          if ($id('selectAll-contacts').dataset.checked == "true") {
+            $id('selectAll-contacts').dataset.checked = false;
+          }
+          ids.forEach(function(item) {
+            removeContact(item);
+          });
+          ViewManager.showViews('contact-quick-add-view');
         }
-        ids.forEach(function(item) {
-          removeContact(item);
-        });
-        ViewManager.showViews('contact-quick-add-view');
       });
     });
 
@@ -595,7 +599,9 @@ var ContactList = (function() {
 
       saveToDisk(content, function(status) {
         if (status) {
-          new AlertDialog(_('export-contacts-success'));
+          new AlertDialog({
+            message: _('export-contacts-success')
+          });
         }
       }, {
         title: _('export-contacts-title'),

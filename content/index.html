@@ -854,11 +854,35 @@
   <script type="text/html" id="tmpl_alert_dialog">
     <div class="alert">
       <header class="alert-dialog-header">
-        <div class="alert-dialog-header-title" data-l10n-id="alert-dialog-title"></div>
+        <div class="alert-dialog-header-title" data-l10n-id=<%=titleL10nId%>></div>
         <div class="alert-dialog-header-x"></div>
       </header>
       <div class="alert-dialog-body">
         <span id="alert-message"><%=message%></span>
+      </div>
+      <footer class="alert-dialog-footer" style="">
+        <button data-l10n-id="OK" class="button button-ok"></button>
+        <button data-l10n-id="cancel" class="button-cancel"></button>
+      </footer>
+    </div>
+  </script>
+
+  <!-- templates for alert view -->
+  <script type="text/html" id="popup_dialog">
+    <div class="alert popup">
+      <header class="alert-dialog-header">
+        <div class="alert-dialog-header-title" data-l10n-id="alert-dialog-title"></div>
+        <div class="alert-dialog-header-x"></div>
+      </header>
+      <div class="popup-body">
+        <p class="popup-body-title"><span><%=message.head%></span></p>
+        <p class="popup-body-subtitle"><span><%=message.description%></span></p>
+        <ul class="popup-content">
+          <% for(var i = 0; i < message.content.length; i++) {%>
+          <li class="popup-content-item"><%=message.content[i]%></li>
+          <%}%>
+        </ul>
+        <p class="popup-click-more"><a target="_blank" href=<%message.href%%>><%=message.detail%></a></p>
       </div>
       <footer class="alert-dialog-footer" style="">
         <button data-l10n-id="OK" class="button button-ok"></button>

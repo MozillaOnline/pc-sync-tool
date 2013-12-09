@@ -301,10 +301,14 @@ var Video = (function() {
         files.push(JSON.stringify(fileInfo));
       });
 
-      new AlertDialog(_('delete-videos-confirm', {
+      new AlertDialog({
+        message: _('delete-videos-confirm', {
           n: files.length
-        }), true, function() {
-        removeVideos(files);
+        }),
+        showCancelButton: true,
+        callback: function() {
+          removeVideos(files);
+        }
       });
     });
 

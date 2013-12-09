@@ -61,19 +61,27 @@ var ViewManager = (function() {
       if (viewOldId == "contact-view" && viewId != 'connect-view') {
         var sub = $id('contact-edit-view');
         if (sub.hidden == false) {
-          new AlertDialog(_('save-contacts-confirm'), true, function () {
-            $id(viewOldId).dataset.shown = false;
-            switchContent(viewId, showData, viewElem);
+          new AlertDialog({
+            message: _('save-contacts-confirm'),
+            showCancelButton: true,
+            callback: function() {
+              $id(viewOldId).dataset.shown = false;
+              switchContent(viewId, showData, viewElem);
+            }
           });
           return;
         }
       } else if (viewOldId == "sms-view" && viewId != 'connect-view') {
         var sub = $id('sender-ctn-input');
         if (sub.hidden == false && sub.value.length > 0) {
-          new AlertDialog(_('send-sms-confirm'), true, function () {
-            $id(viewOldId).dataset.shown = false;
-            switchContent(viewId, showData, viewElem);
-            sub.value = '';
+          new AlertDialog({
+            message: _('send-sms-confirm'),
+            showCancelButton: true,
+            callback: function() {
+              $id(viewOldId).dataset.shown = false;
+              switchContent(viewId, showData, viewElem);
+              sub.value = '';
+            }
           });
           return;
         }

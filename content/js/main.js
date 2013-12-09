@@ -230,7 +230,7 @@ var FFOSAssistant = (function() {
             description: _('connection-alert-dialog-message-header'),
             content: _('connection-alert-dialog-message-check-nodriver'),
             detail: _('connection-alert-dialog-detail'),
-            href: 'http://www.baidu.com'
+            href: 'chrome://ffosassistant/content/Help/Help-cn.html'
           }
         });
       }
@@ -271,7 +271,7 @@ var FFOSAssistant = (function() {
             description: _('connection-alert-dialog-message-header'),
             content: contentInfo,
             detail: _('connection-alert-dialog-detail'),
-            href: 'http://www.baidu.com'
+            href: 'chrome://ffosassistant/content/Help/Help-cn.html'
           }
         });
         return;
@@ -319,7 +319,7 @@ var FFOSAssistant = (function() {
             description: _('connection-alert-dialog-message-header'),
             content: contentInfo,
             detail: _('connection-alert-dialog-detail'),
-            href: 'http://www.baidu.com'
+            href: 'chrome://ffosassistant/content/Help/Help-cn.html'
           }
         });
       },
@@ -344,7 +344,7 @@ var FFOSAssistant = (function() {
               description: _('connection-alert-dialog-message-header'),
               content: contentInfo,
               detail: _('connection-alert-dialog-detail'),
-              href: 'http://www.baidu.com'
+              href: 'chrome://ffosassistant/content/Help/Help-cn.html'
             }
           });
           return;
