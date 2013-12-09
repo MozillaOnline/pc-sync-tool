@@ -2,6 +2,11 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+var module = {};
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(module, 'utils', 'resource://ffosassistant/utils.jsm');
+XPCOMUtils.defineLazyModuleGetter(module, 'ADBService', 'resource://ffosassistant/ADBService.jsm');
+
 function $id(id) {
   return document.getElementById(id);
 }
@@ -98,7 +103,7 @@ function convertToOutputFileName(path) {
 
 function getFileName(path) {
   var splitChar = '/';
-  if (navigator.mozFFOSAssistant.isWindows) {
+  if (isWindows()) {
     splitChar = '\\';
   }
   var arrayPath = path.split(splitChar);
@@ -154,4 +159,33 @@ function formatTime(timestamp) {
   }
   time += minutes;
   return time;
+}
+
+function getGalleryCachedDir(pathArray) {
+  return module.utils.getGalleryCachedDir(pathArray);
+}
+
+function runCmd(cmd, callback) {
+  return module.ADBService.runCmd(cmd, callback);
+}
+
+function isWindows() {
+  return module.utils.isWindows();
+}
+
+
+function selectDirectory(callback, options) {
+  module.utils.selectDirectory(callback, options);
+}
+
+function saveToDisk(content, callback, options) {
+  module.utils.saveToDisk(content, callback, options);
+}
+
+function readFromDisk(callback) {
+  module.utils.readFromDisk(callback);
+}
+
+function selectMultiFilesFromDisk(callback, options) {
+  module.utils.selectMultiFilesFromDisk(callback, options);
 }

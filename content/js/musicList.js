@@ -143,7 +143,7 @@ var MusicList = (function() {
       $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
     $id('import-musics').dataset.disabled = false;
 
-    if (navigator.mozFFOSAssistant.isWifiConnected) {
+    if (isWifiConnected) {
       $id('remove-musics').dataset.disabled = true;
       $id('import-musics').dataset.disabled = true;
       $id('export-musics').dataset.disabled = true;
@@ -193,7 +193,7 @@ var MusicList = (function() {
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(data) {
+    selectMultiFilesFromDisk(function(data) {
       if (!data) {
         return;
       }
@@ -265,7 +265,7 @@ var MusicList = (function() {
         return;
       }
 
-      navigator.mozFFOSAssistant.selectDirectory(function(dir) {
+      selectDirectory(function(dir) {
         var dialog = new FilesOPDialog({
           title_l10n_id: 'export-musics-dialog-header',
           processbar_l10n_id: 'processbar-export-musics-prompt',

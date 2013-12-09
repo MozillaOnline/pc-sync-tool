@@ -204,7 +204,7 @@ var Video = (function() {
       $expr('#video-list-container li[data-checked="true"]').length === 0;
     $id('import-videos').dataset.disabled = false;
 
-    if (navigator.mozFFOSAssistant.isWifiConnected) {
+    if (isWifiConnected) {
       $id('remove-videos').dataset.disabled = true;
       $id('import-videos').dataset.disabled = true;
       $id('export-videos').dataset.disabled = true;
@@ -251,7 +251,7 @@ var Video = (function() {
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(data) {
+    selectMultiFilesFromDisk(function(data) {
       if (!data) {
         return;
       }
@@ -327,7 +327,7 @@ var Video = (function() {
         return;
       }
 
-      navigator.mozFFOSAssistant.selectDirectory(function(dir) {
+      selectDirectory(function(dir) {
         var dialog = new FilesOPDialog({
           title_l10n_id: 'export-videos-dialog-header',
           processbar_l10n_id: 'processbar-export-videos-prompt',

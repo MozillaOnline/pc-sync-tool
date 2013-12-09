@@ -11,6 +11,11 @@ resource ffosassistant-binary components/binary/
 locale ffosassistant en-US locale/en-US/
 locale ffosassistant zh-CN locale/zh-CN/
 
+# devices.json
+resource ffosassistant-devices components/binary/devices.json os=Linux
+resource ffosassistant-devices components/binary/devices.json os=Darwin
+resource ffosassistant-devices components/binary/devices.json os=WINNT
+
 # libadbservice
 resource ffosassistant-libadbservice components/binary/linux/libadbservice.so os=Linux
 resource ffosassistant-libadbservice components/binary/mac/libadbservice.so   os=Darwin
@@ -27,24 +32,19 @@ resource ffosassistant-adb           components/binary/mac/adb                os
 resource ffosassistant-adb           components/binary/win/adb.exe            os=WINNT
 
 # Driver Manager home dir
-resource ffosassistant-dmhome       components/binary/win/driver_manager      os=WINNT
+resource ffosassistant-dmhome       components/binary/win      os=WINNT
 
 # Driver Manager
-resource ffosassistant-drivermanager components/binary/win/driver_manager/USBMonitor.exe os=WINNT
-resource ffosassistant-drivermanager components/binary/linux/drivermanager    os=linux
-resource ffosassistant-drivermanager components/binary/mac/drivermanager      os=Darwin
+resource ffosassistant-drivermanager components/binary/win/USBMonitor.exe os=WINNT
+resource ffosassistant-drivermanager components/binary/linux              os=linux
+resource ffosassistant-drivermanager components/binary/mac                os=Darwin
 
 # json file should be placed in the same dir as USBMonitor.exe
-resource ffosassistant-driverlist    components/binary/win/driver_manager/drivers/driver_list.json os=WINNT
-resource ffosassistant-driverlist    components/binary/win/driver_list.json     os=linux
-resource ffosassistant-driverlist    components/binary/win/driver_list.json     os=Darwin
+resource ffosassistant-driverlist    components/binary/win/drivers/driver_list.json os=WINNT
+resource ffosassistant-driverlist    components/binary/win/driver_list.json         os=linux
+resource ffosassistant-driverlist    components/binary/win/driver_list.json         os=Darwin
 
 overlay chrome://browser/content/browser.xul chrome://ffosassistant/content/overlay.xul
-
-interfaces components/FFOSAssistant.xpt
-component {ed7c329e-5b45-4e99-bdae-f4d159a8edc8} components/FFOSAssistantChild.js
-contract @mozilla.org/adbservice;1 {ed7c329e-5b45-4e99-bdae-f4d159a8edc8}
-category JavaScript-navigator-property mozFFOSAssistant @mozilla.org/adbservice;1
 
 component {7a3435e0-5138-4ba1-bcdf-8f60cedefdc8} components/about.js
 contract @mozilla.org/network/protocol/about;1?what=ffos {7a3435e0-5138-4ba1-bcdf-8f60cedefdc8}

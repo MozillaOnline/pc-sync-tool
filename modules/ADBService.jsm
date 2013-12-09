@@ -14,41 +14,27 @@ debug = function(s) {
 
 var EXPORTED_SYMBOLS = ['ADBService'];
 
-const {
-  classes: Cc,
-  interfaces: Ci,
-  utils: Cu,
-  results: Cr
-} = Components;
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-XPCOMUtils.defineLazyServiceGetter(this, "ppmm", "@mozilla.org/parentprocessmessagemanager;1", "nsIMessageListenerManager");
-
-XPCOMUtils.defineLazyModuleGetter(this, 'utils', 'resource://ffosassistant/utils.jsm');
-
-let connected = false;
-let isWifiConnected = false;
-let ffosDeviceName = 'Unknown';
-let libWorker = null;
-let serverPort = 10010;
-
-function worker_onMessage(e) {
-  let data = e.data;
-  let callback = callbacks[data.id];
-
-  if (callback) {
-    delete callbacks[data.id];
-    callback(data);
-  } else {
-    messageReceiver.handleWorkerMessage(data);
-  }
-}
-
+// Create chrome worker to load adbservice lib
+const WORKER_FILE = 'resource://ffosassistant/worker.js';
+let libWorker = new ChromeWorker(WORKER_FILE);
+libWorker.onmessage = worker_onMessage;
 // Auto-increament id for messages
 let idgen = 0;
 // Message callbacks
 let callbacks = {};
+
+function worker_onMessage(e) {
+  let data = e.data;
+  let callback = callbacks[data.id];
+  if (callback) {
+    if (!data.noDelete) {
+      delete callbacks[data.id];
+    }
+    if (!data.noCallback) {
+      callback(data);
+    }
+  }
+}
 
 function controlMessage(msg, callback) {
   let id = ++idgen;
@@ -57,97 +43,8 @@ function controlMessage(msg, callback) {
   if (callback) {
     callbacks[id] = callback;
   }
-
   libWorker.postMessage(msg);
 }
-
-// Create chrome worker to load adbservice lib
-const WORKER_FILE = 'resource://ffosassistant/worker.js';
-let libWorker = new ChromeWorker(WORKER_FILE);
-libWorker.onmessage = worker_onMessage;
-
-let messageReceiver = {
-  receiveMessage: function msgRev_receiveMessage(aMessage) {
-    let msg = aMessage.json || {};
-    msg.manager = aMessage.target;
-
-    var self = this;
-    switch (aMessage.name) {
-    case 'ADBService:connected':
-      return connected;
-    case 'ADBService:ffosDeviceName':
-      return ffosDeviceName;
-    case 'ADBService:disconnect':
-      // Not implemented
-      this._sendMessage('ADBService:disconnect:Return', false, null, msg);
-      break;
-    case 'ADBService:RunCmd':
-      self = this;
-      controlMessage({
-        cmd: 'RunCmd',
-        data: msg.data
-      }, function Result_RunCmd(data) {
-        self._sendMessage('ADBService:RunCmd:Return', true, data.result, msg);
-      });
-      break;
-    case 'ADBService:getWifiConnectionState':
-      return isWifiConnected;
-      break;
-    case 'ADBService:setWifiConnectionState':
-      isWifiConnected = msg.state;
-      ADBService.startDeviceDetecting(!isWifiConnected);
-      break;
-    case 'ADBService:switchConnectionMode':
-      if (msg.mode == 'USB' && connected) {
-        return;
-      }
-      if (msg.mode == 'WIFI' && isWifiConnected) {
-        return;
-      }
-      ppmm.broadcastAsyncMessage('ADBService:statechange', {
-        mode: msg.mode,
-        connected: true,
-        serverip: msg.serverip,
-        port: serverPort
-      });
-      break;
-    }
-    return null;
-  },
-
-  handleWorkerMessage: function msgRev_handleWorkerMessage(msg) {
-    let cmd = msg.cmd;
-    switch (cmd) {
-    case 'statechange':
-      // Update ADB forward state
-      connected = msg.connected;
-      ffosDeviceName = msg.device;
-      ppmm.broadcastAsyncMessage('ADBService:statechange', {
-        mode: 'USB',
-        connected: connected,
-        serverip: msg.serverip,
-        port: msg.port
-      });
-      break;
-    default:
-      break;
-    }
-  },
-
-  _sendMessage: function(message, success, data, msg) {
-    msg.manager.sendAsyncMessage(message + (success ? ":OK" : ":NO"), {
-      data: data,
-      rid: msg.rid,
-      mid: msg.mid
-    });
-  }
-};
-
-const messages = ['ADBService:connected', 'ADBService:ffosDeviceName', 'ADBService:RunCmd', 'ADBService:setWifiConnectionState',
-                  'ADBService:getWifiConnectionState', 'ADBService:switchConnectionMode'];
-messages.forEach(function(msgName) {
-  ppmm.addMessageListener(msgName, messageReceiver);
-});
 
 var ADBService = {
   initAdbService: function initAdbService(isWindows, libPath, adbPath, profilePath) {
@@ -160,11 +57,17 @@ var ADBService = {
     });
   },
 
-  startDeviceDetecting: function startDeviceDetecting(start) {
+  findDevice: function findDevice(callback) {
     controlMessage({
-      cmd: 'startDeviceDetecting',
-      start: start
-    });
+      cmd: 'findDevice'
+    }, callback);
+  },
+
+  setupDevice: function setupDevice(device, callback) {
+    controlMessage({
+      cmd: 'setupDevice',
+      device: device
+    }, callback);
   },
 
   startAdbServer: function startAdbServer() {
@@ -177,7 +80,22 @@ var ADBService = {
     controlMessage({
       cmd: 'killAdbServer'
     });
-  }
+  },
+
+  runCmd: function runCmd(cmd, callback) {
+    controlMessage({
+      cmd: 'RunCmd',
+      data: cmd
+    }, callback);
+  },
+
+  checkDeviceInLinux: function(enable, devices, callback) {
+    controlMessage({
+      cmd: 'checkDeviceInLinux',
+      enable: enable,
+      devices: devices
+    }, callback);
+  },
 };
 
 debug('ADBService module is inited.');

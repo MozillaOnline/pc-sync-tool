@@ -51,9 +51,10 @@ var libadb = (function() {
       return ret;
     },
 
-    setupDevice: function() {
+    setupDevice: function(data) {
       var ret = null;
       if (runCmd && ADB_PATH != '') {
+        device = data;
         if (device != '') {
           ret = runCmd(ADB_PATH + ' -s ' + device + ' forward tcp:' + LOCAL_PORT + ' tcp:' + REMOTE_PORT);
         } else {
@@ -128,6 +129,7 @@ var libadb = (function() {
           if (isWin) {
             command = UrlEncode(command);
           }
+          debug(command);
           let result = runCmd(command);
           if (result) {
             result = result.readString().trim();
@@ -139,7 +141,11 @@ var libadb = (function() {
       case 'listAdbService':
         return this.listAdbService();
       default:
-        return 'not supported';
+        let result = runCmd(cmd);
+        if (result) {
+          result = result.readString().trim();
+        }
+        return result;
       }
     }
   };
@@ -175,13 +181,12 @@ onmessage = function(e) {
     });
     break;
   case 'setupDevice':
-    let ret = libadb.setupDevice();
+    let ret = libadb.setupDevice(e.data.device);
     let result = !/error|failed/ig.test(ret);
     postMessage({
       id: id,
       result: result
     });
-    setConnected(result);
     break;
   case 'startAdbServer':
     libadb.startAdbServer();
@@ -192,8 +197,8 @@ onmessage = function(e) {
   case 'initAdbService':
     initAdbService(e.data.isWindows, e.data.libPath, e.data.adbPath, e.data.profilePath);
     break;
-  case 'startDeviceDetecting':
-    startDetecting(e.data.start);
+  case 'checkDeviceInLinux':
+    checkDeviceInLinux(id, e.data.enable, e.data.devices);
     break;
   case 'RunCmd':
     postMessage({
@@ -209,24 +214,6 @@ onmessage = function(e) {
     break;
   }
 };
-
-/**
- * Change connected state, and send 'statechange' message if changed.
- */
-function setConnected(newState) {
-  let oldState = connected;
-  connected = newState;
-  if (oldState !== connected) {
-    debug('Connection state is changed!');
-    postMessage({
-      cmd: 'statechange',
-      connected: connected,
-      device: device,
-      serverip: 'localhost',
-      port: REMOTE_PORT
-    });
-  }
-}
 
 function initAdbService(isWindows, libPath, adbPath, profilePath) {
   // Load adb service library
@@ -244,37 +231,49 @@ function initAdbService(isWindows, libPath, adbPath, profilePath) {
   }
 }
 
-function startDetecting(start) {
-  debug('startDetecting = ' + start);
+var m_deviceList = [];
+function checkDeviceInLinux(id, enable, devices) {
+  debug('checkDeviceInLinux = ' + enable);
   if (detectingInterval) {
     clearInterval(detectingInterval);
     detectingInterval = null;
   }
-
-  if (!start) {
+  if (!enable || !devices || devices.length == 0) {
+    postMessage({
+      id: id,
+      noCallback: 'true'
+    });
     return;
   }
-
-  libadb.startAdbServer();
-  setConnected(false);
-  detectingInterval = setInterval(function checkConnectState() {
-    var devicesStr = libadb.findDevice();
-    var regExp = /\n([0-9a-z]+)\tdevice/ig;
-    var devices = [];
-    var result = null;
-    while(result = regExp.exec(devicesStr)){
-      devices.push(result[1]);
+  detectingInterval = setInterval(function checkDeviceState() {
+    let devicesList = libadb.runLocalCmd('lsusb');
+    let curDevices = [];
+    for (var i=0; i<devices.length; i++) {
+      if (devicesList.indexOf(devices[i].vendor_id) > 0) {
+        curDevices.push(devices[i]);
+      }
     }
-
-    if (devices.length == 0) {
+    var isChanged = false;
+    if (m_deviceList.length != curDevices.length) {
+      isChanged = true;
+    } else {
+      for (var i=0; i<curDevices.length; i++) {
+        if (m_deviceList.indexOf(curDevices[i]) < 0) {
+          isChanged = true;
+          break;
+        }
+      }
+    }
+    if (!isChanged) {
       return;
     }
-    // TODO: Select the first device now. If multi-devices plugged-in, it should
-    // popup a dialog for users to choose which device would be connected.
-    device = devices[0];
-    var ret = libadb.setupDevice(device);
-    setConnected(!/error|failed/ig.test(ret));
-  }, 2000);
+    m_deviceList = curDevices;
+    postMessage({
+      id: id,
+      noDelete: 'true',
+      devices: m_deviceList
+    });
+  }, 500);
 }
 
 debug('ADB Service worker is inited.');

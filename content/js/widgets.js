@@ -870,9 +870,9 @@ FilesOPDialog.prototype = {
           break;
       }
       if (cmd) {
-        var req = navigator.mozFFOSAssistant.runCmd(cmd);
-        req.onsuccess = success;
-        req.onerror = error;
+        runCmd(cmd, success);
+        //req.onsuccess = success;
+        //req.onerror = error;
       }
 
       if (!self._timer) {

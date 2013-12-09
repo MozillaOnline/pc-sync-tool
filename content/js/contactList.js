@@ -573,7 +573,7 @@ var ContactList = (function() {
     });
 
     $id('import-contacts').addEventListener('click', function onclick_importContacts(event) {
-      navigator.mozFFOSAssistant.readFromDisk(function(state, data) {
+      readFromDisk(function(state, data) {
         if (state) {
           vCardConverter.importContacts(data);
         }
@@ -593,7 +593,7 @@ var ContactList = (function() {
         content += vcard + '\n';
       });
 
-      navigator.mozFFOSAssistant.saveToDisk(content, function(status) {
+      saveToDisk(content, function(status) {
         if (status) {
           new AlertDialog(_('export-contacts-success'));
         }

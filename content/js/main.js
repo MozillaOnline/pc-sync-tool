@@ -35,69 +35,25 @@ while (browserEnumerator.hasMoreElements()) {
 
 chromeWindow.switchToTabHavingURI('about:ffos', true);
 
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, 'ADBService', 'resource://ffosassistant/ADBService.jsm');
 var animationLoading = null;
 var customEventElement = document;
+var isWifiConnected = false;
+var observer = null;
+var devicesList = null;
+var deviceSocketConnected = false;
+var deviceSocketConnecting = false;
+
 var FFOSAssistant = (function() {
   var connPool = null;
   var connListenSocket = null;
 
-  function showConnectView() {
-    animationLoading.reset();
-    $id('device-connected').classList.add('hiddenElement');
-    $id('device-unconnected').classList.remove('hiddenElement');
-    $id('views').classList.add('hidden-views');
-
-    $id('usb-connection-button').onclick = function() {
-      $id('wifi-connection-button').dataset.checked = false;
-      $id('wifi-connection-button').classList.remove('wifi-connection-button-select');
-      $id('usb-connection-button').dataset.checked = true;
-      $id('usb-connection-button').classList.add('usb-connection-button-select');
-      $id('wifi-connection-settings').classList.add('hiddenElement');
-      $id('usb-connection-settings').classList.remove('hiddenElement');
-    };
-
-    $id('wifi-connection-button').onclick = function() {
-      $id('wifi-connection-button').dataset.checked = true;
-      $id('wifi-connection-button').classList.add('wifi-connection-button-select');
-      $id('usb-connection-button').dataset.checked = false;
-      $id('usb-connection-button').classList.remove('usb-connection-button-select');
-      $id('usb-connection-settings').classList.add('hiddenElement');
-      $id('wifi-connection-settings').classList.remove('hiddenElement');
-    };
-
-    $id('wifi-connect-button').onclick = function() {
-      var wifiCode = $id('wifi-connection-code');
-      if (!wifiCode || !wifiCode.value.trim()) {
-        return;
-      }
-      var ip = '';
-      var dataArray = new ArrayBuffer(4);
-      var int8Array = new Uint8Array(dataArray);
-      var int32Array = new Uint32Array(dataArray);
-      int32Array[0] = parseInt(wifiCode.value);
-      ip = int8Array[0].toString() + '.' + int8Array[1].toString() + '.' + int8Array[2].toString() + '.' + int8Array[3].toString();
-      var elem = $id('mgmt-list');
-      $expr('.header', elem)[0].textContent = wifiCode.value;
-
-      navigator.mozFFOSAssistant.switchConnectionMode('WIFI', ip);
-      connectToDevice(ip);
-    };
-
-    $id('help_btn').onclick = function(e) {
-      var url = '';
-      if (navigator.language == 'zh-CN') {
-        url = 'http://os.firefox.com.cn/zh-CN/about/help.html';
-      } else {
-        url = 'http://os.firefox.com.cn/en-US/about/help.html';
-      }
-      window.open(url);
-    };
-    ViewManager.showContent('connect-view');
-  }
-
   function showSummaryView(serverIP) {
+    $id('connect-button').classList.add('hiddenElement');
+    $id('disconnect-button').classList.remove('hiddenElement');
     if (serverIP != 'localhost') {
-      navigator.mozFFOSAssistant.isWifiConnected = true;
+      isWifiConnected = true;
     }
     if (connListenSocket) {
       connListenSocket.socket.close();
@@ -106,7 +62,7 @@ var FFOSAssistant = (function() {
     var socket = navigator.mozTCPSocket.open(serverIP, 10010, {
       binaryType: 'arraybuffer'
     });
-    socket.onopen = function tc_onSocketOpened(event) {
+    socket.onopen = function tc_onListenSocketOpened(event) {
       connListenSocket = new TCPSocketWrapper({
         socket: event.target,
         onmessage: function(socket, jsonCmd, sendCallback, recvData) {
@@ -123,18 +79,7 @@ var FFOSAssistant = (function() {
       });
       CMD.Listen.listenMessage(null, null);
     };
-    $id('device-disconnect').addEventListener('click', function onclick_disconnect(event) {
-      if (connPool) {
-        connPool.finalize();
-        connPool = null;
-      }
-      if ((!navigator.mozFFOSAssistant.isWindows) ) {
-        navigator.mozFFOSAssistant.isWifiConnected = false;
-      }
-      showConnectView();
-      ViewManager.reset();
-    });
-    if (navigator.mozFFOSAssistant.isWifiConnected) {
+    if (isWifiConnected) {
       $id('device-image-connection').classList.add('wifiConnection');
     } else {
       $id('device-image-connection').classList.remove('wifiConnection');
@@ -265,27 +210,151 @@ var FFOSAssistant = (function() {
     });
   }
 
-  function connectToDevice(serverIP) {
-    var timeout = null;
+  function connectToDevice() {
+    if (!devicesList || devicesList.length == 0) {
+      return;
+    }
+    var availableDevices = [];
+    if (isWindows()) {
+      for (var i=0; i<devicesList.length; i++) {
+        if (devicesList[i].InstallState == 0) {
+          availableDevices.push(devicesList[i]);
+        }
+      }
+      if (availableDevices.length == 0) {
+        new AlertDialog({
+          id: 'popup_dialog',
+          titleL10nId: 'alert-dialog-title',
+          message: {
+            head: _('connection-alert-dialog-title'),
+            description: _('connection-alert-dialog-message-header'),
+            content: _('connection-alert-dialog-message-check-nodriver'),
+            detail: _('connection-alert-dialog-detail'),
+            href: 'http://www.baidu.com'
+          }
+        });
+      }
+    } else {
+      availableDevices = devicesList;
+    }
 
+    var loadingGroupId = animationLoading.start();
+    ADBService.findDevice(function find(data) {
+      var regExp = /\n([0-9a-z]+)\tdevice/ig;
+      var devices = [];
+      var result = null;
+      while(result = regExp.exec(data.result)){
+        devices.push(result[1]);
+      }
+      var connectDevices = [];
+      if (devices.length > 0) {
+        for (var i=0; i<availableDevices.length; i++) {
+          if (devices.indexOf(availableDevices[i].display_name) < 0) {
+            continue;
+          }
+          connectDevices.push(availableDevices[i].display_name);
+        }
+      }
+      if (connectDevices.length == 0) {
+        animationLoading.stop(loadingGroupId);
+        var contentInfo = [_('connection-alert-dialog-message-check-remotedebugger'), _('connection-alert-dialog-message-check-lockscreen')];
+        if (isWindows()) {
+          contentInfo.push(_('connection-alert-dialog-message-check-otheradb'));
+        } else {
+          contentInfo.push(_('connection-alert-dialog-message-check-edit51android'));
+        }
+        new AlertDialog({
+          id: 'popup_dialog',
+          titleL10nId: 'alert-dialog-title',
+          message: {
+            head: _('connection-alert-dialog-title'),
+            description: _('connection-alert-dialog-message-header'),
+            content: contentInfo,
+            detail: _('connection-alert-dialog-detail'),
+            href: 'http://www.baidu.com'
+          }
+        });
+        return;
+      }
+      device = connectDevices[0];
+      ADBService.setupDevice(device, function setup(data) {
+        if (!/error|failed/ig.test(data.result)) {
+          connectToServer('localhost');
+          animationLoading.stop(loadingGroupId);
+        }
+      });
+    });
+  }
+
+  function connectToServer(serverIP) {
+    if (!serverIP) {
+      return;
+    }
+    var loadingGroupId = animationLoading.start();
+    var timeout = null;
     if (connPool) {
       connPool.finalize();
       connPool = null;
     }
-
+    deviceSocketConnecting = true;
     connPool = new TCPConnectionPool({
       host: serverIP,
       size: 1,
-      onenable: function onenable() {
-        timeout = window.setTimeout(function imedb_cacheTimeout() {
-          showSummaryView(serverIP);
-        }, 1000);
+      onerror: function onerror() {
+        deviceSocketConnected = false;
+        deviceSocketConnecting = false;
+        animationLoading.stop(loadingGroupId);
+        var contentInfo = [_('connection-alert-dialog-message-check-version'),
+                           _('connection-alert-dialog-message-check-lockscreen'),
+                           _('connection-alert-dialog-message-check-runapp')];
+        if (isWifiConnected) {
+          contentInfo.push(_('connection-alert-dialog-message-check-samewifi'));
+          contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
+        }
+        new AlertDialog({
+          id: 'popup_dialog',
+          titleL10nId: 'alert-dialog-title',
+          message: {
+            head: _('connection-alert-dialog-title'),
+            description: _('connection-alert-dialog-message-header'),
+            content: contentInfo,
+            detail: _('connection-alert-dialog-detail'),
+            href: 'http://www.baidu.com'
+          }
+        });
       },
-      ondisable: function ondisable() {
-        log('USB Socket is closed');
+      onconnected: function onconnected() {
+        animationLoading.stop(loadingGroupId);
+        timeout = window.setTimeout(function imedb_cacheTimeout() {
+          if (deviceSocketConnecting) {
+            deviceSocketConnected = true;
+            deviceSocketConnecting = false;
+            showSummaryView(serverIP);
+          }
+        }, 500);
+      },
+      ondisconnected: function ondisconnected() {
+        if (!deviceSocketConnecting && !deviceSocketConnected) {
+          var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
+          new AlertDialog({
+            id: 'popup_dialog',
+            titleL10nId: 'alert-dialog-title',
+            message: {
+              head: _('connection-alert-dialog-title'),
+              description: _('connection-alert-dialog-message-header'),
+              content: contentInfo,
+              detail: _('connection-alert-dialog-detail'),
+              href: 'http://www.baidu.com'
+            }
+          });
+          return;
+        }
+        deviceSocketConnected = false;
+        deviceSocketConnecting = false;
+        animationLoading.stop(loadingGroupId);
         window.clearTimeout(timeout);
-        if ((!navigator.mozFFOSAssistant.isWindows) ) {
-          navigator.mozFFOSAssistant.isWifiConnected = false;
+        if (!isWindows()) {
+          isWifiConnected = false;
         }
         showConnectView();
         ViewManager.reset();
@@ -293,7 +362,124 @@ var FFOSAssistant = (function() {
     });
   }
 
+  function showConnectView() {
+    animationLoading.reset();
+    $id('connect-button').classList.remove('hiddenElement');
+    var templateData = {
+      name: 'connect'
+    };
+    new Tip({
+      element: $id('connect-button'),
+      innerHTML: tmpl('tmpl_singletip', templateData),
+      container: $id('connect-action')
+    });
+    $id('disconnect-button').classList.add('hiddenElement');
+    templateData = {
+      name: 'disconnect'
+    };
+    new Tip({
+      element: $id('disconnect-button'),
+      innerHTML: tmpl('tmpl_singletip', templateData),
+      container: $id('connect-action')
+    });
+
+    $id('device-connected').classList.add('hiddenElement');
+    $id('device-unconnected').classList.remove('hiddenElement');
+    $id('views').classList.add('hidden-views');
+
+    $id('usb-connection-button').onclick = function() {
+      $id('wifi-connection-button').dataset.checked = false;
+      $id('wifi-connection-button').classList.remove('wifi-connection-button-select');
+      $id('usb-connection-button').dataset.checked = true;
+      $id('usb-connection-button').classList.add('usb-connection-button-select');
+      $id('wifi-connection-settings').classList.add('hiddenElement');
+      $id('usb-connection-settings').classList.remove('hiddenElement');
+    };
+
+    $id('wifi-connection-button').onclick = function() {
+      $id('wifi-connection-button').dataset.checked = true;
+      $id('wifi-connection-button').classList.add('wifi-connection-button-select');
+      $id('usb-connection-button').dataset.checked = false;
+      $id('usb-connection-button').classList.remove('usb-connection-button-select');
+      $id('usb-connection-settings').classList.add('hiddenElement');
+      $id('wifi-connection-settings').classList.remove('hiddenElement');
+    };
+
+    $id('wifi-connection-code').onkeyup = function() {
+      this.value = this.value.replace(/\D/g, '');
+    }
+
+    $id('wifi-connection-code').onafterpaste = function() {
+      this.value = this.value.replace(/\D/g, '');
+    }
+
+    $id('wifi-connect-button').onclick = function() {
+      var wifiCode = $id('wifi-connection-code');
+      if (!wifiCode || !wifiCode.value.trim()) {
+        return;
+      }
+      var ip = '';
+      var dataArray = new ArrayBuffer(4);
+      var int8Array = new Uint8Array(dataArray);
+      var int32Array = new Uint32Array(dataArray);
+      int32Array[0] = parseInt(wifiCode.value);
+      ip = int8Array[0].toString() + '.' + int8Array[1].toString() + '.' + int8Array[2].toString() + '.' + int8Array[3].toString();
+      if (int32Array[0] == 0
+          || int8Array[0] == 0
+          || int8Array[0] == 127
+          || int8Array[0] > 223
+          || int8Array[3] == 0
+          || int8Array[3] == 255) {
+        new AlertDialog({
+          message: _('wifi-code-error')
+        });
+        return;
+      }
+      ip = int8Array[0].toString() + '.' + int8Array[1].toString() + '.' + int8Array[2].toString() + '.' + int8Array[3].toString();
+      var elem = $id('mgmt-list');
+      $expr('.header', elem)[0].textContent = wifiCode.value;
+      if (ip) {
+        connectToServer(ip);
+      }
+    };
+
+    $id('help_btn').onclick = function(e) {
+      var url = '';
+      if (navigator.language == 'zh-CN') {
+        url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+      } else {
+        url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+      }
+      window.open(url);
+    };
+    ViewManager.showContent('connect-view');
+  }
+
+  var observerService = Components.classes["@mozilla.org/observer-service;1"]
+                      .getService(Components.interfaces.nsIObserverService);
+
+  function Observer()
+  {
+    this.register();
+  }
+
+  Observer.prototype = {
+    observe: function(subject, topic, data) {
+      devicesList = JSON.parse(data);
+      connectToDevice();
+    },
+    register: function() {
+      observerService.addObserver(this, "init-devices", false);
+    },
+    unregister: function() {
+      observerService.removeObserver(this, "init-devices");
+    }
+  };
+
   function init() {
+    if (!animationLoading) {
+      animationLoading = new animationLoadingDialog();
+    }
     $id('lang-settings').addEventListener('click', function onclick_langsetting(event) {
       if (!event.target.classList.contains('language-code-button')) {
         return;
@@ -304,27 +490,21 @@ var FFOSAssistant = (function() {
       });
       event.target.classList.add('current');
     });
-    if (!animationLoading) {
-      animationLoading = new animationLoadingDialog();
-    }
-    showConnectView();
-    if (navigator.mozFFOSAssistant) {
-      navigator.mozFFOSAssistant.onadbstatechange = function onADBStateChange(event) {
-        if (navigator.mozFFOSAssistant.adbConnected === true) {
-          var devicename = navigator.mozFFOSAssistant.adbffosDeviceName;
-          var elem = $id('mgmt-list');
-          $expr('.header', elem)[0].textContent = devicename;
-          connectToDevice('localhost');
-        }
-      };
-
-      if (navigator.mozFFOSAssistant.adbConnected === true) {
-        var devicename = navigator.mozFFOSAssistant.adbffosDeviceName;
-        var elem = $id('mgmt-list');
-        $expr('.header', elem)[0].textContent = devicename;
-        connectToDevice('localhost');
+    $id('connect-button').addEventListener('click', function onclick_connect(event) {
+      connectToDevice();
+    });
+    $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
+      if (connPool) {
+        connPool.finalize();
+        connPool = null;
       }
-    }
+      if (!isWindows()) {
+        isWifiConnected = false;
+      }
+      showConnectView();
+      ViewManager.reset();
+    });
+    showConnectView();
     customEventElement.addEventListener('firstshow', function(e) {
       switch(e.detail.type) {
       case 'summary-view':
@@ -364,11 +544,24 @@ var FFOSAssistant = (function() {
         break;
       }
     });
+    observer = new Observer();
+    observerService.notifyObservers(null, 'chrome-start-connection', '');
   }
 
   window.addEventListener('load', function window_onload(event) {
     window.removeEventListener('load', window_onload);
     init();
+  });
+
+  window.addEventListener('unload', function window_onunload(event) {
+    window.removeEventListener('unload', window_onunload);
+    if (observer) {
+      observer.unregister();
+    }
+    if (connPool) {
+      connPool.finalize();
+      connPool = null;
+    }
   });
 
   window.addEventListener('localized', function showBody() {

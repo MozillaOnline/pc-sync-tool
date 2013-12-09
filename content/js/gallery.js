@@ -208,10 +208,10 @@ var Gallery = (function() {
     var picList = $expr('li', getListContainer());
     if (picList[index]) {
       // TODO: check if picture has been cached already
-      var path = navigator.mozFFOSAssistant.getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', GALLERY_CACHE_FOLDER]);
+      var path = getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', GALLERY_CACHE_FOLDER]);
       var cmd = 'adb pull "' + picList[index].dataset.picUrl + '" "' + path + picList[index].dataset.picUrl + '"';
       var cachedUrl = PRE_PATH + GALLERY_CACHE_FOLDER + picList[index].dataset.picUrl;
-      var req = navigator.mozFFOSAssistant.runCmd(cmd);
+      var req = runCmd(cmd);
 
       req.onsuccess = function on_success(result) {
         callback(true, cachedUrl);
@@ -238,7 +238,7 @@ var Gallery = (function() {
       $expr('#picture-list-container li[data-checked="true"]').length === 0;
     $id('import-pictures').dataset.disabled = false;
 
-    if (navigator.mozFFOSAssistant.isWifiConnected) {
+    if (isWifiConnected) {
       $id('remove-pictures').dataset.disabled = true;
       $id('import-pictures').dataset.disabled = true;
       $id('export-pictures').dataset.disabled = true;
@@ -285,7 +285,7 @@ var Gallery = (function() {
       return;
     }
 
-    navigator.mozFFOSAssistant.selectMultiFilesFromDisk(function(data) {
+    selectMultiFilesFromDisk(function(data) {
       if (!data) {
         return;
       }
@@ -357,7 +357,7 @@ var Gallery = (function() {
         return;
       }
 
-      navigator.mozFFOSAssistant.selectDirectory(function(dir) {
+      selectDirectory(function(dir) {
         var dialog = new FilesOPDialog({
           title_l10n_id: 'export-pictures-dialog-header',
           processbar_l10n_id: 'processbar-export-pictures-prompt',

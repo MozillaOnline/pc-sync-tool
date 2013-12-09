@@ -4,7 +4,7 @@
 
 "use strict"
 
-let DEBUG = 1;
+let DEBUG = 0;
 
 function debug(s) {
   if (DEBUG) {
@@ -15,104 +15,19 @@ function debug(s) {
 const {
   classes: Cc,
   interfaces: Ci,
-  utils: Cu
+  utils: Cu,
+  results: Cr
 } = Components;
-
+Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils', 'resource://gre/modules/FileUtils.jsm');
+XPCOMUtils.defineLazyServiceGetter(this, "xulRuntime", '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
 XPCOMUtils.defineLazyServiceGetter(this, 'iniFactory', '@mozilla.org/xpcom/ini-processor-factory;1', 'nsIINIParserFactory');
 
 var EXPORTED_SYMBOLS = ['utils'];
 
 var utils = {
-  getContentFromURL: function getContentFromURL(url) {
-    var ioService = Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService);
-    var scriptableStream = Cc['@mozilla.org/scriptableinputstream;1'].getService(Ci.nsIScriptableInputStream);
-
-    var channel = ioService.newChannel(url, null, null);
-    var input = channel.open();
-    scriptableStream.init(input);
-    var str = scriptableStream.read(input.available());
-    scriptableStream.close()
-    input.close();
-
-    var utf8Converter = Components.classes["@mozilla.org/intl/utf8converterservice;1"].
-    getService(Components.interfaces.nsIUTF8ConverterService);
-    return utf8Converter.convertURISpecToUTF8(str, "UTF-8");
-  },
-
-  readStrFromFile: function(file) {
-    if (!file) {
-      return '';
-    }
-
-    var data = '';
-    var fstream = Cc['@mozilla.org/network/file-input-stream;1'].createInstance(Ci.nsIFileInputStream);
-    var cstream = Cc['@mozilla.org/intl/converter-input-stream;1'].createInstance(Ci.nsIConverterInputStream);
-
-    try {
-      fstream.init(file, -1, 0, 0);
-      cstream.init(fstream, 'UTF-8', 0, 0);
-
-      var str = {};
-      var read = 0;
-      do {
-        read = cstream.readString(0xffffffff, str); // read as much as we can and  put it in str.value
-        data += str.value;
-      } while (read != 0);
-    } catch (err) {
-      dump('Error occured when reading file: ' + err);
-    } finally {
-      if (cstream) {
-        try {
-          cstream.close();
-        } catch (err) {
-          dump('Error occured when closing file : ' + err);
-        }
-      }
-    }
-
-    return data;
-  },
-
-  exposeReadOnly: function exposeReadOnly(obj) {
-    if (null == obj) {
-      return obj;
-    }
-
-    if (typeof obj !== "object") {
-      return obj;
-    }
-
-    if (obj["__exposedProps__"]) {
-      return obj;
-    }
-
-    // If the obj is a navite wrapper, can not modify the attribute.
-    try {
-      obj.__exposedProps__ = {};
-    } catch (e) {
-      return;
-    }
-
-    var exposedProps = obj.__exposedProps__;
-    for (let i in obj) {
-      if (i === "__exposedProps__") {
-        continue;
-      }
-
-      if (i[0] === "_") {
-        continue;
-      }
-
-      exposedProps[i] = "r";
-
-      exposeReadOnly(obj[i]);
-    }
-
-    return obj;
-  },
-
   md5: function md5(str) {
     var data = str.split('');
     var ch = Cc["@mozilla.org/security/hash;1"].createInstance(Ci.nsICryptoHash);
@@ -135,7 +50,6 @@ var utils = {
     if (!(fileURI instanceof Ci.nsIFileURL)) {
       return null;
     }
-
     return fileURI;
   },
 
@@ -180,27 +94,166 @@ var utils = {
     }
   },
 
-  writeToFile: function(file, json) {
-    var foStream = Cc['@mozilla.org/network/file-output-stream;1'].createInstance(Ci.nsIFileOutputStream);
-
-    foStream.init(file, 0x02 | 0x08 | 0x20, parseInt('0666', 8), 0);
-
-    var converter = Cc['@mozilla.org/intl/converter-output-stream;1'].createInstance(Ci.nsIConverterOutputStream);
-
-    try {
-      converter.init(foStream, 'UTF-8', 0, 0);
-      converter.writeString(json);
-    } catch (err) {
-      debug('Error occured when writing file: ' + err);
-    } finally {
-      if (converter) {
-        try {
-          converter.close();
-        } catch (err) {
-          debug('Error occured when closing writing addon-notification/rules.json : ' + err);
+  selectDirectory: function(callback, options) {
+    var nsIFilePicker = Ci.nsIFilePicker;
+    var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+    let title = options && options.title;
+    let wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                   .getService(Components.interfaces.nsIWindowMediator);
+    let win = wm.getMostRecentWindow('navigator:browser');
+    filePicker.init(win, title, Ci.nsIFilePicker.modeGetFolder);
+    if (options && options.fileType) {
+      if (options.fileType == 'Image') {
+        filePicker.appendFilters(nsIFilePicker.filterImages);
+      } else if (options.fileType == 'Audio') {
+        filePicker.appendFilters(nsIFilePicker.filterAudio);
+      } else if (options.fileType == 'Video') {
+        filePicker.appendFilters(nsIFilePicker.filterVideo);
+      } else {
+        filePicker.appendFilters(nsIFilePicker.filterAll);
+      }
+    } else {
+      filePicker.appendFilters(nsIFilePicker.filterAll);
+    }
+    callback = (typeof callback === 'function') ? callback : function() {};
+    filePicker.open(function onPickComplete(returnCode) {
+      switch (returnCode) {
+      case Ci.nsIFilePicker.returnOK:
+        var path = filePicker.fileURL.path;
+        if (xulRuntime.OS == 'WINNT') {
+          path = path.substr(1);
         }
+        callback(path);
+        break;
+      case Ci.nsIFilePicker.returnCancel:
+      default:
+        break;
+      }
+    });
+  },
+
+  saveToDisk: function(content, callback, options) {
+    var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+    let title = options && options.title ? options.title : null;
+    filePicker.init(this._window, title, Ci.nsIFilePicker.modeSave);
+    if (options) {
+      if (options.name) {
+        filePicker.defaultString = options.name;
+      }
+      if (options.extension) {
+        filePicker.defaultExtension = options.extension;
+        // Create filter from extension
+        filePicker.appendFilter('*.' + options.extension, '*.' + options.extension);
+        filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
       }
     }
+
+    let self = this;
+    callback = (typeof callback === 'function') ? callback : function() {};
+
+    filePicker.open(function onPickComplete(returnCode) {
+      switch (returnCode) {
+      case Ci.nsIFilePicker.returnOK:
+      case Ci.nsIFilePicker.returnReplace:
+        let file = filePicker.file;
+        var ostream = FileUtils.openSafeFileOutputStream(file);
+        var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter'].
+        createInstance(Ci.nsIScriptableUnicodeConverter);
+        converter.charset = 'UTF-8';
+        var istream = converter.convertToInputStream(content);
+
+        NetUtil.asyncCopy(istream, ostream, function(status) {
+          if (!Components.isSuccessCode(status)) {
+            // TODO report error
+            callback(false);
+          } else {
+            // Content has been written to the file.
+            callback(true);
+          }
+        });
+        break;
+      case Ci.nsIFilePicker.returnCancel:
+      default:
+        callback(false);
+        break;
+      }
+    });
+  },
+
+  readFromDisk: function(callback) {
+    var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+    filePicker.init(this._window, null, Ci.nsIFilePicker.modeOpen);
+    filePicker.appendFilter('*.vcf', '*.vcf');
+    filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
+    filePicker.open(function onPickComplete(returnCode) {
+      switch (returnCode) {
+      case Ci.nsIFilePicker.returnOK:
+      case Ci.nsIFilePicker.returnReplace:
+        let file = filePicker.file;
+        NetUtil.asyncFetch(file, function(inputStream, status) {
+          if (!Components.isSuccessCode(status)) {
+            //TODO report error
+            callback(false, null);
+          } else {
+            var data = NetUtil.readInputStreamToString(inputStream, inputStream.available(), {
+              charset: 'UTF-8'
+            });
+            callback(true, data);
+          }
+        });
+        break;
+      case Ci.nsIFilePicker.returnCancel:
+      default:
+        callback(false, null);
+      }
+    });
+  },
+
+  selectMultiFilesFromDisk: function(callback, options) {
+    var nsIFilePicker = Ci.nsIFilePicker;
+    var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+    let title = options && options.title ? options.title : null;
+    filePicker.init(this._window, title, Ci.nsIFilePicker.modeOpenMultiple);
+    if (options && options.fileType) {
+      if (options.fileType == 'Image') {
+        filePicker.appendFilters(nsIFilePicker.filterImages);
+      } else if (options.fileType == 'Audio') {
+        filePicker.appendFilters(nsIFilePicker.filterAudio);
+      } else if (options.fileType == 'Video') {
+        filePicker.appendFilters(nsIFilePicker.filterVideo);
+      } else if (options.fileType == 'VideoTypes') {
+        filePicker.appendFilter('Video Files', '*.webm;*.ogv;*.ogg;*.mp4;*.3gp');
+      } else {
+        filePicker.appendFilters(nsIFilePicker.filterAll);
+      }
+    } else {
+      filePicker.appendFilters(nsIFilePicker.filterAll);
+    }
+    filePicker.open(function onPickComplete(returnCode) {
+      switch (returnCode) {
+      case Ci.nsIFilePicker.returnOK:
+      case Ci.nsIFilePicker.returnReplace:
+        var files = filePicker.files;
+        var filePath = '';
+        while (files.hasMoreElements()) {
+          var file = files.getNext().QueryInterface(Components.interfaces.nsIFile);
+          filePath += file.path + ';';
+        }
+        callback(filePath);
+        break;
+      case Ci.nsIFilePicker.returnCancel:
+      default:
+        break;
+      }
+    });
+  },
+
+  getGalleryCachedDir: function(pathArray) {
+    return FileUtils.getDir("ProfD", pathArray, false).path;
+  },
+
+  isWindows: function() {
+    return xulRuntime.OS == 'WINNT';
   }
 };
 

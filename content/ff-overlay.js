@@ -3,103 +3,142 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 (function() {
+  const DEVICES_CONFIG= 'resource://ffosassistant-devices';
   const DRIVER_MANAGER_HOME = 'resource://ffosassistant-dmhome';
   const DRIVER_MANAGER_INI_FILE_NAME = 'driver_manager.ini';
   const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
   const ADB_FILE_URL = 'resource://ffosassistant-adb';
   const ADDON_ID = 'ffosassistant@mozillaonline.com';
+
+  var client = null;
+  var devicesConfig = [];
+  var devices = [];
+  var isWindowsOS = true;
   let DEBUG = 0;
 
   var jsm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
                    .getService(Components.interfaces.nsIWindowMediator);
+  var observerService = Components.classes["@mozilla.org/observer-service;1"]
+                      .getService(Components.interfaces.nsIObserverService);
 
   function debug(s) {
     if (DEBUG) {
       let console = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-      console.logStringMessage("-*- ADBService FF Overlay: " + s + "\n");
+      console.logStringMessage("-*- FF Overlay: " + s + "\n");
     }
   }
 
   var isDisabled = false;
 
   var modules = {};
-  XPCOMUtils.defineLazyServiceGetter(modules, "cpmm", "@mozilla.org/childprocessmessagemanager;1", "nsISyncMessageSender");
+  Components.utils.import("resource://gre/modules/NetUtil.jsm");
+  Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
   XPCOMUtils.defineLazyModuleGetter(modules, 'utils', 'resource://ffosassistant/utils.jsm');
   XPCOMUtils.defineLazyModuleGetter(modules, 'ADBService', 'resource://ffosassistant/ADBService.jsm');
-  XPCOMUtils.defineLazyModuleGetter(modules, 'DriverDownloader', 'resource://ffosassistant/driverDownloader.jsm');
   XPCOMUtils.defineLazyModuleGetter(modules, 'DriverManager', 'resource://ffosassistant/driverManager.jsm');
   XPCOMUtils.defineLazyModuleGetter(modules, 'AddonManager', 'resource://gre/modules/AddonManager.jsm');
 
-  var _bundles = Cc["@mozilla.org/intl/stringbundle;1"].
-          getService(Ci.nsIStringBundleService).
-          createBundle("chrome://ffosassistant/locale/browser.properties");
-
-  function getString(key) {
-    return _bundles.GetStringFromName(key);
-  }
-
-  function startADBService() {
+  function startService() {
     isDisabled = false;
-    modules.DriverManager.startDriverManager();
-    connectToDriverManager();
+    if (isWindowsOS) {
+      modules.DriverManager.startDriverManager();
+      connectToDriverManager();
+    } else {
+      modules.ADBService.checkDeviceInLinux(true, devicesConfig, handleMessage);
+    }
   }
 
-  function stopADBService() {
+  function stopService() {
     isDisabled = true;
-    if (client && client.isConnected()) {
-      client.sendCommand('shutdown');
+    if (isWindowsOS) {
+      if (client && client.isConnected()) {
+        client.sendCommand('shutdown');
+      }
+    } else {
+      modules.ADBService.checkDeviceInLinux(false);
     }
-    modules.ADBService.startDeviceDetecting(false);
     modules.ADBService.killAdbServer();
   }
 
+  function Observer()
+  {
+    this.register();
+  }
+
+  Observer.prototype = {
+    observe: function(subject, topic, data) {
+      switch(topic) {
+        case 'chrome-start-connection':
+          observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
+          break;
+      }
+    },
+    register: function() {
+      observerService.addObserver(this, "chrome-start-connection", false);
+    },
+    unregister: function() {
+      observerService.removeObserver(this, "chrome-start-connection");
+    }
+  };
+
   function init() {
-    // Import ADB Service module
-    debug('Import adbService module');
-
-    // Register messages
-    const messages = ['ADBService:statechange'];
-    messages.forEach(function(msgName) {
-      modules.cpmm.addMessageListener(msgName, messageHandler)
-    });
-
+    debug('init');
+    new Observer();
+    isWindowsOS = modules.utils.isWindows();
     let libPath = modules.utils.getChromeFileURI(LIB_FILE_URL);
     let adbPath = modules.utils.getChromeFileURI(ADB_FILE_URL);
     let profilePath = Services.dirsvc.get('ProfD', Ci.nsIFile);
-    modules.ADBService.initAdbService(navigator.mozFFOSAssistant.isWindows, libPath.file.path, adbPath.file.path, profilePath.path);
+    modules.ADBService.initAdbService(isWindowsOS, libPath.file.path, adbPath.file.path, profilePath.path);
 
     checkFirstRun();
-
-    if (!navigator.mozFFOSAssistant.isWindows) {
-      modules.ADBService.startDeviceDetecting(true);
-      return;
-    }
-
     modules.AddonManager.addAddonListener({
       onUninstalling: function(addon) {
         if (addon.id == ADDON_ID) {
-          stopADBService();
+          stopService();
         }
       },
       onDisabling: function(addon, needsRestart) {
         if (addon.id == ADDON_ID) {
-          stopADBService();
+          stopService();
+          if (isWindowsOS) {
+            setAddonInfo(true);
+          }
         }
       },
       onEnabling: function(addon, needsRestart) {
         if (addon.id == ADDON_ID) {
-          startADBService();
+          if (isWindowsOS) {
+            setAddonInfo(false);
+          }
+          startService();
         }
       },
       onOperationCancelled: function(addon, needsRestart) {
         if (addon.id == ADDON_ID && isDisabled == true) {
-          startADBService();
+          if (isWindowsOS) {
+            setAddonInfo(false);
+          }
+          startService();
         }
       }
     });
-    setAddonInfo(true);
-    modules.DriverManager.startDriverManager();
-    connectToDriverManager();
+    if (!isWindowsOS) {
+      let devicesConfigFile = modules.utils.getChromeFileURI(DEVICES_CONFIG).file;
+      if (devicesConfigFile) {
+        NetUtil.asyncFetch(devicesConfigFile, function(inputStream, status) {
+          if (!Components.isSuccessCode(status)) {
+            return;
+          }
+          var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
+          var jsonData = JSON.parse(data);
+          devicesConfig = jsonData.devices;
+          startService();
+        });
+      }
+    } else {
+      setAddonInfo(false);
+      startService();
+    }
   }
 
 
@@ -155,7 +194,6 @@
         inBackground: false
       });
     }
-
     var pinPref = 'extensions.' + ADDON_ID + '.pinnedOnOpen';
     if (Services.prefs.getBoolPref(pinPref, true)) {
       gBrowser.pinTab(tab);
@@ -166,7 +204,7 @@
     return Services.dirsvc.get('XREExeF', Ci.nsIFile).path;
   }
 
-  function setAddonInfo(isRun) {
+  function setAddonInfo(isDisabled) {
     try {
       let file = modules.utils.getChromeFileURI(DRIVER_MANAGER_HOME).file;
       file.append(DRIVER_MANAGER_INI_FILE_NAME);
@@ -175,7 +213,7 @@
       }
       // USB monitor will launch firefox corresponding to the path
       modules.utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
-      modules.utils.saveIniValue(file, 'status', 'isRun', isRun);
+      modules.utils.saveIniValue(file, 'status', 'disabled', isDisabled);
     } catch (e) {
       debug(e);
     }
@@ -247,60 +285,9 @@
           openUILinkIn(aURI.spec, "tab");
         }
       }
-
       return false;
     }
   }
-
-  let mode;
-  let connected;
-  let serverIP;
-  let port;
-
-  let messageHandler = {
-    receiveMessage: function(aMessage) {
-      mode = aMessage.json.mode;
-      connected = aMessage.json.connected;
-      serverIP = aMessage.json.serverip;
-      port = aMessage.json.port;
-
-      if (connected) {
-        modules.ADBService.startDeviceDetecting(false);
-      }
-
-      if (!navigator.mozFFOSAssistant.isWindows) {
-        return;
-      }
-
-      var otherAdbService = navigator.mozFFOSAssistant.runCmd('listAdbService');
-      otherAdbService.onsuccess = function on_success(event) {
-        if (event.target.result.indexOf('ffosadb.exe') >= 0) {
-          return;
-        }
-        var message = getString('list-adb-service') + event.target.result;
-        showNotification(message);
-      }
-    }
-  };
-
-  function showNotification(message) {
-    if (!("Notification" in window)) {
-      return;
-    } else if (Notification.permission === "granted") {
-      new Notification(message);
-    } else {
-      Notification.requestPermission(function (permission) {
-        if (!('permission' in Notification)) {
-          Notification.permission = permission;
-        }
-        if (permission === "granted") {
-          new Notification(message);
-        }
-      });
-    }
-  }
-
-  var client = null;
 
   function connectToDriverManager() {
     var port = getDriverManagerPort();
@@ -323,34 +310,14 @@
     if (!msg) {
       return;
     }
-
-    if (msg.length == 0) {
-      modules.ADBService.startDeviceDetecting(false);
-      return;
+    var data = msg;
+    if (!isWindowsOS) {
+      data = msg.devices;
     }
-
-    switch (msg[0].InstallState) {
-      case 0: // device driver installed
-        modules.ADBService.startDeviceDetecting(true);
-        break;
-      case 1: // device driver needs reinstalling
-      case 2: // device driver failed installing
-      case 3: // device driver finishes installation
-      default:
-        modules.ADBService.startDeviceDetecting(false);
-        let url = '';
-        if (navigator.language == 'zh-CN') {
-          url = 'http://os.firefox.com.cn/zh-CN/about/help.html';
-        } else {
-          url = 'http://os.firefox.com.cn/en-US/about/help.html';
-        }
-        if (switchToTabHavingURI) {
-          switchToTabHavingURI(url, true);
-        } else {
-          openUILink(url, "tab");
-        }
-        break;
-    }
+    devices = data;
+    setTimeout(function() {
+      observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
+    }, 500);
   }
 
   function onopen() {
@@ -371,9 +338,6 @@
 
   window.addEventListener('unload', function wnd_onunload(e) {
     window.removeEventListener('unload', wnd_onunload);
-    if (navigator.mozFFOSAssistant.isWindows) {
-      setAddonInfo(false);
-    }
   });
 
   function TelnetClient(options) {
