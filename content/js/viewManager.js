@@ -165,6 +165,11 @@ var ViewManager = (function() {
         cv.hidden = true;
       }
     });
+    if (viewId == 'sms-thread-view') {
+      if (!!$id('message-list-container')) {
+        $id('message-list-container').scrollTop = $id('message-list-container').scrollTopMax;
+      }
+    }
   }
 
   function init() {

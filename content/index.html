@@ -47,6 +47,10 @@
     <div id="container-body">
       <div>
         <div class="sidebar">
+          <div id="connect-action" class="listbutton">
+            <button id="connect-button" class="connectbutton"></button>
+            <button id="disconnect-button" class="disconnectbutton hiddenElement"></button>
+          </div>
           <div id="connect-list" class="list radio-list">
             <div id="connect-tab"
                  class="item"
@@ -129,7 +133,7 @@
                 <div id="wifi-connection-code-input">
                   <input id="wifi-connection-code" type="text" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入Wifi连接码" autofocus="true"></input>
                 </div>
-                <button id="wifi-connect-button" class="button" data-l10n-id="wifi-connect"></button>
+                <button id="wifi-connect-button" class="button" data-l10n-id="connect"></button>
               </div>
             </section>
           </section>
@@ -137,7 +141,6 @@
             <div>
               <div>
                 <span data-l10n-id="summary" class="title">基本信息</span>
-                <a id="device-disconnect" href="javascript: void(0);" data-l10n-id="disconnect">断开</a>
               </div>
               <div id="device-image">
                 <div id="device-image-screen" class="device-picture"></div>
@@ -619,13 +622,13 @@
     </div>
     <div class="actions">
       <%if (showResendButton == 'true') {%>
-        <button id="sms-resend-<%=id%>" value="<%=resendValue%>" class="button-resend" title="重发"></button>
+        <button id="sms-resend-<%=id%>" value="<%=resendValue%>" class="button-resend"></button>
       <%}%>
       <%if (showReplyButton == 'true') {%>
-        <button id="sms-reply-<%=id%>" value="<%=replyValue%>" class="button-forward" title="转发"></button>
+        <button id="sms-reply-<%=id%>" value="<%=replyValue%>" class="button-forward"></button>
       <%}%>
       <%if (showReplyButton == 'true') {%>
-        <button id="sms-delete-<%=id%>" value="<%=deleteValue%>" class="button-delete" title="删除"></button>
+        <button id="sms-delete-<%=id%>" value="<%=deleteValue%>" class="button-delete"></button>
       <%}%>
     </div>
   </script>
@@ -827,7 +830,11 @@
       <span><%=size%> MB</span>
     </div>
   </script>
-
+  <script type="text/html" id="tmpl_singletip">
+    <div class="singletip">
+      <label data-l10n-id="<%=name%>"></label>
+    </div>
+  </script>
   <script type="text/html" id="tmpl_tip">
     <div>
       <label data-l10n-id="tip_name"></label>

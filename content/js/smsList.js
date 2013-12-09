@@ -308,6 +308,14 @@ var SmsList = (function() {
           bodyText: this.value
         });
       });
+      var templateData = {
+        name: 'sms-reply'
+      };
+      new Tip({
+        element: forwardBtns[j],
+        innerHTML: tmpl('tmpl_singletip', templateData),
+        container: $id('message-list-container')
+      });
     }
     var resendBtns = $expr('.button-resend', $id('message-list-container'));
     for (var j = 0; j < resendBtns.length; j++) {
@@ -334,6 +342,14 @@ var SmsList = (function() {
           removeMessage(smsId[2], smsId[3]);
         }, null);
       });
+      var templateData = {
+        name: 'sms-resend'
+      };
+      new Tip({
+        element: resendBtns[j],
+        innerHTML: tmpl('tmpl_singletip', templateData),
+        container: $id('message-list-container')
+      });
     }
     var deleteBtns = $expr('.button-delete', $id('message-list-container'));
     for (var j = 0; j < deleteBtns.length; j++) {
@@ -347,6 +363,14 @@ var SmsList = (function() {
         CMD.SMS.deleteMessageById(JSON.stringify(deleteSMS), function onSuccess(event) {
           removeMessage(smsId[2], smsId[3]);
         }, null);
+      });
+      var templateData = {
+        name: 'sms-delete'
+      };
+      new Tip({
+        element: deleteBtns[j],
+        innerHTML: tmpl('tmpl_singletip', templateData),
+        container: $id('message-list-container')
       });
     }
     animationLoading.stop(loadingGroupId);

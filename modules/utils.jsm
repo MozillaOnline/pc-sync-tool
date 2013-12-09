@@ -94,6 +94,7 @@ var utils = {
     }
   },
 
+  
   selectDirectory: function(callback, options) {
     var nsIFilePicker = Ci.nsIFilePicker;
     var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
@@ -131,7 +132,7 @@ var utils = {
       }
     });
   },
-
+  
   saveToDisk: function(content, callback, options) {
     var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let title = options && options.title ? options.title : null;
@@ -147,21 +148,22 @@ var utils = {
         filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
       }
     }
-
+  
     let self = this;
     callback = (typeof callback === 'function') ? callback : function() {};
-
+  
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
       case Ci.nsIFilePicker.returnOK:
       case Ci.nsIFilePicker.returnReplace:
         let file = filePicker.file;
         var ostream = FileUtils.openSafeFileOutputStream(file);
+  
         var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter'].
         createInstance(Ci.nsIScriptableUnicodeConverter);
         converter.charset = 'UTF-8';
         var istream = converter.convertToInputStream(content);
-
+  
         NetUtil.asyncCopy(istream, ostream, function(status) {
           if (!Components.isSuccessCode(status)) {
             // TODO report error
@@ -179,7 +181,7 @@ var utils = {
       }
     });
   },
-
+  
   readFromDisk: function(callback) {
     var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     filePicker.init(this._window, null, Ci.nsIFilePicker.modeOpen);
@@ -208,7 +210,7 @@ var utils = {
       }
     });
   },
-
+  
   selectMultiFilesFromDisk: function(callback, options) {
     var nsIFilePicker = Ci.nsIFilePicker;
     var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);

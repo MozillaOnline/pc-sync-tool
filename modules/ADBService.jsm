@@ -28,7 +28,7 @@ function worker_onMessage(e) {
   let callback = callbacks[data.id];
   if (callback) {
     if (!data.noDelete) {
-      delete callbacks[data.id];
+      delete callbacks[data.id];  
     }
     if (!data.noCallback) {
       callback(data);

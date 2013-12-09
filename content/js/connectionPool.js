@@ -21,9 +21,10 @@ TCPConnectionPool.prototype = {
       size: 1,
       host: 'localhost',
       port: 10010,
-      onenable: emptyFunction,
-      ondisable: emptyFunction,
-      onListening: emptyFunction
+      onconnected: emptyFunction,
+      ondisconnected: emptyFunction,
+      onListening: emptyFunction,
+      onerror: emptyFunction
     }, options);
 
     this._connPool = [];
@@ -50,6 +51,8 @@ TCPConnectionPool.prototype = {
       });
 
       socket.onopen = this._onSocketOpened.bind(this);
+      socket.onerror = this._onSocketError.bind(this);
+      socket.onclose = this._onSocketClosed.bind(this)
     }
   },
 
@@ -78,16 +81,19 @@ TCPConnectionPool.prototype = {
     return null;
   },
 
+  _onSocketError: function tc_onSocketError(event) {
+    this.options.onerror();
+  },
+
   _onSocketOpened: function tc_onSocketOpened(event) {
     // Init wrapper
     var socketWrapper = new TCPSocketWrapper({
       socket: event.target,
-      onmessage: this._onWrapperMessage.bind(this),
-      onclose: this._onSocketClosed.bind(this)
+      onmessage: this._onWrapperMessage.bind(this)
     });
-    // If a new socket is available, then call onenable to notify
+    // If a new socket is available, then call onconnected to notify
     if (this._connPool.length === 0) {
-      this.options.onenable();
+      this.options.onconnected();
     }
 
     this._setSocketWrapperIdle(socketWrapper);
@@ -111,9 +117,9 @@ TCPConnectionPool.prototype = {
 
     this._connPool = newPool;
 
-    // If all the socket are closed, then call the ondisable to notify
+    // If all the socket are closed, then call the ondisconnected to notify
     if (this._connPool.length === 0) {
-      this.options.ondisable();
+      this.options.ondisconnected();
     }
   },
 

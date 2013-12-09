@@ -168,7 +168,7 @@ function UrlEncode(str) {
   }
   return ret;
 }
-
+  
 onmessage = function(e) {
   debug('Receive message: ' + e.data.cmd);
   let id = e.data.id;
