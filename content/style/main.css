@@ -159,12 +159,20 @@ input[type="url"], textarea {
 .help {
   margin-left: 1rem;
   font-size: 1.2rem;
+  color: #00C8F0;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .connection-button {
   height: 19rem;
   text-align: center;
   margin-top: 0.1rem;
+}
+
+.connection-mode {
+  display: block;
+  margin-top: 15rem;
 }
 
 .usb-connection-button-unselect {
@@ -184,6 +192,14 @@ input[type="url"], textarea {
 
 .usb-connection-button-unselect[data-checked=false]:hover {
   background-color: #e2e2e2;
+}
+
+.usb-connection-button-unselect >label {
+  color: #E86000;
+}
+
+.usb-connection-button-select >label {
+  color: #FFFFFF;
 }
 
 .usb-connection-button-select {
@@ -209,6 +225,14 @@ input[type="url"], textarea {
 
 .wifi-connection-button-select {
   background: url("images/wificonnectionbuttonselect.png") no-repeat center center #e86000;
+}
+
+.wifi-connection-button-unselect >label {
+  color: #E86000;
+}
+
+.wifi-connection-button-select >label {
+  color: #FFFFFF;
 }
 
 .usb-connection-step {
