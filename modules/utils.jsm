@@ -18,6 +18,7 @@ const {
   utils: Cu,
   results: Cr
 } = Components;
+
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
@@ -36,7 +37,6 @@ var utils = {
     var hash = ch.finish(true);
 
     // return the two-digit hexadecimal code for a byte
-
     function toHexString(charCode) {
       return ("0" + charCode.toString(16)).slice(-2);
     }
@@ -94,14 +94,11 @@ var utils = {
     }
   },
 
-  
   selectDirectory: function(callback, options) {
     var nsIFilePicker = Ci.nsIFilePicker;
     var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let title = options && options.title;
-    let wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-                   .getService(Components.interfaces.nsIWindowMediator);
-    let win = wm.getMostRecentWindow('navigator:browser');
+    let win = Services.wm.getMostRecentWindow('navigator:browser');
     filePicker.init(win, title, Ci.nsIFilePicker.modeGetFolder);
     if (options && options.fileType) {
       if (options.fileType == 'Image') {
@@ -132,11 +129,12 @@ var utils = {
       }
     });
   },
-  
+
   saveToDisk: function(content, callback, options) {
     var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let title = options && options.title ? options.title : null;
-    filePicker.init(this._window, title, Ci.nsIFilePicker.modeSave);
+    let win = Services.wm.getMostRecentWindow('navigator:browser');
+    filePicker.init(win, title, Ci.nsIFilePicker.modeSave);
     if (options) {
       if (options.name) {
         filePicker.defaultString = options.name;
@@ -148,22 +146,22 @@ var utils = {
         filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
       }
     }
-  
+
     let self = this;
     callback = (typeof callback === 'function') ? callback : function() {};
-  
+
     filePicker.open(function onPickComplete(returnCode) {
       switch (returnCode) {
       case Ci.nsIFilePicker.returnOK:
       case Ci.nsIFilePicker.returnReplace:
         let file = filePicker.file;
         var ostream = FileUtils.openSafeFileOutputStream(file);
-  
+
         var converter = Cc['@mozilla.org/intl/scriptableunicodeconverter'].
         createInstance(Ci.nsIScriptableUnicodeConverter);
         converter.charset = 'UTF-8';
         var istream = converter.convertToInputStream(content);
-  
+
         NetUtil.asyncCopy(istream, ostream, function(status) {
           if (!Components.isSuccessCode(status)) {
             // TODO report error
@@ -181,10 +179,11 @@ var utils = {
       }
     });
   },
-  
+
   readFromDisk: function(callback) {
     var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
-    filePicker.init(this._window, null, Ci.nsIFilePicker.modeOpen);
+    let win = Services.wm.getMostRecentWindow("navigator:browser");
+    filePicker.init(win, null, Ci.nsIFilePicker.modeOpen);
     filePicker.appendFilter('*.vcf', '*.vcf');
     filePicker.appendFilters(Ci.nsIFilePicker.filterAll);
     filePicker.open(function onPickComplete(returnCode) {
@@ -210,12 +209,13 @@ var utils = {
       }
     });
   },
-  
+
   selectMultiFilesFromDisk: function(callback, options) {
     var nsIFilePicker = Ci.nsIFilePicker;
     var filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let title = options && options.title ? options.title : null;
-    filePicker.init(this._window, title, Ci.nsIFilePicker.modeOpenMultiple);
+    let win = Services.wm.getMostRecentWindow('navigator:browser');
+    filePicker.init(win, title, Ci.nsIFilePicker.modeOpenMultiple);
     if (options && options.fileType) {
       if (options.fileType == 'Image') {
         filePicker.appendFilters(nsIFilePicker.filterImages);
