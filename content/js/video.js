@@ -17,16 +17,16 @@ var Video = (function() {
     }
     var msg = e.detail.data;
     switch (msg.callbackID) {
-    case 'ondeleted':
-      updateRemovedVideos(msg.detail);
-      updateUI();
-      break;
-    case 'enumerate':
-      addVideo(msg.detail);
-      updateUI();
-      break;
-    default:
-      break;
+      case 'ondeleted':
+        updateRemovedVideos(msg.detail);
+        updateUI();
+        break;
+      case 'enumerate':
+        addVideo(msg.detail);
+        updateUI();
+        break;
+      default:
+        break;
     }
   }
 

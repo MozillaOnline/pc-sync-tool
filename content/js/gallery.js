@@ -20,16 +20,16 @@ var Gallery = (function() {
     }
     var msg = e.detail.data;
     switch (msg.callbackID) {
-    case 'ondeleted':
-      updateRemovedPictures(msg.detail);
-      updateUI();
-      break;
-    case 'enumerate':
-      addPicture(msg.detail);
-      updateUI();
-      break;
-    default:
-      break;
+      case 'ondeleted':
+        updateRemovedPictures(msg.detail);
+        updateUI();
+        break;
+      case 'enumerate':
+        addPicture(msg.detail);
+        updateUI();
+        break;
+      default:
+        break;
     }
   }
 

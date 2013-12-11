@@ -39,24 +39,24 @@ var MusicList = (function() {
     }
     var msg = e.detail.data;
     switch (msg.callbackID) {
-    case 'ondeleted':
-      if (!msg.detail || !msg.detail.length || msg.detail.length < 1) {
-        return;
-      }
-      for (var index = 0; index < msg.detail.length; index++) {
-        var item = $id(msg.detail[index]);
-        if (item) {
-          getListContainer().removeChild(item);
+      case 'ondeleted':
+        if (!msg.detail || !msg.detail.length || msg.detail.length < 1) {
+          return;
         }
-      }
-      updateUI();
-      break;
-    case 'enumerate':
-      getListContainer().appendChild(createMusicListItem(msg.detail));
-      updateUI();
-      break;
-    default:
-      break;
+        for (var index = 0; index < msg.detail.length; index++) {
+          var item = $id(msg.detail[index]);
+          if (item) {
+            getListContainer().removeChild(item);
+          }
+        }
+        updateUI();
+        break;
+      case 'enumerate':
+        getListContainer().appendChild(createMusicListItem(msg.detail));
+        updateUI();
+        break;
+      default:
+        break;
     }
   }
 

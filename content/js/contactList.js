@@ -481,17 +481,14 @@ var ContactList = (function() {
     }
     var changeEvent = e.detail.data;
     switch (changeEvent.reason) {
-    case 'remove':
-      {
+      case 'remove':
         var item = getContact(changeEvent.contactID);
         if (!item) {
           return;
         }
         groupedList.remove(item);
         break;
-      }
-    case 'update':
-      {
+      case 'update':
         CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
           if (result.data != '' && groupedList) {
             var contactData = JSON.parse(result.data);
@@ -501,9 +498,7 @@ var ContactList = (function() {
           }
         }, null);
         break;
-      }
-    case 'create':
-      {
+      case 'create':
         CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
           if (result.data != '' && groupedList) {
             var contactData = JSON.parse(result.data);
@@ -511,9 +506,8 @@ var ContactList = (function() {
           }
         }, null);
         break;
-      }
-    default:
-      break;
+      default:
+        break;
     }
   }
 
