@@ -37,12 +37,18 @@ chromeWindow.switchToTabHavingURI('about:ffos', true);
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'ADBService', 'resource://ffosassistant/ADBService.jsm');
+var connectState = {
+  disconnected: 1,
+  connected: 2,
+  connecting: 3,
+  error: 4
+};
 var animationLoading = null;
 var customEventElement = document;
 var isWifiConnected = false;
 var observer = null;
 var devicesList = null;
-var deviceSocketConnected = false;
+var deviceSocketState = connectState.disconnected;
 var REMOTE_PORT = 25679;
 var FFOSAssistant = (function() {
   var connPool = null;
@@ -211,8 +217,16 @@ var FFOSAssistant = (function() {
 
   function connectToDevice() {
     if (!devicesList || devicesList.length == 0) {
+      if (deviceSocketState == connectState.connected) {
+        releaseConnPool();
+        resetConnect();
+      }
       return;
     }
+    if (deviceSocketState == connectState.connecting) {
+      return;
+    }
+    deviceSocketState = connectState.connecting;
     var availableDevices = [];
     if (isWindows()) {
       for (var i=0; i<devicesList.length; i++) {
@@ -230,13 +244,14 @@ var FFOSAssistant = (function() {
             content: _('connection-alert-dialog-message-check-nodriver'),
             detail: _('connection-alert-dialog-detail'),
             href: 'chrome://ffosassistant/content/Help/Help-cn.html'
-          }
+          },
+          callback: resetConnect
         });
+        return;
       }
     } else {
       availableDevices = devicesList;
     }
-
     var loadingGroupId = animationLoading.start();
     ADBService.findDevice(function find(data) {
       var regExp = /\n([0-9a-z]+)\tdevice/ig;
@@ -271,7 +286,8 @@ var FFOSAssistant = (function() {
             content: contentInfo,
             detail: _('connection-alert-dialog-detail'),
             href: 'chrome://ffosassistant/content/Help/Help-cn.html'
-          }
+          },
+          callback: resetConnect
         });
         return;
       }
@@ -280,9 +296,27 @@ var FFOSAssistant = (function() {
         animationLoading.stop(loadingGroupId);
         if (!/error|failed/ig.test(data.result)) {
           connectToServer('localhost');
+        } else {
+          deviceSocketState = connectState.error;
         }
       });
     });
+  }
+
+  function releaseConnPool() {
+    if (connPool) {
+      connPool.finalize();
+      connPool = null;
+    }
+  }
+
+  function resetConnect() {
+    if (!isWindows()) {
+      isWifiConnected = false;
+    }
+    showConnectView();
+    ViewManager.reset();
+    deviceSocketState = connectState.disconnected;
   }
 
   function connectToServer(serverIP) {
@@ -290,19 +324,17 @@ var FFOSAssistant = (function() {
       return;
     }
     var loadingGroupId = animationLoading.start();
-    var timeout = null;
-    if (connPool) {
-      connPool.finalize();
-      connPool = null;
-    }
-    deviceSocketConnected = false;
+    releaseConnPool();
     connPool = new TCPConnectionPool({
       host: serverIP,
       port: REMOTE_PORT,
       size: 1,
       onerror: function onerror() {
-        deviceSocketConnected = false;
         animationLoading.stop(loadingGroupId);
+        if (deviceSocketState != connectState.connecting) {
+          return;
+        }
+        releaseConnPool();
         var contentInfo = [_('connection-alert-dialog-message-check-version'),
                            _('connection-alert-dialog-message-check-lockscreen'),
                            _('connection-alert-dialog-message-check-runapp')];
@@ -319,17 +351,22 @@ var FFOSAssistant = (function() {
             content: contentInfo,
             detail: _('connection-alert-dialog-detail'),
             href: 'chrome://ffosassistant/content/Help/Help-cn.html'
-          }
+          },
+          callback: resetConnect
         });
       },
       onconnected: function onconnected() {
         animationLoading.stop(loadingGroupId);
-        deviceSocketConnected = true;
+        if (deviceSocketState != connectState.connecting) {
+          return;
+        }
+        deviceSocketState = connectState.connected;
         showSummaryView(serverIP);
       },
       ondisconnected: function ondisconnected() {
         animationLoading.stop(loadingGroupId);
-        if (!deviceSocketConnected) {
+        releaseConnPool();
+        if (deviceSocketState == connectState.connecting) {
           var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
           new AlertDialog({
             id: 'popup_dialog',
@@ -340,17 +377,12 @@ var FFOSAssistant = (function() {
               content: contentInfo,
               detail: _('connection-alert-dialog-detail'),
               href: 'chrome://ffosassistant/content/Help/Help-cn.html'
-            }
+            },
+            callback: resetConnect
           });
-          return;
+        } else{
+           resetConnect();
         }
-        deviceSocketConnected = false;
-        window.clearTimeout(timeout);
-        if (!isWindows()) {
-          isWifiConnected = false;
-        }
-        showConnectView();
-        ViewManager.reset();
       }
     });
   }
@@ -471,9 +503,6 @@ var FFOSAssistant = (function() {
   };
 
   function init() {
-    if (!animationLoading) {
-      animationLoading = new animationLoadingDialog();
-    }
     $id('lang-settings').addEventListener('click', function onclick_langsetting(event) {
       if (!event.target.classList.contains('language-code-button')) {
         return;
@@ -488,74 +517,66 @@ var FFOSAssistant = (function() {
       connectToDevice();
     });
     $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
-      if (connPool) {
-        connPool.finalize();
-        connPool = null;
-      }
+      releaseConnPool();
       if (!isWindows()) {
         isWifiConnected = false;
       }
       showConnectView();
       ViewManager.reset();
     });
-    showConnectView();
     customEventElement.addEventListener('firstshow', function(e) {
-      switch(e.detail.type) {
-      case 'summary-view':
-        getAndShowSummaryInfo(e.detail.data);
-        break;
-      case 'contact-view':
-        ContactList.init(e.detail.data);
-        break;
-      case 'sms-view':
-        SmsList.init(e.detail.data);
-        break;
-      case 'music-view':
-        MusicList.init(e.detail.data);
-        break;
-      case 'gallery-view':
-        Gallery.init(e.detail.data);
-        break;
-      case 'video-view':
-        Video.init(e.detail.data);
-        break;
-      default:
-        break;
+      switch (e.detail.type) {
+        case 'summary-view':
+          getAndShowSummaryInfo(e.detail.data);
+          break;
+        case 'contact-view':
+          ContactList.init(e.detail.data);
+          break;
+        case 'sms-view':
+          SmsList.init(e.detail.data);
+          break;
+        case 'music-view':
+          MusicList.init(e.detail.data);
+          break;
+        case 'gallery-view':
+          Gallery.init(e.detail.data);
+          break;
+        case 'video-view':
+          Video.init(e.detail.data);
+          break;
+        default:
+          break;
       }
     });
     customEventElement.addEventListener('othershow', function(e) {
-      switch(e.detail.type) {
-      case 'summary-view':
-        getAndShowStorageInfo(e.detail.data);
-        break;
-      case 'contact-view':
-        ContactList.show(e.detail.data);
-        break;
-      case 'sms-view':
-        SmsList.resetView();
-        break;
-      default:
-        break;
+      switch (e.detail.type) {
+        case 'summary-view':
+          getAndShowStorageInfo(e.detail.data);
+          break;
+        case 'contact-view':
+          ContactList.show(e.detail.data);
+          break;
+        case 'sms-view':
+          SmsList.resetView();
+          break;
+        default:
+          break;
       }
     });
+    if (!animationLoading) {
+      animationLoading = new animationLoadingDialog();
+    }
+    showConnectView();
     observer = new Observer();
     observerService.notifyObservers(null, 'chrome-start-connection', '');
   }
-
-  window.addEventListener('load', function window_onload(event) {
-    window.removeEventListener('load', window_onload);
-    init();
-  });
 
   window.addEventListener('unload', function window_onunload(event) {
     window.removeEventListener('unload', window_onunload);
     if (observer) {
       observer.unregister();
     }
-    if (connPool) {
-      connPool.finalize();
-      connPool = null;
-    }
+    releaseConnPool();
   });
 
   window.addEventListener('localized', function showBody() {
@@ -569,6 +590,7 @@ var FFOSAssistant = (function() {
         label.classList.remove('current');
       }
     });
+    init();
   });
 
   return {
