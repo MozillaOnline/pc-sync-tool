@@ -69,7 +69,9 @@
     observe: function(subject, topic, data) {
       switch(topic) {
         case 'chrome-start-connection':
-          observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
+          if (devices.length != 0 ) {
+            observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
+          }
           break;
       }
     },
@@ -317,7 +319,7 @@
     devices = data;
     setTimeout(function() {
       observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
-    }, 500);
+    }, 1000);
   }
 
   function onopen() {
@@ -334,10 +336,6 @@
       window.removeEventListener('load', wnd_onload);
       window.setTimeout(init, 1000);
     }
-  });
-
-  window.addEventListener('unload', function wnd_onunload(e) {
-    window.removeEventListener('unload', wnd_onunload);
   });
 
   function TelnetClient(options) {

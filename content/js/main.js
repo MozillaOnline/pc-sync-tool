@@ -43,8 +43,7 @@ var isWifiConnected = false;
 var observer = null;
 var devicesList = null;
 var deviceSocketConnected = false;
-var deviceSocketConnecting = false;
-
+var REMOTE_PORT = 25679;
 var FFOSAssistant = (function() {
   var connPool = null;
   var connListenSocket = null;
@@ -59,7 +58,7 @@ var FFOSAssistant = (function() {
       connListenSocket.socket.close();
       connListenSocket = null;
     }
-    var socket = navigator.mozTCPSocket.open(serverIP, 10010, {
+    var socket = navigator.mozTCPSocket.open(serverIP, REMOTE_PORT, {
       binaryType: 'arraybuffer'
     });
     socket.onopen = function tc_onListenSocketOpened(event) {
@@ -177,8 +176,8 @@ var FFOSAssistant = (function() {
   }
 
   function getAndShowSummaryInfo() {
-    var loadingGroupId = animationLoading.start();
     getAndShowStorageInfo();
+    var loadingGroupId = animationLoading.start();
     CMD.Device.getSettings(function onresponse_getDeviceInfo(message) {
       var dataJSON = JSON.parse(message.data);
       var elem = $id('device-storage-summary');
@@ -278,9 +277,9 @@ var FFOSAssistant = (function() {
       }
       device = connectDevices[0];
       ADBService.setupDevice(device, function setup(data) {
+        animationLoading.stop(loadingGroupId);
         if (!/error|failed/ig.test(data.result)) {
           connectToServer('localhost');
-          animationLoading.stop(loadingGroupId);
         }
       });
     });
@@ -296,13 +295,13 @@ var FFOSAssistant = (function() {
       connPool.finalize();
       connPool = null;
     }
-    deviceSocketConnecting = true;
+    deviceSocketConnected = false;
     connPool = new TCPConnectionPool({
       host: serverIP,
+      port: REMOTE_PORT,
       size: 1,
       onerror: function onerror() {
         deviceSocketConnected = false;
-        deviceSocketConnecting = false;
         animationLoading.stop(loadingGroupId);
         var contentInfo = [_('connection-alert-dialog-message-check-version'),
                            _('connection-alert-dialog-message-check-lockscreen'),
@@ -325,16 +324,12 @@ var FFOSAssistant = (function() {
       },
       onconnected: function onconnected() {
         animationLoading.stop(loadingGroupId);
-        timeout = window.setTimeout(function imedb_cacheTimeout() {
-          if (deviceSocketConnecting) {
-            deviceSocketConnected = true;
-            deviceSocketConnecting = false;
-            showSummaryView(serverIP);
-          }
-        }, 500);
+        deviceSocketConnected = true;
+        showSummaryView(serverIP);
       },
       ondisconnected: function ondisconnected() {
-        if (!deviceSocketConnecting && !deviceSocketConnected) {
+        animationLoading.stop(loadingGroupId);
+        if (!deviceSocketConnected) {
           var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
           new AlertDialog({
             id: 'popup_dialog',
@@ -350,8 +345,6 @@ var FFOSAssistant = (function() {
           return;
         }
         deviceSocketConnected = false;
-        deviceSocketConnecting = false;
-        animationLoading.stop(loadingGroupId);
         window.clearTimeout(timeout);
         if (!isWindows()) {
           isWifiConnected = false;
@@ -445,10 +438,11 @@ var FFOSAssistant = (function() {
 
     $id('help_btn').onclick = function(e) {
       var url = '';
-      if (navigator.language == 'zh-CN') {
+      if (navigator.mozL10n.language.code == 'zh-CN') {
+        //url = 'http://os.firefox.com.cn/zh-CN/about/help.html';
         url = 'chrome://ffosassistant/content/Help/Help-cn.html';
       } else {
-        url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+        url = 'chrome://ffosassistant/content/Help/Help-en.html';
       }
       window.open(url);
     };

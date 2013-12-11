@@ -12,8 +12,8 @@ function debug(s) {
 
 var device = '';
 var ADB_PATH = '';
-var LOCAL_PORT = 10010;
-var REMOTE_PORT = 10010;
+var LOCAL_PORT = 25679;
+var REMOTE_PORT = 25679;
 let detectingInterval = null;
 let connected = false;
 let isWin = false;

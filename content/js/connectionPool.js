@@ -20,7 +20,7 @@ TCPConnectionPool.prototype = {
     this.options = extend({
       size: 1,
       host: 'localhost',
-      port: 10010,
+      port: 25679,
       onconnected: emptyFunction,
       ondisconnected: emptyFunction,
       onListening: emptyFunction,
@@ -51,8 +51,6 @@ TCPConnectionPool.prototype = {
       });
 
       socket.onopen = this._onSocketOpened.bind(this);
-      socket.onerror = this._onSocketError.bind(this);
-      socket.onclose = this._onSocketClosed.bind(this)
     }
   },
 
@@ -89,12 +87,11 @@ TCPConnectionPool.prototype = {
     // Init wrapper
     var socketWrapper = new TCPSocketWrapper({
       socket: event.target,
-      onmessage: this._onWrapperMessage.bind(this)
+      onconnected: this._onSocketConnected.bind(this),
+      onmessage: this._onWrapperMessage.bind(this),
+      onerror: this._onSocketError.bind(this),
+      onclose: this._onSocketClosed.bind(this)
     });
-    // If a new socket is available, then call onconnected to notify
-    if (this._connPool.length === 0) {
-      this.options.onconnected();
-    }
 
     this._setSocketWrapperIdle(socketWrapper);
     this._connPool.push(socketWrapper);
@@ -102,6 +99,12 @@ TCPConnectionPool.prototype = {
     if (!this._messageSendingTimer) {
       this._messageSendingTimer = window.setInterval(
       this._sendQueuedMsg.bind(this), 500);
+    }
+  },
+
+  _onSocketConnected: function tc_onSocketConnected() {
+    if (this.options.onconnected) {
+      this.options.onconnected();
     }
   },
 

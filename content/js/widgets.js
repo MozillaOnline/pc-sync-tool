@@ -1318,7 +1318,13 @@ animationLoadingDialog.prototype = {
     var documentHeight = document.documentElement.clientHeight;
     var loading = $expr('.loading', this._modalElement)[0];
     document.body.appendChild(this._modalElement);
-    loading.style.top = (documentHeight > containerHeight ? (containerHeight - loading.clientHeight) / 2 : (documentHeight - loading.clientHeight) / 2) + 'px';
+    var loadingTop;
+    if (containerHeight == 0 || documentHeight < containerHeight) {
+      loadingTop = (documentHeight - loading.clientHeight) / 2;
+    } else {
+      loadingTop = (containerHeight - loading.clientHeight) / 2
+    }
+    loading.style.top = loadingTop + 'px';
     return this.groupId;
   },
 
