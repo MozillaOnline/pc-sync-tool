@@ -391,24 +391,7 @@ var FFOSAssistant = (function() {
   function showConnectView() {
     animationLoading.reset();
     $id('connect-button').classList.remove('hiddenElement');
-    var templateData = {
-      name: 'connect'
-    };
-    new Tip({
-      element: $id('connect-button'),
-      innerHTML: tmpl('tmpl_singletip', templateData),
-      container: $id('connect-action')
-    });
     $id('disconnect-button').classList.add('hiddenElement');
-    templateData = {
-      name: 'disconnect'
-    };
-    new Tip({
-      element: $id('disconnect-button'),
-      innerHTML: tmpl('tmpl_singletip', templateData),
-      container: $id('connect-action')
-    });
-
     $id('device-connected').classList.add('hiddenElement');
     $id('device-unconnected').classList.remove('hiddenElement');
     $id('views').classList.add('hidden-views');
@@ -518,6 +501,9 @@ var FFOSAssistant = (function() {
     $id('connect-button').addEventListener('click', function onclick_connect(event) {
       connectToDevice();
     });
+    $id('connect-button').addEventListener('mouseover', function () {
+      this.title = _('connect');
+    });
     $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
       releaseConnPool();
       if (!isWindows()) {
@@ -525,6 +511,9 @@ var FFOSAssistant = (function() {
       }
       showConnectView();
       ViewManager.reset();
+    });
+    $id('disconnect-button').addEventListener('mouseover', function () {
+      this.title = _('disconnect');
     });
     customEventElement.addEventListener('firstshow', function(e) {
       switch (e.detail.type) {
