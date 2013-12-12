@@ -694,17 +694,17 @@
 }
 
 .messages-list-item .actions button.button-forward{
-  background: url("images/sms-reply.png") no-repeat;
+  background: url("images/sms-forward.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-forward:hover{
-  background: url("images/sms-reply-hover.png") no-repeat;
+  background: url("images/sms-forward-hover.png") no-repeat;
   background-size: cover;
 }
 
 .messages-list-item .actions button.button-forward:active{
-  background: url("images/sms-reply-active.png") no-repeat;
+  background: url("images/sms-forward-active.png") no-repeat;
   background-size: cover;
 }
 
