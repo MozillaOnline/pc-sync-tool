@@ -127,22 +127,6 @@ var ContactList = (function() {
     }
   }
 
-  function updateAvatar(contact) {
-    if (!contact.photo || (contact.photo.length == 0)) {
-      return;
-    }
-
-    var item = $id('contact-' + contact.id);
-    if (!item) {
-      return;
-    }
-
-    var img = item.getElementsByTagName('img')[0];
-    img.src = contact.photo;
-    item.dataset.avatar = contact.photo;
-    img.classList.remove('avatar-default');
-  }
-
   function init(viewData) {
     var loadingGroupId = animationLoading.start();
     ViewManager.showViews('contact-quick-add-view');
@@ -409,19 +393,21 @@ var ContactList = (function() {
     groupedList.remove(existingContact);
     groupedList.add(contact);
 
-    if (!contact.photo || (contact.photo.length == 0)) {
-      return;
-    }
-
     var item = $id('contact-' + contact.id);
     if (!item) {
       return;
     }
-
     var img = item.getElementsByTagName('img')[0];
-    img.src = contact.photo;
-    item.dataset.avatar = contact.photo;
-    img.classList.remove('avatar-default');
+    if (!contact.photo || (contact.photo.length == 0)) {
+      img.src = '';
+      item.dataset.avatar = '';
+      img.removeAttribute('src');
+      img.classList.add('avatar-default');
+    } else {
+      img.src = contact.photo;
+      item.dataset.avatar = contact.photo;
+      img.classList.remove('avatar-default');
+    }
   }
 
   function getContact(id) {
@@ -494,7 +480,6 @@ var ContactList = (function() {
             var contactData = JSON.parse(result.data);
             updateContact(contactData);
             showContactInfo(contactData);
-            updateAvatar(contactData);
           }
         }, null);
         break;
