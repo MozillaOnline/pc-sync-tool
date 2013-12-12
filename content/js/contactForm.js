@@ -85,7 +85,7 @@ ContactField.prototype = {
         break;
       }
     }
-    section.innerHTML = tmpl('tmpl_contact_add_item', templateData);;
+    section.innerHTML = tmpl('tmpl_contact_add_item', templateData);
 
     this.elem.insertBefore(section, this._getAddNewButton());
     // Translate the fields

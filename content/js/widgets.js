@@ -255,7 +255,9 @@ GroupedList.prototype = {
     var group = this._removeFromGroup(dataObj);
 
     var groupElem = this._getGroupElem(group.index);
-
+    if (!groupElem) {
+      return;
+    }
     // remove whole group
     if (group.dataList.length === 0) {
       groupElem.parentNode.removeChild(groupElem);
@@ -1158,7 +1160,7 @@ ImageViewer.prototype = {
         });
         return;
       }
-      $id('pic-content').setAttribute('src', cachedUrl);;
+      $id('pic-content').setAttribute('src', cachedUrl);
     });
   },
 

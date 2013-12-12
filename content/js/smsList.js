@@ -20,7 +20,7 @@ var SmsList = (function() {
     $id('message-list-container').innerHTML = '';
     CMD.SMS.getThreads(function onresponse_getThreads(messages) {
       var dataJSON = JSON.parse(messages.data);
-      for (var i=0; i<dataJSON.length; i++) {
+      for (var i = 0; i < dataJSON.length; i++) {
         allMessagesList[dataJSON[i].id] = [];
       }
       threadList = new GroupedList({
@@ -42,7 +42,7 @@ var SmsList = (function() {
       });
       CMD.SMS.getAllMessages(function onresponse(messages) {
         var allMessages = JSON.parse(messages.data);
-        for (var i=0; i<allMessages.length; i++) {
+        for (var i = 0; i < allMessages.length; i++) {
           var threadMessage = allMessages[i];
           allMessagesList[threadMessage.threadId].push(threadMessage);
         }
@@ -77,6 +77,107 @@ var SmsList = (function() {
     });
   }
 
+  function removeThreadAvatar(threadInfo) {
+    var threadItem = $id('id-threads-data-' + threadInfo.id);
+    var name = threadItem.getElementsByTagName('div')[2];
+    name.childNodes[0].type = '';
+    name.childNodes[0].nodeValue = threadInfo.participants[0];
+    var img = threadItem.getElementsByTagName('img')[0];
+    img.src = '';
+    threadItem.dataset.avatar = '';
+    img.removeAttribute('src');
+    img.classList.add('avatar-default');
+    var ids = [];
+    $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(item) {
+      ids.push(item.dataset.threadIndex);
+    });
+    if (ids.length == 1 && ids[0] == threadInfo.id && !$id('sms-thread-view').hidden) {
+      var messageViewName = $id('sms-thread-header-name');
+      if (messageViewName) {
+        messageViewName.textContent = threadInfo.participants[0];
+        var titleElem = $id('add-to-contact-' + threadInfo.id);
+        if (titleElem) {
+          titleElem.hidden = true;
+        }
+      }
+      var headerButton = $id('sms-thread-header-button');
+      if (headerButton) {
+        headerButton.hidden = false;
+      }
+      var messageViewimg = $id('sms-thread-header-img');
+      if (!!messageViewimg) {
+        messageViewimg.src = '';
+        messageViewimg.removeAttribute('src');
+        messageViewimg.classList.add('avatar-show-default');
+      }
+    } else if (ids.length > 1 && ids.indexOf(threadInfo.id) && !$id('sms-select-view').hidden) {
+      var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
+      if (selectViewName) {
+        selectViewName.childNodes[0].nodeValue = threadInfo.participants[0];
+      }
+      var selectItem = $id('show-multi-sms-' + threadInfo.id);
+      if (!!selectItem) {
+        img = selectItem.getElementsByTagName('img')[0];
+        img.src = '';
+        img.removeAttribute('src');
+        selectItem.dataset.avatar = '';
+        img.classList.add('avatar-default');
+      }
+    }
+  }
+
+  function updateThreadAvatarFromcontact(threadInfo, contactData) {
+    var threadItem = $id('id-threads-data-' + threadInfo.id);
+    var name = threadItem.getElementsByTagName('div')[2];
+    name.childNodes[0].type = 'contact-' + contactData.id;
+    name.childNodes[0].nodeValue = contactData.name.join(' ');
+    if (!!contactData.photo && contactData.photo.length > 0) {
+      var img = threadItem.getElementsByTagName('img')[0];
+      img.src = contactData.photo;
+      threadItem.dataset.avatar = contactData.photo;
+      img.classList.remove('avatar-default');
+    }
+    var ids = [];
+    $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(item) {
+      ids.push(item.dataset.threadIndex);
+    });
+    if (ids.length == 1 && ids[0] == threadInfo.id && !$id('sms-thread-view').hidden) {
+      var messageViewName = $id('sms-thread-header-name');
+      if (messageViewName) {
+        messageViewName.textContent = contactData.name.join(' ');
+        var titleElem = $id('add-to-contact-' + threadInfo.id);
+        if (titleElem) {
+          titleElem.hidden = true;
+        }
+      }
+      var headerButton = $id('sms-thread-header-button');
+      if (headerButton) {
+        headerButton.hidden = true;
+      }
+      if (!!contactData.photo && contactData.photo.length > 0) {
+        var messageViewimg = $id('sms-thread-header-img');
+        if (!!messageViewimg) {
+          messageViewimg.src = contactData.photo;
+          messageViewimg.classList.remove('avatar-show-default');
+        }
+      }
+    } else if (ids.length > 1 && ids.indexOf(threadInfo.id) && !$id('sms-select-view').hidden) {
+      var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
+      if (selectViewName) {
+        selectViewName.childNodes[0].nodeValue = contactData.name.join(' ');
+      }
+      if (!!contactData.photo && contactData.photo.length > 0) {
+        var selectItem = $id('show-multi-sms-' + threadInfo.id);
+        if (!!selectItem) {
+          img = selectItem.getElementsByTagName('img')[0];
+          img.src = contactData.photo;
+          selectItem.dataset.avatar = contactData.photo;
+          img.classList.remove('avatar-default');
+        }
+      }
+    }
+  }
+
   function updateThreadAvatarFromPhone(item) {
     var threadInfo = item;
     var phoneNum = item.participants[0];
@@ -85,82 +186,120 @@ var SmsList = (function() {
     if (result) {
       phoneNum = result[1];
     }
-
     CMD.Contacts.getContactByPhoneNumber(phoneNum, function(result) {
       if (!result.data) {
         return;
       }
       var contactData = JSON.parse(result.data);
-      var threadItem = $id('id-threads-data-' + threadInfo.id);
-      var name = threadItem.getElementsByTagName('div')[2];
-      name.childNodes[0].type = 'contact';
-      name.childNodes[0].nodeValue = contactData.name.join(' ');
-      if ( !!contactData.photo && contactData.photo.length > 0) {
-        var threadItem = $id('id-threads-data-' + threadInfo.id);
-        var img = threadItem.getElementsByTagName('img')[0];
-        img.src = contactData.photo;
-        threadItem.dataset.avatar = contactData.photo;
-        img.classList.remove('avatar-default');
-      }
-      var ids = [];
-      $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(item) {
-        ids.push(item.dataset.threadIndex);
-      });
-      if (ids.length == 1 && ids[0] == threadInfo.id && !$id('sms-thread-view').hidden) {
-        var messageViewName = $id('sms-thread-header-name');
-        if (messageViewName) {
-          messageViewName.textContent = contactData.name.join(' ');
-          var titleElem = $id('add-to-contact-' + threadInfo.id);
-          if (titleElem) {
-            titleElem.hidden = true;
-          }
-        }
-        var headerButton = $id('sms-thread-header-button');
-        if (headerButton) {
-          headerButton.hidden = true;
-        }
-        if ( !!contactData.photo && contactData.photo.length > 0) {
-          var messageViewimg = $id('sms-thread-header-img');
-          if ( !!messageViewimg) {
-            messageViewimg.src = contactData.photo;
-            messageViewimg.classList.remove('avatar-show-default');
-          }
-        }
-      } else if (ids.length > 1 && ids.indexOf(threadInfo.id) && !$id('sms-select-view').hidden) {
-        var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
-        if (selectViewName) {
-          selectViewName.childNodes[0].nodeValue = contactData.name.join(' ');
-        }
-        if ( !!contactData.photo && contactData.photo.length > 0) {
-          var selectItem = $id('show-multi-sms-' + threadInfo.id);
-          if ( !!selectItem) {
-            img = selectItem.getElementsByTagName('img')[0];
-            img.src = contactData.photo;;
-            selectItem.dataset.avatar = contactData.photo;;
-            img.classList.remove('avatar-default');
-          }
-        }
-      }
+      updateThreadAvatarFromcontact(threadInfo, contactData);
     }, null);
   }
 
-  function updateThreadAvatarFromData(item, nameData, imageData) {
+  function updateThreadAvatarFromData(item, typeData, nameData, imageData) {
     if (!imageData) {
       return;
     }
     var threadInfo = item;
     var threadItem = $id('id-threads-data-' + threadInfo.id);
     var name = threadItem.getElementsByTagName('div')[2];
-    if (nameData) {
-      name.childNodes[0].type = 'contact';
+    if (typeData.indexOf('contact') >= 0) {
+      name.childNodes[0].type = typeData;
       name.childNodes[0].nodeValue = nameData;
     }
-    if ( !!imageData && imageData.length > 0) {
-      var threadItem = $id('id-threads-data-' + threadInfo.id);
+    if (!!imageData && imageData.length > 0) {
       var img = threadItem.getElementsByTagName('img')[0];
       img.src = imageData;
       threadItem.dataset.avatar = imageData;
       img.classList.remove('avatar-default');
+    }
+  }
+
+  function updateThreadAvatarFromContactChange(changeEvent) {
+    if (!threadList) {
+      return;
+    }
+    switch (changeEvent.reason) {
+      case 'remove':
+        var threadsListItems = $expr('#threads-list-container .threads-list-item');
+        for (var i = 0; i < threadsListItems.length; i++) {
+          var name = threadsListItems[i].getElementsByTagName('div')[2];
+          var type = 'contact-' + changeEvent.contactID;
+          if (!name.childNodes[0].type || name.childNodes[0].type != type) {
+            continue;
+          }
+          var threadListData = threadList.getGroupedData();
+          for (var m = 0; m < threadListData.length; m++) {
+            var threadData = threadListData[m].dataList;
+            for (var n = 0; n < threadData.length; n++) {
+              if (threadData[n].id != threadsListItems[i].dataset.threadIndex) {
+                continue;
+              }
+              removeThreadAvatar(threadData[n]);
+              return;
+            }
+          }
+          break;
+        }
+        break;
+      case 'update':
+        var threadsListItems = $expr('#threads-list-container .threads-list-item');
+        for (var i = 0; i < threadsListItems.length; i++) {
+          var name = threadsListItems[i].getElementsByTagName('div')[2];
+          var type = 'contact-' + changeEvent.contactID;
+          if (!name.childNodes[0].type || name.childNodes[0].type != type) {
+            continue;
+          }
+          var threadListData = threadList.getGroupedData();
+          for (var m = 0; m < threadListData.length; m++) {
+            var threadData = threadListData[m].dataList;
+            for (var n = 0; n < threadData.length; n++) {
+              if (threadData[n].id != threadsListItems[i].dataset.threadIndex) {
+                continue;
+              }
+              CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
+                if (result.data != '') {
+                  var contactData = JSON.parse(result.data);
+                  updateThreadAvatarFromcontact(threadData[n], contactData);
+                }
+              }, null);
+              return;
+            }
+          }
+          break;
+        }
+        break;
+      case 'create':
+        CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
+          if (result.data != '') {
+            var contactData = JSON.parse(result.data);
+            if (!contactData.tel || contactData.tel.length <= 0) {
+              return;
+            }
+            var threadListData = threadList.getGroupedData();
+            for (var m = 0; m < threadListData.length; m++) {
+              var threadData = threadListData[m].dataList;
+              for (var n = 0; n < threadData.length; n++) {
+                for (var j = 0; j < contactData.tel.length; j++) {
+                  if (contactData.tel[j].value != threadData[n].participants[0]) {
+                    continue;
+                  }
+                  var threadsListItems = $expr('#threads-list-container .threads-list-item');
+                  for (var i = 0; i < threadsListItems.length; i++) {
+                    if (threadsListItems[i].dataset.threadIndex != threadData[n].id) {
+                      continue;
+                    }
+                    updateThreadAvatarFromcontact(threadData[n], contactData);
+                    break;
+                  }
+                  return;
+                }
+              }
+            }
+          }
+        }, null);
+        break;
+      default:
+        break;
     }
   }
 
@@ -259,11 +398,10 @@ var SmsList = (function() {
       inputSms.value = '';
     }
     $id('message-list-container').innerHTML = '';
-    var threadGroup = $id('id-threads-data-' + index);
-    threadGroup.classList.remove('unread');
-    var sp = threadGroup.getElementsByTagName('div');
-    sp[3].innerHTML = '';
     var threadItem = $id('id-threads-data-' + index);
+    threadItem.classList.remove('unread');
+    var sp = threadItem.getElementsByTagName('div');
+    sp[3].innerHTML = '';
     var threadName = threadItem.getElementsByTagName('div')[2];
     var threadImg = threadItem.getElementsByTagName('img')[0];
 
@@ -281,7 +419,7 @@ var SmsList = (function() {
     headerName.textContent = threadName.childNodes[0].nodeValue;
     var headerButton = $id('sms-thread-header-button');
     if (headerButton) {
-      if (threadName.childNodes[0].type == 'contact') {
+      if (threadName.childNodes[0].type && threadName.childNodes[0].type.indexOf('contact') >= 0) {
         headerButton.hidden = true;
       } else {
         headerButton.hidden = false;
@@ -312,7 +450,7 @@ var SmsList = (function() {
       renderFunc: createThreadDialogView,
       container: $id('message-list-container'),
       ondatachange: function() {
-        if ( !!$id('message-list-container')) {
+        if (!!$id('message-list-container')) {
           $id('message-list-container').scrollTop = $id('message-list-container').scrollTopMax;
         }
       }
@@ -353,7 +491,7 @@ var SmsList = (function() {
         elem.classList.add('from-me');
       }
     }
-    templateData.time += formatTime(messageData.timestamp);;
+    templateData.time += formatTime(messageData.timestamp);
 
     // mms display
     if (messageData.type == 'mms') {
@@ -400,7 +538,7 @@ var SmsList = (function() {
           bodyText: this.value
         });
       });
-      forwardBtns[j].addEventListener('mouseover', function () {
+      forwardBtns[j].addEventListener('mouseover', function() {
         this.title = _('sms-forward');
       });
     }
@@ -433,7 +571,7 @@ var SmsList = (function() {
           animationLoading.stop(loadingGroupId);
         });
       });
-      resendBtns[j].addEventListener('mouseover', function () {
+      resendBtns[j].addEventListener('mouseover', function() {
         this.title = _('sms-resend');
       });
     }
@@ -454,7 +592,7 @@ var SmsList = (function() {
           animationLoading.stop(loadingGroupId);
         });
       });
-      deleteBtns[j].addEventListener('mouseover', function () {
+      deleteBtns[j].addEventListener('mouseover', function() {
         this.title = _('sms-delete');
       });
     }
@@ -539,7 +677,7 @@ var SmsList = (function() {
 
   function onMessage(e) {
     if (e.detail.type == 'contact') {
-      updateAvatar();
+      updateThreadAvatarFromContactChange(e.detail.data);
       return;
     }
     if (e.detail.type != 'sms') {
@@ -573,11 +711,12 @@ var SmsList = (function() {
         }
         for (var j = 0; j < allMessagesList[msg.threadId].length; j++) {
           if (allMessagesList[msg.threadId][j].id == msg.id) {
-            allMessagesList[msg.threadId].splice(j,1);
+            allMessagesList[msg.threadId].splice(j, 1);
             break;
           }
         }
         allMessagesList[msg.threadId].push(msg);
+        var typeData = null;
         var nameData = null;
         var imageData = null;
         var checked = false;
@@ -586,7 +725,8 @@ var SmsList = (function() {
           if (e.dataset.threadIndex == threadData.id) {
             checked = e.dataset.checked;
             var name = e.getElementsByTagName('div')[2];
-            if (name.childNodes[0].type == 'contact') {
+            if (name.childNodes[0].type && name.childNodes[0].type.indexOf('contact') >= 0) {
+              typeData = name.childNodes[0].type;
               nameData = name.childNodes[0].nodeValue;
             }
             imageData = e.dataset.avatar;
@@ -614,13 +754,13 @@ var SmsList = (function() {
           });
           opStateChanged();
         }
-        updateThreadAvatarFromData(threadData, nameData, imageData);
+        updateThreadAvatarFromData(threadData, typeData, nameData, imageData);
         return;
       }
     }
     for (var j = 0; j < allMessagesList[msg.threadId].length; j++) {
       if (allMessagesList[msg.threadId][j].id == msg.id) {
-        allMessagesList[msg.threadId].splice(j,1);
+        allMessagesList[msg.threadId].splice(j, 1);
         break;
       }
     }
@@ -732,10 +872,10 @@ var SmsList = (function() {
     var loadingGroupId = animationLoading.start();
     var messageListData = messageList.getGroupedData();
     messageListData = messageListData[0].dataList;
-    for (var i=0; i<allMessagesList[threadId].length; i++) {
+    for (var i = 0; i < allMessagesList[threadId].length; i++) {
       var message = allMessagesList[threadId][i];
       if (message.id == messageId) {
-        allMessagesList[threadId].splice(i,1);
+        allMessagesList[threadId].splice(i, 1);
         break;
       }
     }
@@ -759,6 +899,7 @@ var SmsList = (function() {
             threadList.remove(threadListData);
             ViewManager.showViews('sms-send-view');
           } else {
+            var typeData = null;
             var nameData = null;
             var imageData = null;
             var checked = false;
@@ -767,16 +908,17 @@ var SmsList = (function() {
               if (e.dataset.threadIndex == threadListData.id) {
                 checked = e.dataset.checked;
                 var name = e.getElementsByTagName('div')[2];
-                if (name.childNodes[0].type == 'contact') {
+                if (name.childNodes[0].type && name.childNodes[0].type.indexOf('contact') >= 0) {
+                  typeData = name.childNodes[0].type;
                   nameData = name.childNodes[0].nodeValue;
                 }
                 imageData = e.dataset.avatar;
               }
             });
             threadList.remove(threadListData);
-            threadListData.body = messageListData[i-1].body;
-            threadListData.timestamp = messageListData[i-1].timestamp;
-            threadListData.lastMessageType = messageListData[i-1].type;
+            threadListData.body = messageListData[i - 1].body;
+            threadListData.timestamp = messageListData[i - 1].timestamp;
+            threadListData.lastMessageType = messageListData[i - 1].type;
             threadList.add(threadListData);
             if (checked) {
               var uncheckedItems = $expr('#threads-list-container .threads-list-item');
@@ -788,7 +930,7 @@ var SmsList = (function() {
               });
               opStateChanged();
             }
-            updateThreadAvatarFromData(threadListData, nameData, imageData);
+            updateThreadAvatarFromData(threadListData, typeData, nameData, imageData);
           }
           break;
         }
@@ -915,7 +1057,7 @@ var SmsList = (function() {
       });
     });
 
-    $id('sms-send-inthread').addEventListener('click', function (event) {
+    $id('sms-send-inthread').addEventListener('click', function(event) {
       if (!messageList) {
         return;
       }
