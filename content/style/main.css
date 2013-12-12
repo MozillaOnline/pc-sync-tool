@@ -692,16 +692,16 @@ input[type="url"], textarea {
 
 .collapsed {
   background-image: url("images/collapsed.png");
-  background-position: 24rem -1.5rem;
+  background-position: 25rem -0.75rem;
   background-repeat: no-repeat;
-  background-size: 16% auto;
+  background-size: 10% auto;
 }
 
 .expanded {
   background-image: url("images/expanded.png");
-  background-position: 24rem -1.55555rem;
+  background-position: 25rem -0.75rem;
   background-repeat: no-repeat;
-  background-size: 16% auto;
+  background-size: 10% auto;
 }
 
 #summary-infos .storage-graph {
