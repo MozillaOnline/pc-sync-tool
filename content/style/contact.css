@@ -608,7 +608,7 @@ button.add-new-button {
 }
 
 #show-contacts-container {
-  max-height: 60rem;
+  max-height: 38rem;
   overflow-y: auto;
   overflow-x: hidden;
 }
