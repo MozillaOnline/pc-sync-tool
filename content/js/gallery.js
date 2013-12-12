@@ -211,14 +211,9 @@ var Gallery = (function() {
       var path = getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', GALLERY_CACHE_FOLDER]);
       var cmd = 'adb pull "' + picList[index].dataset.picUrl + '" "' + path + picList[index].dataset.picUrl + '"';
       var cachedUrl = PRE_PATH + GALLERY_CACHE_FOLDER + picList[index].dataset.picUrl;
-      var req = runCmd(cmd);
-
-      req.onsuccess = function on_success(result) {
+      runCmd(cmd, function() {
         callback(true, cachedUrl);
-      };
-      req.onerror = function on_error(e) {
-        callback(false);
-      };
+      });
     }
   }
 
