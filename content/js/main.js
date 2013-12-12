@@ -43,6 +43,7 @@ var connectState = {
   connecting: 3,
   error: 4
 };
+var device = '';
 var animationLoading = null;
 var customEventElement = document;
 var isWifiConnected = false;
@@ -361,6 +362,7 @@ var FFOSAssistant = (function() {
           return;
         }
         deviceSocketState = connectState.connected;
+        $id('device-name').innerHTML = device;
         showSummaryView(serverIP);
       },
       ondisconnected: function ondisconnected() {
@@ -464,6 +466,7 @@ var FFOSAssistant = (function() {
       var elem = $id('mgmt-list');
       $expr('.header', elem)[0].textContent = wifiCode.value;
       if (ip) {
+        $id('device-name').innerHTML = wifiCode;
         connectToServer(ip);
       }
     };
