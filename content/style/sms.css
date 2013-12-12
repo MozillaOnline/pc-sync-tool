@@ -198,6 +198,7 @@
 
 .threads-list-item {
   height: 4.5rem;
+  margin: 0.5rem 0;
   cursor:pointer;
 }
 

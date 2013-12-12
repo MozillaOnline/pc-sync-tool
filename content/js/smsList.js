@@ -334,7 +334,7 @@ var SmsList = (function() {
       type: [],
       id: messageData.id + '-' + messageData.threadId,
       showResendButton: '',
-      showorwardButton: '',
+      showForwardButton: '',
       showDeleteButton: '',
       resendValue: '',
       forwardValue: '',
@@ -582,7 +582,7 @@ var SmsList = (function() {
         var imageData = null;
         var checked = false;
         var threadsListItems = $expr('#threads-list-container .threads-list-item');
-        checkedItems.forEach(function(e) {
+        threadsListItems.forEach(function(e) {
           if (e.dataset.threadIndex == threadData.id) {
             checked = e.dataset.checked;
             var name = e.getElementsByTagName('div')[2];
@@ -763,7 +763,7 @@ var SmsList = (function() {
             var imageData = null;
             var checked = false;
             var threadsListItems = $expr('#threads-list-container .threads-list-item');
-            checkedItems.forEach(function(e) {
+            threadsListItems.forEach(function(e) {
               if (e.dataset.threadIndex == threadListData.id) {
                 checked = e.dataset.checked;
                 var name = e.getElementsByTagName('div')[2];
