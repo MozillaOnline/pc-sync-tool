@@ -1073,7 +1073,7 @@ input.modal-btn {
 }
 
 .popup-content-item {
-  height: 3rem;
+  line-height: 3rem;
 }
 
 .popup-click-more {
