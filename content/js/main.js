@@ -13,6 +13,7 @@ var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
                    .getService(Components.interfaces.nsIWindowMediator);
 var browserEnumerator = wm.getEnumerator("navigator:browser");
 var bFound = false;
+var bInit = false;
 
 while (browserEnumerator.hasMoreElements()) {
   var browserWin = browserEnumerator.getNext();
@@ -112,7 +113,6 @@ var FFOSAssistant = (function() {
   function getAndShowStorageInfo() {
     var loadingGroupId = animationLoading.start();
     CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
-
       var dataJSON = JSON.parse(message.data);
       var elem = $id('device-storage-summary');
       var total = dataJSON.apps.usedSpace + dataJSON.apps.freeSpace;
@@ -125,7 +125,6 @@ var FFOSAssistant = (function() {
         $expr('.storage-number', elem)[0].textContent = '0.00M/0.00M';
         $expr('.storage-graph .used', elem)[0].style.width = '0%';
       }
-
       elem = $id('sdcard-storage-summary');
       total = dataJSON.sdcard.usedSpace + dataJSON.sdcard.freeSpace;
       if (total > 0) {
@@ -576,6 +575,7 @@ var FFOSAssistant = (function() {
 
   window.addEventListener('unload', function window_onunload(event) {
     window.removeEventListener('unload', window_onunload);
+    bInit = false;
     if (observer) {
       observer.unregister();
     }
@@ -593,7 +593,10 @@ var FFOSAssistant = (function() {
         label.classList.remove('current');
       }
     });
-    init();
+    if (!bInit) {
+      bInit = true;
+      init();
+    }
   });
 
   return {
