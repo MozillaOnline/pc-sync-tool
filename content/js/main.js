@@ -445,10 +445,9 @@ var FFOSAssistant = (function() {
         return;
       }
       ip = int8Array[0].toString() + '.' + int8Array[1].toString() + '.' + int8Array[2].toString() + '.' + int8Array[3].toString();
-      var elem = $id('mgmt-list');
-      $expr('.header', elem)[0].textContent = wifiCode.value;
       if (ip) {
-        $id('device-name').innerHTML = wifiCode;
+        $id('device-name').innerHTML = wifiCode.value;
+        deviceSocketState = connectState.connecting;
         connectToServer(ip);
       }
     };
