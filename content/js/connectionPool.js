@@ -51,6 +51,8 @@ TCPConnectionPool.prototype = {
       });
 
       socket.onopen = this._onSocketOpened.bind(this);
+      socket.onerror = this._onSocketError.bind(this);
+      socket.onclose = this._onSocketClosed.bind(this);
     }
   },
 
@@ -80,7 +82,9 @@ TCPConnectionPool.prototype = {
   },
 
   _onSocketError: function tc_onSocketError(event) {
-    this.options.onerror();
+    if (this.options.onerror) {
+      this.options.onerror();
+    }
   },
 
   _onSocketOpened: function tc_onSocketOpened(event) {
@@ -122,7 +126,9 @@ TCPConnectionPool.prototype = {
 
     // If all the socket are closed, then call the ondisconnected to notify
     if (this._connPool.length === 0) {
-      this.options.ondisconnected();
+      if (this.options.ondisconnected) {
+        this.options.ondisconnected();
+      }
     }
   },
 
