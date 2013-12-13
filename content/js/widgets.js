@@ -1475,7 +1475,7 @@ Tip.prototype = {
       tip.hidden = false;
     };
     this.options.element.onmouseout = function() {
-      //tip.hidden = true;
+      tip.hidden = true;
     };
   }
 };
