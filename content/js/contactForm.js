@@ -462,7 +462,7 @@ var ContactForm = (function() {
       var MAX_HEIGHT = 320;
       var pic = $id('avatar-add-edit');
 
-      var offscreenImage = new Image();
+      var offscreenImage = document.createElement('img');
       var url = URL.createObjectURL(this.files[0]);
       offscreenImage.src = url;
 
@@ -471,23 +471,23 @@ var ContactForm = (function() {
       };
 
       offscreenImage.onload = function() {
-        URL.revokeObjectURL(url);
+        var image_width = offscreenImage.width;
+        var image_height = offscreenImage.height;
+        var scalex = image_width / MAX_WIDTH;
+        var scaley = image_height / MAX_HEIGHT;
+        var scale = Math.min(scalex, scaley);
+
+        var w = MAX_WIDTH * scale;
+        var h = MAX_HEIGHT * scale;
+        var x = (image_width - w) / 2;
+        var y = (image_height - h) / 2;
 
         var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
         canvas.width = MAX_WIDTH;
         canvas.height = MAX_HEIGHT;
-        var scalex = canvas.width / offscreenImage.width;
-        var scaley = canvas.height / offscreenImage.height;
-
-        var scale = Math.max(scalex, scaley);
-
-        var w = Math.round(MAX_WIDTH / scale);
-        var h = Math.round(MAX_HEIGHT / scale);
-        var x = Math.round((offscreenImage.width - w) / 2);
-        var y = Math.round((offscreenImage.height - h) / 2);
-
+        var context = canvas.getContext('2d');
         context.drawImage(offscreenImage, x, y, w, h, 0, 0, MAX_WIDTH, MAX_HEIGHT);
+        URL.revokeObjectURL(url);
         canvas.toBlob(function(blob) {
           var fr = new FileReader();
           fr.readAsDataURL(blob);
@@ -495,7 +495,7 @@ var ContactForm = (function() {
             pic.src = e.target.result;
             pic.classList.remove('avatar-add-edit-default');
           };
-        });
+        }, 'image/jpeg');
       };
     };
     $id('avatar-input').addEventListener('change', handlerAvatarInput, false);
