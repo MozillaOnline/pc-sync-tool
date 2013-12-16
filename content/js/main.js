@@ -253,6 +253,7 @@ var FFOSAssistant = (function() {
       availableDevices = devicesList;
     }
     var loadingGroupId = animationLoading.start();
+    ADBService.killAdbServer();
     ADBService.findDevice(function find(data) {
       var regExp = /\n([0-9a-z]+)\tdevice/ig;
       var devices = [];
@@ -272,22 +273,41 @@ var FFOSAssistant = (function() {
       if (connectDevices.length == 0) {
         animationLoading.stop(loadingGroupId);
         var contentInfo = [_('connection-alert-dialog-message-check-remotedebugger'), _('connection-alert-dialog-message-check-lockscreen')];
-        if (isWindows()) {
-          contentInfo.push(_('connection-alert-dialog-message-check-otheradb'));
-        } else {
+        if (!isWindows()) {
           contentInfo.push(_('connection-alert-dialog-message-check-edit51android'));
+          new AlertDialog({
+            id: 'popup_dialog',
+            titleL10nId: 'alert-dialog-title',
+            message: {
+              head: _('connection-alert-dialog-title'),
+              description: _('connection-alert-dialog-message-header'),
+              content: contentInfo,
+              detail: _('connection-alert-dialog-detail'),
+              href: 'chrome://ffosassistant/content/Help/Help-cn.html'
+            },
+            callback: resetConnect
+          });
+          return;
         }
-        new AlertDialog({
-          id: 'popup_dialog',
-          titleL10nId: 'alert-dialog-title',
-          message: {
-            head: _('connection-alert-dialog-title'),
-            description: _('connection-alert-dialog-message-header'),
-            content: contentInfo,
-            detail: _('connection-alert-dialog-detail'),
-            href: 'chrome://ffosassistant/content/Help/Help-cn.html'
-          },
-          callback: resetConnect
+        ADBService.runCmd('listAdbService', function (data) {
+          if (data.result) {
+            var adbServiceName = data.result.split(' ');
+            if (adbServiceName.length > 0 && adbServiceName[0] != 'ffosadb.exe') {
+              contentInfo.push(_('connection-alert-dialog-message-check-otheradb') + ' : ' + adbServiceName[0]);
+            }
+          }
+          new AlertDialog({
+            id: 'popup_dialog',
+            titleL10nId: 'alert-dialog-title',
+            message: {
+              head: _('connection-alert-dialog-title'),
+              description: _('connection-alert-dialog-message-header'),
+              content: contentInfo,
+              detail: _('connection-alert-dialog-detail'),
+              href: 'chrome://ffosassistant/content/Help/Help-cn.html'
+            },
+            callback: resetConnect
+          });
         });
         return;
       }
