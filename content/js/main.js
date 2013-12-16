@@ -44,7 +44,7 @@ var connectState = {
   connecting: 3,
   error: 4
 };
-var device = '';
+var connectedDevice = '';
 var animationLoading = null;
 var customEventElement = document;
 var isWifiConnected = false;
@@ -263,10 +263,10 @@ var FFOSAssistant = (function() {
       var connectDevices = [];
       if (devices.length > 0) {
         for (var i=0; i<availableDevices.length; i++) {
-          if (devices.indexOf(availableDevices[i].display_name) < 0) {
+          if (devices.indexOf(availableDevices[i].device_name) < 0) {
             continue;
           }
-          connectDevices.push(availableDevices[i].display_name);
+          connectDevices.push(availableDevices[i]);
         }
       }
       if (connectDevices.length == 0) {
@@ -291,8 +291,8 @@ var FFOSAssistant = (function() {
         });
         return;
       }
-      device = connectDevices[0];
-      ADBService.setupDevice(device, function setup(data) {
+      connectedDevice = connectDevices[0];
+      ADBService.setupDevice(connectedDevice.device_name, function setup(data) {
         animationLoading.stop(loadingGroupId);
         if (!/error|failed/ig.test(data.result)) {
           connectToServer('localhost');
@@ -361,7 +361,7 @@ var FFOSAssistant = (function() {
           return;
         }
         deviceSocketState = connectState.connected;
-        $id('device-name').innerHTML = device;
+        $id('device-name').innerHTML = connectedDevice.display_name;
         showSummaryView(serverIP);
       },
       ondisconnected: function ondisconnected() {
