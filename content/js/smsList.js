@@ -1057,7 +1057,7 @@ var SmsList = (function() {
       });
     });
 
-    $id('sms-send-inthread').addEventListener('click', function(event) {
+    $id('sms-send-in-thread').addEventListener('click', function(event) {
       if (!messageList) {
         return;
       }

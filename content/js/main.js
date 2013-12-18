@@ -520,7 +520,7 @@ var FFOSAssistant = (function() {
     $id('connect-button').addEventListener('click', function onclick_connect(event) {
       connectToDevice();
     });
-    $id('connect-button').addEventListener('mouseover', function () {
+    $id('connect-button').addEventListener('mouseover', function() {
       this.title = _('connect');
     });
     $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
@@ -531,7 +531,7 @@ var FFOSAssistant = (function() {
       showConnectView();
       ViewManager.reset();
     });
-    $id('disconnect-button').addEventListener('mouseover', function () {
+    $id('disconnect-button').addEventListener('mouseover', function() {
       this.title = _('disconnect');
     });
     customEventElement.addEventListener('firstshow', function(e) {
