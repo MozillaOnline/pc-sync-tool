@@ -653,7 +653,11 @@
         <%if (type == 'single') {%>
           <div class="header" id="select-contact-tel-header">
             <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
-            <select class="sendSms-button sendSms-menubutton" id="select-contact-tel-button">
+            <%if (tel.length > 1) {%>
+              <select class="sendSms-button sendSms-menubutton" id="select-contact-tel-button">
+            <%} else {%>
+              <select class="sendSms-button sendSms-menubutton" id="select-contact-tel-button" disabled="true">
+            <%}%>
               <%for (var i=0; i<tel.length; i++) {%>
                 <option><%=tel[i]%></option>
               <%}%>
