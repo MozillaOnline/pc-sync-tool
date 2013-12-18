@@ -721,17 +721,19 @@ var SmsList = (function() {
         var imageData = null;
         var checked = false;
         var threadsListItems = $expr('#threads-list-container .threads-list-item');
-        threadsListItems.forEach(function(e) {
-          if (e.dataset.threadIndex == threadData.id) {
-            checked = e.dataset.checked;
-            var name = e.getElementsByTagName('div')[2];
-            if (name.childNodes[0].type && name.childNodes[0].type.indexOf('contact') >= 0) {
-              typeData = name.childNodes[0].type;
-              nameData = name.childNodes[0].nodeValue;
-            }
-            imageData = e.dataset.avatar;
+        for (var j = 0; j < threadsListItems.length; j++) {
+          if (threadsListItems[j].dataset.threadIndex != threadData.id) {
+            continue;
           }
-        });
+          checked = threadsListItems[j].dataset.checked;
+          var name = threadsListItems[j].getElementsByTagName('div')[2];
+          if (name.childNodes[0].type && name.childNodes[0].type.indexOf('contact') >= 0) {
+            typeData = name.childNodes[0].type;
+            nameData = name.childNodes[0].nodeValue;
+          }
+          imageData = threadsListItems[j].dataset.avatar;
+          break;
+        }
         threadList.remove(threadData);
         if (msg.delivery == "received") {
           if (messageList) {
@@ -746,12 +748,14 @@ var SmsList = (function() {
         threadList.add(threadData);
         if (checked) {
           var uncheckedItems = $expr('#threads-list-container .threads-list-item');
-          uncheckedItems.forEach(function(e) {
-            if (e.dataset.threadIndex == threadData.id) {
-              var item = $expr('label', e)[0];
-              item.dataset.checked = e.dataset.checked = e.dataset.focused = true;
+          for (var j = 0; j < uncheckedItems.length; j++) {
+            if (uncheckedItems[j].dataset.threadIndex != threadData.id) {
+              continue;
             }
-          });
+            var item = $expr('label', uncheckedItems[j])[0];
+            item.dataset.checked = uncheckedItems[j].dataset.checked = uncheckedItems[j].dataset.focused = true;
+            break;
+          }
           opStateChanged();
         }
         updateThreadAvatarFromData(threadData, typeData, nameData, imageData);
@@ -904,17 +908,19 @@ var SmsList = (function() {
             var imageData = null;
             var checked = false;
             var threadsListItems = $expr('#threads-list-container .threads-list-item');
-            threadsListItems.forEach(function(e) {
-              if (e.dataset.threadIndex == threadListData.id) {
-                checked = e.dataset.checked;
-                var name = e.getElementsByTagName('div')[2];
-                if (name.childNodes[0].type && name.childNodes[0].type.indexOf('contact') >= 0) {
-                  typeData = name.childNodes[0].type;
-                  nameData = name.childNodes[0].nodeValue;
-                }
-                imageData = e.dataset.avatar;
+            for (var k = 0; k < threadsListItems.length; k++) {
+              if (threadsListItems[k].dataset.threadIndex != threadListData.id) {
+                continue;
               }
-            });
+              checked = threadsListItems[k].dataset.checked;
+              var name = threadsListItems[k].getElementsByTagName('div')[2];
+              if (name.childNodes[0].type && name.childNodes[0].type.indexOf('contact') >= 0) {
+                typeData = name.childNodes[0].type;
+                nameData = name.childNodes[0].nodeValue;
+              }
+              imageData = threadsListItems[k].dataset.avatar;
+              break;
+            }
             threadList.remove(threadListData);
             threadListData.body = messageListData[i - 1].body;
             threadListData.timestamp = messageListData[i - 1].timestamp;
@@ -922,12 +928,14 @@ var SmsList = (function() {
             threadList.add(threadListData);
             if (checked) {
               var uncheckedItems = $expr('#threads-list-container .threads-list-item');
-              uncheckedItems.forEach(function(e) {
-                if (e.dataset.threadIndex == threadListData.id) {
-                  var item = $expr('label', e)[0];
-                  item.dataset.checked = e.dataset.checked = e.dataset.focused = true;
+              for (var k = 0; k < uncheckedItems.length; k++) {
+                if (uncheckedItems[k].dataset.threadIndex != threadListData.id) {
+                  continue;
                 }
-              });
+                var item = $expr('label', uncheckedItems[k])[0];
+                item.dataset.checked = uncheckedItems[k].dataset.checked = uncheckedItems[k].dataset.focused = true;
+                break;
+              }
               opStateChanged();
             }
             updateThreadAvatarFromData(threadListData, typeData, nameData, imageData);
