@@ -288,7 +288,6 @@
 }
 
 .threads-list-item .sms-info .body{
-  height: 1.5rem;
   padding-top: 0.2rem;
   white-space: nowrap;
   width: 36rem;
@@ -842,7 +841,7 @@
   display: block;
   font-size: 2.5rem;
   padding-top: 4rem;
-  padding-bottom: 2.6rem;
+  padding-bottom: 2.9rem;
   text-align: center;
 }
 
