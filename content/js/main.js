@@ -235,13 +235,14 @@ var FFOSAssistant = (function() {
         }
       }
       if (availableDevices.length == 0) {
+        var contentInfo = [_('connection-alert-dialog-message-check-nodriver')];
         new AlertDialog({
           id: 'popup_dialog',
           titleL10nId: 'alert-dialog-title',
           message: {
             head: _('connection-alert-dialog-title'),
             description: _('connection-alert-dialog-message-header'),
-            content: _('connection-alert-dialog-message-check-nodriver'),
+            content: contentInfo,
             detail: _('connection-alert-dialog-detail'),
             href: 'chrome://ffosassistant/content/Help/Help-cn.html'
           },

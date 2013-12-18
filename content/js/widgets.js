@@ -528,6 +528,12 @@ SendSMSDialog.prototype = {
       });
       return;
     }
+    if (!message.value) {
+      new AlertDialog({
+        message: _('EmptyMessage')
+      });
+      return;
+    }
     var loadingGroupId = animationLoading.start();
     message.readOnly = true;
     CMD.SMS.sendSMS(JSON.stringify({
@@ -553,9 +559,7 @@ SendSMSDialog.prototype = {
     var message = $id('sms-text-content');
     var sender = [];
     var self = this;
-    message.readOnly = true;
     var selectedContactItems = $expr('.select-contacts-item', this._modalElement);
-
     selectedContactItems.forEach(function(item) {
       var tel = item.children[0].title;
       var start = tel.indexOf("(");
@@ -572,6 +576,13 @@ SendSMSDialog.prototype = {
       });
       return;
     }
+    if (!message.value) {
+      new AlertDialog({
+        message: _('EmptyMessage')
+      });
+      return;
+    }
+    message.readOnly = true;
     var loadingGroupId = animationLoading.start();
     CMD.SMS.sendSMS(JSON.stringify({
       number: sender,

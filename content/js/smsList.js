@@ -1061,6 +1061,13 @@ var SmsList = (function() {
       if (!messageList) {
         return;
       }
+      var body = $id('sender-ctn-input');
+      if (!body.value) {
+        new AlertDialog({
+          message: _('EmptyMessage')
+        });
+        return;
+      }
       var num;
       var MessageListData = messageList.getGroupedData();
       MessageListData = MessageListData[0].dataList;
@@ -1077,7 +1084,6 @@ var SmsList = (function() {
           num = MessageListData[0].receiver;
         }
       }
-      var body = $id('sender-ctn-input');
       CMD.SMS.sendSMS(JSON.stringify({
         number: num,
         message: body.value
