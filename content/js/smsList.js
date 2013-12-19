@@ -357,10 +357,7 @@ var SmsList = (function() {
   }
 
   function showSelectView(item) {
-    var header = _('sms-selected', {
-      n: item.length
-    });
-    $id('select-threads-count').innerHTML = header;
+    $id('select-threads-count').innerHTML = item.length;
     $id('show-sms-container').innerHTML = '';
     for (var i = 0; i < item.length; i++) {
       var elem = document.createElement('div');

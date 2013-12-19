@@ -342,10 +342,7 @@ var ContactList = (function() {
     var selectedContacts = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
     var container = $id('show-contacts-container');
     container.innerHTML = '';
-    var header = _('contacts-selected', {
-      n: selectedContacts.length
-    });
-    $id('show-contacts-header').innerHTML = header;
+    $id('show-contacts-header').innerHTML = selectedContacts.length;
     selectedContacts.forEach(function(item) {
       var contact = JSON.parse(item.dataset.contact);
       var templateData = {
