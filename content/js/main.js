@@ -316,6 +316,7 @@ var FFOSAssistant = (function() {
       ADBService.setupDevice(connectedDevice.device_name, function setup(data) {
         animationLoading.stop(loadingGroupId);
         if (!/error|failed/ig.test(data.result)) {
+          $id('device-name').innerHTML = connectedDevice.display_name;
           connectToServer('localhost');
         } else {
           deviceSocketState = connectState.error;
@@ -382,7 +383,6 @@ var FFOSAssistant = (function() {
           return;
         }
         deviceSocketState = connectState.connected;
-        $id('device-name').innerHTML = connectedDevice.display_name;
         showSummaryView(serverIP);
       },
       ondisconnected: function ondisconnected() {
