@@ -11,8 +11,8 @@
     <toolbarbutton
       id="ffosassistant-button"
       class="toolbarbutton-1 chromeclass-toolbar-additional"
-      label="FFOS Sync Tool"
-      tooltiptext="FFOS Sync Tool"
+      label="Firefox OS Assistant"
+      tooltiptext="Firefox OS Assistant"
       oncommand="if (switchToTabHavingURI) { switchToTabHavingURI('about:ffos', true); } else { openUILink('about:ffos'); }"
       type="button">
     </toolbarbutton>
