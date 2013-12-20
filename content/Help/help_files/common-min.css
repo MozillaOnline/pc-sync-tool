@@ -90,6 +90,10 @@ mark
 	background: #ff0;
 	color: #000;
 }
+p,pre
+{
+	margin: 1em 0;
+}
 code,kbd,pre,samp
 {
 	_font-family: 'courier new',monospace;
@@ -1365,35 +1369,6 @@ input[type=submit].btn-warning:before,input[type=button].btn-warning:before,.btn
 {
 	padding: 20px 15px;
 }
-.grid_9 article>ul
-{
-    list-style-type: -moz-simp-chinese-informal;
-    margin-left: 10px;
-    background-color: #FFFFFF;
-
-}
-.grid_9 article>ul>li
-{
-    font-size: 20px;
-    color: #E86000;
-}
-.grid_9 article>ul>li>ul>li
-{
-    color: #333333;
-    font-size: 16px;
-}
-.grid_9 .item1
-{
-    margin-top: 5px;
-    margin-bottom: 0;
-}
-.grid_9 .item2
-{
-    margin-top: 0;
-    margin-bottom: 0;
-    margin-left: 20px;
-
-}
 .no-generatedcontent .card-grid>li
 {
 	background: #ccc;
@@ -1782,7 +1757,7 @@ input[type=submit].btn-warning:before,input[type=button].btn-warning:before,.btn
 .sidebar-nav .sidebar-nav>li>span,.sidebar-nav .sidebar-nav>li>a,.sidebar-nav .sidebar-nav>li>a:visited
 {
 	font-size: 12px;
-	padding: 10px 20px 10px 40px;
+	padding: 10px 20px 10px 30px;
 }
 .sidebar-nav .sidebar-nav>li>span:hover,.sidebar-nav .sidebar-nav>li>a:hover
 {

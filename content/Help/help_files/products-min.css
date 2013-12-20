@@ -86,7 +86,7 @@ h1.product-title .logo-sprite
 .logo-sprite
 {
 	float: left;
-	margin: -15px 8px 0 0;
+	margin: 0 8px 0 0;
 }
 .download-firefox
 {
@@ -161,6 +161,52 @@ h1.product-title .logo-sprite
 	moz-box-shadow: 0 2px 0 0 rgba(0,0,0,0.1),0 -1px 0 0 rgba(0,0,0,0.3) inset,0 12px 24px 2px #83c822 inset;
 	webkit-box-shadow: 0 2px 0 0 rgba(0,0,0,0.1),0 -1px 0 0 rgba(0,0,0,0.3) inset,0 12px 24px 2px #83c822 inset;
 }
+.download-firefox .help-bubble
+{
+	background: #fff;
+	background-clip: padding-box;
+	border-radius: 10px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	display: none;
+	font-size: 13px;
+	moz-background-clip: padding;
+	moz-border-radius: 10px;
+	moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	padding: 25px;
+	position: absolute;
+	top: 50px;
+	webkit-background-clip: padding-box;
+	webkit-border-radius: 10px;
+	webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	z-index: 10;
+}
+.download-firefox .help-bubble:before
+{
+	border-color: transparent transparent #fff transparent;
+	border-style: solid;
+	border-width: 0 16px 16px 16px;
+	content: '';
+	left: 50%;
+	margin-left: -16px;
+	position: absolute;
+	top: -16px;
+}
+.download-firefox .help-bubble ul
+{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.download-firefox .help-bubble ul>li
+{
+	border-bottom: 1px dotted #ccc;
+	padding: 12px 0;
+}
+.download-firefox .help-bubble ul>li:last-of-type
+{
+	border-bottom: 0;
+	padding-bottom: 0;
+}
 .download-firefox ul.info
 {
 	font-size: .7em;
@@ -205,12 +251,10 @@ h1.product-title .logo-sprite
 {
 	margin-bottom: 0;
 }
-.topic-list>li>label
+.topic-list>li>a
 {
-	color: #00539F;
 	display: block;
 	font-size: 18px;
-	margin-bottom: 2px;
 }
 .topic-title
 {
