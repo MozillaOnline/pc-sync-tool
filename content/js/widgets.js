@@ -844,17 +844,26 @@ FilesOPDialog.prototype = {
     this._timer = null;
     this._steps = 0;
     this._processbar = null,
+    this._closed = false;
     this._build();
   },
 
   start: function() {
     var filesToBeDone = [];
-    var filesCannotBeDone = [];
     var self = this;
     var filesIndicator = $id('files-indicator');
     filesIndicator.innerHTML = '0/' + this.options.files.length;
 
     setTimeout(function doCmd() {
+      if (self._closed) {
+        if (self._timer) {
+          clearInterval(self._timer);
+        }
+        if (filesToBeDone.length > 0) {
+          self.options.callback(filesToBeDone);
+        }
+        return;
+      }
       var cmd = '';
       switch (self.options.type) {
         case 1:
@@ -888,10 +897,9 @@ FilesOPDialog.prototype = {
           CMD.Videos.deleteVideo(self.options.files[self._fileIndex], success, error);
           break;
       }
+
       if (cmd) {
         runCmd(cmd, success);
-        //req.onsuccess = success;
-        //req.onerror = error;
       }
 
       if (!self._timer) {
@@ -918,39 +926,10 @@ FilesOPDialog.prototype = {
           doCmd();
           return;
         }
+
         clearInterval(self._timer);
         self._processbar.finish(self.options.files.length);
         self.closeAll();
-
-        if (filesCannotBeDone.length > 0) {
-          new AlertDialog({
-            message: _(self.options.alert_prompt, {n:filesCannotBeDone.length})
-          });
-        }
-
-        self.options.callback(filesToBeDone);
-      }
-
-      function error(e) {
-        filesCannotBeDone.push(self.options.files[self._fileIndex]);
-        self._fileIndex++;
-        self._processbar.finish(filesToBeDone.length);
-        filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
-
-        if (self._fileIndex != self.options.files.length) {
-          doCmd();
-          return;
-        }
-        clearInterval(self._timer);
-        self._processbar.finish(self.options.files.length);
-        self.closeAll();
-
-        if (filesCannotBeDone.length > 0) {
-          new AlertDialog({
-            message: _(self.options.alert_prompt, {n:filesCannotBeDone.length})
-          });
-        }
-
         self.options.callback(filesToBeDone);
       }
     }, 0);
@@ -1046,6 +1025,7 @@ FilesOPDialog.prototype = {
   },
 
   close: function() {
+    this._closed = true;
     this._mask.parentNode.removeChild(this._mask);
     this._modalElement.parentNode.removeChild(this._modalElement);
     this._mask = null;
