@@ -598,21 +598,29 @@
     <div class="readflag"></div>
     <img class="avatar avatar-default"></img>
     <div class="sms-info">
-       <div class="name"><%=name%></div>
-       <div class="unread"><%=unread%></div>
-       <div class="date"><%=date%></div>
-       <div class="body"><%=body%></div>
+      <div class="name"><%=name%></div>
+      <div class="unread"><%=unread%></div>
+      <% if(isToday) {%>
+        <div class="date" data-l10n-id="today"></div>
+      <%} else {%>
+        <div class="date"><%=date%></div>
+      <%}%>
+      <div class="body"><%=body%></div>
     </div>
   </script>
   <script type="text/html" id="tmpl_sms_select_item">
     <img class="avatar avatar-default"></img>
     <div class="select-sms-info">
-       <div class="name"><%=name%></div>
-       <div class="body"><%=body%></div>
+      <div class="name"><%=name%></div>
+      <div class="body"><%=body%></div>
     </div>
   </script>
   <script type="text/html" id="tmpl_sms_display_item">
-    <date class="sms-date"><%=date%></date>
+    <% if(date && isToday) {%>
+      <date class="sms-date" data-l10n-id="today"></date>
+    <%} else if(date) {%>
+      <date class="sms-date"><%=date%></date>
+    <%}%>
     <div class="sms-body">
       <%for (var i=0; i<body.length; i++) {%>
         <%if (type[i] == 'img') {%>

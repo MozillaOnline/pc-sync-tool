@@ -355,7 +355,8 @@ var SmsList = (function() {
       name: threadData.participants[0],
       unread: '',
       date: '',
-      body: ''
+      body: '',
+      isToday: isToday(new Date(threadData.timestamp))
     };
     if (threadData.unreadCount > 0) {
       templateData.unread = _('sms-unread-count', {
@@ -504,7 +505,8 @@ var SmsList = (function() {
       showDeleteButton: '',
       resendValue: '',
       forwardValue: '',
-      deleteValue: ''
+      deleteValue: '',
+      isToday: isToday(new Date(messageData.timestamp))
     };
     templateData.date = formatDate(messageData.timestamp);
     if (messageData.nearDate) {
