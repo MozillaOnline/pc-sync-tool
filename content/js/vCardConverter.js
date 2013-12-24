@@ -173,7 +173,7 @@ vCardConverter = {
                     var length = adr.length;
                     var address = adr[length - 5].replace('\\n', '');
                     contact.adr.push({
-                      "type": ["Home"],
+                      "type": ["home"],
                       "streetAddress": address,
                       "locality": adr[length - 3],
                       "postalCode": adr[length - 2],
@@ -186,7 +186,7 @@ vCardConverter = {
                     var length = adr.length;
                     var address = adr[length - 5].replace('\\n', '');
                     contact.adr.push({
-                      "type": ["Work"],
+                      "type": ["work"],
                       "streetAddress": address,
                       "locality": adr[length - 3],
                       "postalCode": adr[length - 2],
@@ -371,7 +371,7 @@ vCardConverter = {
                   var length = adr.length;
                   var address = adr[length - 5].replace('\\n', '');
                   contact.adr.push({
-                    "type": ["Home"],
+                    "type": ["home"],
                     "streetAddress": address,
                     "locality": adr[length - 3],
                     "postalCode": adr[length - 2],
@@ -385,7 +385,7 @@ vCardConverter = {
                   var length = adr.length;
                   var address = adr[length - 5].replace('\\n', '');
                   contact.adr.push({
-                    "type": ["Work"],
+                    "type": ["work"],
                     "streetAddress": address,
                     "locality": adr[length - 3],
                     "postalCode": adr[length - 2],
@@ -575,7 +575,7 @@ vCardConverter = {
                   }
                   var address = adr[length - 5].replace('\\n', '');
                   contact.adr.push({
-                    "type": ["Home"],
+                    "type": ["home"],
                     "streetAddress": address,
                     "locality": adr[length - 3],
                     "postalCode": adr[length - 2],
@@ -592,7 +592,7 @@ vCardConverter = {
                   }
                   var address = adr[length - 5].replace('\\n', '');
                   contact.adr.push({
-                    "type": ["Work"],
+                    "type": ["work"],
                     "streetAddress": address,
                     "locality": adr[length - 3],
                     "postalCode": adr[length - 2],

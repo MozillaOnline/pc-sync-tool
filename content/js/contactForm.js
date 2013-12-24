@@ -183,7 +183,7 @@ var ContactForm = (function() {
 
     fields['tel'] = new ContactField({
       id: 'tel',
-      typeList: ['Mobile', 'Home', 'Work', 'Personal', 'FaxHome', 'FaxOffice', 'FaxOther', 'Other'],
+      typeList: ['mobile', 'home', 'work', 'personal', 'faxHome', 'faxOffice', 'faxOther', 'another'],
       fields: [{
         name: 'value',
         l10nId: 'phone',
@@ -200,7 +200,7 @@ var ContactForm = (function() {
 
     fields['adr'] = new ContactField({
       id: 'address',
-      typeList: ['Home', 'Work'],
+      typeList: ['home', 'work'],
       fields: [{
         name: 'streetAddress',
         l10nId: 'street',
@@ -225,7 +225,7 @@ var ContactForm = (function() {
 
     fields['email'] = new ContactField({
       id: 'email',
-      typeList: ['Personal', 'Work', 'Home'],
+      typeList: ['personal', 'work', 'home'],
       fields: [{
         name: 'value',
         l10nId: 'email',

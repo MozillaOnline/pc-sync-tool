@@ -539,7 +539,7 @@
     </div>
   </script>
   <script type="text/html" id="tmpl_contact_tel_digest">
-    <%if (['Mobile', 'Home', 'Work', 'Personal', 'FaxHome', 'FaxOffice', 'FaxOther', 'Another'].indexOf(type) > -1) {%>
+    <%if (['mobile', 'home', 'work', 'personal', 'faxHome', 'faxOffice', 'faxOther', 'another'].indexOf(type) > -1) {%>
       <div class="title"><label data-l10n-id="<%=type%>Tel"></label></div>
       <div class="value"><label><%=value%></label></div>
     <%} else {%>
@@ -548,7 +548,7 @@
     <%}%>
   </script>
   <script type="text/html" id="tmpl_contact_email_digest">
-    <%if (['Personal', 'Work', 'Home'].indexOf(type) > -1) {%>
+    <%if (['personal', 'work', 'home'].indexOf(type) > -1) {%>
       <div class="title"><label data-l10n-id="<%=type%>Email"></label></div>
       <div class="value"><label><%=value%></label></div>
     <%} else {%>
