@@ -250,7 +250,7 @@ var utils = {
     });
   },
 
-  getGalleryCachedDir: function(pathArray) {
+  getCachedDir: function(pathArray) {
     return FileUtils.getDir("ProfD", pathArray, false).path;
   },
 

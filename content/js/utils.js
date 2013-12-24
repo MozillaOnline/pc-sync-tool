@@ -165,8 +165,8 @@ function isToday(date) {
   }
 }
 
-function getGalleryCachedDir(pathArray) {
-  return module.utils.getGalleryCachedDir(pathArray);
+function getCachedDir(pathArray) {
+  return module.utils.getCachedDir(pathArray);
 }
 
 function runCmd(cmd, callback) {

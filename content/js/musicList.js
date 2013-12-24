@@ -1,6 +1,6 @@
 var MusicList = (function() {
   var playedAudio = null;
-  const GALLERY_CACHE_FOLDER = 'gallery_tmp';
+  const MUSIC_CACHE_FOLDER = 'music_tmp';
   const PRE_PATH = 'chrome://ffosassistant/content/';
   function getListContainer() {
     return $id('music-list-container');
@@ -157,9 +157,9 @@ var MusicList = (function() {
     }
     var loadingGroupId = animationLoading.start();
     var file = self.id.split('music-play-');
-    var path = getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', GALLERY_CACHE_FOLDER]);
+    var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', MUSIC_CACHE_FOLDER]);
     var cmd = 'adb pull "' + file[1] + '" "' + path + file[1] + '"';
-    var cachedUrl = PRE_PATH + GALLERY_CACHE_FOLDER + file[1];
+    var cachedUrl = PRE_PATH + MUSIC_CACHE_FOLDER + file[1];
     runCmd(cmd, function() {
       self.classList.add('playing');
       playedAudio.src = cachedUrl;

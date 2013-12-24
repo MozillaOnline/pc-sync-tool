@@ -212,7 +212,7 @@ var Gallery = (function() {
     var picList = $expr('li', getListContainer());
     if (picList[index]) {
       // TODO: check if picture has been cached already
-      var path = getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', GALLERY_CACHE_FOLDER]);
+      var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', GALLERY_CACHE_FOLDER]);
       var cmd = 'adb pull "' + picList[index].dataset.picUrl + '" "' + path + picList[index].dataset.picUrl + '"';
       var cachedUrl = PRE_PATH + GALLERY_CACHE_FOLDER + picList[index].dataset.picUrl;
       runCmd(cmd, function() {
