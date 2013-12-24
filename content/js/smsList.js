@@ -2,6 +2,37 @@ var SmsList = (function() {
   var threadList = null;
   var messageList = null;
   var allMessagesList = {};
+  var repeatMsg = '';
+
+  function showNotification(e) {
+    if (!("Notification" in window)) {
+      return;
+    }
+    if (e.detail.type != 'sms') {
+      return;
+    }
+    var msg = e.detail.data;
+    if (msg.delivery != "received") {
+      return;
+    }
+    if (repeatMsg == JSON.stringify(msg)) {
+      return;
+    }
+    repeatMsg = JSON.stringify(msg);
+    var message = _('received-new-sms');
+    if (Notification.permission === "granted") {
+      new Notification(message);
+    } else {
+      Notification.requestPermission(function (permission) {
+        if (!('permission' in Notification)) {
+          Notification.permission = permission;
+        }
+        if (permission === "granted") {
+          new Notification(message);
+        }
+      });
+    }
+  }
 
   function resetView() {
     var inputSms = $id('sender-ctn-input');
@@ -1123,6 +1154,7 @@ var SmsList = (function() {
 
   return {
     init: init,
-    resetView: resetView
+    resetView: resetView,
+    showNotification: showNotification
   };
 })();
