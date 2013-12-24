@@ -796,12 +796,25 @@
     </div>
   </script>
   <script type="text/html" id="tmpl_thread_title">
-    <span><%=threadId%> (<%=length%>)</span>
+    <% if(isToday) {%>
+      <span data-l10n-id="today">
+    <%} else {%>
+      <span><%=threadId%>
+    <%}%>
+      </span><span class="pic-count video-count"> (<%=length%>)</span>
   </script>
   <script type="text/html" id="tmpl_video_thread_container">
     <div id=<%=id%> class="video-thread" data-length="1" data-checked="false" data-thread-id=<%=threadId%>>
       <div class="header">
-        <label><span><%=threadId%> (1)</span></label>
+        <label>
+        <% if(isToday) {%>
+          <span data-l10n-id="today">
+        <%} else {%>
+          <span><%=threadId%>
+        <%}%>
+          </span>
+          <span class="video-count">(1)</span>
+        </label>
       </div>
       <ul class="body"></ul>
     </div>
@@ -813,7 +826,15 @@
   <script type="text/html" id="tmpl_pic_thread_container">
     <div id=<%=id%> class="picture-thread" data-length="1" data-checked="false" data-thread-id=<%=threadId%>>
       <div class="header">
-        <label><span><%=threadId%> (1)</span></label>
+        <label>
+        <% if(isToday) {%>
+          <span data-l10n-id="today">
+        <%} else {%>
+          <span><%=threadId%>
+        <%}%>
+          </span>
+          <span class="pic-count">(1)</span>
+        </label>
       </div>
       <ul class="body"></ul>
     </div>

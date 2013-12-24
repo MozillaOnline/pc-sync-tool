@@ -148,6 +148,10 @@
   margin-top: 0.4rem;
 }
 
+.video-thread .video-count {
+  margin-left: .2rem;
+}
+
 .video-thread[data-checked=false] label {
   background-image: url("images/checkbox.png");
   background-position: 0.2rem 0;

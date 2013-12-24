@@ -124,25 +124,16 @@ function formatDate(timestamp) {
   var month = dt.getMonth() + 1;
   var date = dt.getDate();
 
-  var today = new Date();
-  var curYear = today.getFullYear();
-  var curMonth = today.getMonth() + 1;
-  var curDate = today.getDate();
-
-  if (curYear == year && curMonth == month && curDate == date) {
-    return _('today');
-  } else {
-    var strDate = year + '-';
-    if (month <= 9) {
-      strDate += '0';
-    }
-    strDate += month + '-';
-    if (date <= 9) {
-      strDate += '0';
-    }
-    strDate += date;
-    return strDate;
+  var strDate = year + '-';
+  if (month <= 9) {
+    strDate += '0';
   }
+  strDate += month + '-';
+  if (date <= 9) {
+    strDate += '0';
+  }
+  strDate += date;
+  return strDate;
 }
 
 function formatTime(timestamp) {
@@ -159,6 +150,19 @@ function formatTime(timestamp) {
   }
   time += minutes;
   return time;
+}
+
+function isToday(date) {
+  var today = new Date();
+  var curYear = today.getFullYear();
+  var curMonth = today.getMonth();
+  var curDate = today.getDate();
+
+  if (curYear == date.getFullYear() && curMonth == date.getMonth() && curDate == date.getDate()) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function getGalleryCachedDir(pathArray) {

@@ -70,20 +70,24 @@ var Video = (function() {
       threadContainer.dataset.length = 1 + parseInt(threadContainer.dataset.length);
       var title = threadContainer.getElementsByTagName('label')[0];
       var templateData = {
-        threadId : threadId,
+        threadId: threadId,
+        isToday: isToday(new Date(threadId)),
         length: threadContainer.dataset.length
       };
       title.innerHTML = tmpl('tmpl_thread_title', templateData);
+      navigator.mozL10n.translate(title);
       return;
     }
 
     var templateData = {
       id: 'video-' + threadId,
+      isToday: isToday(new Date(threadId)),
       threadId: threadId
     };
 
     var div = document.createElement('div');
     div.innerHTML = tmpl('tmpl_video_thread_container', templateData);
+    navigator.mozL10n.translate(div);
 
     var threads = $expr('.video-thread', container);
     if (threads.length == 0) {
