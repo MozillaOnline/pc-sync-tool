@@ -145,6 +145,7 @@
 }
 
 #contact-list-container {
+  margin-top: 1rem;
   padding-left: 1rem;
   max-height: 42rem;
   overflow: auto;
