@@ -1,4 +1,7 @@
 var MusicList = (function() {
+  var playedAudio = null;
+  const GALLERY_CACHE_FOLDER = 'gallery_tmp';
+  const PRE_PATH = 'chrome://ffosassistant/content/';
   function getListContainer() {
     return $id('music-list-container');
   }
@@ -26,6 +29,7 @@ var MusicList = (function() {
   }
 
   function init() {
+    playedAudio = new Audio();
     getListContainer().innerHTML = '';
     $id('empty-music-container').hidden = true;
     customEventElement.removeEventListener('dataChange', onMessage);
@@ -102,7 +106,8 @@ var MusicList = (function() {
       artist: music.metadata.artist,
       album: music.metadata.album,
       type: music.type,
-      size: toSizeInMB(music.size)
+      size: toSizeInMB(music.size),
+      id: 'music-play-' + music.name
     };
 
     var elem = document.createElement('div');
@@ -125,7 +130,42 @@ var MusicList = (function() {
         musicItemClicked(elem);
       }
     };
+    var playMusicBtns = $expr('.music-play-button', elem);
+    for (var i = 0; i < playMusicBtns.length; i++) {
+      playMusicBtns[i].addEventListener('click', playMusic);
+    }
     return elem;
+  }
+
+  function playMusic() {
+    var self = this;
+    if (!playedAudio) {
+      return;
+    }
+    var playMusicBtns = $expr('#music-list-container .music-play-button');
+    for (var i = 0; i < playMusicBtns.length; i++) {
+      if (playMusicBtns[i].classList.contains('playing')) {
+        playedAudio.pause();
+        playedAudio.src = '';
+        playMusicBtns[i].classList.remove('playing');
+        if (self == playMusicBtns[i]) {
+          return;
+        } else {
+          break;
+        }
+      }
+    }
+    var loadingGroupId = animationLoading.start();
+    var file = self.id.split('music-play-');
+    var path = getGalleryCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', GALLERY_CACHE_FOLDER]);
+    var cmd = 'adb pull "' + file[1] + '" "' + path + file[1] + '"';
+    var cachedUrl = PRE_PATH + GALLERY_CACHE_FOLDER + file[1];
+    runCmd(cmd, function() {
+      self.classList.add('playing');
+      playedAudio.src = cachedUrl;
+      playedAudio.play();
+      animationLoading.stop(loadingGroupId);
+    });
   }
 
   function updateControls() {

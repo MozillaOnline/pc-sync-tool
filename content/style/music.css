@@ -186,30 +186,59 @@
 }
 
 .music-header .music-names {
-  width:15rem;
-  padding:  0.5rem 0 0 0.5rem;
+  width: 15rem;
+  padding: 0.5rem 0 0 0.5rem;
 }
 
 .music-header .music-singer {
-  width:10rem;
+  width: 10rem;
 }
 
 .music-header .music-album {
-  width:16rem;
+  width: 16rem;
 }
 
 .music-header .music-timespan {
-  width:5rem;
+  width: 5rem;
 }
 
 .music-header .music-type {
-  width:6rem;
+  width: 6rem;
 }
 
 .music-header .music-size {
-  width:7rem;
+  width: 7rem;
 }
 
+.music-header .music-play {
+  width: 2rem;
+}
+
+.music-header .music-play .music-play-button {
+  height: 2rem;
+  background: url('images/play.png') no-repeat center;
+}
+
+.music-header .music-play .music-play-button:hover {
+  background: url('images/play-hover.png') no-repeat center;
+}
+
+.music-header .music-play .music-play-button:active {
+  background: url('images/play.png') no-repeat center;
+}
+
+.music-header .music-play .music-play-button.playing {
+  height: 2rem;
+  background: url('images/stop.png') no-repeat center;
+}
+
+.music-header .music-play .music-play-button.playing:hover {
+  background: url('images/stop-hover.png') no-repeat center;
+}
+
+.music-header .music-play .music-play-button.playing:active {
+  background: url('images/stop.png') no-repeat center;
+}
 
 .music-header >label.empty {
   height: 2.8rem;
