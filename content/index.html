@@ -411,7 +411,7 @@
                 <input id="contact-form-id" name="id" type="hidden" value="" />
                 <section>
                   <div>
-                    <img id="avatar-add-edit" class="avatar-add-edit avatar-add-edit-default" src="" />
+                    <img id="avatar-add-edit" class="avatar-add-edit avatar-add-edit-default" src=""></img>
                     <div id="add-avatar">
                       <div id="avatar-label" data-l10n-id="avatar-label">添加头像</div>
                     </div>
@@ -514,7 +514,7 @@
     <label></label>
     <div class="bookmark"></div>
     <%if (img) {%>
-      <img class="avatar" src="<%=img%>" />
+      <img class="avatar" src="<%=img%>"></img>
     <%} else {%>
       <img class="avatar avatar-default"></img>
     <%}%>
@@ -529,7 +529,7 @@
   </script>
   <script type="text/html" id="tmpl_contact_vcard_multi_info">
   <%if (avatar) {%>
-    <img class="multi-avatar-show" src="<%=avatar%>" />
+    <img class="multi-avatar-show" src="<%=avatar%>"></img>
   <%} else {%>
     <img class="multi-avatar-show multi-avatar-show-default"></img>
   <%}%>
@@ -741,7 +741,11 @@
   </script>
   <script type="text/html" id="tmpl_select_contact_item">
       <label data-checked="false"></label>
-      <img class="avatar avatar-default"></img>
+      <% if(!img) {%>
+        <img class="avatar avatar-default"></img>
+      <%} else {%>
+        <img class="avatar" src="<%=img%>"></img>
+      <%}%>
       <div class="contact-info">
         <div class="name"><%=name%></div>
         <div class="tel"><%=tel%></div>
@@ -778,7 +782,7 @@
       <div id="gallery-left-arrow" class="gallery-left-arrow"></div>
     </div>
     <div class="column-middle">
-      <img id="pic-content" src="<%=cachedUrl%>">
+      <img id="pic-content" src="<%=cachedUrl%>"></img>
     </div>
     <div class="column-right">
       <div id="gallery-right-arrow" class="gallery-right-arrow"></div>
@@ -829,7 +833,7 @@
     </div>
   </script>
   <script type="text/html" id="tmpl_video_item">
-    <img src=<%=poster%>>
+    <img src="<%=poster%>"></img>
     <div class="item-check"></div>
   </script>
   <script type="text/html" id="tmpl_pic_thread_container">
@@ -849,7 +853,7 @@
     </div>
   </script>
   <script type="text/html" id="tmpl_pic_item">
-    <img src=<%=thumbnail%>>
+    <img src="<%=thumbnail%>"></img>
     <div class="item-check"></div>
   </script>
   <script type="text/html" id="tmpl_music_item">

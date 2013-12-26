@@ -421,10 +421,8 @@ SendSMSDialog.prototype = {
         if (this.value.length <= 0) {
           return;
         }
-        if (this.value[this.value.length-1] == ';'
-            || this.value[this.value.length-1] == ','
-            || this.value[this.value.length-1] == ' ') {
-          var sender = this.value.split(this.value[this.value.length-1]);
+        if (this.value.match(/[;；,， ]$/)) {
+          var sender = this.value.split(this.value[this.value.length - 1]);
           self.addToSenders(sender[0]);
           this.value = '';
         }
@@ -441,8 +439,29 @@ SendSMSDialog.prototype = {
         CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
           animationLoading.stop(loadingGroupId);
           var dataJSON = JSON.parse(message.data);
+          var shortDataJSON = [];
+          for (var i = 0; i < dataJSON.length; i++) {
+            if (!dataJSON[i].tel || dataJSON[i].tel.length == 0) {
+              continue;
+            }
+            for (var j = 0; j < dataJSON[i].tel.length; j++) {
+              var shortData = {
+                name: dataJSON[i].name.join(' '),
+                tel: dataJSON[i].tel[j].value,
+                photo: dataJSON[i].photo,
+                id: dataJSON[i].id
+              };
+              shortDataJSON.push(shortData);
+            }
+          }
+          if (shortDataJSON.length == 0) {
+            new AlertDialog({
+              message: _('EmptyContacts')
+            });
+            return;
+          }
           new SelectContactsDialog({
-            contactList: dataJSON,
+            contactList: shortDataJSON,
             onok: self._selectContacts.bind(self)
           });
         }, function onerror_getAllContacts(message) {
@@ -463,7 +482,7 @@ SendSMSDialog.prototype = {
     };
     var selectedContactItems = $expr('.select-contacts-item', this._modalElement);
     var index;
-    for (index=0; index<selectedContactItems.length; index++) {
+    for (index = 0; index < selectedContactItems.length; index++) {
       if (selectedContactItems[index].children[0].title == templateData.title) {
         break;
       }
@@ -490,11 +509,7 @@ SendSMSDialog.prototype = {
 
   _selectContacts: function(data) {
     for (var i = 0; i < data.length; i++) {
-      var contact = JSON.parse(data[i]);
-      if (!contact.tel || contact.tel.length <= 0) {
-        continue;
-      }
-      var sender = contact.name + '(' + contact.tel[0].value + ')';
+      var sender = data[i].name + '(' + data[i].tel + ')';
       this.addToSenders(sender);
     }
   },
@@ -681,19 +696,6 @@ SelectContactsDialog.prototype = {
       container: contactSmallListContainer,
     });
     contactSmallList.render();
-    contactSmallList.getGroupedData().forEach(function(group) {
-      group.dataList.forEach(function(contact) {
-        if (( !! contact.photo) && (contact.photo.length > 0)) {
-          var item = $id('smartlist-contact-' + contact.id);
-          if ( !! item) {
-            var img = item.getElementsByTagName('img')[0];
-            img.src = contact.photo;
-            item.dataset.avatar = contact.photo;
-            img.classList.remove('avatar-default');
-          }
-        }
-      });
-    });
     var itemNum = $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').length;
     var header = _('contacts-selected', {
       n: itemNum
@@ -703,25 +705,19 @@ SelectContactsDialog.prototype = {
 
   _createContactListItem: function(contact) {
     var templateData = {
-      name: '',
-      tel: ''
+      name: contact.name,
+      tel: contact.tel,
+      img: null
     };
-    if (contact.name) {
-      templateData.name = contact.name.join(' ');
-    }
-    if (contact.tel && contact.tel.length > 0) {
-      templateData.tel = contact.tel[0].value;
-    }
+
     var elem = document.createElement('div');
     elem.classList.add('contact-list-item');
-    if (contact.category && contact.category.indexOf('favorite') > -1) {
-      elem.classList.add('favorite');
+    if (!!contact.photo && contact.photo.length > 0) {
+      templateData.img = contact.photo;
     }
     elem.innerHTML = tmpl('tmpl_select_contact_item', templateData);
-    elem.dataset.contact = JSON.stringify(contact);
-    elem.dataset.contactId = contact.id;
-    elem.id = 'smartlist-contact-' + contact.id;
-    elem.dataset.avatar = '';
+    elem.dataset.name = contact.name;
+    elem.dataset.tel = templateData.tel;
     elem.dataset.checked = false;
     elem.onclick = function onclick_contact_list(event) {
       var target = event.target;
@@ -771,10 +767,15 @@ SelectContactsDialog.prototype = {
     this._modalElement = null;
     document.removeEventListener('SelectContactsDialog:show', this._onModalDialogShown);
   },
+
   select: function() {
     var ids = [];
     $expr('#sendSms-smartlist-container .contact-list-item[data-checked="true"]').forEach(function(item) {
-      ids.push(item.dataset.contact);
+      var tempData = {
+        name: item.dataset.name,
+        tel: item.dataset.tel
+      };
+      ids.push(tempData);
     });
     this.options.onok(ids);
     this.close();
@@ -843,7 +844,7 @@ FilesOPDialog.prototype = {
     this._fileIndex = 0;
     this._timer = null;
     this._steps = 0;
-    this._processbar = null,
+    this._processbar = null;
     this._closed = false;
     this._build();
   },
@@ -933,7 +934,9 @@ FilesOPDialog.prototype = {
 
         if (filesCannotBeDone.length > 0) {
           new AlertDialog({
-            message: _(self.options.alert_prompt, {n:filesCannotBeDone.length})
+            message: _(self.options.alert_prompt, {
+              n: filesCannotBeDone.length
+            })
           });
         }
 
@@ -956,7 +959,9 @@ FilesOPDialog.prototype = {
 
         if (filesCannotBeDone.length > 0) {
           new AlertDialog({
-            message: _(self.options.alert_prompt, {n:filesCannotBeDone.length})
+            message: _(self.options.alert_prompt, {
+              n: filesCannotBeDone.length
+            })
           });
         }
 
