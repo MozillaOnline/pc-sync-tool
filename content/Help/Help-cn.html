@@ -7,7 +7,7 @@
     <title>火狐手机助手新手上路</title>
 
     <link rel="stylesheet" media="screen,projection,tv" href="help_files/tabzilla-min.css">
-    <link rel="stylesheet" media="screen,projection,tv" href="help_files/mozcn_tour-min.css">
+    <link rel="stylesheet" media="screen,projection,tv" href="help_files/mozcn_tour-min-cn.css">
     <meta name="og:image" content="/media/img/firefox/firefox-100.jpg?2013-06">
     <link rel="shortcut icon" type="image/icon" href="http://www.firefox.com.cn/media/img/firefox/favicon.ico?2013-06">
   </head>
@@ -37,8 +37,8 @@
           <ul>
             <li>环境准备
               <ul>
-                <li>安装 Firefox 浏览器26.0正式版 <a href="http://download.firefox.com.cn/releases/stub/official/zh-CN/Firefox-latest.exe">（点击下载）</a></li>
-                <li>安装 FirefoxOS 手机助手附加组件<a href="http://download.firefox.com.cn/chinaedition/addons/ffosassistant/ffosassistant-latest.xpi">（点击下载）</a></li>
+                <li>安装Firefox 浏览器26.0正式版。（<a href="http://www.firefox.com.cn"><u>点击下载</u></a>）</li>
+                <li>安装Firefox OS手机助手附加组件。（<a href="http://download.firefox.com.cn/chinaedition/addons/ffosassistant/ffosassistant-latest.xpi"><u>点击下载</u></a>）</li>
               </ul>
             </li>
             <li>USB连接
@@ -46,59 +46,62 @@
                 <li>安装驱动
                   <ul>
                     <li>Windows
-                      <p><a href="http://download.firefox.com.cn/ffos/drivers/Alcatel/Alcatel_Driver.zip">下载</a>驱动并安装</p>
+                      <p><a href="http://download.firefox.com.cn/ffos/drivers/Alcatel/Alcatel_Driver.zip"><u>点击下载驱动</u></a>，并执行安装包内的install.exe</p>
                     </li>
                     <li>Linux
-                      <p>运行 sudo vim /etc/udev/rules.d/51-android.rules</p>
+                      <p>运行命令：</p>
+                      <i>sodu vim /etc/udev/rules.d/51-android.rules</i>
                       <p>添加新行：</p>
-                      <p>SUBSYSTEM=="usb",ATTRS{idVendor}=="05c6",MODE=="0666"</p>
+                      <i>SUBSYSTEM=="usb",ATTRS{idVendor}=="05c6",MODE=="0666"</i>
                     </li>
                     <li>Mac
                       <p>无需配置</p>
                     </li>
                   </ul>
                 </li>
-                <li id="SETTINGS">设置手机
+                <li id="SETTINGS">修改手机设置
                   <ul>
-                    <li>打开“远程调试”</li>
+                    <li>打开远程调试</li>
                     <div class="remote-debug"></div>
-                    <li>停用 USB 存储模式</li>
+                    <li>停用USB存储的连接模式</li>
                     <div class="usb-storage"></div>
                   </ul>
                 </li>
-                <li>启动 Firefox, 并运行手机助手
+                <li> 启动Firefox，并运行手机助手
                   <div class="start-ffosassistant"></div>
                 </li>
-                <li>启动手机端PC同步应用
+                <li>启动手机端的PC同步应用
                   <div class="start-app"></div>
                 </li>
-                <li>用 USB 线连接手机和电脑，连接成功如下图所示，否则见<a href="#FAQ">常见问题</a>
+                <li>使用USB线连接手机和电脑，连接成功时您将可以看到以下界面：
+                  <p>如果连接不成功请参看<a href="#FAQ"><u>常见问题</u></a></p>
                   <div class="usb-conn-success"></div>
                 </li>
               </ul>
             </li>
-            <li>WIFI连接
+            <li>使用WiFi连接方式
               <ul>
                 <li id="WIFI-MODE-SETTINGS">修改手机设置
                   <ul>
-                    <li>停用“锁屏”功能
+                    <li>停用锁屏功能
                       <div class="lock-screen"></div>
                     </li>
-                    <li>停用“休眠”功能
+                    <li>停用休眠功能
                       <div class="sleepless"></div>
                     </li>
                   </ul>
                 </li>
-                <li>确认手机连接到 WIFI 网络，获取连接码
+                <li>确认手机已经连接到无线网络，获取WiFi连接码。
                   <div class="wifi-code"></div>
                 </li>
-                <li>启动 Firefox, 并运行手机助手
+                <li>启动 Firefox, 并运行Firefox OS手机助手。
                   <div class="start-ffosassistant"></div>
                 </li>
-                <li>选择 WIFI 连接模式，输入手机端 WIFI 连接码
+                <li>选择WiFi连接方式，输入手机生成的WiFi连接码。
                   <div class="input-wifi-code"></div>
                 </li>
-                <li>点击“连接”按钮，连接成功如下图所示，否则见<a href="#FAQ">常见问题</a>
+                <li>点击连接按钮，连接成功后将显示如下界面：
+                  <p>如果连接不成功请参看<a href="#FAQ"><u>常见问题</u></a></p>
                   <div class="wifi-conn-success"></div>
                 </li>
               </ul>
@@ -107,55 +110,67 @@
         </div>
 
         <div class="billboard" id="FAQ">
-          <h3>常见问题</h3> <ul> <li>如何检查 Firefox 浏览器版本?
+          <h3>常见问题</h3> <ul> <li>如何检查Firefox浏览器的版本？
               <div class="firefox-check"></div>
             </li>
             <li>如何检查手机驱动是否正确安装？
               <div class="driver-check"></div>
             </li>
-            <li>如何关闭手机端正在运行的应用？
+            <li>如何关闭手机端正在运行的应用程序？
+              <ul>
+                <li>长按手机Home按钮</li>
+                <li>触发正在运行应用列表，向上滑动除移正在运行的应用</li>
+              </ul>
               <div class="close-app"></div>
             </li>
-            <li id="CLOSE-OTHERS">如何关闭手机端正在运行的其他手机助手？
+            <li id="CLOSE-OTHERS">如何关闭PC端正在运行其他手机助手？
+              <ul>
+                <li>打开电脑的任务管理器：在桌面最下面任务栏上点右键，选择“任务管理器”①或使用键盘（Alt+Ctrl+Delete）</li>
+                <li>在任务管理器面板“进程”列表②中，选择手机助手进程③</li>
+                <li>逐一结束各个手机助手和管理软件进程④</li>
+              </ul>
               <div class="close-pc-app"></div>
             </li>
-            <li>为何输入正确的 WIFI 连接码后，无法建立 WIFI 连接？
+            <li>为何输入正确的WiFi连接码后，无法建立WiFi连接？
               <ul>
-                <li>确认手机和PC运行在同一网络</li>
-                <li>确认手机端PC同步应用正在运行</li>
+                <li>确认手机与电脑连接到同一个网络中。</li>
+                <li>确认手机端的手机助手在运行中。</li>
               </ul>
             </li>
-            <li>为何USB连接时，无法显示手机上的图片、音乐和视频？
+            <li>为何USB连接时无法显示手机上的图片，音乐和视频？
               <ul>
-                <li>检查是否打开远程调试,参考<a href="#SETTINGS">（设置手机）</a></li>
-                <li>检查是否关闭了USB存储模式,参考<a
-                href="#SETTINGS">（设置手机）</a></li>
+                <li>检查是否打开了远程调试设置。（<a href="#SETTINGS"><u>参考设置手机</u></a>）</li>
+                <li>检查是否关闭了USB存储模式。（<a
+                href="#SETTINGS"><u>参考设置手机</u></a>）</li>
               </ul>
             </li>
-            <li id="APP-CLOSED">手机端应用自动退出怎么办？
+            <li id="APP-CLOSED">手机端的应用会自动退出怎么办？
               <ul>
-                <li>参考WIFI模式下 <a href="#WIFI-MODE-SETTINGS">设置手机</a></li>
-                <li>重启手机端应用</li>
+                <li>尝试停用锁屏功能和手机休眠设置。（<a href="#WIFI-MODE-SETTINGS"><u>参考设置手机</u></a>）</li>
+                <li>重新打开手机端应用，刷新电脑页面就可以再次连接。</li>
               </ul>
+              <li>由于Firefox OS在内存不足时会关闭掉部分已打开的应用程序，此时重启手机端应用即可。</li>
             </li>
-            <li>PC 端操作时，连接突然中断，如何恢复连接？
+            <li>在PC端操作时，连接突然被断开如何恢复连接？
               <ul>
-                <li>检查手机端应用是否被关闭。<a href="#APP-CLOSED">（参考链接）</a></li>
-                <li>如果您使用WIFI连接模式，检查网络是否正常、检查手机设置<a href="#APP-CLOSED">（参考链接）</a></li>
-                <li>如果您使用USB连接模式，尝试以下操作:
+                <li>检查手机端应用是否被关闭，重新打开应用并连接即可恢复操作。（具体操作步骤<a href="#APP-CLOSED"><u>参考该问题</u></a>）</li>
+                <li>如果您使用WiFi连接模式，检查WiFi网络连接是否正常（最好停用锁屏功能和手机休眠设置，参考<a href="#APP-CLOSED"><u>设置手机</u></a>）。</li>
+                <li>如果您使用USB连接模式，请尝试以下操作来恢复连接：
                   <ul>
-                    <li>关闭电脑上其他的手机助手<a href="#CLOSE-OTHERS">（参考链接）</a></li>
-                    <li>参考<a href="#SETTINGS">设置手机</a></li>
+                    <li>关闭电脑上运行的其他手机助手。（具体操作步骤<a href="#CLOSE-OTHERS"><u>参考该问题</u></a>）
+                      <p>其他手机助手运行会占用USB服务端口，因此手机与电脑的连接也就无法正常使用。</p>
+                    </li>
+                    <li>打开手机“远程调试”设置，关闭“USB存储”模式。（具体操作步骤<a href="#SETTINGS"><u>参考该问题</u></a>）</li>
                   </ul>
                 </li>
               </ul>
             </li>
-            <li>安装完手机助手，在浏览器上找不到对应的图标怎么办？
+            <li>安装完手机助手，在浏览器上找不到图标怎么办？
               <ul>
-                <li>检查附加组件是否已经正确安装
+                <li>检查浏览器上的附加组件安装是否正确。
                   <div class="check-addon"></div>
                 </li>
-                <li>从浏览器的“个性定制”表中将图标放到工具栏上
+                <li>从浏览器的“个性化定制”表格中将图标放到工具栏上。
                   <div class="customize-addon"></div>
                 </li>
               </ul>

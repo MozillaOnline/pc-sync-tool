@@ -238,6 +238,10 @@ var FFOSAssistant = (function() {
       }
       if (availableDevices.length == 0) {
         var contentInfo = [_('connection-alert-dialog-message-check-nodriver')];
+		var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+        if (navigator.mozL10n.language.code == 'zh-CN') {
+          url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+        }
         new AlertDialog({
           id: 'popup_dialog',
           titleL10nId: 'alert-dialog-title',
@@ -246,7 +250,7 @@ var FFOSAssistant = (function() {
             description: _('connection-alert-dialog-message-header'),
             content: contentInfo,
             detail: _('connection-alert-dialog-detail'),
-            href: 'chrome://ffosassistant/content/Help/Help-cn.html'
+            href: url
           },
           callback: resetConnect
         });
@@ -278,6 +282,10 @@ var FFOSAssistant = (function() {
         var contentInfo = [_('connection-alert-dialog-message-check-remotedebugger'), _('connection-alert-dialog-message-check-lockscreen')];
         if (!isWindows()) {
           contentInfo.push(_('connection-alert-dialog-message-check-edit51android'));
+          var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+          if (navigator.mozL10n.language.code == 'zh-CN') {
+            url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+          }
           new AlertDialog({
             id: 'popup_dialog',
             titleL10nId: 'alert-dialog-title',
@@ -286,7 +294,7 @@ var FFOSAssistant = (function() {
               description: _('connection-alert-dialog-message-header'),
               content: contentInfo,
               detail: _('connection-alert-dialog-detail'),
-              href: 'chrome://ffosassistant/content/Help/Help-cn.html'
+              href: url
             },
             callback: resetConnect
           });
@@ -299,6 +307,10 @@ var FFOSAssistant = (function() {
               contentInfo.push(_('connection-alert-dialog-message-check-otheradb') + ' : ' + adbServiceName[0]);
             }
           }
+          var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+          if (navigator.mozL10n.language.code == 'zh-CN') {
+            url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+          }
           new AlertDialog({
             id: 'popup_dialog',
             titleL10nId: 'alert-dialog-title',
@@ -307,7 +319,7 @@ var FFOSAssistant = (function() {
               description: _('connection-alert-dialog-message-header'),
               content: contentInfo,
               detail: _('connection-alert-dialog-detail'),
-              href: 'chrome://ffosassistant/content/Help/Help-cn.html'
+              href: url
             },
             callback: resetConnect
           });
@@ -366,6 +378,10 @@ var FFOSAssistant = (function() {
           contentInfo.push(_('connection-alert-dialog-message-check-samewifi'));
           contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
         }
+        var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+        if (navigator.mozL10n.language.code == 'zh-CN') {
+          url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+        }
         new AlertDialog({
           id: 'popup_dialog',
           titleL10nId: 'alert-dialog-title',
@@ -374,7 +390,7 @@ var FFOSAssistant = (function() {
             description: _('connection-alert-dialog-message-header'),
             content: contentInfo,
             detail: _('connection-alert-dialog-detail'),
-            href: 'chrome://ffosassistant/content/Help/Help-cn.html'
+            href: url
           },
           callback: resetConnect
         });
@@ -392,6 +408,10 @@ var FFOSAssistant = (function() {
         releaseConnPool();
         if (deviceSocketState == connectState.connecting) {
           var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
+          var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+          if (navigator.mozL10n.language.code == 'zh-CN') {
+            url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+          }
           new AlertDialog({
             id: 'popup_dialog',
             titleL10nId: 'alert-dialog-title',
@@ -400,7 +420,7 @@ var FFOSAssistant = (function() {
               description: _('connection-alert-dialog-message-header'),
               content: contentInfo,
               detail: _('connection-alert-dialog-detail'),
-              href: 'chrome://ffosassistant/content/Help/Help-cn.html'
+              href: url
             },
             callback: resetConnect
           });
@@ -476,12 +496,10 @@ var FFOSAssistant = (function() {
     };
 
     $id('help_btn').onclick = function(e) {
-      var url = '';
+      var url = 'chrome://ffosassistant/content/Help/Help-en.html';
       if (navigator.mozL10n.language.code == 'zh-CN') {
         //url = 'http://os.firefox.com.cn/zh-CN/about/help.html';
         url = 'chrome://ffosassistant/content/Help/Help-cn.html';
-      } else {
-        url = 'chrome://ffosassistant/content/Help/Help-en.html';
       }
       window.open(url);
     };

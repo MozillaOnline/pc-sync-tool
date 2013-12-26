@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="linux js loaded" dir="ltr" lang="zh-CN">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>How to start Firefox OS Assistant</title>
+
+    <link rel="stylesheet" media="screen,projection,tv" href="help_files/tabzilla-min.css">
+    <link rel="stylesheet" media="screen,projection,tv" href="help_files/mozcn_tour-min.css">
+    <meta name="og:image" content="/media/img/firefox/firefox-100.jpg?2013-06">
+    <link rel="shortcut icon" type="image/icon" href="http://www.firefox.com.cn/media/img/firefox/favicon.ico?2013-06">
+  </head>
+  <body id="" class="html-ltr sky" data-latest-firefox="26.0" data-esr-versions="[10, 17, 24]">
+    <div id="outer-wrapper">
+      <div id="wrapper">
+        <header id="masthead">
+          <h2>Firefox OS Assistant</h2>
+        </header>
+        <div id="main-feature">
+          <div class="">
+            <hgroup class="stacked">
+              <h1>Tours<span class="large">Get started</span></h1>
+            </hgroup>
+          </div>
+        </div>
+
+        <nav class="menu-bar billboard">
+          <ul>
+            <li><a href="#connection">Quick start</a></li>
+            <li><a href="#FAQ">FAQs</a></li>
+          </ul>
+        </nav>
+
+        <div class="billboard" id="connection">
+          <h3>Quick start</h3>
+          <ul>
+            <li>Prerequisites
+              <ul>
+                <li>Install Firefox browser v26.0 release. (<a href="http://www.firefox.com.cn"><u>Download</u></a>)</li>
+                <li>Install addon of Firefox OS Assistant into Firefox browser. (<a href="http://download.firefox.com.cn/chinaedition/addons/ffosassistant/ffosassistant-latest.xpi"><u>Download</u></a>)</li>
+              </ul>
+            </li>
+            <li>USB connection
+              <ul>
+                <li>Install the device driver
+                  <ul>
+                    <li>Windows
+                      <p><a href="http://download.firefox.com.cn/ffos/drivers/Alcatel/Alcatel_Driver.zip"><u>Download device driver</u></a>, and run the install.exe.</p>
+                    </li>
+                    <li>Linux
+                      <p>Enter the following command:</p>
+                      <i>sodu vim /etc/udev/rules.d/51-android.rules</i>
+                      <p>Add the following line:</p>
+                      <i>SUBSYSTEM=="usb",ATTRS{idVendor}=="05c6",MODE=="0666"</i>
+                    </li>
+                    <li>Mac
+                      <p>None.</p>
+                    </li>
+                  </ul>
+                </li>
+                <li id="SETTINGS">Set up your mobile phone
+                  <ul>
+                    <li>Enable “Remote debugging”</li>
+                    <div class="remote-debug"></div>
+                    <li>Disable “USB storage”</li>
+                    <div class="usb-storage"></div>
+                  </ul>
+                </li>
+                <li>Launch Firefox browser and run the addon Firefox OS Assistant
+                  <div class="start-ffosassistant"></div>
+                </li>
+                <li>Launch the application PC Sync on the mobile phone
+                  <div class="start-app"></div>
+                </li>
+                <li>Now you’re ready to manage the mobile phone in USB connection model as follow:
+                  <p>For any problem, follow instructions from <a href="#FAQ"><u>FAQs</u></a></p>
+                  <div class="usb-conn-success"></div>
+                </li>
+              </ul>
+            </li>
+            <li>WIFI connection
+              <ul>
+                <li id="WIFI-MODE-SETTINGS">Set up your mobile phone
+                  <ul>
+                    <li>Disable ”Screen lock”
+                      <div class="lock-screen"></div>
+                    </li>
+                    <li>Set “Screen timeout” as “never”
+                      <div class="sleepless"></div>
+                    </li>
+                  </ul>
+                </li>
+                <li>Get the connection code on the phone
+                  <p>Note: Make sure your mobile phone is connected to the WIFI and in the same network with PC.</p>
+                  <div class="wifi-code"></div>
+                </li>
+                <li>Launch Firefox browser and run the addon Firefox OS Assistant
+                  <div class="start-ffosassistant"></div>
+                </li>
+                <li>Select the WIFI connection, then enter the connection code and click the button “Connect”
+                  <div class="input-wifi-code"></div>
+                </li>
+                <li>Now you’re ready to manage the mobile phone in WIFI connection model as follow:
+                  <p>For any problem, follow instructions from <a href="#FAQ"><u>FAQs</u></a></p>
+                  <div class="wifi-conn-success"></div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="billboard" id="FAQ">
+          <h3>FAQs</h3> <ul> <li>How can I check out the version of Firefox browser?
+              <div class="firefox-check"></div>
+            </li>
+            <li>How can I find out whether the device driver has been installed properly?
+              <div class="driver-check"></div>
+            </li>
+            <li>How can I remove the running application on the mobile phone?
+              <ul>
+                <li>Long press Home button</li>
+                <li>Trigger the list of running applications and swipe upward the hierarchy of every application to remove it</li>
+              </ul>
+              <div class="close-app"></div>
+            </li>
+            <li id="CLOSE-OTHERS">How can I remove mobile phone assistant on the PC?
+              <ul>
+                <li>Open “Task Manager” by right-clicking the taskbar --> “Start Task Manager”, or press Ctrl+Shift+Delete</li>
+                <li>Click the “Process” tab</li>
+                <li>Click the processes of mobile phone manager or assistant, and click “End Process”</li>
+              </ul>
+              <div class="close-pc-app"></div>
+            </li>
+            <li>Cannot get into WIFI connection when I enter the right connection code?
+              <ul>
+                <li>Make sure your mobile phone and the computer are in the same WIFI network.</li>
+                <li>Make sure the application PC Sync is running on the mobile phone.</li>
+              </ul>
+            </li>
+            <li>Cannot read the pictures, music and videos on the computer in USB connection?
+              <ul>
+                <li>Make sure you have enabled “Remote debugging” on the mobile phone. (Referring to <a href="#SETTINGS"><u>Set up your mobile phone</u></a>)</li>
+                <li>Make sure you have disabled “USB storage” on the mobile phone. (Referring to <a
+                href="#SETTINGS"><u>Set up your mobile phone</u></a>)</li>
+              </ul>
+            </li>
+            <li id="APP-CLOSED">Why the application PC Sync shut down automatically?
+              <ul>
+                <li>Disable “Screen lock” and set your mobile phone “Screen timeout” to “never”.
+                  <p>(Referring to <a href="#WIFI-MODE-SETTINGS"><u>Set up your mobile phone</u></a>)</p></li>
+                <li>Re-launch the application and reconnect it on the PC. It will work.</li>
+              </ul>
+            </li>
+            <li>What can I do when the connection is broken down on PC?
+              <ul>
+                <li>Make sure the application PC Sync in running on the mobile phone. If not, please re-launch it. (Follow the <a href="#APP-CLOSED"><u>instruction of this question</u></a>)</li>
+                <li>In WIFI connection, make sure your WIFI network and the PC/mobile phone connection to the network are on work
+                  <p>(You'd better to disable” Screen lock” and set” Screen timeout” as “never”,referring to <a href="#APP-CLOSED"><u>set up your mobile phone</u></a>)</p></li>
+                <li>In USB connection, you can follow the steps below to recover the connection:
+                  <ul>
+                    <li>Remove the processes of other mobile phone assistant running on the PC. (Follow the <a href="#CLOSE-OTHERS"><u>instruction of this question</u></a>)</li>
+                    <li>As the running assistants occupy the USB server who handles the device-computer connection and communication, they will cause disconnection between your mobile phone and PC.</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>Where is the addon icon of Firefox OS Assistant when I finish install?
+              <ul>
+                <li>Make sure the addon Firefox OS Assistant has been install properly
+                  <div class="check-addon"></div>
+                </li>
+                <li>Pin the addon icon to the tool bar from the customize-box
+                  <div class="customize-addon"></div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div><!-- close #wrapper -->
+    </div><!-- close #outer-wrapper -->
+  </body>
+</html>
