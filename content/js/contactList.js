@@ -108,7 +108,6 @@ var ContactList = (function() {
     return searchString;
   }
 
-
   function updateUI() {
     var isEmpty = groupedList.count() == 0;
     $id('selectAll-contacts').dataset.disabled = isEmpty;
@@ -193,6 +192,9 @@ var ContactList = (function() {
         // TODO
         // - index family name for Chinese name
         // - filter the special chars
+        if (!contact.name[0] || contact.name[0].length == 0) {
+          return '#';
+        }
         var firstChar = contact.name[0].charAt(0).toUpperCase();
         var pinyin = makePy(firstChar);
 

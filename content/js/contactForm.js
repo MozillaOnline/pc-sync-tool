@@ -95,7 +95,17 @@ ContactField.prototype = {
     section.addEventListener('click', function onclick_deleteButton(event) {
       var elem = event.target;
       if (elem instanceof HTMLDivElement && elem.className == 'action-delete') {
+        var inputs = $expr('input', elem.parentNode);
+        for (var i = 0; i < inputs.length; i++) {
+          if(inputs[i].dataset.value != '' && inputs[i].dataset.changed != 'true') {
+            ContactForm.changeCount(1);
+          }
+          if(inputs[i].dataset.value == '' && inputs[i].dataset.changed == 'true') {
+            ContactForm.changeCount(-1);
+          }
+        }
         this.parentNode.removeChild(this);
+        ContactForm.changed();
       }
     });
   },
@@ -145,14 +155,26 @@ var ContactForm = (function() {
   var handlerQuickSaveContact = null;
   var handlerAvatarAddEdit = null;
   var handlerAvatarInput = null;
+  var changedCount = 0;
 
-/*
+  function changeCount(changed) {
+    changedCount += changed;
+  }
+
+  /**
    * Edit the given contact in the form.
    * If the given contact is null, then adding contact is performed.
    */
-
   function editContact(contact) {
     ViewManager.showViews('contact-edit-view');
+    $id('save-contact').classList.add('button-disabled');
+    $id('save-contact').dataset.disabled = true;
+    changedCount = 0;
+
+    var inputs = $expr('input', $id('contact-edit-view'));
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].dataset.changed = false;
+    }
 
     // Mark form as adding new contact
     $id('contact-edit-view').dataset.addContact = !contact;
@@ -176,9 +198,12 @@ var ContactForm = (function() {
       $id('avatar-add-edit').classList.add('avatar-add-edit-default');
     }
 
-    $id('givenName').value = contact && contact.givenName ? contact.givenName.join(' ') : '';
-    $id('familyName').value = contact && contact.familyName ? contact.familyName.join(' ') : '';
-    $id('org').value = contact && contact.org ? contact.org.join(' ') : '';
+    $id('givenName').dataset.value = $id('givenName').value = contact && contact.givenName ? contact.givenName.join(' ') : '';
+    $id('givenName').oninput = changed;
+    $id('familyName').dataset.value = $id('familyName').value = contact && contact.familyName ? contact.familyName.join(' ') : '';
+    $id('familyName').oninput = changed;
+    $id('org').dataset.value = $id('org').value = contact && contact.org ? contact.org.join(' ') : '';
+    $id('org').oninput = changed;
     $id('givenName').focus();
 
     fields['tel'] = new ContactField({
@@ -250,6 +275,64 @@ var ContactForm = (function() {
     }).render();
   }
 
+  function changed(e) {
+    if (e instanceof HTMLSelectElement) {
+      var inputs = $expr('input', e.parentNode.parentNode);
+      if (checkInputsEmpty(inputs))
+        return;
+
+      if (e.dataset.selectedIndex != e.selectedIndex && e.dataset.changed != 'true') {
+        e.dataset.changed = 'true';
+        changedCount++;
+      }
+      if (e.dataset.selectedIndex == e.selectedIndex && e.dataset.changed == 'true') {
+        e.dataset.changed = 'false';
+        changedCount--;
+      }
+      changeSaveButtonStatus();
+      return;
+    }
+
+    var target;
+    if (e instanceof Event) {
+      target = e.target;
+    } else {
+      target = e;
+    }
+    if (target) {
+      if (target.dataset.value != target.value && target.dataset.changed != 'true') {
+        changedCount++;
+        target.dataset.changed = 'true';
+      }
+      if (target.dataset.value == target.value && target.dataset.changed == 'true') {
+        changedCount--;
+        target.dataset.changed = 'false';
+      }
+    }
+    changeSaveButtonStatus();
+  }
+
+  function  checkInputsEmpty(inputs) {
+    var ret = true;
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].value != '') {
+        ret = false;
+        break;
+      }
+    }
+    return ret;
+  }
+
+  function changeSaveButtonStatus() {
+    if (changedCount > 0) {
+      $id('save-contact').classList.remove('button-disabled');
+      $id('save-contact').dataset.disabled = false;
+    } else {
+      $id('save-contact').classList.add('button-disabled');
+      $id('save-contact').dataset.disabled = true;
+    }
+  }
+
   function getFieldValue(id) {
     if (fields[id]) {
       return fields[id].getValues();
@@ -261,6 +344,9 @@ var ContactForm = (function() {
   }
 
   function saveContact() {
+    if ($id('save-contact').dataset.disabled == 'true') {
+      return false;
+    }
     var contactId = $id('contact-form-id').value;
     var updateContact = !! contactId;
     var contact = null;
@@ -312,14 +398,6 @@ var ContactForm = (function() {
       contact.photo = [];
     } else {
       contact.photo = $id('avatar-add-edit').src;
-    }
-
-    if (contact.givenName.length == 0) {
-      new AlertDialog({
-        message: _('EmptyForm')
-      });
-      animationLoading.stop(loadingGroupId);
-      return false;
     }
 
     if (updateContact) {
@@ -494,6 +572,8 @@ var ContactForm = (function() {
           fr.onload = function(e) {
             pic.src = e.target.result;
             pic.classList.remove('avatar-add-edit-default');
+            ContactForm.changeCount(1);
+            ContactForm.changed();
           };
         }, 'image/jpeg');
       };
@@ -503,6 +583,8 @@ var ContactForm = (function() {
 
   return {
     // If contact object is not given, perform adding a new contact
-    editContact: editContact
+    editContact: editContact,
+    changed: changed,
+    changeCount: changeCount
   };
 })();
