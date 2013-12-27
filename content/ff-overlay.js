@@ -319,6 +319,9 @@
       data = msg.devices;
     }
     devices = data;
+    if (devices.length > 0) {
+      switchToTabHavingURI('about:ffos', true);
+    }
     setTimeout(function() {
       observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
     }, 1000);
