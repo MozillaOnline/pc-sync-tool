@@ -44,7 +44,7 @@
       modules.DriverManager.startDriverManager();
       connectToDriverManager();
     } else {
-      modules.ADBService.checkDeviceInLinux(true, devicesConfig, handleMessage);
+      modules.ADBService.checkDevice(true, modules.utils.isMac(), devicesConfig, handleMessage);
     }
   }
 
@@ -55,7 +55,7 @@
         client.sendCommand('shutdown');
       }
     } else {
-      modules.ADBService.checkDeviceInLinux(false);
+      modules.ADBService.checkDevice(false);
     }
     modules.ADBService.killAdbServer();
   }

@@ -197,8 +197,8 @@ onmessage = function(e) {
   case 'initAdbService':
     initAdbService(e.data.isWindows, e.data.libPath, e.data.adbPath, e.data.profilePath);
     break;
-  case 'checkDeviceInLinux':
-    checkDeviceInLinux(id, e.data.enable, e.data.devices);
+  case 'checkDevice':
+    checkDevice(id, e.data.enable, e.data.isMac, e.data.devices);
     break;
   case 'RunCmd':
     postMessage({
@@ -232,8 +232,9 @@ function initAdbService(isWindows, libPath, adbPath, profilePath) {
 }
 
 var m_deviceList = [];
-function checkDeviceInLinux(id, enable, devices) {
-  debug('checkDeviceInLinux = ' + enable);
+
+function checkDevice(id, enable, isMac, devices) {
+  debug('checkDevice = ' + enable);
   if (detectingInterval) {
     clearInterval(detectingInterval);
     detectingInterval = null;
@@ -246,18 +247,29 @@ function checkDeviceInLinux(id, enable, devices) {
     return;
   }
   detectingInterval = setInterval(function checkDeviceState() {
-    let devicesList = libadb.runLocalCmd('lsusb');
+    var cmd = 'lsusb';
+    if (isMac) {
+      cmd = 'system_profiler SPUSBDataType';
+    }
+    let devicesList = libadb.runLocalCmd(cmd);
     let curDevices = [];
-    for (var i=0; i<devices.length; i++) {
-      if (devicesList.indexOf(devices[i].vendor_id) > 0) {
-        curDevices.push(devices[i]);
+    for (var i = 0; i < devices.length; i++) {
+      if (isMac) {
+        var vid = devices[i].vendor_id.split(':');
+        if (devicesList.indexOf(vid[0]) > 0 && devicesList.indexOf(vid[0]) > devicesList.indexOf(vid[1])) {
+          curDevices.push(devices[i]);
+        }
+      } else {
+        if (devicesList.indexOf(devices[i].vendor_id) > 0) {
+          curDevices.push(devices[i]);
+        }
       }
     }
     var isChanged = false;
     if (m_deviceList.length != curDevices.length) {
       isChanged = true;
     } else {
-      for (var i=0; i<curDevices.length; i++) {
+      for (var i = 0; i < curDevices.length; i++) {
         if (m_deviceList.indexOf(curDevices[i]) < 0) {
           isChanged = true;
           break;

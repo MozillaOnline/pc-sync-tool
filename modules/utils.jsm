@@ -256,6 +256,10 @@ var utils = {
 
   isWindows: function() {
     return xulRuntime.OS == 'WINNT';
+  },
+
+  isMac: function() {
+    return xulRuntime.OS == 'Darwin';
   }
 };
 

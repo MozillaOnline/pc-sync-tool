@@ -89,10 +89,11 @@ var ADBService = {
     }, callback);
   },
 
-  checkDeviceInLinux: function(enable, devices, callback) {
+  checkDevice: function(enable, isMac, devices, callback) {
     controlMessage({
-      cmd: 'checkDeviceInLinux',
+      cmd: 'checkDevice',
       enable: enable,
+      isMac: isMac,
       devices: devices
     }, callback);
   },
