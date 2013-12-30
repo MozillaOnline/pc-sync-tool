@@ -126,6 +126,11 @@
           }
           startService();
         }
+      },
+      onInstalling: function(addon, needsRestart) {
+        if (addon.id == ADDON_ID) {
+          stopService();
+        }
       }
     });
     if (!isWindowsOS) {
