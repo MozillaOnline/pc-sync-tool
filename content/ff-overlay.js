@@ -14,6 +14,7 @@
   var devicesConfig = [];
   var devices = [];
   var isWindowsOS = true;
+  var usbMonitorConnected = false;
   let DEBUG = 0;
 
   var jsm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
@@ -42,6 +43,7 @@
     isDisabled = false;
     if (isWindowsOS) {
       modules.DriverManager.startDriverManager();
+      usbMonitorConnected = false;
       connectToDriverManager();
     } else {
       modules.ADBService.checkDevice(true, modules.utils.isMac(), devicesConfig, handleMessage);
@@ -294,20 +296,21 @@
   }
 
   function connectToDriverManager() {
-    var port = getDriverManagerPort();
-    if (!port) {
-      window.setTimeout(connectToDriverManager, 1000);
-      debug("DriverManager process is not running, try to connect it again!");
+    if (usbMonitorConnected) {
       return;
     }
-
-    client = new TelnetClient({
-      host: '127.0.0.1',
-      port: port,
-      onmessage: handleMessage,
-      onopen: onopen,
-      onclose: onclose
-    }).connect();
+    var port = getDriverManagerPort();
+    if (port) {
+      client = new TelnetClient({
+        host: '127.0.0.1',
+        port: port,
+        onmessage: handleMessage,
+        onopen: onopen,
+        onerror: onerror,
+        onclose: onclose
+      }).connect();
+    }
+    window.setTimeout(connectToDriverManager, 1000);
   }
 
   function handleMessage(msg) {
@@ -328,11 +331,15 @@
   }
 
   function onopen() {
-    debug('Telnet client is opened.');
+    usbMonitorConnected = true;
   }
 
   function onclose() {
-    debug('telnet client is closed.');
+    usbMonitorConnected = false;
+  }
+
+  function onerror() {
+    usbMonitorConnected = false;
   }
 
   window.addEventListener('load', function wnd_onload(e) {
@@ -354,6 +361,7 @@
         port: 0,
         onmessage: modules.utils.emptyFunction,
         onopen: modules.utils.emptyFunction,
+        onerror: modules.utils.emptyFunction,
         onclose: modules.utils.emptyFunction
       }, options);
 
@@ -371,6 +379,11 @@
       this._socket.onclose = this._onclose.bind(this);
       this._socket.ondata = this._ondata.bind(this);
       this.options.onopen(event);
+    },
+
+    _onerror: function onerror(event) {
+      this._connected = false;
+      this.options.onerror(event);
     },
 
     _onclose: function onclose(event) {
@@ -406,9 +419,7 @@
       });
 
       this._socket.onopen = this._onopen.bind(this);
-      this._socket.onerror = function(event) {
-        debug("telnet error: " + event.data);
-      };
+      this._socket.onerror = this._onerror.bind(this);
 
       return this;
     },

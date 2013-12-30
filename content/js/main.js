@@ -539,7 +539,7 @@ var FFOSAssistant = (function() {
       event.target.classList.add('current');
     });
     $id('connect-button').addEventListener('click', function onclick_connect(event) {
-      connectToDevice();
+      observerService.notifyObservers(null, 'chrome-start-connection', '');
     });
     $id('connect-button').addEventListener('mouseover', function() {
       this.title = _('connect');
