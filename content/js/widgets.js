@@ -795,7 +795,7 @@ ProcessBar.prototype = {
 
     if (!this.options.sectionsNumber || !this.options.stepsPerSection) {
       new AlertDialog({
-        message: "Process bar initialize failed"
+        message: _('processbar-init-error')
       });
       return;
     }
@@ -1086,7 +1086,7 @@ ImageViewer.prototype = {
 
     if (this.options.count <= 0) {
       new AlertDialog({
-        message: "selected picture doesn't exist"
+        message: _('select-picture-error')
       });
       return;
     }
@@ -1105,7 +1105,7 @@ ImageViewer.prototype = {
     this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
       if (!bCached) {
         new AlertDialog({
-          message: 'Cache picture failed'
+          message: _('cache-picture-error')
         });
         return;
       }
@@ -1165,7 +1165,7 @@ ImageViewer.prototype = {
       if (!bCached) {
         $id('pic-content').setAttribute('src', '');
         new AlertDialog({
-          message: 'load cached picture failed'
+          message: _('load-picture-error')
         });
         return;
       }
@@ -1182,7 +1182,7 @@ ImageViewer.prototype = {
       if (!bCached) {
         $id('pic-content').setAttribute('src', '');
         new AlertDialog({
-          message: 'Cache picture failed'
+          message: _('cache-picture-error')
         });
         return;
       }
