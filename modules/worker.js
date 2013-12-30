@@ -217,6 +217,8 @@ onmessage = function(e) {
 
 function initAdbService(isWindows, libPath, adbPath, profilePath) {
   // Load adb service library
+  adbPath = '"' + adbPath + '"';
+  ADB_PATH = adbPath;
   libadb.loadLib(libPath);
   // Set the path of adb executive file
   isWin = isWindows;
@@ -226,8 +228,6 @@ function initAdbService(isWindows, libPath, adbPath, profilePath) {
     libadb.copyAdb(adbPath, ADB_PATH);
     libadb.copyAdb(adbPath.replace('adb.exe', 'AdbWinApi.dll'), ADB_PATH.replace('ffosadb.exe', 'AdbWinApi.dll'));
     libadb.copyAdb(adbPath.replace('adb.exe', 'AdbWinUsbApi.dll'), ADB_PATH.replace('ffosadb.exe', 'AdbWinUsbApi.dll'));
-  } else {
-    ADB_PATH = '"' + adbPath + '"';
   }
 }
 
