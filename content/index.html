@@ -633,6 +633,9 @@
           <img region="Image" src="<%=body[i]%>"></img>
         <%} else {%>
           <text region="Text"><%=body[i]%></text>
+          <% if(isError) {%>
+            <div class="error-send-sms"></div>
+          <%}%>
         <%}%>
       <%}%>
     </div>

@@ -772,6 +772,20 @@
   border-color:#E86000;
 }
 
+.messages-list-item.from-me-error .sms-body > text{
+  padding-right: 2rem;
+}
+
+.error-send-sms {
+  background: url("images/exclamation.png") no-repeat scroll center center  transparent;
+  float: right;
+  height: 1.6rem;
+  width: 1.6rem;
+  position: absolute;
+  right: 0.5rem;
+  top: calc(50% - 0.8rem);
+}
+
 .messages-list-item.from-me-error .sms-body .actions{
   direction:rtl;
 }

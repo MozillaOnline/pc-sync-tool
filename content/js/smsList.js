@@ -12,14 +12,18 @@ var SmsList = (function() {
       return;
     }
     var msg = e.detail.data;
-    if (msg.delivery != "received") {
-      return;
-    }
     if (repeatMsg == JSON.stringify(msg)) {
       return;
     }
+    var message;
+    if (msg.delivery == 'received') {
+      message = _('received-new-sms');
+    } else if (msg.delivery == 'error') {
+      message = _('send-sms-error');
+    } else {
+      return;
+    }
     repeatMsg = JSON.stringify(msg);
-    var message = _('received-new-sms');
     if (Notification.permission === "granted") {
       new Notification(message);
     } else {
@@ -506,7 +510,8 @@ var SmsList = (function() {
       resendValue: '',
       forwardValue: '',
       deleteValue: '',
-      isToday: isToday(new Date(messageData.timestamp))
+      isToday: isToday(new Date(messageData.timestamp)),
+      isError: messageData.delivery == "error"
     };
     templateData.date = formatDate(messageData.timestamp);
     if (messageData.nearDate) {
