@@ -28,6 +28,14 @@ var MusicList = (function() {
     return fileName.substr(index + 1);
   }
 
+  function resetView() {
+    if (!playedAudio) {
+      return;
+    }
+    playedAudio.pause();
+    playedAudio.src = '';
+  }
+
   function init() {
     playedAudio = new Audio();
     getListContainer().innerHTML = '';
@@ -329,6 +337,7 @@ var MusicList = (function() {
   });
 
   return {
-    init: init
+    init: init,
+    resetView: resetView
   };
 })();
