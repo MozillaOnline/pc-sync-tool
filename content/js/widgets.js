@@ -1384,7 +1384,8 @@ AlertDialog.prototype = {
     this.options = extend({
       showCancelButton: false,
       message: {},
-      callback: emptyFunction,
+      okCallback: emptyFunction,
+      cancelCallback: emptyFunction,
       id: 'tmpl_alert_dialog',
       titleL10nId: 'alert-dialog-title'
     }, options);
@@ -1457,12 +1458,15 @@ AlertDialog.prototype = {
 
   okButtonCallback: function() {
     this.close();
-    if (this.options.callback) {
-      this.options.callback();
+    if (this.options.okCallback) {
+      this.options.okCallback();
     }
   },
 
   cancelButtonCallback: function() {
+    if (this.options.cancelCallback) {
+      this.options.cancelCallback();
+    }
     this.close();
   },
 

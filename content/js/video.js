@@ -310,7 +310,7 @@ var Video = (function() {
           n: files.length
         }),
         showCancelButton: true,
-        callback: function() {
+        okCallback: function() {
           removeVideos(files);
         }
       });

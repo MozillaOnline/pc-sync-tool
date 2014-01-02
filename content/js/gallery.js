@@ -335,7 +335,7 @@ var Gallery = (function() {
           n: files.length
         }),
         showCancelButton: true,
-        callback: function() {
+        okCallback: function() {
           removePictures(files);
         }
       });

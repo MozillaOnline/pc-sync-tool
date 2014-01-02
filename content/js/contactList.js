@@ -534,7 +534,7 @@ var ContactList = (function() {
           n: ids.length
         }),
         showCancelButton: true,
-        callback: function() {
+        okCallback: function() {
           if ($id('selectAll-contacts').dataset.checked == "true") {
             $id('selectAll-contacts').dataset.checked = false;
           }

@@ -285,7 +285,7 @@ var MusicList = (function() {
           n: files.length
         }),
         showCancelButton: true,
-        callback: function() {
+        okCallback: function() {
           removeMusics(files);
         }
       });

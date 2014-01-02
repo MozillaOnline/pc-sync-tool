@@ -1010,7 +1010,7 @@ var SmsList = (function() {
           n: ids.length
         }),
         showCancelButton: true,
-        callback: function() {
+        okCallback: function() {
           ids.forEach(function(item) {
             removeThread(item);
           });
@@ -1094,7 +1094,7 @@ var SmsList = (function() {
           n: ids.length
         }),
         showCancelButton: true,
-        callback: function() {
+        okCallback: function() {
           exportThreads(ids);
         }
       });

@@ -250,7 +250,8 @@ var FFOSAssistant = (function() {
             detail: _('connection-alert-dialog-detail'),
             href: url
           },
-          callback: resetConnect
+          okCallback: resetConnect,
+          cancelCallback: resetConnect
         });
         return;
       }
@@ -294,7 +295,8 @@ var FFOSAssistant = (function() {
               detail: _('connection-alert-dialog-detail'),
               href: url
             },
-            callback: resetConnect
+            okCallback: resetConnect,
+            cancelCallback: resetConnect
           });
           return;
         }
@@ -319,7 +321,8 @@ var FFOSAssistant = (function() {
               detail: _('connection-alert-dialog-detail'),
               href: url
             },
-            callback: resetConnect
+            okCallback: resetConnect,
+            cancelCallback: resetConnect
           });
         });
         return;
@@ -390,7 +393,8 @@ var FFOSAssistant = (function() {
             detail: _('connection-alert-dialog-detail'),
             href: url
           },
-          callback: resetConnect
+          okCallback: resetConnect,
+          cancelCallback: resetConnect
         });
       },
       onconnected: function onconnected() {
@@ -420,7 +424,8 @@ var FFOSAssistant = (function() {
               detail: _('connection-alert-dialog-detail'),
               href: url
             },
-            callback: resetConnect
+            okCallback: resetConnect,
+            cancelCallback: resetConnect
           });
         } else{
            resetConnect();

@@ -64,7 +64,7 @@ var ViewManager = (function() {
           new AlertDialog({
             message: _('save-contacts-confirm'),
             showCancelButton: true,
-            callback: function() {
+            okCallback: function() {
               $id(viewOldId).dataset.shown = false;
               switchContent(viewId, showData, viewElem);
             }
@@ -77,7 +77,7 @@ var ViewManager = (function() {
           new AlertDialog({
             message: _('send-sms-confirm'),
             showCancelButton: true,
-            callback: function() {
+            okCallback: function() {
               $id(viewOldId).dataset.shown = false;
               switchContent(viewId, showData, viewElem);
               sub.value = '';
