@@ -34,8 +34,6 @@ while (browserEnumerator.hasMoreElements()) {
   }
 }
 
-chromeWindow.switchToTabHavingURI('about:ffos', true);
-
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'ADBService', 'resource://ffosassistant/ADBService.jsm');
 var connectState = {
