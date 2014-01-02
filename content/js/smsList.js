@@ -43,13 +43,16 @@ var SmsList = (function() {
     if (inputSms) {
       inputSms.value = '';
     }
+    threadList = null;
+    messageList = null;
+    allMessagesList = {};
+    repeatMsg = '';
     selectAllSms(false);
     ViewManager.showViews('sms-send-view');
   }
 
   function init() {
     var loadingGroupId = animationLoading.start();
-    resetView();
     $id('threads-list-container').innerHTML = '';
     $id('show-sms-container').innerHTML = '';
     $id('message-list-container').innerHTML = '';
@@ -583,6 +586,8 @@ var SmsList = (function() {
       resendBtns[j].addEventListener('click', function onclick_resendSms(event) {
         var smsId = this.id.split("-");
         var num;
+        var MessageListData = messageList.getGroupedData();
+        MessageListData = MessageListData[0].dataList;
         if (MessageListData[0].delivery == "received") {
           num = MessageListData[0].sender;
         } else {

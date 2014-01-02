@@ -436,6 +436,7 @@ var FFOSAssistant = (function() {
 
   function showConnectView() {
     animationLoading.reset();
+    SmsList.resetView();
     $id('connect-button').classList.remove('hiddenElement');
     $id('disconnect-button').classList.add('hiddenElement');
     $id('device-connected').classList.add('hiddenElement');
