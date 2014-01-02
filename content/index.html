@@ -882,9 +882,11 @@
     <div class="music-size item">
       <span><%=size%> MB</span>
     </div>
-    <div class="music-play item">
-      <div id="<%=id%>" class="music-play-button"></div>
-    </div>
+    <% if(canPlay) {%>
+      <div class="music-play item">
+        <div id="<%=id%>" class="music-play-button"></div>
+      </div>
+    <%}%>
   </script>
   <script type="text/html" id="tmpl_singletip">
     <div class="singletip">

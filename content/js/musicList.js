@@ -115,7 +115,8 @@ var MusicList = (function() {
       album: music.metadata.album,
       type: music.type,
       size: toSizeInMB(music.size),
-      id: 'music-play-' + music.name
+      id: 'music-play-' + music.name,
+      canPlay: !isWifiConnected
     };
 
     var elem = document.createElement('div');
@@ -138,9 +139,11 @@ var MusicList = (function() {
         musicItemClicked(elem);
       }
     };
-    var playMusicBtns = $expr('.music-play-button', elem);
-    for (var i = 0; i < playMusicBtns.length; i++) {
-      playMusicBtns[i].addEventListener('click', playMusic);
+    if (!isWifiConnected) {
+      var playMusicBtns = $expr('.music-play-button', elem);
+      for (var i = 0; i < playMusicBtns.length; i++) {
+        playMusicBtns[i].addEventListener('click', playMusic);
+      }
     }
     return elem;
   }
