@@ -34,6 +34,7 @@ var MusicList = (function() {
     }
     playedAudio.pause();
     playedAudio.src = '';
+    playedAudio.removeAttribute('src');
   }
 
   function init() {
@@ -118,7 +119,6 @@ var MusicList = (function() {
       id: 'music-play-' + music.name,
       canPlay: !isWifiConnected
     };
-
     var elem = document.createElement('div');
     elem.classList.add('music-header');
     elem.classList.add('music-list-item');
@@ -148,23 +148,32 @@ var MusicList = (function() {
     return elem;
   }
 
-  function playMusic() {
-    var self = this;
+  function stopMusic() {
     if (!playedAudio) {
       return;
     }
     var playMusicBtns = $expr('#music-list-container .music-play-button');
     for (var i = 0; i < playMusicBtns.length; i++) {
-      if (playMusicBtns[i].classList.contains('playing')) {
-        playedAudio.pause();
-        playedAudio.src = '';
-        playMusicBtns[i].classList.remove('playing');
-        if (self == playMusicBtns[i]) {
-          return;
-        } else {
-          break;
-        }
+      if (!playMusicBtns[i].classList.contains('playing')) {
+        continue;
       }
+      playedAudio.pause();
+      playedAudio.src = '';
+      playedAudio.removeAttribute('src');
+      playMusicBtns[i].classList.remove('playing');
+      break;
+    }
+  }
+
+  function playMusic() {
+    var self = this;
+    if (!playedAudio) {
+      return;
+    }
+    var isPlay = self.classList.contains('playing');
+    stopMusic();
+    if (isPlay) {
+      return;
     }
     var loadingGroupId = animationLoading.start();
     var file = self.id.split('music-play-');
@@ -174,6 +183,12 @@ var MusicList = (function() {
     runCmd(cmd, function() {
       self.classList.add('playing');
       playedAudio.src = cachedUrl;
+      playedAudio.onended = function() {
+        playedAudio.pause();
+        playedAudio.src = '';
+        playedAudio.removeAttribute('src');
+        playMusicBtns[i].classList.remove('playing');
+      }
       playedAudio.play();
       animationLoading.stop(loadingGroupId);
     });
@@ -287,16 +302,26 @@ var MusicList = (function() {
       }
 
       var files = [];
+      var isPlay = false;
       $expr('#music-list-container .music-list-item[data-checked="true"]').forEach(function(item) {
-        files.push(JSON.parse(item.dataset.music).name);
+        var name = JSON.parse(item.dataset.music).name;
+        files.push(name);
+        var cachedUrl = PRE_PATH + MUSIC_CACHE_FOLDER + name;
+        if (playedAudio && decodeURI(playedAudio.src) == cachedUrl) {
+          isPlay = true;
+        }
       });
-
       new AlertDialog({
         message: _('delete-musics-confirm', {
           n: files.length
         }),
         showCancelButton: true,
         okCallback: function() {
+          if (playedAudio && isPlay) {
+            playedAudio.pause();
+            playedAudio.src = '';
+            playedAudio.removeAttribute('src');
+          }
           removeMusics(files);
         }
       });
