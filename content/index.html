@@ -623,9 +623,17 @@
   </script>
   <script type="text/html" id="tmpl_sms_display_item">
     <% if(date && isToday) {%>
-      <date class="sms-date" data-l10n-id="today"></date>
-    <%} else if(date) {%>
-      <date class="sms-date"><%=date%></date>
+      <% if(isHidden) {%>
+        <date class="sms-date" hidden="true" data-l10n-id="today"></date>
+      <%} else {%>
+        <date class="sms-date" data-l10n-id="today"></date>
+      <%}%>
+    <%} else {%>
+      <% if(isHidden) {%>
+        <date class="sms-date" hidden="true"><%=date%></date>
+      <%} else {%>
+        <date class="sms-date"><%=date%></date>
+      <%}%>
     <%}%>
     <div class="sms-body">
       <%for (var i=0; i<body.length; i++) {%>

@@ -478,12 +478,13 @@ var SmsList = (function() {
       forwardValue: '',
       deleteValue: '',
       isToday: isToday(new Date(messageData.timestamp)),
-      isError: messageData.delivery == "error"
+      isError: messageData.delivery == "error",
+      isHidden: false
     };
     templateData.date = formatDate(messageData.timestamp);
     if (messageData.nearDate) {
       if (templateData.date == formatDate(messageData.nearDate)) {
-        templateData.date = '';
+        templateData.isHidden = true;
       }
     }
     if (messageData.delivery != "received") {
@@ -528,7 +529,7 @@ var SmsList = (function() {
     templateData.deleteValue = messageData.id;
     elem.innerHTML = tmpl('tmpl_sms_display_item', templateData);
     elem.dataset.groupId = messageData.threadId;
-    elem.id = 'id-message-data-' + messageData.threadId;
+    elem.id = 'id-message-data-' + messageData.id;
     navigator.mozL10n.translate(elem);
     var forwardBtns = $expr('.button-forward', elem);
     for (var j = 0; j < forwardBtns.length; j++) {
@@ -981,6 +982,16 @@ var SmsList = (function() {
             updateThreadAvatarFromData(threadListData, typeData, nameData, imageData);
           }
           break;
+        }
+      } else {
+        var messageItem = $id('id-message-data-' + messageId);
+        var dateField = $expr('.sms-date', messageItem);
+        if (dateField && dateField.length == 1 && !dateField[0].hidden) {
+          var nextMessageItem = messageItem.nextSibling;
+          dateField = $expr('.sms-date', nextMessageItem);
+          if (dateField && dateField.length == 1 && dateField[0].hidden) {
+            dateField[0].hidden = false;
+          }
         }
       }
       messageList.remove(messageListData[i]);
