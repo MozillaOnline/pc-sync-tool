@@ -82,8 +82,8 @@ var FFOSAssistant = (function() {
           connListenSocket = null;
         }
       });
-      customEventElement.removeEventListener('dataChange', SmsList.showNotification);
-      customEventElement.addEventListener('dataChange', SmsList.showNotification);
+      customEventElement.removeEventListener('dataChange', SmsList.onMessage);
+      customEventElement.addEventListener('dataChange', SmsList.onMessage);
       CMD.Listen.listenMessage(null, null);
     };
     if (isWifiConnected) {

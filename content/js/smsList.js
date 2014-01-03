@@ -3,40 +3,7 @@ var SmsList = (function() {
   var messageList = null;
   var allMessagesList = {};
   var repeatMsg = '';
-
-  function showNotification(e) {
-    if (!("Notification" in window)) {
-      return;
-    }
-    if (e.detail.type != 'sms') {
-      return;
-    }
-    var msg = e.detail.data;
-    if (repeatMsg == JSON.stringify(msg)) {
-      return;
-    }
-    var message;
-    if (msg.delivery == 'received') {
-      message = _('received-new-sms');
-    } else if (msg.delivery == 'error') {
-      message = _('send-sms-error');
-    } else {
-      return;
-    }
-    repeatMsg = JSON.stringify(msg);
-    if (Notification.permission === "granted") {
-      new Notification(message);
-    } else {
-      Notification.requestPermission(function (permission) {
-        if (!('permission' in Notification)) {
-          Notification.permission = permission;
-        }
-        if (permission === "granted") {
-          new Notification(message);
-        }
-      });
-    }
-  }
+  var isInit = false;
 
   function resetView() {
     var inputSms = $id('sender-ctn-input');
@@ -47,6 +14,7 @@ var SmsList = (function() {
     messageList = null;
     allMessagesList = {};
     repeatMsg = '';
+    isInit = false;
     selectAllSms(false);
     ViewManager.showViews('sms-send-view');
   }
@@ -87,8 +55,7 @@ var SmsList = (function() {
         threadList.render();
         updateAvatar();
         showThreadList();
-        customEventElement.removeEventListener('dataChange', onMessage);
-        customEventElement.addEventListener('dataChange', onMessage);
+        isInit = true;
         animationLoading.stop(loadingGroupId);
       }, function onerror(messages) {
         log('Error occurs when fetching all messages' + messages.message);
@@ -234,9 +201,6 @@ var SmsList = (function() {
   }
 
   function updateThreadAvatarFromData(item, typeData, nameData, imageData) {
-    if (!imageData) {
-      return;
-    }
     var threadInfo = item;
     var threadItem = $id('id-threads-data-' + threadInfo.id);
     var name = threadItem.getElementsByTagName('div')[2];
@@ -716,15 +680,51 @@ var SmsList = (function() {
   }
 
   function onMessage(e) {
-    if (e.detail.type == 'contact') {
-      updateThreadAvatarFromContactChange(e.detail.data);
-      return;
+    if (!isInit) {
+      if (!("Notification" in window)) {
+        return;
+      }
+    } else {
+      if (e.detail.type == 'contact') {
+        updateThreadAvatarFromContactChange(e.detail.data);
+        return;
+      }
+      if (!threadList) {
+        return;
+      }
     }
+
     if (e.detail.type != 'sms') {
       return;
     }
     var msg = e.detail.data;
-    if (!threadList) {
+    if (repeatMsg == JSON.stringify(msg)) {
+      return;
+    }
+    repeatMsg = JSON.stringify(msg);
+
+    var message;
+    if (msg.delivery == 'received') {
+      message = _('received-new-sms');
+    } else if (msg.delivery == 'error') {
+      message = _('send-sms-error');
+    } else {
+      return;
+    }
+    if (Notification.permission === "granted") {
+      new Notification(message);
+    } else {
+      Notification.requestPermission(function (permission) {
+        if (!('permission' in Notification)) {
+          Notification.permission = permission;
+        }
+        if (permission === "granted") {
+          new Notification(message);
+        }
+      });
+    }
+
+    if (!isInit) {
       return;
     }
     if (!allMessagesList[msg.threadId]) {
@@ -1167,6 +1167,6 @@ var SmsList = (function() {
   return {
     init: init,
     resetView: resetView,
-    showNotification: showNotification
+    onMessage: onMessage
   };
 })();
