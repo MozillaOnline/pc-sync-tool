@@ -660,6 +660,10 @@
   <script type="text/javascript">
     function deleteNode(form) {
       form.parentNode.removeChild(form);
+      var header = _('send-sms-count', {
+        n: $expr('.select-contacts-item', form.parentNode).length
+      });
+      $id('sender-count').innerHTML = header;
     }
   </script>
   <script type="text/html" id="tmpl_select_contacts_item">
