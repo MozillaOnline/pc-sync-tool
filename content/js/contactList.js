@@ -517,6 +517,11 @@ var ContactList = (function() {
     $id('search-contact-input').addEventListener('keyup', function onclick_searchContact(event) {
       showSearchList(this.value);
     });
+    $id('search-contact-input').addEventListener('keydown', function onclick_searchContact(event) {
+      if(event.keyCode == 13) {
+        event.preventDefault();
+      }
+    });
 
     $id('remove-contacts').addEventListener('click', function onclick_removeContact(event) {
       // Do nothing if the button is disabled.
