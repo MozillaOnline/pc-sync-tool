@@ -75,6 +75,9 @@ var FFOSAssistant = (function() {
             return;
           }
           var message = JSON.parse(recvData);
+          if (message == null) {
+            return;
+          }
           var event = new CustomEvent('dataChange',{'detail': {'type': message.type, 'data': message}});
           customEventElement.dispatchEvent(event);
         },
@@ -278,9 +281,9 @@ var FFOSAssistant = (function() {
       }
       if (connectDevices.length == 0) {
         animationLoading.stop(loadingGroupId);
-        var contentInfo = [_('connection-alert-dialog-message-check-remotedebugger'), _('connection-alert-dialog-message-check-lockscreen')];
+        var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
         if (!isWindows()) {
-          contentInfo.push(_('connection-alert-dialog-message-check-edit51android'));
+          contentInfo.push(_('connection-alert-dialog-message-check-nodriver'));
           var url = 'chrome://ffosassistant/content/Help/Help-en.html';
           if (navigator.mozL10n.language.code == 'zh-CN') {
             url = 'chrome://ffosassistant/content/Help/Help-cn.html';
@@ -372,11 +375,8 @@ var FFOSAssistant = (function() {
           return;
         }
         releaseConnPool();
-        var contentInfo = [_('connection-alert-dialog-message-check-version'),
-                           _('connection-alert-dialog-message-check-lockscreen'),
-                           _('connection-alert-dialog-message-check-runapp')];
+        var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
         if (isWifiConnected) {
-          contentInfo.push(_('connection-alert-dialog-message-check-samewifi'));
           contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
         }
         var url = 'chrome://ffosassistant/content/Help/Help-en.html';
@@ -409,7 +409,7 @@ var FFOSAssistant = (function() {
         animationLoading.stop(loadingGroupId);
         releaseConnPool();
         if (deviceSocketState == connectState.connecting) {
-          var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
+          var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
           var url = 'chrome://ffosassistant/content/Help/Help-en.html';
           if (navigator.mozL10n.language.code == 'zh-CN') {
             url = 'chrome://ffosassistant/content/Help/Help-cn.html';
