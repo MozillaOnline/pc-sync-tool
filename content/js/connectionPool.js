@@ -32,6 +32,7 @@ TCPConnectionPool.prototype = {
     this._callbacks = {};
     this._messageQueue = [];
     this._messageSendingTimer = null;
+    this._connectedTimer = null;
     this._initPool();
   },
 
@@ -41,6 +42,9 @@ TCPConnectionPool.prototype = {
     });
     if (this._messageSendingTimer) {
       window.clearInterval(this._messageSendingTimer);
+    }
+    if (this._connectedTimer) {
+      window.clearInterval(this._connectedTimer);
     }
   },
 
@@ -82,6 +86,9 @@ TCPConnectionPool.prototype = {
   },
 
   _onSocketError: function tc_onSocketError(event) {
+    if (this._connectedTimer) {
+      window.clearInterval(this._connectedTimer);
+    }
     if (this.options.onerror) {
       this.options.onerror();
     }
@@ -104,9 +111,14 @@ TCPConnectionPool.prototype = {
       this._messageSendingTimer = window.setInterval(
       this._sendQueuedMsg.bind(this), 500);
     }
+    this._connectedTimer = window.setInterval(
+      this._onSocketError.bind(this), 5000);
   },
 
   _onSocketConnected: function tc_onSocketConnected() {
+    if (this._connectedTimer) {
+      window.clearInterval(this._connectedTimer);
+    }
     if (this.options.onconnected) {
       this.options.onconnected();
     }
@@ -114,6 +126,9 @@ TCPConnectionPool.prototype = {
 
   _onSocketClosed: function tc_onSocketClosed(event) {
     // Remove the socket from pool
+    if (this._connectedTimer) {
+      window.clearInterval(this._connectedTimer);
+    }
     var socket = event.target;
     var newPool = [];
     this._connPool.forEach(function(wrapper) {
