@@ -438,6 +438,10 @@ var FFOSAssistant = (function() {
     animationLoading.reset();
     SmsList.resetView();
     MusicList.resetView();
+    if (connListenSocket) {
+      connListenSocket.socket.close();
+      connListenSocket = null;
+    }
     $id('connect-button').classList.remove('hiddenElement');
     $id('disconnect-button').classList.add('hiddenElement');
     $id('device-connected').classList.add('hiddenElement');
