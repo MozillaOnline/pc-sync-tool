@@ -216,7 +216,7 @@ vCardConverter = {
           }
         }
       } else {
-        if (item.version == '3.0') {
+        if (item.version == '3.0' || item.version == '4.0') {
           if (item.fn != '') {
             var fullName = item.fn;
             var index = fullName.indexOf(' ');
