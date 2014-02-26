@@ -42,7 +42,7 @@ vCardConverter = {
             if (index > 0) {
               contact.familyName = fullName.substr(index + 1, fullName.length);
               contact.givenName = fullName.substr(0, index);
-              contact.name = [fullName];
+              contact.name = [contact.givenName, contact.familyName];
             } else {
               contact.name = [fullName];
             }
@@ -223,7 +223,7 @@ vCardConverter = {
             if (index > 0) {
               contact.givenName = fullName.substr(index + 1, fullName.length);
               contact.familyName = fullName.substr(0, index);
-              contact.name = [fullName];
+              contact.name = [contact.givenName, contact.familyName];
             } else {
               contact.givenName = fullName;
               contact.name = [fullName];
@@ -424,7 +424,7 @@ vCardConverter = {
             if (index > 0) {
               contact.givenName = fullName.substr(index + 1, fullName.length);
               contact.familyName = fullName.substr(0, index);
-              contact.name = [fullName];
+              contact.name = [contact.givenName, contact.familyName];
             } else {
               contact.givenName = fullName;
               contact.name = [fullName];
