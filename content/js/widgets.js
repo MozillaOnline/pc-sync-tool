@@ -1471,10 +1471,14 @@ AlertDialog.prototype = {
   },
 
   close: function() {
-    this._mask.parentNode.removeChild(this._mask);
-    this._modalElement.parentNode.removeChild(this._modalElement);
-    this._mask = null;
-    this._modalElement = null;
+    if (this._mask) {
+      this._mask.parentNode.removeChild(this._mask);
+      this._mask = null;
+    }
+    if (this._modalElement) {
+      this._modalElement.parentNode.removeChild(this._modalElement);
+      this._modalElement = null;
+    }
     document.removeEventListener('AlertDialog:show', this._onModalDialogShown);
     window.removeEventListener('resize', this._onWindowResize)
   }
