@@ -57,6 +57,8 @@ var FFOSAssistant = (function() {
   function showSummaryView(serverIP) {
     $id('connect-button').classList.add('hiddenElement');
     $id('disconnect-button').classList.remove('hiddenElement');
+    $id('device-empty').classList.add('hiddenElement');
+    $id('device-name').classList.remove('hiddenElement');
     if (serverIP != 'localhost') {
       isWifiConnected = true;
     }
@@ -239,7 +241,7 @@ var FFOSAssistant = (function() {
       }
       if (availableDevices.length == 0) {
         var contentInfo = [_('connection-alert-dialog-message-check-nodriver')];
-		var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+        var url = 'chrome://ffosassistant/content/Help/Help-en.html';
         if (navigator.mozL10n.language.code == 'zh-CN') {
           url = 'chrome://ffosassistant/content/Help/Help-cn.html';
         }
@@ -444,26 +446,23 @@ var FFOSAssistant = (function() {
     }
     $id('connect-button').classList.remove('hiddenElement');
     $id('disconnect-button').classList.add('hiddenElement');
+    $id('device-empty').classList.remove('hiddenElement');
+    $id('device-name').classList.add('hiddenElement');
     $id('device-connected').classList.add('hiddenElement');
     $id('device-unconnected').classList.remove('hiddenElement');
     $id('views').classList.add('hidden-views');
+    $id("mgmt-list").hidden = true;
 
     $id('usb-connection-button').onclick = function() {
       $id('wifi-connection-button').dataset.checked = false;
-      $id('wifi-connection-button').classList.remove('wifi-connection-button-select');
       $id('usb-connection-button').dataset.checked = true;
-      $id('usb-connection-button').classList.add('usb-connection-button-select');
-      $id('wifi-connection-settings').classList.add('hiddenElement');
-      $id('usb-connection-settings').classList.remove('hiddenElement');
     };
 
     $id('wifi-connection-button').onclick = function() {
       $id('wifi-connection-button').dataset.checked = true;
-      $id('wifi-connection-button').classList.add('wifi-connection-button-select');
       $id('usb-connection-button').dataset.checked = false;
-      $id('usb-connection-button').classList.remove('usb-connection-button-select');
-      $id('usb-connection-settings').classList.add('hiddenElement');
-      $id('wifi-connection-settings').classList.remove('hiddenElement');
+      $id('wifi-connection-code').placeholder=_('wifi-connection-code-placeholder');
+      $id('wifi-connection-code').fucus = true;
     };
 
     $id('wifi-connection-code').onkeyup = function() {
@@ -503,12 +502,31 @@ var FFOSAssistant = (function() {
         connectToServer(ip);
       }
     };
-
-    $id('help_btn').onclick = function(e) {
-      var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+    $id('help-driver').onclick = function(e) {
+      var url = 'chrome://ffosassistant/content/Help/Help-en.html#DRIVER';
       if (navigator.mozL10n.language.code == 'zh-CN') {
-        //url = 'http://os.firefox.com.cn/zh-CN/about/help.html';
-        url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+        url = 'chrome://ffosassistant/content/Help/Help-cn.html#DRIVER';
+      }
+      window.open(url);
+    };
+    $id('help-app').onclick = function(e) {
+      var url = 'chrome://ffosassistant/content/Help/Help-en.html#CLOSE-OTHERS';
+      if (navigator.mozL10n.language.code == 'zh-CN') {
+        url = 'chrome://ffosassistant/content/Help/Help-cn.html#CLOSE-OTHERS';
+      }
+      window.open(url);
+    };
+    $id('help-usb').onclick = function(e) {
+      var url = 'chrome://ffosassistant/content/Help/Help-en.html#USB';
+      if (navigator.mozL10n.language.code == 'zh-CN') {
+        url = 'chrome://ffosassistant/content/Help/Help-cn.html#USB';
+      }
+      window.open(url);
+    };
+    $id('help-wifi').onclick = function(e) {
+      var url = 'chrome://ffosassistant/content/Help/Help-en.html#WIFI';
+      if (navigator.mozL10n.language.code == 'zh-CN') {
+        url = 'chrome://ffosassistant/content/Help/Help-cn.html#WIFI';
       }
       window.open(url);
     };
@@ -547,22 +565,16 @@ var FFOSAssistant = (function() {
       });
       event.target.classList.add('current');
     });
-    $id('connect-button').addEventListener('click', function onclick_connect(event) {
+      $id('connect-button').addEventListener('click', function onclick_connect(event) {
       observerService.notifyObservers(null, 'chrome-start-connection', '');
     });
-    $id('connect-button').addEventListener('mouseover', function() {
-      this.title = _('connect');
-    });
-    $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
+     $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
       releaseConnPool();
       if (!isWindows()) {
         isWifiConnected = false;
       }
       showConnectView();
       ViewManager.reset();
-    });
-    $id('disconnect-button').addEventListener('mouseover', function() {
-      this.title = _('disconnect');
     });
     customEventElement.addEventListener('firstshow', function(e) {
       switch (e.detail.type) {

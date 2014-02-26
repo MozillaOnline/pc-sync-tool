@@ -47,20 +47,17 @@
     <div id="container-body">
       <div>
         <div class="sidebar">
-          <div id="connect-action" class="listbutton">
-            <button id="connect-button" class="connectbutton"></button>
-            <button id="disconnect-button" class="disconnectbutton hiddenElement"></button>
-          </div>
-          <div id="connect-list" class="list radio-list">
+          <div id="connect-list" class="list">
             <div id="connect-tab"
                  class="item"
-                 data-l10n-id="pls_connect_device"
                  data-linked-view="connect-view">
-              请链接手机...
+                 <p id="device-empty" class="header" data-l10n-id="pls_connect_device"></p>
+                 <p id="device-name" class="header hiddenElement">ZET Unagi</p>
+                 <p id="connect-button" class="reconnect" data-l10n-id="pls_reconnect-device">点击尝试重连</p>
+                 <p id="disconnect-button" class="disconnect hiddenElement" data-l10n-id="pls_disconnect-device">点击断开连接</p>
             </div>
           </div>
-          <div id="mgmt-list" class="list radio-list" hidden>
-            <div id="device-name" class="header">ZET Unagi</div>
+          <div id="mgmt-list" class="list" hidden>
             <div id="summary-tab"
                  class=" summary-tab-selected item summary selected"
                  data-linked-view="summary-view"
@@ -94,46 +91,51 @@
               <p data-l10n-id="ffos-description"></p>
             </div>
             <section id="user-guide">
-              <div class="connection-title">
-                <label data-l10n-id="nodevice-found-msg">您可以通过以下方式连接手机
-                  <a id="help_btn" class="help" data-l10n-id="connection-help"></a>
-                </label>
-              </div>
-              <div class="connection-button">
-                <a id="usb-connection-button" data-checked=true class="usb-connection-button-unselect usb-connection-button-select">
-                  <label data-l10n-id="connection-USB-mode" class="connection-mode">USB</label>
-                </a>
-                <a id="wifi-connection-button" data-checked=false class="wifi-connection-button-unselect">
-                  <label data-l10n-id="connection-WIFI-mode" class="connection-mode">WIFI</label>
-                </a>
-              </div>
-              <div class="usb-connection-step" id="usb-connection-settings">
-                <div id="usb-arrow" class="usbarrow">
-                  <div class="side"></div>
+              <div>
+                <div id="usb-connection-button" data-checked="true" class="usb usb-selected">
+                  <span data-l10n-id="usb-mode">
+                    使用USB数据线连接
+                  </span>
+                  <div class="arrow"></div>
+                  <div class="usb-des">
+                    <p data-l10n-id="usb-des-header">使用 USB 数据线连接手机和电脑，程序会自动检测到您的手机、并为您建立连接。USB
+                    连接是最快最稳定的连接方式。</p>
+                    <ul data-l10n-id="usb-des-list-header">已连接 USB 线后，仍无法连接？
+                      <li data-l10n-id="usb-des-list-item1">检查是否已经正确安装驱动程序
+                        <a id="help-driver" data-l10n-id="detail" href="#">详情</a>
+                      </li>
+                      <li data-l10n-id="usb-des-list-item2">检查手机端应用是否正在运行，并处于连接可用状态；</li>
+                      <li data-l10n-id="usb-des-list-item3">彻底关闭电脑上其他运行的手机助手客户端；
+                        <a id="help-app" data-l10n-id="detail" href="#">详情</a>
+                      </li>
+                      <li data-l10n-id="usb-des-list-item4">点击左上方的“尝试重连”，或拔出 USB 线重新插入</li>
+                    </ul>
+                    <div class="more-help">
+                      <a id="help-usb" data-l10n-id="more-detail" href="#">更多使用帮助</a>
+                    </div>
+                  </div>
                 </div>
-                <div id="usb-step-one" class="step-one-usb">
-                  <span id="usb-step-one-span" data-l10n-id="usb-step-one"></span>
+                <div id="wifi-connection-button" data-checked="false" class="wifi wifi-selected">
+                  <span data-l10n-id="wifi-mode">
+                    使用 Wi-Fi 无线连接
+                  </span>
+                  <div class="arrow"></div>
+                  <div class="wifi-des">
+                    <p data-l10n-id="wifi-des-header">
+                      将手机和电脑连如同一 WI-FI 网络，输入 WI-FI 连接码
+                    </p>
+                    <div class="wifi-form">
+                      <input type="number" id="wifi-connection-code" data-l10n-id="wifi-connection-code-placeholder" autofocus="true"/>
+                      <button id="wifi-connect-button" data-l10n-id="connect" class="button">连接</button>
+                    </div>
+                    <ul data-l10n-id="wifi-des-list-header">如何获取 WI-FI 连接码？
+                      <li data-l10n-id="wifi-des-list-item1"></li>
+                    </ul>
+                    <div class="more-help">
+                      <a id="help-wifi" data-l10n-id="more-detail" href="#">更多使用帮助</a>
+                    </div>
+                  </div>
                 </div>
-                <div id="usb-step-two" class="step-two-usb"></div>
-                <div id="usb-step-three" class="step-three-usb">
-                  <span id="usb-step-three-span" data-l10n-id="usb-step-three"></span>
-                </div>
-              </div>
-              <div class="wifi-connection-step hiddenElement" id="wifi-connection-settings">
-                <div id="wifi-arrow"  class="wifiarrow">
-                  <div class="side"></div>
-                </div>
-                <div id="wifi-step-one" class="step-one-wifi">
-                  <span id="wifi-step-one-span" data-l10n-id="wifi-step-one"></span>
-                </div>
-                <div id="wifi-step-two" class="step-two-wifi"></div>
-                <div id="wifi-step-three" class="step-three-wifi">
-                  <span id="wifi-step-three-span" data-l10n-id="wifi-step-three"></span>
-                </div>
-                <div id="wifi-connection-code-input">
-                  <input id="wifi-connection-code" type="text" data-l10n-id="wifi-connection-code-placeholder" placeholder="请输入WIFI连接码" autofocus="true"></input>
-                </div>
-                <button id="wifi-connect-button" class="button" data-l10n-id="connect"></button>
               </div>
             </section>
           </section>
