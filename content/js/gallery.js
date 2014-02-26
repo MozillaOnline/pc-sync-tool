@@ -177,7 +177,9 @@ var Gallery = (function() {
 
     listItem.ondblclick = function(e) {
       $id('tip').hidden = true;
-
+      if (isWifiConnected) {
+        return;
+      }
       var picList = $expr('li', getListContainer());
       var currentIndex = 0;
       for (; currentIndex < picList.length; currentIndex++) {
