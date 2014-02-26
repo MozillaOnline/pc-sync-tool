@@ -214,6 +214,45 @@ var SmsList = (function() {
       threadItem.dataset.avatar = imageData;
       img.classList.remove('avatar-default');
     }
+    var ids = [];
+    $expr('#threads-list-container .threads-list-item[data-checked="true"]').forEach(function(item) {
+      ids.push(item.dataset.threadIndex);
+    });
+    if (ids.length == 1 && ids[0] == threadInfo.id && !$id('sms-thread-view').hidden) {
+      var messageViewName = $id('sms-thread-header-name');
+      if (messageViewName) {
+        messageViewName.textContent = nameData;
+        var titleElem = $id('add-to-contact-' + threadInfo.id);
+        if (titleElem) {
+          titleElem.hidden = true;
+        }
+      }
+      var headerButton = $id('sms-thread-header-button');
+      if (headerButton) {
+        headerButton.hidden = true;
+      }
+      if (!!imageData && imageData.length > 0) {
+        var messageViewimg = $id('sms-thread-header-img');
+        if (!!messageViewimg) {
+          messageViewimg.src = imageData;
+          messageViewimg.classList.remove('avatar-show-default');
+        }
+      }
+    } else if (ids.length > 1 && ids.indexOf(threadInfo.id) && !$id('sms-select-view').hidden) {
+      var selectViewName = $id('show-multi-sms-content-number-' + threadInfo.id);
+      if (selectViewName) {
+        selectViewName.childNodes[0].nodeValue = nameData;
+      }
+      if (!!imageData && imageData.length > 0) {
+        var selectItem = $id('show-multi-sms-' + threadInfo.id);
+        if (!!selectItem) {
+          img = selectItem.getElementsByTagName('img')[0];
+          img.src = imageData;
+          selectItem.dataset.avatar = imageData;
+          img.classList.remove('avatar-default');
+        }
+      }
+    }
   }
 
   function updateThreadAvatarFromContactChange(changeEvent) {
@@ -709,20 +748,20 @@ var SmsList = (function() {
       message = _('received-new-sms');
     } else if (msg.delivery == 'error') {
       message = _('send-sms-error');
-    } else {
-      return;
     }
-    if (Notification.permission === "granted") {
-      new Notification(message);
-    } else {
-      Notification.requestPermission(function (permission) {
-        if (!('permission' in Notification)) {
-          Notification.permission = permission;
-        }
-        if (permission === "granted") {
-          new Notification(message);
-        }
-      });
+    if (message) {
+      if (Notification.permission === "granted") {
+        new Notification(message);
+      } else {
+        Notification.requestPermission(function (permission) {
+          if (!('permission' in Notification)) {
+            Notification.permission = permission;
+          }
+          if (permission === "granted") {
+            new Notification(message);
+          }
+        });
+      }
     }
 
     if (!isInit) {
