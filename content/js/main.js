@@ -359,6 +359,8 @@ var FFOSAssistant = (function() {
     showConnectView();
     ViewManager.reset();
     deviceSocketState = connectState.disconnected;
+    ADBService.killAdbServer();
+    ADBService.startAdbServer();
   }
 
   function connectToServer(serverIP) {
