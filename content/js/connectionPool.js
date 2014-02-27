@@ -112,7 +112,7 @@ TCPConnectionPool.prototype = {
       this._sendQueuedMsg.bind(this), 500);
     }
     this._connectedTimer = window.setInterval(
-      this._onSocketError.bind(this), 5000);
+      this._onSocketError.bind(this), 10000);
   },
 
   _onSocketConnected: function tc_onSocketConnected() {

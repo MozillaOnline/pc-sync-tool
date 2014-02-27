@@ -373,31 +373,33 @@ var FFOSAssistant = (function() {
       size: 1,
       onerror: function onerror() {
         animationLoading.stop(loadingGroupId);
-        if (deviceSocketState != connectState.connecting) {
-          return;
+        if (deviceSocketState == connectState.connected) {
+          releaseConnPool();
+          resetConnect();
+        } else if (deviceSocketState == connectState.connecting) {
+          releaseConnPool();
+          var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
+          if (isWifiConnected) {
+            contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
+          }
+          var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+          if (navigator.mozL10n.language.code == 'zh-CN') {
+            url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+          }
+          new AlertDialog({
+            id: 'popup_dialog',
+            titleL10nId: 'alert-dialog-title',
+            message: {
+              head: _('connection-alert-dialog-title'),
+              description: _('connection-alert-dialog-message-header'),
+              content: contentInfo,
+              detail: _('connection-alert-dialog-detail'),
+              href: url
+            },
+            okCallback: resetConnect,
+            cancelCallback: resetConnect
+          });
         }
-        releaseConnPool();
-        var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
-        if (isWifiConnected) {
-          contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
-        }
-        var url = 'chrome://ffosassistant/content/Help/Help-en.html';
-        if (navigator.mozL10n.language.code == 'zh-CN') {
-          url = 'chrome://ffosassistant/content/Help/Help-cn.html';
-        }
-        new AlertDialog({
-          id: 'popup_dialog',
-          titleL10nId: 'alert-dialog-title',
-          message: {
-            head: _('connection-alert-dialog-title'),
-            description: _('connection-alert-dialog-message-header'),
-            content: contentInfo,
-            detail: _('connection-alert-dialog-detail'),
-            href: url
-          },
-          okCallback: resetConnect,
-          cancelCallback: resetConnect
-        });
       },
       onconnected: function onconnected() {
         animationLoading.stop(loadingGroupId);
