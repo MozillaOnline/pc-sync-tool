@@ -698,6 +698,10 @@ div.modal-container {
   top: 10rem;
 }
 
+#install-driver-modal-container {
+  height: 13rem;
+}
+
 div.modal-title {
   height: 3rem;
   line-height: 3rem;
