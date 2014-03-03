@@ -1,0 +1,71 @@
+;***********************************************************************************************
+;
+; Name:  onetouchrndis.inf
+;
+; Function:  Install Alcatel Composite RNDIS Interface Device Driver on Win2K/XP/VISTA/Win7
+;            inf file is based on wceIsVista.inf (microsoft) and tetherxp.inf(google)
+;	
+;  Copyright (c) TCL
+;***********************************************************************************************
+
+[Version]
+Signature           = "$Windows NT$"
+Class               = Net
+ClassGUID           = {4d36e972-e325-11ce-bfc1-08002be10318}
+Provider            = %Provider%
+CatalogFile         = onetouchrndis.cat
+DriverVer           =04/27/2012,1.2.5.0
+
+[Manufacturer]
+%onetouch% = onetouchDevices, NTx86, NTamd64
+
+[onetouchDevices.NTx86]
+%onetouch.VID_05C6&PID_9024.Desc%    = onetouch.install.NT.5.1, USB\VID_05C6&PID_9024&MI_00
+%onetouch.VID_05C6&PID_F00E.Desc%    = onetouch.install.NT.5.1, USB\VID_05C6&PID_F00E&MI_00
+%onetouch.VID_05C6&PID_902D.Desc%    = onetouch.install.NT.5.1, USB\VID_05C6&PID_902D&MI_00
+%onetouch.VID_05C6&PID_902C.Desc%    = onetouch.install.NT.5.1, USB\VID_05C6&PID_902C&MI_00
+%onetouch.VID_1BBB&PID_9024.Desc%    = onetouch.install.NT.5.1, USB\VID_1BBB&PID_9024&MI_00
+%onetouch.VID_1BBB&PID_F00E.Desc%    = onetouch.install.NT.5.1, USB\VID_1BBB&PID_F00E&MI_00
+%onetouch.VID_1BBB&PID_902D.Desc%    = onetouch.install.NT.5.1, USB\VID_1BBB&PID_902D&MI_00
+%onetouch.VID_1BBB&PID_902C.Desc%    = onetouch.install.NT.5.1, USB\VID_1BBB&PID_902C&MI_00
+
+
+[onetouchDevices.NTamd64]
+%onetouch.VID_05C6&PID_9024.Desc%    = onetouch.install.NT.5.1, USB\VID_05C6&PID_9024&MI_00
+%onetouch.VID_05C6&PID_F00E.Desc%    = onetouch.install.NT.5.1, USB\VID_05C6&PID_F00E&MI_00
+%onetouch.VID_05C6&PID_902D.Desc%    = onetouch.install.NT.5.1, USB\VID_05C6&PID_902D&MI_00
+%onetouch.VID_05C6&PID_902C.Desc%    = onetouch.install.NT.5.1, USB\VID_05C6&PID_902C&MI_00
+%onetouch.VID_1BBB&PID_9024.Desc%    = onetouch.install.NT.5.1, USB\VID_1BBB&PID_9024&MI_00
+%onetouch.VID_1BBB&PID_F00E.Desc%    = onetouch.install.NT.5.1, USB\VID_1BBB&PID_F00E&MI_00
+%onetouch.VID_1BBB&PID_902D.Desc%    = onetouch.install.NT.5.1, USB\VID_1BBB&PID_902D&MI_00
+%onetouch.VID_1BBB&PID_902C.Desc%    = onetouch.install.NT.5.1, USB\VID_1BBB&PID_902C&MI_00
+
+[ControlFlags]
+ExcludeFromSelect=*
+
+; Windows LH specific sections -----------------------------------
+
+[onetouch.install.NT.5.1]
+Characteristics = 0x84   ; NCF_PHYSICAL + NCF_HAS_UI
+BusType         = 15
+include         = netrndis.inf
+needs           = Usb_Rndis.ndi
+
+[onetouch.install.NT.5.1.Services]
+include     = netrndis.inf
+needs       = Usb_Rndis.ndi.Services
+
+; no sys copyfiles - the sys files are already in place
+
+[Strings]
+Provider    = "Alcatel"
+onetouch     = "Alcatel"
+
+onetouch.VID_05C6&PID_9024.Desc="ALCATEL Composite RNDIS Interface"
+onetouch.VID_05C6&PID_F00E.Desc="ALCATEL Composite RNDIS Interface"
+onetouch.VID_05C6&PID_902D.Desc="ALCATEL Composite RNDIS Interface"
+onetouch.VID_05C6&PID_902C.Desc="ALCATEL Composite RNDIS Interface"
+onetouch.VID_1BBB&PID_9024.Desc="ALCATEL Composite RNDIS Interface"
+onetouch.VID_1BBB&PID_F00E.Desc="ALCATEL Composite RNDIS Interface"
+onetouch.VID_1BBB&PID_902D.Desc="ALCATEL Composite RNDIS Interface"
+onetouch.VID_1BBB&PID_902C.Desc="ALCATEL Composite RNDIS Interface"

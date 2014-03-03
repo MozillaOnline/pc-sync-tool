@@ -1071,6 +1071,128 @@ FilesOPDialog.prototype = {
   }
 };
 
+function DriverInstallDialog(options) {
+  this.initialize(options);
+}
+
+DriverInstallDialog.prototype = {
+  initialize: function(options) {
+    this.options = extend({
+      onclose: emptyFunction,
+      title_l10n_id: '',
+      processbar_l10n_id: '',
+      maxSteps: 0
+    }, options);
+
+    this._modalElement = null;
+    this._mask = null;
+    this._timer = null;
+    this._steps = 0;
+    this._processbar = null;
+    this._closed = false;
+    this._build();
+  },
+
+  start: function() {
+    var count = 0;
+    var self = this;
+    this._timer =setInterval(function() {
+      if (count == self.options.maxSteps) {
+        clearInterval(self._timer);
+        return;
+      }
+      self._processbar.moveForward();
+      count++;
+    } ,100);
+  },
+
+  closeAll: function() {
+    var evt = document.createEvent('Event');
+    evt.initEvent('DriverInstallDialog:show', true, true);
+    document.dispatchEvent(evt);
+  },
+
+  _build: function() {
+    this._mask = document.createElement('div');
+    this._mask.className = 'modal-mask';
+    document.body.appendChild(this._mask);
+
+    this._modalElement = document.createElement('div');
+    this._modalElement.className = 'modal-dialog';
+    var templateData = {
+      title_l10n_id: '',
+      processbar_l10n_id: ''
+    };
+    if (this.options.title_l10n_id != '') {
+      templateData.title_l10n_id = this.options.title_l10n_id;
+    }
+    if (this.options.processbar_l10n_id != '') {
+      templateData.processbar_l10n_id = this.options.processbar_l10n_id;
+    }
+    this._modalElement.innerHTML = tmpl('tmpl_install_driver_dialog', templateData);
+    var dlgBody = $expr('.select-multi-files-dialog-body', this._modalElement)[0];
+    this._processbar = new ProcessBar({
+      sectionsNumber: 1,
+      stepsPerSection: 1800
+    });
+    dlgBody.appendChild(this._processbar.processbar);
+    document.body.appendChild(this._modalElement);
+    this._adjustModalPosition();
+
+    // Translate l10n value
+    navigator.mozL10n.translate(this._modalElement);
+
+    // Only one modal dialog is shown at a time.
+    var self = this;
+    this._onModalDialogShown = function(event) {
+      // Show a popup dialog at a time.
+      if (event.targetElement == self._modalElement) {
+        return;
+      }
+      self.close();
+    }
+    document.addEventListener('DriverInstallDialog:show', this._onModalDialogShown);
+
+    // Make sure other modal dialog has a chance to close itself.
+    this._fireEvent('DriverInstallDialog:show');
+
+    // Tweak modal dialog position when resizing.
+    this._onWindowResize = function(event) {
+      self._adjustModalPosition();
+    };
+    window.addEventListener('resize', this._onWindowResize);
+    window.addEventListener('CloseWidget', function() {
+      self.close();
+    });
+  },
+
+  _adjustModalPosition: function() {
+    var container = $expr('.modal-container', this._modalElement)[0];
+    var documentHeight = document.documentElement.clientHeight;
+    var containerHeight = container.clientHeight;
+    container.style.top = (documentHeight > containerHeight ? (documentHeight - containerHeight) / 2 : 0) + 'px';
+  },
+
+  _fireEvent: function(name, data) {
+    var evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+    evt.data = data;
+    evt.targetElement = this._modalElement;
+    document.dispatchEvent(evt);
+  },
+
+  close: function() {
+    this._closed = true;
+    this._mask.parentNode.removeChild(this._mask);
+    this._modalElement.parentNode.removeChild(this._modalElement);
+    this._mask = null;
+    this._modalElement = null;
+    document.removeEventListener('DriverInstallDialog:show', this._onModalDialogShown);
+    window.removeEventListener('resize', this._onWindowResize)
+    this.options.onclose();
+  }
+};
+
 function ImageViewer(options) {
   this.initialize(options);
 }

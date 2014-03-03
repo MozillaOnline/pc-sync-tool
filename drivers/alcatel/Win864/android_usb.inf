@@ -1,0 +1,204 @@
+;/*++
+;
+;Abstract:
+;    Installation inf for the Android USB Bulk device
+;
+;--*/
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=USB
+ClassGuid={F72FE0D4-CBCB-407d-8814-9ED673D0DD6B}
+Provider=%GOOG%
+DriverVer=04/27/2012,1.0.1.1
+CatalogFile.NTx86=androidusb86.cat
+CatalogFile.NTamd64=androidusba64.cat
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=AndroidUsbClassReg
+
+[AndroidUsbClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+; ================= Device section =====================
+
+[Manufacturer]
+%MfgName%=Alcatel,NTx86,NTamd64
+
+; For Win2K
+[Alcatel]
+%USB\VID_18D1&PID_DDDD.DeviceDescTest%=androidusb.Dev, USB\VID_18D1&PID_DDDD
+%USB\VID_18D1&PID_D00D.DeviceDescRelease%=androidusb.Dev, USB\VID_18D1&PID_D00D
+%USB\VID_18D1&PID_DEED&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_18D1&PID_DEED&MI_01
+%USB\VID_18D1&PID_DEED&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_18D1&PID_DEED&MI_02
+%USB\VID_05C6&PID_9018&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9018&MI_01
+%USB\VID_05C6&PID_9024&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9024&MI_02
+%USB\VID_05C6&PID_9025&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9025&MI_01
+;%USB\VID_05C6&PID_9026&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9026&MI_01
+
+%USB\VID_1BBB&PID_DDDD.DeviceDescTest%=androidusb.Dev, USB\VID_1BBB&PID_DDDD
+%USB\VID_1BBB&PID_D00D.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_D00D
+%USB\VID_1BBB&PID_DEED&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_DEED&MI_01
+%USB\VID_1BBB&PID_DEED&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_DEED&MI_02
+%USB\VID_1BBB&PID_9025&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9025&MI_01
+;%USB\VID_1BBB&PID_9026&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9026&MI_01
+
+%USB\VID_1BBB&PID_9018&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9018&MI_01
+%USB\VID_1BBB&PID_9024&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9024&MI_02
+%USB\VID_1BBB&PID_F001&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_F001&MI_01
+%USB\VID_1BBB&PID_F004&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_F004&MI_01
+%USB\VID_1BBB&PID_904E&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_904E&MI_01
+%USB\VID_1BBB&PID_901D&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_901D&MI_01
+
+%USB\VID_1BBB&PID_F006&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_F006&MI_02
+
+
+; For XP and later
+[Alcatel.NTx86]
+%USB\VID_18D1&PID_DDDD.DeviceDescTest%=androidusb.Dev, USB\VID_18D1&PID_DDDD
+%USB\VID_18D1&PID_D00D.DeviceDescRelease%=androidusb.Dev, USB\VID_18D1&PID_D00D
+%USB\VID_18D1&PID_DEED&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_18D1&PID_DEED&MI_01
+%USB\VID_18D1&PID_DEED&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_18D1&PID_DEED&MI_02
+%USB\VID_05C6&PID_9018&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9018&MI_01
+%USB\VID_05C6&PID_9024&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9024&MI_02
+%USB\VID_05C6&PID_9025&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9025&MI_01
+;%USB\VID_05C6&PID_9026&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9026&MI_01
+
+%USB\VID_1BBB&PID_DDDD.DeviceDescTest%=androidusb.Dev, USB\VID_1BBB&PID_DDDD
+%USB\VID_1BBB&PID_D00D.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_D00D
+%USB\VID_1BBB&PID_DEED&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_DEED&MI_01
+%USB\VID_1BBB&PID_DEED&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_DEED&MI_02
+%USB\VID_1BBB&PID_9025&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9025&MI_01
+;%USB\VID_1BBB&PID_9026&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9026&MI_01
+
+%USB\VID_1BBB&PID_9018&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9018&MI_01
+%USB\VID_1BBB&PID_9024&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9024&MI_02
+%USB\VID_1BBB&PID_F001&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_F001&MI_01
+%USB\VID_1BBB&PID_F004&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_F004&MI_01
+%USB\VID_1BBB&PID_904E&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_904E&MI_01
+%USB\VID_1BBB&PID_901D&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_901D&MI_01
+
+%USB\VID_1BBB&PID_F006&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_F006&MI_02
+
+
+; For AMD64 and later
+[Alcatel.NTamd64]
+%USB\VID_18D1&PID_DDDD.DeviceDescTest%=androidusb.Dev, USB\VID_18D1&PID_DDDD
+%USB\VID_18D1&PID_D00D.DeviceDescRelease%=androidusb.Dev, USB\VID_18D1&PID_D00D
+%USB\VID_18D1&PID_DEED&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_18D1&PID_DEED&MI_01
+%USB\VID_18D1&PID_DEED&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_18D1&PID_DEED&MI_02
+%USB\VID_05C6&PID_9018&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9018&MI_01
+%USB\VID_05C6&PID_9024&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9024&MI_02
+%USB\VID_05C6&PID_9025&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9025&MI_01
+;%USB\VID_05C6&PID_9026&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_05C6&PID_9026&MI_01
+
+%USB\VID_1BBB&PID_DDDD.DeviceDescTest%=androidusb.Dev, USB\VID_1BBB&PID_DDDD
+%USB\VID_1BBB&PID_D00D.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_D00D
+%USB\VID_1BBB&PID_DEED&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_DEED&MI_01
+%USB\VID_1BBB&PID_DEED&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_DEED&MI_02
+%USB\VID_1BBB&PID_9025&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9025&MI_01
+;%USB\VID_1BBB&PID_9026&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9026&MI_01
+
+%USB\VID_1BBB&PID_9018&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9018&MI_01
+%USB\VID_1BBB&PID_9024&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_9024&MI_02
+%USB\VID_1BBB&PID_F001&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_F001&MI_01
+%USB\VID_1BBB&PID_F004&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_F004&MI_01
+%USB\VID_1BBB&PID_904E&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_904E&MI_01
+%USB\VID_1BBB&PID_901D&MI_01.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_901D&MI_01
+
+%USB\VID_1BBB&PID_F006&MI_02.DeviceDescRelease%=androidusb.Dev, USB\VID_1BBB&PID_F006&MI_02
+
+
+[androidusb.Dev.NT]
+CopyFiles=androidusb.Files.Ext
+
+[androidusb.Dev.NT.Services]
+Addservice = androidusb, 0x00000002, androidusb.AddService
+
+[androidusb.AddService]
+DisplayName    = %androidusb.SvcDesc%
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %10%\System32\Drivers\androidusb.sys
+AddReg         = androidusb.AddReg
+LoadOrderGroup = Base
+
+[androidusb.AddReg]
+HKR,"Parameters","MaximumTransferSize",0x10001,4096
+HKR,"Parameters","DebugLevel",0x10001,2
+HKR, Parameters\Wdf, VerboseOn,       0x00010001, 1
+HKR, Parameters\Wdf, VerifierOn,      0x00010001, 1
+HKR, Parameters\Wdf, DbgBreakOnError, 0x00010001, 1
+
+[androidusb.Files.Ext]
+androidusb.sys
+
+[SourceDisksNames]
+1=%Disk_Description%,,,
+
+[SourceDisksFiles]
+androidusb.sys = 1
+
+;-------------- WDF Coinstaller installation
+[DestinationDirs]
+CoInstaller_CopyFiles = 11
+
+[androidusb.Dev.NT.CoInstallers]
+AddReg=CoInstaller_AddReg
+CopyFiles=CoInstaller_CopyFiles
+
+[CoInstaller_CopyFiles]
+wdfcoinstaller01005.dll
+
+[SourceDisksFiles]
+wdfcoinstaller01005.dll=1 ; make sure the number matches with SourceDisksNames
+
+[CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "wdfcoinstaller01005.dll,WdfCoInstaller"
+
+[androidusb.Dev.NT.Wdf]
+KmdfService = androidusb, androidusb_wdfsect
+
+[androidusb_wdfsect]
+KmdfLibraryVersion = 1.5
+
+;---------------------------------------------------------------;
+
+[Strings]
+GOOG            = "ALCATEL, Inc"
+MfgName         = "ALCATEL, Inc"
+Disk_Description= "ADB Interface Installation Disk"
+androidusb.SvcDesc = "ADB Interface Driver"
+ClassName       = "ADB Interface"
+USB\VID_18D1&PID_DDDD.DeviceDescTest="Android Sooner ADB Testing Interface"
+USB\VID_18D1&PID_D00D.DeviceDescRelease="Android Sooner Single ADB Interface"
+USB\VID_18D1&PID_DEED&MI_01.DeviceDescRelease="Android Sooner Composite ADB Interface"
+USB\VID_18D1&PID_DEED&MI_02.DeviceDescRelease="Android Sooner Kernel Debug Interface"
+USB\VID_05C6&PID_9018&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+USB\VID_05C6&PID_9024&MI_02.DeviceDescRelease="ALCATEL ADB Interface 01"
+USB\VID_05C6&PID_9025&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+;USB\VID_05C6&PID_9026&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+
+USB\VID_1BBB&PID_DDDD.DeviceDescTest="Android Sooner ADB Testing Interface"
+USB\VID_1BBB&PID_D00D.DeviceDescRelease="Android Sooner Single ADB Interface"
+USB\VID_1BBB&PID_DEED&MI_01.DeviceDescRelease="Android Sooner Composite ADB Interface"
+USB\VID_1BBB&PID_DEED&MI_02.DeviceDescRelease="Android Sooner Kernel Debug Interface"
+USB\VID_1BBB&PID_9025&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+;USB\VID_1BBB&PID_9026&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+
+USB\VID_1BBB&PID_9018&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+USB\VID_1BBB&PID_9024&MI_02.DeviceDescRelease="ALCATEL ADB Interface 01"
+USB\VID_1BBB&PID_F001&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+USB\VID_1BBB&PID_F004&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+USB\VID_1BBB&PID_904E&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+USB\VID_1BBB&PID_901D&MI_01.DeviceDescRelease="ALCATEL ADB Interface 01"
+
+USB\VID_1BBB&PID_F006&MI_02.DeviceDescRelease="ALCATEL ADB Interface 01"
+

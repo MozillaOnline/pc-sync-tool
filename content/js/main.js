@@ -2,6 +2,7 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+Components.utils.import("resource://gre/modules/Services.jsm");
 var chromeWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                          .getInterface(Components.interfaces.nsIWebNavigation)
                          .QueryInterface(Components.interfaces.nsIDocShellTreeItem)
@@ -234,30 +235,69 @@ var FFOSAssistant = (function() {
     deviceSocketState = connectState.connecting;
     var availableDevices = [];
     if (isWindows()) {
-      for (var i=0; i<devicesList.length; i++) {
+      for (var i = 0; i < devicesList.length; i++) {
         if (devicesList[i].InstallState == 0) {
           availableDevices.push(devicesList[i]);
         }
       }
       if (availableDevices.length == 0) {
-        var contentInfo = [_('connection-alert-dialog-message-check-nodriver')];
-        var url = 'chrome://ffosassistant/content/Help/Help-en.html';
-        if (navigator.mozL10n.language.code == 'zh-CN') {
-          url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+        // install driver here
+        var uri = '';
+        var driverDir = getCachedDir(["extensions", "ffosassistant@mozillaonline.com", "drivers"]);
+        var params = ["/Q", "/SH", "/C", "/PATH"];
+        var bIs64Bits = false;
+        if (navigator.oscpu.indexOf('WOW64') != -1) {
+          uri = "resource://ffosassistant-dphome/dpinst64.exe";
+          bIs64Bits = true;
+        } else {
+          uri = "resource://ffosassistant-dphome/dpinst32.exe";
         }
-        new AlertDialog({
-          id: 'popup_dialog',
-          titleL10nId: 'alert-dialog-title',
-          message: {
-            head: _('connection-alert-dialog-title'),
-            description: _('connection-alert-dialog-message-header'),
-            content: contentInfo,
-            detail: _('connection-alert-dialog-detail'),
-            href: url
-          },
-          okCallback: resetConnect,
-          cancelCallback: resetConnect
+        if (navigator.oscpu.indexOf('6.3') != -1) {
+          if (bIs64Bits) {
+            params.push(driverDir += "\\alcatel\\Win864");
+          } else {
+            params.push(driverDir += "\\alcatel\\Win832");
+          }
+        } else {
+          if (bIs64Bits) {
+            params.push(driverDir += "\\alcatel\\amd64");
+          } else {
+            params.push(driverDir += "\\alcatel\\i386");
+          }
+        }
+        var dialog = new DriverInstallDialog({
+          title_l10n_id: 'install-driver-header',
+          processbar_l10n_id: 'install-driver-prompt',
+          maxSteps: 1800
         });
+        dialog.start();
+        var process = Components.classes["@mozilla.org/process/util;1"].createInstance(Components.interfaces.nsIProcess);
+        var url = Services.io.newURI(uri, null, null).QueryInterface(Components.interfaces.nsIFileURL);
+        process.init(url.file);
+        process.runAsync(params, params.length, {
+          observe: function(aSubject, aTopic, aData) {
+            switch(aTopic) {
+              case "process-finished":
+                console.log("process-finished:" + aData);
+                dialog.close();
+                deviceSocketState = connectState.disconnected;
+                var tm = setTimeout(function() {
+                  clearTimeout(tm);
+                  observerService.notifyObservers(null, 'chrome-start-connection', '');
+                }, 3000);
+                break;
+              case "process-failed":
+                console.log("process-failed" + aData);
+                dialog.close();
+                deviceSocketState = connectState.disconnected;
+                var tm = setTimeout(function() {
+                  clearTimeout(tm);
+                  observerService.notifyObservers(null, 'chrome-start-connection', '');
+                }, 3000);
+                break;
+            }
+          }
+        }, false);
         return;
       }
     } else {
