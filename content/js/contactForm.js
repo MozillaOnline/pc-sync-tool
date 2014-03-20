@@ -125,7 +125,7 @@ ContactField.prototype = {
     } else {
       formRows.forEach(function(row) {
         var value = {
-          type: $expr('select', row)[0].value,
+          type: [$expr('select', row)[0].value],
         };
 
         var hasValue = false;
@@ -254,7 +254,7 @@ var ContactForm = (function() {
       fields: [{
         name: 'value',
         l10nId: 'email',
-        type: 'email'
+        type: 'text'
       }],
       initValues: contact && contact.email ? contact.email : [],
       container: container,
@@ -463,7 +463,7 @@ var ContactForm = (function() {
       contact.name = contact.givenName;
     }
     contact.tel = [{
-      "type": "Mobile",
+      "type": ["Mobile"],
       "value": mobile,
       "carrier": ""
     }];

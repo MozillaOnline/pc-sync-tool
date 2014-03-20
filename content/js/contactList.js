@@ -277,8 +277,8 @@ var ContactList = (function() {
   }
 
   function showContactInfo(contact) {
-    $id('show-contact-full-name').innerHTML = contact.name.join(' ');
-    $id('show-contact-company').innerHTML = contact.org.join(' ');
+    $id('show-contact-full-name').innerHTML = contact && contact.name ? contact.name.join(' ') : '';
+    $id('show-contact-company').innerHTML = contact && contact.org ? contact.org.join(' ') : '';
     var container = $id('show-contact-content');
     container.innerHTML = '';
     if (contact.tel && contact.tel.length > 0) {
