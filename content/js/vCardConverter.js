@@ -40,9 +40,9 @@ vCardConverter = {
             var fullName = item.fn;
             var index = fullName.indexOf(' ');
             if (index > 0) {
-              contact.familyName = fullName.substr(index + 1, fullName.length);
-              contact.givenName = fullName.substr(0, index);
-              contact.name = [contact.givenName, contact.familyName];
+              contact.familyName = [fullName.substr(index + 1, fullName.length)];
+              contact.givenName = [fullName.substr(0, index)];
+              contact.name = [contact.givenName[0], contact.familyName[0]];
             } else {
               contact.name = [fullName];
             }
@@ -221,11 +221,11 @@ vCardConverter = {
             var fullName = item.fn;
             var index = fullName.indexOf(' ');
             if (index > 0) {
-              contact.givenName = fullName.substr(index + 1, fullName.length);
-              contact.familyName = fullName.substr(0, index);
-              contact.name = [contact.givenName, contact.familyName];
+              contact.givenName = [fullName.substr(index + 1, fullName.length)];
+              contact.familyName = [fullName.substr(0, index)];
+              contact.name = [contact.givenName[0], contact.familyName[0]];
             } else {
-              contact.givenName = fullName;
+              contact.givenName = [fullName];
               contact.name = [fullName];
             }
           }
@@ -422,11 +422,11 @@ vCardConverter = {
             var fullName = decodeURIComponent(item.fn.replace(/=/g, '%'));
             var index = fullName.indexOf(' ');
             if (index > 0) {
-              contact.givenName = fullName.substr(index + 1, fullName.length);
-              contact.familyName = fullName.substr(0, index);
-              contact.name = [contact.givenName, contact.familyName];
+              contact.givenName = [fullName.substr(index + 1, fullName.length)];
+              contact.familyName = [fullName.substr(0, index)];
+              contact.name = [contact.givenName[0], contact.familyName[0]];
             } else {
-              contact.givenName = fullName;
+              contact.givenName = [fullName];
               contact.name = [fullName];
             }
           }
