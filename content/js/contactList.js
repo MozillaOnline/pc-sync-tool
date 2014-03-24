@@ -389,6 +389,15 @@ var ContactList = (function() {
       return;
     }
     var existingContact = getContact(contact.id);
+    var isChecked = false;
+    var contactListItems = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
+    for (var i = 0; i < contactListItems.length; i++) {
+      var item = JSON.parse(contactListItems[i].dataset.contact);
+      if (item.id == contact.id) {
+        isChecked = true;
+        break;
+      }
+    }
     groupedList.remove(existingContact);
     groupedList.add(contact);
 
@@ -406,6 +415,12 @@ var ContactList = (function() {
       img.src = contact.photo;
       item.dataset.avatar = contact.photo;
       img.classList.remove('avatar-default');
+    }
+    if (isChecked) {
+      if (contactListItems.length == 1) {
+        showContactInfo(contact);
+      }
+      item.dataset.checked = item.dataset.focused = isChecked;
     }
   }
 
@@ -478,7 +493,6 @@ var ContactList = (function() {
           if (result.data != '' && groupedList) {
             var contactData = JSON.parse(result.data);
             updateContact(contactData);
-            showContactInfo(contactData);
           }
         }, null);
         break;
