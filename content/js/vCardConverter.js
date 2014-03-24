@@ -36,7 +36,7 @@ vCardConverter = {
       if (item.prodid) {
         //contacts exported from Apple
         if (item.prodid.indexOf('Apple') != -1) {
-          if (item.fn != '') {
+          if (item.fn && item.fn != '') {
             var fullName = item.fn;
             var index = fullName.indexOf(' ');
             if (index > 0) {
@@ -217,7 +217,7 @@ vCardConverter = {
         }
       } else {
         if (item.version == '3.0' || item.version == '4.0') {
-          if (item.fn != '') {
+          if (item.fn && item.fn != '') {
             var fullName = item.fn;
             var index = fullName.indexOf(' ');
             if (index > 0) {
@@ -418,7 +418,7 @@ vCardConverter = {
           }
         }
         if (item.version == '2.1') {
-          if (item.fn != '') {
+          if (item.fn && item.fn != '') {
             var fullName = decodeURIComponent(item.fn.replace(/=/g, '%'));
             var index = fullName.indexOf(' ');
             if (index > 0) {

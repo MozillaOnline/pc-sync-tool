@@ -159,6 +159,9 @@ TCPConnectionPool.prototype = {
       }
       var callback = this._fetchRequestCallback(jsonCmd.id);
       if (!callback) {
+        if (jsonCmd.result != RS_MIDDLE) {
+          this._setSocketWrapperIdle(wrapper);
+        }
         return;
       }
       if (jsonCmd.result != RS_MIDDLE) {
@@ -195,6 +198,9 @@ TCPConnectionPool.prototype = {
         }
       }
     } catch (e) {
+      if (jsonCmd.result != RS_MIDDLE) {
+        this._setSocketWrapperIdle(wrapper);
+      }
       callback.onerror(e);
     }
     // Reset socket state
