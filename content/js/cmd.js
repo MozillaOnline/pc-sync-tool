@@ -73,6 +73,7 @@ var CMD = (function() {
       /**
        * get the summary info of the device
        */
+      getVersion: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getVersion),
       getStorage: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorage),
       getSettings: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getSettings),
     },

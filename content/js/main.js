@@ -51,6 +51,7 @@ var observer = null;
 var devicesList = null;
 var deviceSocketState = connectState.disconnected;
 var REMOTE_PORT = 25679;
+var clientVer = null;
 var FFOSAssistant = (function() {
   var connPool = null;
   var connListenSocket = null;
@@ -116,7 +117,7 @@ var FFOSAssistant = (function() {
     return sizeInMega.toFixed(2) + 'M';
   }
 
-  function getAndShowStorageInfo() {
+  function getStorageInfo() {
     var loadingGroupId = animationLoading.start();
     CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
       var dataJSON = JSON.parse(message.data);
@@ -154,6 +155,15 @@ var FFOSAssistant = (function() {
           storageIndicators[i].style.width = '0%';
         }
       }
+      $id('device-storage-head').onmouseover = function() {
+        var body = $id('device-storage-body');
+        summaryHeadMouseOver(this, body);
+      };
+      $id('device-storage-head').onmouseout = summaryHeadMouseout;
+      $id('device-storage-head').onclick = function() {
+        var body = $id('device-storage-body');
+        summaryHeadClick(this, body);
+      };
       animationLoading.stop(loadingGroupId);
     }, function onerror_getStorage(message) {
       animationLoading.stop(loadingGroupId);
@@ -187,8 +197,26 @@ var FFOSAssistant = (function() {
     }
   }
 
-  function getAndShowSummaryInfo() {
-    getAndShowStorageInfo();
+  function getVersionandShow() {
+    CMD.Device.getVersion(function onresponse_getDeviceInfo(message) {
+      clientVer = message.data;
+      if (clientVer && clientVer[0] == 'm') {
+        $id('sms-tab').hidden = true;
+        getStorageInfo();
+      } else {
+        $id('sms-tab').hidden = false;
+        getSettingsInfo();
+        getStorageInfo();
+      }
+    }, function onerror_getStorage(message) {
+      $id('sms-tab').hidden = false;
+      getSettingsInfo();
+      getStorageInfo();
+      return;
+    });
+  }
+
+  function getSettingsInfo() {
     var loadingGroupId = animationLoading.start();
     CMD.Device.getSettings(function onresponse_getDeviceInfo(message) {
       var dataJSON = JSON.parse(message.data);
@@ -201,17 +229,9 @@ var FFOSAssistant = (function() {
         var body = $id('device-info-body');
         summaryHeadMouseOver(this, body);
       };
-      $id('device-storage-head').onmouseover = function() {
-        var body = $id('device-storage-body');
-        summaryHeadMouseOver(this, body);
-      };
-      $id('device-info-head').onmouseout = $id('device-storage-head').onmouseout = summaryHeadMouseout;
+      $id('device-info-head').onmouseout = summaryHeadMouseout;
       $id('device-info-head').onclick = function() {
         var body = $id('device-info-body');
-        summaryHeadClick(this, body);
-      };
-      $id('device-storage-head').onclick = function() {
-        var body = $id('device-storage-body');
         summaryHeadClick(this, body);
       };
       animationLoading.stop(loadingGroupId);
@@ -623,7 +643,7 @@ var FFOSAssistant = (function() {
     customEventElement.addEventListener('firstshow', function(e) {
       switch (e.detail.type) {
         case 'summary-view':
-          getAndShowSummaryInfo(e.detail.data);
+          getVersionandShow();
           break;
         case 'contact-view':
           ContactList.init(e.detail.data);
@@ -647,7 +667,7 @@ var FFOSAssistant = (function() {
     customEventElement.addEventListener('othershow', function(e) {
       switch (e.detail.type) {
         case 'summary-view':
-          getAndShowStorageInfo(e.detail.data);
+          getStorageInfo(e.detail.data);
           break;
         case 'contact-view':
           ContactList.show(e.detail.data);

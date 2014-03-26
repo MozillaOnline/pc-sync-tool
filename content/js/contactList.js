@@ -293,7 +293,10 @@ var ContactList = (function() {
         container.appendChild(div);
         navigator.mozL10n.translate(div);
       });
-      $id('sms-send-incontact').hidden = false;
+      if (clientVer && clientVer[0] == 'm')
+        $id('sms-send-incontact').hidden = true;
+      else
+        $id('sms-send-incontact').hidden = false;
     } else {
       $id('sms-send-incontact').hidden = true;
     }
@@ -365,7 +368,8 @@ var ContactList = (function() {
     });
 
     var btn = $id('sms-send-inmulticontact');
-
+    if (clientVer && clientVer[0] == 'm')
+      btn.hidden = true;
     btn.onclick = function() {
       new SendSMSDialog({
         type: 'multi',
