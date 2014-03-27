@@ -265,8 +265,13 @@ vCardConverter = {
                 continue;
               }
               item.email[e].forEach(function(email) {
+                var type = /type=(.+);?/;
+                var results = ['type=other', 'other'];
+                if (type.test(e)) {
+                  results = e.match(type);
+                }
                 contact.email.push({
-                  'type': ['other'],
+                  'type': [results[1]],
                   'value': email
                 });
               });
@@ -356,8 +361,13 @@ vCardConverter = {
                 continue;
               }
               item.tel[e].forEach(function(t) {
+                var type = /type=(.+);?/;
+                var results = ['type=other', 'other'];
+                if (type.test(e)) {
+                  results = e.match(type);
+                }
                 contact.tel.push({
-                  'type': ['other'],
+                  'type': [results[1]],
                   'carrier': carrier,
                   'value': t
                 });
@@ -397,8 +407,13 @@ vCardConverter = {
               item.adr[e].forEach(function(adr) {
                 var length = adr.length;
                 var address = adr[length - 5].replace('\\n', '');
+                var type = /type=(.+);?/;
+                var results = ['type=other', 'other'];
+                if (type.test(e)) {
+                  results = e.match(type);
+                }
                 contact.adr.push({
-                  "type": ["Other"],
+                  "type": [results[1]],
                   "streetAddress": address,
                   "locality": adr[length - 3],
                   "postalCode": adr[length - 2],
@@ -466,8 +481,13 @@ vCardConverter = {
                 continue;
               }
               item.email[e].forEach(function(email) {
+                var type = /type=(.+);?/;
+                var results = ['type=other', 'other'];
+                if (type.test(e)) {
+                  results = e.match(type);
+                }
                 contact.email.push({
-                  'type': ['other'],
+                  'type': [results[1]],
                   'value': email
                 });
               });
@@ -557,8 +577,13 @@ vCardConverter = {
                 continue;
               }
               item.tel[e].forEach(function(t) {
+                var type = /type=(.+);?/;
+                var results = ['type=other', 'other'];
+                if (type.test(e)) {
+                  results = e.match(type);
+                }
                 contact.tel.push({
-                  'type': ['other'],
+                  'type': [results[1]],
                   'carrier': carrier,
                   'value': t
                 });
@@ -607,8 +632,13 @@ vCardConverter = {
                   adr[index] = decodeURIComponent(adr[index].replace(/=/g, '%'));
                 }
                 var address = adr[length - 5].replace('\\n', '');
+                var type = /type=(.+);?/;
+                var results = ['type=other', 'other'];
+                if (type.test(e)) {
+                  results = e.match(type);
+                }
                 contact.adr.push({
-                  "type": ["Other"],
+                  "type": [results[1]],
                   "streetAddress": address,
                   "locality": adr[length - 3],
                   "postalCode": adr[length - 2],

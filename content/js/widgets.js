@@ -523,8 +523,10 @@ SendSMSDialog.prototype = {
   },
 
   close: function() {
-    this._mask.parentNode.removeChild(this._mask);
-    this._modalElement.parentNode.removeChild(this._modalElement);
+    if (this._mask)
+      this._mask.parentNode.removeChild(this._mask);
+    if (this._modalElement)
+      this._modalElement.parentNode.removeChild(this._modalElement);
     this._mask = null;
     this._modalElement = null;
     document.removeEventListener('SendSMSDialog:show', this._onModalDialogShown);
@@ -684,7 +686,10 @@ SelectContactsDialog.prototype = {
     contactSmallList = new GroupedList({
       dataList: this.options.contactList,
       dataIndexer: function getContactIndex(contact) {
-        var firstChar = contact.name[0].charAt(0).toUpperCase();
+        var firstChar = '';
+        if (contact.name[0]) {
+          firstChar = contact.name[0].charAt(0).toUpperCase();
+        }
         var pinyin = makePy(firstChar);
         if (pinyin.length == 0) {
           return '#';
@@ -748,7 +753,6 @@ SelectContactsDialog.prototype = {
         $id('select-contact-count').innerHTML = header;
       }
     };
-
     return elem;
   },
 
@@ -761,8 +765,10 @@ SelectContactsDialog.prototype = {
   },
 
   close: function() {
-    this._mask.parentNode.removeChild(this._mask);
-    this._modalElement.parentNode.removeChild(this._modalElement);
+    if (this._mask)
+      this._mask.parentNode.removeChild(this._mask);
+    if (this._modalElement)
+      this._modalElement.parentNode.removeChild(this._modalElement);
     this._mask = null;
     this._modalElement = null;
     document.removeEventListener('SelectContactsDialog:show', this._onModalDialogShown);

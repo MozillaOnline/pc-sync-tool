@@ -77,13 +77,17 @@ ContactField.prototype = {
       fieldType: this.options.fieldType,
       fields: this.options.fields,
       initValue: initValue,
-      selectedIndex: 0
+      selectedIndex: -1
     };
     for (var i = 0; i < this.options.typeList.length; i++) {
       if (initValue && initValue.type && this.options.typeList[i].toLowerCase() === initValue.type[0].toLowerCase()) {
         templateData.selectedIndex = i;
         break;
       }
+    }
+    if (initValue && initValue.type && templateData.selectedIndex == -1 && this.options.typeList.length > 0) {
+      templateData.selectedIndex = this.options.typeList.length;
+      templateData.typeList.push(initValue.type[0]);
     }
     section.innerHTML = tmpl('tmpl_contact_add_item', templateData);
 
@@ -127,7 +131,6 @@ ContactField.prototype = {
         var value = {
           type: [$expr('select', row)[0].value],
         };
-
         var hasValue = false;
 
         $expr('input', row).forEach(function(input) {
@@ -393,7 +396,6 @@ var ContactForm = (function() {
     contact.email = getFieldValue('email');
     contact.org = getFieldValue('org');
     contact.note = getFieldValue('note');
-
     if ($id('avatar-add-edit').classList.contains('avatar-add-edit-default')) {
       contact.photo = [];
     } else {
