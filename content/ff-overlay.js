@@ -71,11 +71,9 @@
     observe: function(subject, topic, data) {
       switch (topic) {
         case 'chrome-start-connection':
-          if (devices.length != 0) {
-            setTimeout(function() {
-              observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
-            }, 1000);
-          }
+          setTimeout(function() {
+            observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
+          }, 1000);
           break;
       }
     },

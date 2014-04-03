@@ -242,86 +242,85 @@ var FFOSAssistant = (function() {
   }
 
   function connectToDevice() {
-    if (!devicesList || devicesList.length == 0) {
-      if (deviceSocketState == connectState.connected) {
-        releaseConnPool();
-        resetConnect();
-      }
-      return;
+    if (deviceSocketState == connectState.connected) {
+      releaseConnPool();
+      resetConnect();
     }
     if (deviceSocketState == connectState.connecting) {
       return;
     }
     deviceSocketState = connectState.connecting;
     var availableDevices = [];
-    if (isWindows()) {
-      for (var i = 0; i < devicesList.length; i++) {
-        if (devicesList[i].InstallState == 0) {
-          availableDevices.push(devicesList[i]);
-        }
-      }
-      if (availableDevices.length == 0) {
-        // install driver here
-        var uri = '';
-        var driverDir = getCachedDir(["extensions", "ffosassistant@mozillaonline.com", "drivers"]);
-        var params = ["/Q", "/SH", "/C", "/PATH"];
-        var bIs64Bits = false;
-        if (navigator.oscpu.indexOf('WOW64') != -1) {
-          uri = "resource://ffosassistant-dphome/dpinst64.exe";
-          bIs64Bits = true;
-        } else {
-          uri = "resource://ffosassistant-dphome/dpinst32.exe";
-        }
-        if (navigator.oscpu.indexOf('6.3') != -1) {
-          if (bIs64Bits) {
-            params.push(driverDir += "\\alcatel\\Win864");
-          } else {
-            params.push(driverDir += "\\alcatel\\Win832");
-          }
-        } else {
-          if (bIs64Bits) {
-            params.push(driverDir += "\\alcatel\\amd64");
-          } else {
-            params.push(driverDir += "\\alcatel\\i386");
+    if (devicesList && devicesList.length > 0) {
+      if (isWindows()) {
+        for (var i = 0; i < devicesList.length; i++) {
+          if (devicesList[i].InstallState == 0) {
+            availableDevices.push(devicesList[i]);
           }
         }
-        var dialog = new DriverInstallDialog({
-          title_l10n_id: 'install-driver-header',
-          processbar_l10n_id: 'install-driver-prompt',
-          maxSteps: 1800
-        });
-        dialog.start();
-        var process = Components.classes["@mozilla.org/process/util;1"].createInstance(Components.interfaces.nsIProcess);
-        var url = Services.io.newURI(uri, null, null).QueryInterface(Components.interfaces.nsIFileURL);
-        process.init(url.file);
-        process.runAsync(params, params.length, {
-          observe: function(aSubject, aTopic, aData) {
-            switch(aTopic) {
-              case "process-finished":
-                console.log("process-finished:" + aData);
-                dialog.close();
-                deviceSocketState = connectState.disconnected;
-                var tm = setTimeout(function() {
-                  clearTimeout(tm);
-                  observerService.notifyObservers(null, 'chrome-start-connection', '');
-                }, 3000);
-                break;
-              case "process-failed":
-                console.log("process-failed" + aData);
-                dialog.close();
-                deviceSocketState = connectState.disconnected;
-                var tm = setTimeout(function() {
-                  clearTimeout(tm);
-                  observerService.notifyObservers(null, 'chrome-start-connection', '');
-                }, 3000);
-                break;
+        if (availableDevices.length == 0) {
+          // install driver here
+          var uri = '';
+          var driverDir = getCachedDir(["extensions", "ffosassistant@mozillaonline.com", "drivers"]);
+          var params = ["/Q", "/SH", "/C", "/PATH"];
+          var bIs64Bits = false;
+          if (navigator.oscpu.indexOf('WOW64') != -1) {
+            uri = "resource://ffosassistant-dphome/dpinst64.exe";
+            bIs64Bits = true;
+          } else {
+            uri = "resource://ffosassistant-dphome/dpinst32.exe";
+          }
+          if (navigator.oscpu.indexOf('6.3') != -1) {
+            if (bIs64Bits) {
+              params.push(driverDir += "\\alcatel\\Win864");
+            } else {
+              params.push(driverDir += "\\alcatel\\Win832");
+            }
+          } else {
+            if (bIs64Bits) {
+              params.push(driverDir += "\\alcatel\\amd64");
+            } else {
+              params.push(driverDir += "\\alcatel\\i386");
             }
           }
-        }, false);
-        return;
+          var dialog = new DriverInstallDialog({
+            title_l10n_id: 'install-driver-header',
+            processbar_l10n_id: 'install-driver-prompt',
+            maxSteps: 1800
+          });
+          dialog.start();
+          var process = Components.classes["@mozilla.org/process/util;1"].createInstance(Components.interfaces.nsIProcess);
+          var url = Services.io.newURI(uri, null, null).QueryInterface(Components.interfaces.nsIFileURL);
+          process.init(url.file);
+          process.runAsync(params, params.length, {
+            observe: function(aSubject, aTopic, aData) {
+              switch(aTopic) {
+                case "process-finished":
+                  console.log("process-finished:" + aData);
+                  dialog.close();
+                  deviceSocketState = connectState.disconnected;
+                  var tm = setTimeout(function() {
+                    clearTimeout(tm);
+                    observerService.notifyObservers(null, 'chrome-start-connection', '');
+                  }, 3000);
+                  break;
+                case "process-failed":
+                  console.log("process-failed" + aData);
+                  dialog.close();
+                  deviceSocketState = connectState.disconnected;
+                  var tm = setTimeout(function() {
+                    clearTimeout(tm);
+                    observerService.notifyObservers(null, 'chrome-start-connection', '');
+                  }, 3000);
+                  break;
+              }
+            }
+          }, false);
+          return;
+        }
+      } else {
+        availableDevices = devicesList;
       }
-    } else {
-      availableDevices = devicesList;
     }
     var loadingGroupId = animationLoading.start();
     ADBService.killAdbServer();
@@ -340,8 +339,21 @@ var FFOSAssistant = (function() {
           }
           connectDevices.push(availableDevices[i]);
         }
-      }
-      if (connectDevices.length == 0) {
+        if (connectDevices.length == 0) {
+          connectedDevice = devices[0];
+        } else {
+          connectedDevice = connectDevices[0];
+        }
+        ADBService.setupDevice(connectedDevice.device_name, function setup(data) {
+          animationLoading.stop(loadingGroupId);
+          if (!/error|failed/ig.test(data.result)) {
+            $id('device-name').innerHTML = connectedDevice.display_name;
+            connectToServer('localhost');
+          } else {
+            deviceSocketState = connectState.error;
+          }
+        });
+      } else {
         animationLoading.stop(loadingGroupId);
         var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
         if (!isWindows()) {
@@ -392,16 +404,6 @@ var FFOSAssistant = (function() {
         });
         return;
       }
-      connectedDevice = connectDevices[0];
-      ADBService.setupDevice(connectedDevice.device_name, function setup(data) {
-        animationLoading.stop(loadingGroupId);
-        if (!/error|failed/ig.test(data.result)) {
-          $id('device-name').innerHTML = connectedDevice.display_name;
-          connectToServer('localhost');
-        } else {
-          deviceSocketState = connectState.error;
-        }
-      });
     });
   }
 
@@ -629,7 +631,7 @@ var FFOSAssistant = (function() {
       });
       event.target.classList.add('current');
     });
-      $id('connect-button').addEventListener('click', function onclick_connect(event) {
+    $id('connect-button').addEventListener('click', function onclick_connect(event) {
       observerService.notifyObservers(null, 'chrome-start-connection', '');
     });
      $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
