@@ -340,7 +340,10 @@ var FFOSAssistant = (function() {
           connectDevices.push(availableDevices[i]);
         }
         if (connectDevices.length == 0) {
-          connectedDevice = devices[0];
+          connectedDevice = {
+            device_name: devices[0],
+            display_name: devices[0]
+          };
         } else {
           connectedDevice = connectDevices[0];
         }
