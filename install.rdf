@@ -7,18 +7,16 @@
         <em:version>1.3.3</em:version>
         <em:iconURL>chrome://ffosassistant/content/style/icons/ffosassistant64.png</em:iconURL>
         <em:description>Manage Firefox OS device</em:description>
-        <em:creator>Mozilla Online Ltd.</em:creator>
+        <em:creator>Mozilla Online Limited.</em:creator>
         <em:homepageURL>http://www.firefox.com.cn/</em:homepageURL>
         <em:type>2</em:type> <!-- type=extension --> 
         <em:unpack>true</em:unpack>
-        <em:updateURL>http://g-fox.cn/chinaedition/addons/ffosassistant/update.rdf</em:updateURL>
-        <em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDMKzOG1FGuh305qI06sogVe4V2grJ9LdSrNq7SD4UDfTBJeMsL8yh2zOnCzC5vcaChWG2/ihMFbHvhC3cO/Q7QJHvcDrotsE/jX0ATyOPdBXHQ+vOwhTdeu98RzhU3P22fxI4yZCP49KeraOanK4vsEkcBQSbLDQdYUYIC8TtoxQIDAQAB</em:updateKey>
         <em:targetApplication>
            <!-- Firefox -->
            <Description>
                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-                <em:minVersion>26</em:minVersion>
-                <em:maxVersion>26.*</em:maxVersion>
+                <em:minVersion>26.*</em:minVersion>
+                <em:maxVersion>28.*</em:maxVersion>
            </Description>
         </em:targetApplication>
     </Description>
