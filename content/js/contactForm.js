@@ -39,7 +39,10 @@ ContactField.prototype = {
     // FIXME escape
     this.elem = document.createElement('li');
     this.elem.id = this._getElemId();
-    this.elem.innerHTML = '<button class="add-new-button" data-l10n-id="' + this.options.addButtonLabel + '">' + _(this.options.addButtonLabel) + '</button>';
+    var templateData = {
+      addButtonLabel: this.options.addButtonLabel
+    };
+    this.elem.innerHTML = tmpl('tmpl_contact_add_new_button', templateData);
 
     // Create input fields and fill it with init values.
     var self = this;
