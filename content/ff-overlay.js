@@ -70,18 +70,18 @@
   Observer.prototype = {
     observe: function(subject, topic, data) {
       switch (topic) {
-        case 'chrome-start-connection':
+        case 'ffosassistant-start-connection':
           setTimeout(function() {
-            observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
+            observerService.notifyObservers(null, "ffosassistant-init-devices", JSON.stringify(devices));
           }, 1000);
           break;
       }
     },
     register: function() {
-      observerService.addObserver(this, "chrome-start-connection", false);
+      observerService.addObserver(this, "ffosassistant-start-connection", false);
     },
     unregister: function() {
-      observerService.removeObserver(this, "chrome-start-connection");
+      observerService.removeObserver(this, "ffosassistant-start-connection");
     }
   };
 
@@ -329,7 +329,7 @@
       switchToTabHavingURI('about:ffos', true);
     }
     setTimeout(function() {
-      observerService.notifyObservers(null, "init-devices", JSON.stringify(devices));
+      observerService.notifyObservers(null, "ffosassistant-init-devices", JSON.stringify(devices));
     }, 1000);
   }
 

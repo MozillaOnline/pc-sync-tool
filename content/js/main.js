@@ -301,7 +301,7 @@ var FFOSAssistant = (function() {
                   deviceSocketState = connectState.disconnected;
                   var tm = setTimeout(function() {
                     clearTimeout(tm);
-                    observerService.notifyObservers(null, 'chrome-start-connection', '');
+                    observerService.notifyObservers(null, 'ffosassistant-start-connection', '');
                   }, 3000);
                   break;
                 case "process-failed":
@@ -310,7 +310,7 @@ var FFOSAssistant = (function() {
                   deviceSocketState = connectState.disconnected;
                   var tm = setTimeout(function() {
                     clearTimeout(tm);
-                    observerService.notifyObservers(null, 'chrome-start-connection', '');
+                    observerService.notifyObservers(null, 'ffosassistant-start-connection', '');
                   }, 3000);
                   break;
               }
@@ -616,10 +616,10 @@ var FFOSAssistant = (function() {
       connectToDevice();
     },
     register: function() {
-      observerService.addObserver(this, "init-devices", false);
+      observerService.addObserver(this, "ffosassistant-init-devices", false);
     },
     unregister: function() {
-      observerService.removeObserver(this, "init-devices");
+      observerService.removeObserver(this, "ffosassistant-init-devices");
     }
   };
 
@@ -635,7 +635,7 @@ var FFOSAssistant = (function() {
       event.target.classList.add('current');
     });
     $id('connect-button').addEventListener('click', function onclick_connect(event) {
-      observerService.notifyObservers(null, 'chrome-start-connection', '');
+      observerService.notifyObservers(null, 'ffosassistant-start-connection', '');
     });
      $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
       releaseConnPool();
@@ -689,7 +689,7 @@ var FFOSAssistant = (function() {
     }
     showConnectView();
     observer = new Observer();
-    observerService.notifyObservers(null, 'chrome-start-connection', '');
+    observerService.notifyObservers(null, 'ffosassistant-start-connection', '');
   }
 
   window.addEventListener('unload', function window_onunload(event) {
