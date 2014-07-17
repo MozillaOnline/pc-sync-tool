@@ -30,7 +30,8 @@
   }
 
   var isDisabled = false;
-
+  var isUninstalled = false;
+  var isFirstrun = false;
   var modules = {};
   Components.utils.import("resource://gre/modules/NetUtil.jsm");
   Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -98,6 +99,9 @@
     modules.AddonManager.addAddonListener({
       onUninstalling: function(addon) {
         if (addon.id == ADDON_ID) {
+          isUninstalled = true;
+          isFirstrun = Services.prefs.getBoolPref('extensions.' + ADDON_ID + '.firstrun', true);
+          Services.prefs.setBoolPref('extensions.' + ADDON_ID + '.firstrun', true);
           stopService();
         }
       },
@@ -118,6 +122,10 @@
         }
       },
       onOperationCancelled: function(addon, needsRestart) {
+        if (addon.id == ADDON_ID && isUninstalled == true) {
+          isUninstalled = false;
+          Services.prefs.setBoolPref('extensions.' + ADDON_ID + '.firstrun', isFirstrun);
+        }
         if (addon.id == ADDON_ID && isDisabled == true) {
           if (isWindowsOS) {
             setAddonInfo(false);
@@ -161,33 +169,31 @@
   }
 
   function addToolbarButton() {
-    var navBar = document.getElementById('nav-bar');
-    var currentSet = navBar.currentSet;
-
     var buttonId = 'ffosassistant-button';
-    if (!currentSet.contains(buttonId)) {
-      var set = navBar.currentSet + '';
-      var MANULLAY_REMOVE_PREF = 'extensions.' + ADDON_ID + '.manuallyRemovedButton';
-      var manuallyRemovedButton = Services.prefs.getBoolPref(MANULLAY_REMOVE_PREF, false);
-
-      if (manuallyRemovedButton) {
-        return;
-      }
-
-      set = set + ',' + buttonId;
-
-      navBar.setAttribute('currentset', set);
-      navBar.currentSet = set;
-      document.persist('nav-bar', 'currentset');
-
-      BrowserToolboxCustomizeDone(true);
+    if (!CustomizableUI) {
+      return;
     }
-
-    // Check whether user has manually removed the toolbar button
-    navBar.addEventListener('DOMAttrModified', function(event) {
-      if (event.type == 'DOMAttrModified' && event.attrName == 'currentset') {
-        if (!event.newValue.contains('ffosassistant-button')) {
-          Services.prefs.setBoolPref(MANULLAY_REMOVE_PREF, true);
+    let widget = CustomizableUI.getWidget(buttonId);
+    if (widget && widget.provider == CustomizableUI.PROVIDER_API) {
+      return;
+    }
+    var bundle = Services.strings.createBundle('chrome://ffosassistant/locale/browser.properties');
+    CustomizableUI.createWidget({
+      id: buttonId,
+      type: 'button',
+      defaultArea: CustomizableUI.AREA_NAVBAR,
+      label: bundle.GetStringFromName('title'),
+      tooltiptext: bundle.GetStringFromName('tooltip'),
+      onCommand: (aEvent) => {
+        var doc = aEvent.target && aEvent.target.ownerDocument;
+        var win = doc && doc.defaultView;
+        if (!win) {
+          return;
+        }
+        if (win.switchToTabHavingURI) {
+          win.switchToTabHavingURI('about:ffos', true);
+        } else {
+          win.openUILink('about:ffos');
         }
       }
     });
@@ -202,10 +208,6 @@
       tab = gBrowser.loadOneTab('about:ffos', {
         inBackground: false
       });
-    }
-    var pinPref = 'extensions.' + ADDON_ID + '.pinnedOnOpen';
-    if (Services.prefs.getBoolPref(pinPref, true)) {
-      gBrowser.pinTab(tab);
     }
   }
 

@@ -7,15 +7,5 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/javascript" src="chrome://ffosassistant/content/ff-overlay.js"/>
 
-  <toolbarpalette id="BrowserToolbarPalette">
-    <toolbarbutton
-      id="ffosassistant-button"
-      class="toolbarbutton-1 chromeclass-toolbar-additional"
-      label="Firefox OS Assistant"
-      tooltiptext="Firefox OS Assistant"
-      oncommand="if (switchToTabHavingURI) { switchToTabHavingURI('about:ffos', true); } else { openUILink('about:ffos'); }"
-      type="button">
-    </toolbarbutton>
-  </toolbarpalette>
 </overlay>
 
