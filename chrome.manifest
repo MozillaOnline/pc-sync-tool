@@ -6,46 +6,8 @@ style    chrome://global/content/customizeToolbar.xul   chrome://ffosassistant/s
 
 resource ffosassistant modules/
 
-resource ffosassistant-binary components/binary/
-
 locale ffosassistant en-US locale/en-US/
 locale ffosassistant zh-CN locale/zh-CN/
-
-# devices.json
-resource ffosassistant-devices components/binary/devices.json os=Linux
-resource ffosassistant-devices components/binary/devices.json os=Darwin
-resource ffosassistant-devices components/binary/devices.json os=WINNT
-
-# libadbservice
-resource ffosassistant-libadbservice components/binary/linux/libadbservice.so os=Linux
-resource ffosassistant-libadbservice components/binary/mac/libadbservice.so   os=Darwin
-resource ffosassistant-libadbservice components/binary/win/adbservice.dll     os=WINNT
-
-# binary home dir
-resource ffosassistant-binhome       components/binary/linux                  os=linux
-resource ffosassistant-binhome       components/binary/mac                    os=Darwin
-resource ffosassistant-binhome       components/binary/win                    os=WINNT
-
-# adb
-resource ffosassistant-adb           components/binary/linux/adb              os=linux
-resource ffosassistant-adb           components/binary/mac/adb                os=Darwin
-resource ffosassistant-adb           components/binary/win/adb.exe            os=WINNT
-
-# Driver Manager home dir
-resource ffosassistant-dmhome       components/binary/win      os=WINNT
-
-# Driver installer package
-resource ffosassistant-dphome       drivers/      os=WINNT
-
-# Driver Manager
-resource ffosassistant-drivermanager components/binary/win/USBMonitor.exe os=WINNT
-resource ffosassistant-drivermanager components/binary/linux              os=linux
-resource ffosassistant-drivermanager components/binary/mac                os=Darwin
-
-# json file should be placed in the same dir as USBMonitor.exe
-resource ffosassistant-driverlist    components/binary/win/drivers/driver_list.json os=WINNT
-resource ffosassistant-driverlist    components/binary/win/driver_list.json         os=linux
-resource ffosassistant-driverlist    components/binary/win/driver_list.json         os=Darwin
 
 overlay chrome://browser/content/browser.xul chrome://ffosassistant/content/overlay.xul
 

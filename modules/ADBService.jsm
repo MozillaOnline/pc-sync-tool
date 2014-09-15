@@ -4,7 +4,12 @@
 
 'use strict';
 
-let DEBUG = 0;
+Components.utils.import("resource://gre/modules/devtools/Devices.jsm");
+const {devtools} = Components.utils.import("resource://gre/modules/devtools/Loader.jsm", {});
+const {require} = devtools;
+const adbStore = require("devtools/app-manager/builtin-adb-store");
+
+let DEBUG = 1;
 
 debug = function(s) {
   if (DEBUG) {
@@ -14,89 +19,22 @@ debug = function(s) {
 
 var EXPORTED_SYMBOLS = ['ADBService'];
 
-// Create chrome worker to load adbservice lib
-const WORKER_FILE = 'resource://ffosassistant/worker.js';
-let libWorker = new ChromeWorker(WORKER_FILE);
-libWorker.onmessage = worker_onMessage;
-// Auto-increament id for messages
-let idgen = 0;
-// Message callbacks
-let callbacks = {};
-
-function worker_onMessage(e) {
-  let data = e.data;
-  let callback = callbacks[data.id];
-  if (callback) {
-    if (!data.noDelete) {
-      delete callbacks[data.id];
-    }
-    if (!data.noCallback) {
-      callback(data);
-    }
-  }
-}
-
-function controlMessage(msg, callback) {
-  let id = ++idgen;
-  msg.id = id;
-
-  if (callback) {
-    callbacks[id] = callback;
-  }
-  libWorker.postMessage(msg);
-}
-
 var ADBService = {
-  initAdbService: function initAdbService(isWindows, libPath, adbPath, profilePath) {
-    controlMessage({
-      cmd: 'initAdbService',
-      isWindows: isWindows,
-      libPath: libPath,
-      adbPath: adbPath,
-      profilePath: profilePath
+  init: function(callback) {
+    adbStore.on('set', function(event, path, value) {
+      if (path[0] !== 'devices') {
+        return;
+      }
+      if (value.length == 0) {
+        return;
+      }
+
+      callback(Devices.available());
     });
   },
 
-  findDevice: function findDevice(callback) {
-    controlMessage({
-      cmd: 'findDevice'
-    }, callback);
-  },
-
-  setupDevice: function setupDevice(device, callback) {
-    controlMessage({
-      cmd: 'setupDevice',
-      device: device
-    }, callback);
-  },
-
-  startAdbServer: function startAdbServer() {
-    controlMessage({
-      cmd: 'startAdbServer'
-    });
-  },
-
-  killAdbServer: function killAdbServer() {
-    controlMessage({
-      cmd: 'killAdbServer'
-    });
-  },
-
-  runCmd: function runCmd(cmd, callback) {
-    controlMessage({
-      cmd: 'RunCmd',
-      data: cmd
-    }, callback);
-  },
-
-  checkDevice: function(enable, isMac, devices, callback) {
-    controlMessage({
-      cmd: 'checkDevice',
-      enable: enable,
-      isMac: isMac,
-      devices: devices
-    }, callback);
-  },
+  setupDevice: function(name) {
+    let device = Devices.getByName(name);
+    device.forwardPort('tcp:25679', 'tcp:25679');
+  }
 };
-
-debug('ADBService module is inited.');

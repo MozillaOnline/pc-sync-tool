@@ -3,19 +3,10 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 (function() {
-  const DEVICES_CONFIG= 'resource://ffosassistant-devices';
-  const DRIVER_MANAGER_HOME = 'resource://ffosassistant-dmhome';
-  const DRIVER_MANAGER_INI_FILE_NAME = 'driver_manager.ini';
-  const LIB_FILE_URL = 'resource://ffosassistant-libadbservice';
-  const ADB_FILE_URL = 'resource://ffosassistant-adb';
   const ADDON_ID = 'ffosassistant@mozillaonline.com';
 
-  var client = null;
-  var devicesConfig = [];
   var devices = [];
-  var isWindowsOS = true;
-  var usbMonitorConnected = false;
-  let DEBUG = 0;
+  let DEBUG = 1;
 
   var jsm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
                    .getService(Components.interfaces.nsIWindowMediator);
@@ -29,39 +20,12 @@
     }
   }
 
-  var isDisabled = false;
-  var isUninstalled = false;
   var isFirstrun = false;
   var modules = {};
   Components.utils.import("resource://gre/modules/NetUtil.jsm");
   Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
   XPCOMUtils.defineLazyModuleGetter(modules, 'utils', 'resource://ffosassistant/utils.jsm');
   XPCOMUtils.defineLazyModuleGetter(modules, 'ADBService', 'resource://ffosassistant/ADBService.jsm');
-  XPCOMUtils.defineLazyModuleGetter(modules, 'DriverManager', 'resource://ffosassistant/driverManager.jsm');
-  XPCOMUtils.defineLazyModuleGetter(modules, 'AddonManager', 'resource://gre/modules/AddonManager.jsm');
-
-  function startService() {
-    isDisabled = false;
-    if (isWindowsOS) {
-      modules.DriverManager.startDriverManager();
-      usbMonitorConnected = false;
-      connectToDriverManager();
-    } else {
-      modules.ADBService.checkDevice(true, modules.utils.isMac(), devicesConfig, handleMessage);
-    }
-  }
-
-  function stopService() {
-    isDisabled = true;
-    if (isWindowsOS) {
-      if (client && client.isConnected()) {
-        client.sendCommand('shutdown');
-      }
-    } else {
-      modules.ADBService.checkDevice(false);
-    }
-    modules.ADBService.killAdbServer();
-  }
 
   function Observer()
   {
@@ -89,75 +53,20 @@
   function init() {
     debug('init');
     new Observer();
-    isWindowsOS = modules.utils.isWindows();
-    let libPath = modules.utils.getChromeFileURI(LIB_FILE_URL);
-    let adbPath = modules.utils.getChromeFileURI(ADB_FILE_URL);
-    let profilePath = Services.dirsvc.get('ProfD', Ci.nsIFile);
-    modules.ADBService.initAdbService(isWindowsOS, libPath.file.path, adbPath.file.path, profilePath.path);
+    modules.ADBService.init(handlemessage);
 
     checkFirstRun();
-    modules.AddonManager.addAddonListener({
-      onUninstalling: function(addon) {
-        if (addon.id == ADDON_ID) {
-          isUninstalled = true;
-          isFirstrun = Services.prefs.getBoolPref('extensions.' + ADDON_ID + '.firstrun', true);
-          Services.prefs.setBoolPref('extensions.' + ADDON_ID + '.firstrun', true);
-          stopService();
-        }
-      },
-      onDisabling: function(addon, needsRestart) {
-        if (addon.id == ADDON_ID) {
-          stopService();
-          if (isWindowsOS) {
-            setAddonInfo(true);
-          }
-        }
-      },
-      onEnabling: function(addon, needsRestart) {
-        if (addon.id == ADDON_ID) {
-          if (isWindowsOS) {
-            setAddonInfo(false);
-          }
-          startService();
-        }
-      },
-      onOperationCancelled: function(addon, needsRestart) {
-        if (addon.id == ADDON_ID && isUninstalled == true) {
-          isUninstalled = false;
-          Services.prefs.setBoolPref('extensions.' + ADDON_ID + '.firstrun', isFirstrun);
-        }
-        if (addon.id == ADDON_ID && isDisabled == true) {
-          if (isWindowsOS) {
-            setAddonInfo(false);
-          }
-          startService();
-        }
-      },
-      onInstalling: function(addon, needsRestart) {
-        if (addon.id == ADDON_ID) {
-          stopService();
-        }
-      }
-    });
-    if (!isWindowsOS) {
-      let devicesConfigFile = modules.utils.getChromeFileURI(DEVICES_CONFIG).file;
-      if (devicesConfigFile) {
-        NetUtil.asyncFetch(devicesConfigFile, function(inputStream, status) {
-          if (!Components.isSuccessCode(status)) {
-            return;
-          }
-          var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
-          var jsonData = JSON.parse(data);
-          devicesConfig = jsonData.devices;
-          startService();
-        });
-      }
-    } else {
-      setAddonInfo(false);
-      startService();
-    }
   }
 
+  function handlemessage(deviceList) {
+    devices = deviceList;
+    if (devices.length > 0) {
+      switchToTabHavingURI('about:ffos', true);
+    }
+    setTimeout(function() {
+      observerService.notifyObservers(null, "ffosassistant-init-devices", JSON.stringify(devices));
+    }, 1000);
+  }
 
   function checkFirstRun() {
     var firstRunPref = 'extensions.' + ADDON_ID + '.firstrun';
@@ -209,42 +118,6 @@
         inBackground: false
       });
     }
-  }
-
-  function getFirefoxPath() {
-    return Services.dirsvc.get('XREExeF', Ci.nsIFile).path;
-  }
-
-  function setAddonInfo(isDisabled) {
-    try {
-      let file = modules.utils.getChromeFileURI(DRIVER_MANAGER_HOME).file;
-      file.append(DRIVER_MANAGER_INI_FILE_NAME);
-      if (!file.exists()) {
-        file.create(Ci.nsIFile.NORMAL_FILE_TYPE, '0644');
-      }
-      // USB monitor will launch firefox corresponding to the path
-      modules.utils.saveIniValue(file, 'firefox', 'path', getFirefoxPath());
-      modules.utils.saveIniValue(file, 'status', 'disabled', isDisabled);
-    } catch (e) {
-      debug(e);
-    }
-  }
-
-  function getDriverManagerPort() {
-    // Read port number from driver_manager.ini
-    try {
-      let file = modules.utils.getChromeFileURI(DRIVER_MANAGER_HOME).file;
-      file.append(DRIVER_MANAGER_INI_FILE_NAME);
-      if (!file.exists()) {
-        debug('No ini file is found');
-        return 0;
-      }
-
-      return parseInt(modules.utils.getIniValue(file, 'socket', 'port'));
-    } catch (e) {
-      debug(e);
-    }
-    return 0;
   }
 
   // Copy from Firefox4
@@ -300,53 +173,6 @@
     }
   }
 
-  function connectToDriverManager() {
-    if (usbMonitorConnected) {
-      return;
-    }
-    var port = getDriverManagerPort();
-    if (port) {
-      client = new TelnetClient({
-        host: '127.0.0.1',
-        port: port,
-        onmessage: handleMessage,
-        onopen: onopen,
-        onerror: onerror,
-        onclose: onclose
-      }).connect();
-    }
-    window.setTimeout(connectToDriverManager, 1000);
-  }
-
-  function handleMessage(msg) {
-    if (!msg) {
-      return;
-    }
-    var data = msg;
-    if (!isWindowsOS) {
-      data = msg.devices;
-    }
-    devices = data;
-    if (devices.length > 0) {
-      switchToTabHavingURI('about:ffos', true);
-    }
-    setTimeout(function() {
-      observerService.notifyObservers(null, "ffosassistant-init-devices", JSON.stringify(devices));
-    }, 1000);
-  }
-
-  function onopen() {
-    usbMonitorConnected = true;
-  }
-
-  function onclose() {
-    usbMonitorConnected = false;
-  }
-
-  function onerror() {
-    usbMonitorConnected = false;
-  }
-
   window.addEventListener('load', function wnd_onload(e) {
     var winEnum = jsm.getEnumerator("navigator:browser");
     if (winEnum.hasMoreElements() && winEnum.getNext() && !winEnum.hasMoreElements()) {
@@ -354,95 +180,4 @@
       window.setTimeout(init, 1000);
     }
   });
-
-  function TelnetClient(options) {
-    this.initialize(options);
-  }
-
-  TelnetClient.prototype = {
-    initialize: function tc_init(options) {
-      this.options = modules.utils.extend({
-        host: 'localhost',
-        port: 0,
-        onmessage: modules.utils.emptyFunction,
-        onopen: modules.utils.emptyFunction,
-        onerror: modules.utils.emptyFunction,
-        onclose: modules.utils.emptyFunction
-      }, options);
-
-      if (!this.options.port) {
-        throw Error('No port is specified.');
-      }
-
-      this._connected = false;
-      this._socket = null;
-    },
-
-    _onopen: function onopen(event) {
-      debug('Connection is opened.');
-      this._connected = true;
-      this._socket.onclose = this._onclose.bind(this);
-      this._socket.ondata = this._ondata.bind(this);
-      this.options.onopen(event);
-    },
-
-    _onerror: function onerror(event) {
-      this._connected = false;
-      this.options.onerror(event);
-    },
-
-    _onclose: function onclose(event) {
-      debug('Connection is closed.');
-      this._connected = false;
-      this._socket = null;
-      this.options.onclose(event);
-    },
-
-    _ondata: function ondata(event) {
-      debug('Received data: ' + event.data);
-      var data = null;
-      try {
-        data = JSON.parse(event.data);
-      } catch (e) {
-        debug('Not a valid JSON string.');
-        return;
-      }
-      this.options.onmessage(data);
-    },
-
-    isConnected: function() {
-      return !!this._connected;
-    },
-
-    connect: function() {
-      if (this._socket) {
-        return this;
-      }
-
-      this._socket = navigator.mozTCPSocket.open(this.options.host, this.options.port, {
-        binaryType: 'string'
-      });
-
-      this._socket.onopen = this._onopen.bind(this);
-      this._socket.onerror = this._onerror.bind(this);
-
-      return this;
-    },
-
-    disconnect: function() {
-      debug("disconnect socket: " + this._connected);
-      if (this._connected) {
-        this._socket.close();
-      }
-    },
-
-    sendCommand: function tc_sendCommand(command) {
-      if (!this.isConnected()) {
-        throw Error('Server is disconnected.');
-      }
-
-      command = command + "\n";
-      this._socket.send(command);
-    }
-  };
 })();

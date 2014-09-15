@@ -37,6 +37,7 @@ while (browserEnumerator.hasMoreElements()) {
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'ADBService', 'resource://ffosassistant/ADBService.jsm');
+
 var connectState = {
   disconnected: 1,
   connected: 2,
@@ -250,164 +251,18 @@ var FFOSAssistant = (function() {
       return;
     }
     deviceSocketState = connectState.connecting;
-    var availableDevices = [];
-    if (devicesList && devicesList.length > 0) {
-      if (isWindows()) {
-        for (var i = 0; i < devicesList.length; i++) {
-          if (devicesList[i].InstallState == 0) {
-            availableDevices.push(devicesList[i]);
-          }
-        }
-        if (availableDevices.length == 0) {
-          // install driver here
-          var uri = '';
-          var driverDir = getCachedDir(["extensions", "ffosassistant@mozillaonline.com", "drivers"]);
-          var params = ["/Q", "/SH", "/C", "/PATH"];
-          var bIs64Bits = false;
-          if (navigator.oscpu.indexOf('WOW64') != -1) {
-            uri = "resource://ffosassistant-dphome/dpinst64.exe";
-            bIs64Bits = true;
-          } else {
-            uri = "resource://ffosassistant-dphome/dpinst32.exe";
-          }
-          if (navigator.oscpu.indexOf('6.3') != -1) {
-            if (bIs64Bits) {
-              params.push(driverDir += "\\alcatel\\Win864");
-            } else {
-              params.push(driverDir += "\\alcatel\\Win832");
-            }
-          } else {
-            if (bIs64Bits) {
-              params.push(driverDir += "\\alcatel\\amd64");
-            } else {
-              params.push(driverDir += "\\alcatel\\i386");
-            }
-          }
-          var dialog = new DriverInstallDialog({
-            title_l10n_id: 'install-driver-header',
-            processbar_l10n_id: 'install-driver-prompt',
-            maxSteps: 1800
-          });
-          dialog.start();
-          var process = Components.classes["@mozilla.org/process/util;1"].createInstance(Components.interfaces.nsIProcess);
-          var url = Services.io.newURI(uri, null, null).QueryInterface(Components.interfaces.nsIFileURL);
-          process.init(url.file);
-          process.runAsync(params, params.length, {
-            observe: function(aSubject, aTopic, aData) {
-              switch(aTopic) {
-                case "process-finished":
-                  console.log("process-finished:" + aData);
-                  dialog.close();
-                  deviceSocketState = connectState.disconnected;
-                  var tm = setTimeout(function() {
-                    clearTimeout(tm);
-                    observerService.notifyObservers(null, 'ffosassistant-start-connection', '');
-                  }, 3000);
-                  break;
-                case "process-failed":
-                  console.log("process-failed" + aData);
-                  dialog.close();
-                  deviceSocketState = connectState.disconnected;
-                  var tm = setTimeout(function() {
-                    clearTimeout(tm);
-                    observerService.notifyObservers(null, 'ffosassistant-start-connection', '');
-                  }, 3000);
-                  break;
-              }
-            }
-          }, false);
-          return;
-        }
-      } else {
-        availableDevices = devicesList;
-      }
+
+    if (devicesList.length == 0 ) {
+      return;
     }
+
     var loadingGroupId = animationLoading.start();
-    ADBService.killAdbServer();
-    ADBService.findDevice(function find(data) {
-      var regExp = /\n([0-9a-z]+)\tdevice/ig;
-      var devices = [];
-      var result = null;
-      while(result = regExp.exec(data.result)){
-        devices.push(result[1]);
-      }
-      var connectDevices = [];
-      if (devices.length > 0) {
-        for (var i=0; i<availableDevices.length; i++) {
-          if (devices.indexOf(availableDevices[i].device_name) < 0) {
-            continue;
-          }
-          connectDevices.push(availableDevices[i]);
-        }
-        if (connectDevices.length == 0) {
-          connectedDevice = {
-            device_name: devices[0],
-            display_name: devices[0]
-          };
-        } else {
-          connectedDevice = connectDevices[0];
-        }
-        ADBService.setupDevice(connectedDevice.device_name, function setup(data) {
-          animationLoading.stop(loadingGroupId);
-          if (!/error|failed/ig.test(data.result)) {
-            $id('device-name').innerHTML = connectedDevice.display_name;
-            connectToServer('localhost');
-          } else {
-            deviceSocketState = connectState.error;
-          }
-        });
-      } else {
-        animationLoading.stop(loadingGroupId);
-        var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
-        if (!isWindows()) {
-          contentInfo.push(_('connection-alert-dialog-message-check-nodriver'));
-          var url = 'chrome://ffosassistant/content/Help/Help-en.html';
-          if (navigator.mozL10n.language.code == 'zh-CN') {
-            url = 'chrome://ffosassistant/content/Help/Help-cn.html';
-          }
-          new AlertDialog({
-            id: 'popup_dialog',
-            titleL10nId: 'alert-dialog-title',
-            message: {
-              head: _('connection-alert-dialog-title'),
-              description: _('connection-alert-dialog-message-header'),
-              content: contentInfo,
-              detail: _('connection-alert-dialog-detail'),
-              href: url
-            },
-            okCallback: resetConnect,
-            cancelCallback: resetConnect
-          });
-          return;
-        }
-        ADBService.runCmd('listAdbService', function (data) {
-          if (data.result) {
-            var adbServiceName = data.result.split(' ');
-            if (adbServiceName.length > 0 && adbServiceName[0] != 'ffosadb.exe') {
-              contentInfo.push(_('connection-alert-dialog-message-check-otheradb') + ' : ' + adbServiceName[0]);
-            }
-          }
-          var url = 'chrome://ffosassistant/content/Help/Help-en.html';
-          if (navigator.mozL10n.language.code == 'zh-CN') {
-            url = 'chrome://ffosassistant/content/Help/Help-cn.html';
-          }
-          new AlertDialog({
-            id: 'popup_dialog',
-            titleL10nId: 'alert-dialog-title',
-            message: {
-              head: _('connection-alert-dialog-title'),
-              description: _('connection-alert-dialog-message-header'),
-              content: contentInfo,
-              detail: _('connection-alert-dialog-detail'),
-              href: url
-            },
-            okCallback: resetConnect,
-            cancelCallback: resetConnect
-          });
-        });
-        return;
-      }
-    });
+    var deviceName = devicesList[0];
+    $id('device-name').innerHTML = deviceName;
+    ADBService.setupDevice(deviceName);
+    connectToServer('localhost');
+    animationLoading.stop(loadingGroupId);
+    return;
   }
 
   function releaseConnPool() {
@@ -424,8 +279,8 @@ var FFOSAssistant = (function() {
     showConnectView();
     ViewManager.reset();
     deviceSocketState = connectState.disconnected;
-    ADBService.killAdbServer();
-    ADBService.startAdbServer();
+    // ADBService.killAdbServer();
+    // ADBService.startAdbServer();
   }
 
   function connectToServer(serverIP) {
@@ -637,7 +492,7 @@ var FFOSAssistant = (function() {
     $id('connect-button').addEventListener('click', function onclick_connect(event) {
       observerService.notifyObservers(null, 'ffosassistant-start-connection', '');
     });
-     $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
+    $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
       releaseConnPool();
       if (!isWindows()) {
         isWifiConnected = false;
