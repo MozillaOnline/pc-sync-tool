@@ -25,119 +25,66 @@
           </div>
         </div>
 
-        <nav class="menu-bar billboard">
-          <ul>
-            <li><a href="#connection">Quick start</a></li>
-            <li><a href="#FAQ">FAQs</a></li>
-          </ul>
-        </nav>
-
         <div class="billboard" id="connection">
-          <h3>Quick start</h3>
+          <h3>Device and system configuration</h3>
           <ul>
-            <li>Prerequisites
+            <li>Make sure you have Firefox Desktop 28+ installed. (<a href="http://www.firefox.com.cn"><u>Download</u></a>)</li>
+            <li><a class="external" href="https://ftp.mozilla.org/pub/mozilla.org/labs/fxos-simulator/adb-helper/#OS#/adbhelper-#OS#-latest.xpi">Install the Firefox OS Assistant</a> add-on in Firefox Desktop.</li>
+            <li>Make sure your device is running Firefox OS 1.3+</li>
+            <li>Make sure you have PC Sync installed on your device</li>
+          </ul>
+
+          <h3 id="WiFi">WiFi connection</h3>
+          <ul>
+            <li>Quick setup
               <ul>
-                <li>Install Firefox browser v28.0 release. (<a href="http://www.firefox.com.cn"><u>Download</u></a>)</li>
-                <li>Install addon of Firefox OS Assistant into Firefox browser. (<a href="http://download.firefox.com.cn/chinaedition/addons/ffosassistant/ffosassistant-latest.xpi"><u>Download</u></a>)</li>
-              </ul>
-            </li>
-            <li id="USB">USB connection
-              <ul>
-                <li id="DRIVER">Install the device driver
-                  <ul>
-                    <li>Windows
-                      <p>geeksphone: <a href="http://downloads.geeksphone.com/drivers/usb_driver.zip"><u>Download device driver</u></a></p>
-                      <p>zte open: <a href="http://download.ztedevices.com/UpLoadFiles/product/643/3601/soft/2013102209095023.zip"><u>Download device driver</u></a></p>
-                      <p>alcatel one touch: <a href="http://www.alcatelonetouch.com/global-en/support/faq/usbdriver.html"><u>Download device driver</u></a></p>
-                      <p><a href="https://developer.android.com/tools/extras/oem-usb.html"><u>More drivers information</u></a></p>
-                    </li>
-                    <li>Linux, add vendorId to system, for example:
-                      <p>Enter the following command:</p>
-                      <i>sodu vim /etc/udev/rules.d/51-android.rules</i>
-                      <p>Add the following line:</p>
-                      <i>SUBSYSTEM=="usb",ATTRS{idVendor}=="05c6",MODE=="0666"</i>
-                    </li>
-                    <li>Mac
-                      <p>None.</p>
-                    </li>
-                  </ul>
+                <li>Make sure your device is connected to Wi-Fi network</li>
+                <li>Launch the PC Sync on your device
+                  <div class="wifi-code"></div>
                 </li>
-                <li id="SETTINGS">Set up your mobile phone
-                  <ul>
-                    <li>Enable “Remote debugging”</li>
-                    <div class="remote-debug"></div>
-                    <li>Disable ”Screen lock”</li>
-                    <div class="lock-screen"></div>
-                  </ul>
-                </li>
-                <li>Launch Firefox browser and run the addon Firefox OS Assistant
+                <li>Launch Firefox browser and run the Firefox OS Assistant
                   <div class="start-ffosassistant"></div>
                 </li>
-                <li>Launch the application PC Sync on the mobile phone
-                  <div class="start-app"></div>
+                <li>Input the Wi-Fi connection code on the Firefox OS Assistant, Click connection button on it.
+                  <div class="input-wifi-code"></div>
                 </li>
-                <li>Now you’re ready to manage the mobile phone in USB connection model as follow:
-                  <p>For any problem, follow instructions from <a href="#FAQ"><u>FAQs</u></a></p>
-                  <div class="usb-conn-success"></div>
+                <li>Now you’re ready to manage your device as follow:
+                  <div class="wifi-conn-success"></div>
                 </li>
               </ul>
             </li>
           </ul>
-        </div>
 
-        <div class="billboard" id="FAQ">
-          <h3>FAQs</h3> <ul> <li>How can I check out the version of Firefox browser?
-              <div class="firefox-check"></div>
-            </li>
-            <li>How can I find out whether the device driver has been installed properly?
-              <div class="driver-check"></div>
-            </li>
-            <li>How can I remove the running application on the mobile phone?
+          <h3 id="USB">USB connection</h3>
+          <ul>
+            <li id="DRIVER">Install the device driver
               <ul>
-                <li>Long press Home button</li>
-                <li>Trigger the list of running applications and swipe upward the hierarchy of every application to remove it</li>
-              </ul>
-              <div class="close-app"></div>
-            </li>
-            <li id="CLOSE-OTHERS">How can I remove mobile phone assistant on the PC?
-              <ul>
-                <li>Open “Task Manager” by right-clicking the taskbar --> “Start Task Manager”, or press Ctrl+Shift+Delete</li>
-                <li>Click the “Process” tab</li>
-                <li>Click the processes of mobile phone manager or assistant, and click “End Process”</li>
-              </ul>
-              <div class="close-pc-app"></div>
-            </li>
-            <li>Cannot read the pictures, music and videos on the computer in USB connection?
-              <ul>
-                <li>Make sure you have disabled “USB storage” on the mobile phone. (Referring to <a
-                href="#SETTINGS"><u>Set up your mobile phone</u></a>)</li>
-              </ul>
-            </li>
-            <li id="APP-CLOSED">Why the application PC Sync shut down automatically?
-              <ul>
-                <li>Disable “Screen lock”.
-                  <p>(Referring to <a href="#WIFI-MODE-SETTINGS"><u>Set up your mobile phone</u></a>)</p></li>
-                <li>Re-launch the application and reconnect it on the PC. It will work.</li>
-              </ul>
-            </li>
-            <li>What can I do when the connection is broken down on PC?
-              <ul>
-                <li>Make sure the application PC Sync in running on the mobile phone. If not, please re-launch it. (Follow the <a href="#APP-CLOSED"><u>instruction of this question</u></a>)</li>
-                <li>In USB connection, you can follow the steps below to recover the connection:
-                  <ul>
-                    <li>Remove the processes of other mobile phone assistant running on the PC. (Follow the <a href="#CLOSE-OTHERS"><u>instruction of this question</u></a>)</li>
-                    <li>As the running assistants occupy the USB server who handles the device-computer connection and communication, they will cause disconnection between your mobile phone and PC.</li>
-                  </ul>
+                <li>Windows drivers (<a href="https://developer.android.com/tools/extras/oem-usb.html"><u>Download</u></a>)</li>
+                <li>Linux, add vendorId to system, for example:
+                  <p>Enter the following command:</p>
+                  <i>sodu vim /etc/udev/rules.d/51-android.rules</i>
+                  <p>Add the following line:</p>
+                  <i>SUBSYSTEM=="usb",ATTRS{idVendor}=="05c6",MODE=="0666"</i>
+                </li>
+                <li>Mac
+                  <p>None.</p>
                 </li>
               </ul>
             </li>
-            <li>Where is the addon icon of Firefox OS Assistant when I finish install?
+            <li><a class="external" href="https://ftp.mozilla.org/pub/mozilla.org/labs/fxos-simulator/adb-helper/#OS#/adbhelper-#OS#-latest.xpi">Install the ADB Helper</a> add-on in Firefox Desktop.</li>
+            <li id="SETTINGS">Set up your device
               <ul>
-                <li>Make sure the addon Firefox OS Assistant has been install properly
-                  <div class="check-addon"></div>
-                </li>
-                <li>Pin the addon icon to the tool bar from the customize-box
-                  <div class="customize-addon"></div>
+                <li>In the Settings of your device, disable Screen Lock (Settings > Phone lock > Lock Screen)</li>
+                <li>In the Settings of your device, enable Remote Debugging (Settings > Device information > More information > Developer)</li>
+                <li>Connect your device to your machine via a USB cable</li>
+                <li>Launch the PC Sync on your device</li>
+              </ul>
+            </li>
+            <li>Launch Firefox browser and run the addon Firefox OS Assistant
+              <ul>
+                <li>You should see the name of your device in the Firefox OS Assistant's bottom bar. Click on it.</li>
+                <li>Now you’re ready to manage your device as follow:
+                  <div class="usb-conn-success"></div>
                 </li>
               </ul>
             </li>

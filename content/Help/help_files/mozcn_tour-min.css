@@ -2429,20 +2429,6 @@ div.billboard p.details {
     background: url(/media/img/mozcn/welcome/browser-bg.png) no-repeat;
 }
 
-.remote-debug {
-  margin-top: 10px;
-  background: url("images/remote-debug.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 215px;
-  width: 800px;
-}
-
-.usb-storage {
-  margin-top: 10px;
-  background: url("images/usb-storage.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 200px;
-  width: 300px;
-}
-
 .start-ffosassistant {
   margin-top: 10px;
   background: url("images/start-ffosassistant.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
@@ -2450,32 +2436,11 @@ div.billboard p.details {
   width: 353px;
 }
 
-.start-app {
-  margin-top: 10px;
-  background: url("images/start-app.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 200px;
-  width: 140px;
-}
-
 .usb-conn-success {
   margin-top: 10px;
   background: url("images/usb-conn-success.png") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
   height: 442px;
   width: 800px;
-}
-
-.lock-screen {
-  margin-top: 10px;
-  background: url("images/lock-screen.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 200px;
-  width: 437px;
-}
-
-.sleepless {
-  margin-top: 10px;
-  background: url("images/sleepless.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 200px;
-  width: 583px;
 }
 
 .wifi-code {
@@ -2499,44 +2464,3 @@ div.billboard p.details {
   width: 800px;
 }
 
-.firefox-check {
-  margin-top: 10px;
-  background: url("images/firefox-check.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 619px;
-  width: 638px;
-}
-
-.driver-check {
-  margin-top: 10px;
-  background: url("images/driver-check.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 568px;
-  width: 741px;
-}
-
-.close-app {
-  margin-top: 10px;
-  background: url("images/close-app.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 200px;
-  width: 292px;
-}
-
-.close-pc-app {
-  margin-top: 10px;
-  background: url("images/close-pc-app.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 465px;
-  width: 800px;
-}
-
-.check-addon {
-  margin-top: 10px;
-  background: url("images/check-addon.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 654px;
-  width: 800px;
-}
-
-.customize-addon {
-  margin-top: 10px;
-  background: url("images/customize-addon.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 850px;
-  width: 693px;
-}
