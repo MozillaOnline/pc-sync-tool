@@ -90,7 +90,7 @@ TCPConnectionPool.prototype = {
       window.clearInterval(this._connectedTimer);
     }
     if (this.options.onerror) {
-      this.options.onerror();
+      this.options.onerror(event);
     }
   },
 

@@ -227,7 +227,10 @@ var FFOSAssistant = (function() {
     var deviceName = devicesList[0];
     $id('device-name').innerHTML = deviceName;
     ADBService.setupDevice(deviceName);
-    connectToServer('localhost');
+    window.setTimeout( function () {
+      connectToServer('localhost')
+    }, 1000);
+    //connectToServer('localhost');
     animationLoading.stop(loadingGroupId);
     return;
   }

@@ -78,34 +78,54 @@
   }
 
   function addToolbarButton() {
-    var buttonId = 'ffosassistant-button';
-    if (!CustomizableUI) {
+    if (!window) {
       return;
     }
-    let widget = CustomizableUI.getWidget(buttonId);
-    if (widget && widget.provider == CustomizableUI.PROVIDER_API) {
+    var document = window.document;
+    var navbar = document.querySelector("#nav-bar");
+    if (!navbar) {
       return;
     }
+    debug('xds navbar:' + navbar);
     var bundle = Services.strings.createBundle('chrome://ffosassistant/locale/browser.properties');
-    CustomizableUI.createWidget({
-      id: buttonId,
-      type: 'button',
-      defaultArea: CustomizableUI.AREA_NAVBAR,
-      label: bundle.GetStringFromName('title'),
-      tooltiptext: bundle.GetStringFromName('tooltip'),
-      onCommand: (aEvent) => {
-        var doc = aEvent.target && aEvent.target.ownerDocument;
-        var win = doc && doc.defaultView;
-        if (!win) {
-          return;
-        }
-        if (win.switchToTabHavingURI) {
-          win.switchToTabHavingURI('about:ffos', true);
-        } else {
-          win.openUILink('about:ffos');
-        }
+    debug('xds bundle:' + bundle);
+    var label = bundle.GetStringFromName('title');
+    debug('xds label:' + label);
+    var tooltip = bundle.GetStringFromName('tooltip');
+    debug('xds tooltip:' + tooltip);
+    var button = document.createElement("toolbarbutton");
+    debug('xds button:' + button);
+    button.id = "ffosassistant-button";
+    button.className = "firecommander-button toolbarbutton-1 chromeclass-toolbar-additional";
+    button.setAttribute("label", label);
+    button.tooltipText = label;
+    button.addEventListener("command", function onCommand(aEvent) {
+      var doc = aEvent.target && aEvent.target.ownerDocument;
+      var win = doc && doc.defaultView;
+      if (!win) {
+        return;
+      }
+      if (win.switchToTabHavingURI) {
+        win.switchToTabHavingURI('about:ffos', true);
+      } else {
+        win.openUILink('about:ffos');
       }
     });
+    document.querySelector("#navigator-toolbox").palette.appendChild(button);
+    var parent = document.querySelector("[currentset*=\"" + button.id + "\"]");
+    if (parent) { /* restore position */
+      var ids = parent.getAttribute("currentset").split(",");
+      var before = null;
+      var index = ids.indexOf(button.id);
+      for (var i=index+1; i<ids.length; i++) {
+              before = document.querySelector("#" + ids[i]);
+              if (before) {
+                      parent.insertItem(button.id, before);
+                      break;
+              }
+      }
+      if (!before) { parent.insertItem(button.id); }
+    }
   }
 
   function openFFOSInAPinnedTab() {
