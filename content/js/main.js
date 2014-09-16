@@ -120,6 +120,7 @@ var FFOSAssistant = (function() {
     CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
       var dataJSON = JSON.parse(message.data);
       var container = $id('summary-infos');
+      container.innerHTML = '';
       for (var uname in dataJSON) {
         var elem = document.createElement('div');
         var templateData = {
@@ -151,13 +152,14 @@ var FFOSAssistant = (function() {
         elem.innerHTML = tmpl('tmpl_storage_summary', templateData);
         container.appendChild(elem);
         navigator.mozL10n.translate(elem);
+        $id(templateData.headerId).dataset.body = templateData.bodyId;
         $id(templateData.headerId).onmouseover = function() {
-          var body = $id(templateData.bodyId);
+          var body = $id(this.dataset.body);
           summaryHeadMouseOver(this, body);
         };
         $id(templateData.headerId).onmouseout = summaryHeadMouseout;
         $id(templateData.headerId).onclick = function() {
-          var body = $id(templateData.bodyId);
+          var body = $id(this.dataset.body);
           summaryHeadClick(this, body);
         };
       }
