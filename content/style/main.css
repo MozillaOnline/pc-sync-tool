@@ -418,14 +418,6 @@ input[type="url"], textarea {
   background-image: url("images/contact-selected.png");
 }
 
-.sms-tab {
-  background-image: url("images/sms.png");
-}
-
-.sms-tab-selected {
-  background-image: url("images/sms-selected.png");
-}
-
 .apps-tab {
   background-image: url("images/app.png");
 }
@@ -554,16 +546,10 @@ input[type="url"], textarea {
   margin: 4rem 0 0;
 }
 
-#summary-infos > div:first-child{
+#summary-infos > div{
   margin-top: 1rem;
   height: auto;
 }
-
-#summary-infos > div:last-child{
-  margin-top: 3rem;
-  height: 20rem;
-}
-
 
 #summary-infos .storage-total{
   height: 2.5rem;
@@ -604,23 +590,6 @@ input[type="url"], textarea {
   background-color: #00C9F7;
   transition-property: width;
   transition-duration: 1s;
-}
-
-#summary-infos .device-info{
-  height: 3rem;
-}
-
-#summary-infos .device-info > span:first-child {
-  font-size: 1.4rem;
-  color: #868686;
-  float: left;
-  margin-top: 1rem;
-}
-
-#summary-infos .device-info  > span:last-child  {
-  float: left;
-  margin-left: 0.8rem;
-  margin-top: 1rem;
 }
 
 #summary-infos .storage-detail {

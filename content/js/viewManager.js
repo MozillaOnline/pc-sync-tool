@@ -71,20 +71,6 @@ var ViewManager = (function() {
           });
           return;
         }
-      } else if (viewOldId == "sms-view" && viewId != 'connect-view') {
-        var sub = $id('sender-ctn-input');
-        if (sub.hidden == false && sub.value.length > 0) {
-          new AlertDialog({
-            message: _('send-sms-confirm'),
-            showCancelButton: true,
-            okCallback: function() {
-              $id(viewOldId).dataset.shown = false;
-              switchContent(viewId, showData, viewElem);
-              sub.value = '';
-            }
-          });
-          return;
-        }
       }
       $id(viewOldId).dataset.shown = false;
     }
@@ -159,11 +145,6 @@ var ViewManager = (function() {
         cv.hidden = true;
       }
     });
-    if (viewId == 'sms-thread-view') {
-      if (!!$id('message-list-container')) {
-        $id('message-list-container').scrollTop = $id('message-list-container').scrollTopMax;
-      }
-    }
   }
 
   function init() {

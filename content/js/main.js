@@ -52,7 +52,6 @@ var observer = null;
 var devicesList = null;
 var deviceSocketState = connectState.disconnected;
 var REMOTE_PORT = 25679;
-var clientVer = null;
 var FFOSAssistant = (function() {
   var connPool = null;
   var connListenSocket = null;
@@ -90,8 +89,6 @@ var FFOSAssistant = (function() {
           connListenSocket = null;
         }
       });
-      customEventElement.removeEventListener('dataChange', SmsList.onMessage);
-      customEventElement.addEventListener('dataChange', SmsList.onMessage);
       CMD.Listen.listenMessage(null, null);
     };
     if (isWifiConnected) {
@@ -122,49 +119,48 @@ var FFOSAssistant = (function() {
     var loadingGroupId = animationLoading.start();
     CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
       var dataJSON = JSON.parse(message.data);
-      var elem = $id('device-storage-summary');
-      var total = dataJSON.apps.usedSpace + dataJSON.apps.freeSpace;
-      if (total > 0) {
-        var usedInP = Math.floor(dataJSON.apps.usedSpace / total * 100) + '%';
-        $expr('.storage-number', elem)[0].textContent =
-          formatStorage(dataJSON.apps.usedSpace) + '/' + formatStorage(total) + ' ' + usedInP;
-        $expr('.storage-graph .used', elem)[0].style.width = usedInP;
-      } else {
-        $expr('.storage-number', elem)[0].textContent = '0.00M/0.00M';
-        $expr('.storage-graph .used', elem)[0].style.width = '0%';
-      }
-      elem = $id('sdcard-storage-summary');
-      total = dataJSON.sdcard.usedSpace + dataJSON.sdcard.freeSpace;
-      if (total > 0) {
-        var usedInP = Math.floor(dataJSON.sdcard.usedSpace / total * 100) + '%';
-        $expr('.storage-number', elem)[0].textContent =
-          formatStorage(dataJSON.sdcard.usedSpace) + '/' + formatStorage(total) + ' ' + usedInP;
-        $expr('.storage-graph .used', elem)[0].style.width = usedInP;
-        var subInP = Math.floor(dataJSON.pictures.usedSpace / dataJSON.sdcard.usedSpace * 100);
-        $expr('.storage-used', elem)[0].style.width = subInP + '%';
-        subInP = Math.floor(dataJSON.music.usedSpace / dataJSON.sdcard.usedSpace * 100);
-        $expr('.storage-used', elem)[1].style.width = subInP + '%';
-        subInP = Math.floor(dataJSON.videos.usedSpace / dataJSON.sdcard.usedSpace * 100);
-        $expr('.storage-used', elem)[2].style.width = subInP + '%';
-        subInP = Math.floor((dataJSON.sdcard.usedSpace - dataJSON.music.usedSpace - dataJSON.pictures.usedSpace - dataJSON.videos.usedSpace) / dataJSON.sdcard.usedSpace * 100);
-        $expr('.storage-used', elem)[3].style.width = subInP + '%';
-      } else {
-        $expr('.storage-number', elem)[0].textContent = '0.00M/0.00M';
-        $expr('.storage-graph .used', elem)[0].style.width = '0%';
-        var storageIndicators = $expr('.storage-used', elem);
-        for (var i = 0; i < 4; i++) {
-          storageIndicators[i].style.width = '0%';
+      var container = $id('summary-infos');
+      for (var uname in dataJSON) {
+        var elem = document.createElement('div');
+        var templateData = {
+          headerId: uname + '-header',
+          bodyId: uname + '-body',
+          storageName: uname,
+          storageNumber: '',
+          storageUsed: '',
+          pictureUsed: '',
+          musicUsed: '',
+          videoUsed: ''
+        };
+        for (var utype in dataJSON[uname]) {
+          total = dataJSON[uname].sdcard.usedSpace + dataJSON[uname].sdcard.freeSpace;
+          if (total > 0) {
+            templateData.storageUsed = Math.floor(dataJSON[uname].sdcard.usedSpace / total * 100) + '%';
+            templateData.storageNumber = formatStorage(dataJSON[uname].sdcard.usedSpace) + '/' + formatStorage(total) + ' ' + templateData.storageUsed;
+            templateData.pictureUsed = Math.floor(dataJSON[uname].pictures.usedSpace / total * 100) + '%';
+            templateData.musicUsed = Math.floor(dataJSON[uname].music.usedSpace / total * 100) + '%';
+            templateData.videoUsed = Math.floor(dataJSON[uname].videos.usedSpace / total * 100) + '%';
+          } else {
+            templateData.storageNumber = '0.00M/0.00M';
+            templateData.storageUsed = '0%';
+            templateData.pictureUsed = '0%';
+            templateData.musicUsed = '0%';
+            templateData.videoUsed = '0%';
+          }
         }
+        elem.innerHTML = tmpl('tmpl_storage_summary', templateData);
+        container.appendChild(elem);
+        navigator.mozL10n.translate(elem);
+        $id(templateData.headerId).onmouseover = function() {
+          var body = $id(templateData.bodyId);
+          summaryHeadMouseOver(this, body);
+        };
+        $id(templateData.headerId).onmouseout = summaryHeadMouseout;
+        $id(templateData.headerId).onclick = function() {
+          var body = $id(templateData.bodyId);
+          summaryHeadClick(this, body);
+        };
       }
-      $id('device-storage-head').onmouseover = function() {
-        var body = $id('device-storage-body');
-        summaryHeadMouseOver(this, body);
-      };
-      $id('device-storage-head').onmouseout = summaryHeadMouseout;
-      $id('device-storage-head').onclick = function() {
-        var body = $id('device-storage-body');
-        summaryHeadClick(this, body);
-      };
       animationLoading.stop(loadingGroupId);
     }, function onerror_getStorage(message) {
       animationLoading.stop(loadingGroupId);
@@ -200,45 +196,14 @@ var FFOSAssistant = (function() {
 
   function getVersionandShow() {
     CMD.Device.getVersion(function onresponse_getDeviceInfo(message) {
-      clientVer = message.data;
-      if (clientVer && clientVer[0] == 'm') {
-        $id('sms-tab').hidden = true;
+      var clientVer = parseInt(message.data);
+      if (clientVer > 2) {
         getStorageInfo();
       } else {
-        $id('sms-tab').hidden = false;
-        getSettingsInfo();
-        getStorageInfo();
+        //Todo: msg-please-download-from-marketplace
       }
     }, function onerror_getStorage(message) {
-      $id('sms-tab').hidden = false;
-      getSettingsInfo();
-      getStorageInfo();
-      return;
-    });
-  }
-
-  function getSettingsInfo() {
-    var loadingGroupId = animationLoading.start();
-    CMD.Device.getSettings(function onresponse_getDeviceInfo(message) {
-      var dataJSON = JSON.parse(message.data);
-      var elem = $id('device-storage-summary');
-      $expr('.device-os-version-number', elem)[0].textContent = dataJSON["deviceinfo.os"];
-      $expr('.device-hardware-revision-number', elem)[0].textContent = dataJSON["deviceinfo.hardware"];
-      $expr('.device-platform-version-number', elem)[0].textContent = dataJSON["deviceinfo.platform_version"];
-      $expr('.device-build-identifier-number', elem)[0].textContent = dataJSON["deviceinfo.platform_build_id"];
-      $id('device-info-head').onmouseover = function() {
-        var body = $id('device-info-body');
-        summaryHeadMouseOver(this, body);
-      };
-      $id('device-info-head').onmouseout = summaryHeadMouseout;
-      $id('device-info-head').onclick = function() {
-        var body = $id('device-info-body');
-        summaryHeadClick(this, body);
-      };
-      animationLoading.stop(loadingGroupId);
-    }, function onerror_getSettings(message) {
-      animationLoading.stop(loadingGroupId);
-      console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
+      //Todo: msg-please-download-from-marketplace
     });
   }
 
@@ -362,7 +327,6 @@ var FFOSAssistant = (function() {
 
   function showConnectView() {
     animationLoading.reset();
-    SmsList.resetView();
     MusicList.resetView();
     if (connListenSocket) {
       connListenSocket.socket.close();
@@ -508,9 +472,6 @@ var FFOSAssistant = (function() {
         case 'contact-view':
           ContactList.init(e.detail.data);
           break;
-        case 'sms-view':
-          SmsList.init(e.detail.data);
-          break;
         case 'music-view':
           MusicList.init(e.detail.data);
           break;
@@ -531,9 +492,6 @@ var FFOSAssistant = (function() {
           break;
         case 'contact-view':
           ContactList.show(e.detail.data);
-          break;
-        case 'sms-view':
-          SmsList.resetView();
           break;
         default:
           break;

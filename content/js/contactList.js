@@ -293,12 +293,6 @@ var ContactList = (function() {
         container.appendChild(div);
         navigator.mozL10n.translate(div);
       });
-      if (clientVer && clientVer[0] == 'm')
-        $id('sms-send-incontact').hidden = true;
-      else
-        $id('sms-send-incontact').hidden = false;
-    } else {
-      $id('sms-send-incontact').hidden = true;
     }
 
     if (contact.email && contact.email.length > 0) {
@@ -317,17 +311,6 @@ var ContactList = (function() {
 
     $id('edit-contact').onclick = function doEditContact() {
       ContactForm.editContact(contact);
-    };
-
-    $id('sms-send-incontact').onclick = function doSendInContact() {
-      if (!contact.tel || contact.tel.length <= 0) {
-        return;
-      }
-      new SendSMSDialog({
-        type: 'single',
-        name: contact.name,
-        tel: contact.tel
-      });
     };
 
     ViewManager.showViews('show-contact-view');
@@ -366,17 +349,6 @@ var ContactList = (function() {
         num += contact.name + "(" + contact.tel[0].value + ");";
       }
     });
-
-    var btn = $id('sms-send-inmulticontact');
-    if (clientVer && clientVer[0] == 'm')
-      btn.hidden = true;
-    btn.onclick = function() {
-      new SendSMSDialog({
-        type: 'multi',
-        tel: [num],
-        bodyText: null
-      });
-    };
 
     ViewManager.showViews('show-multi-contacts');
   }

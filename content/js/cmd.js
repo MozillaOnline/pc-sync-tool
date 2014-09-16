@@ -142,51 +142,7 @@ var CMD = (function() {
       deleteMusic: createCommand(CMD_TYPE.music, MUSIC_COMMAND.deleteMusic)
     },
 
-    /***** SMS commands *****/
-    SMS: {
-      getAllMessages: createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.getAllMessages),
-
-/*
-       * data:
-       *   SMS Filter
-       */
-      getSMSById: createCommand(CMD_TYPE.sms, SMS_COMMAND.getSMSById),
-
-/*
-       * data:
-       *   string like: "number: '10086', message: 'Here is the message content'"
-       */
-      sendSMS: createCommand(CMD_TYPE.sms, SMS_COMMAND.sendSMS),
-
-/*
-       * data:
-       *   string like: "number: ['10086','13584651421'], message: 'Here is the message content'"
-       */
-      sendMMS: createCommand(CMD_TYPE.sms, SMS_COMMAND.sendMMS),
-
-/*
-       * data:
-       *   message id
-       */
-      deleteMessageById: createCommand(CMD_TYPE.sms, SMS_COMMAND.deleteMessageById),
-
-      resendMessage: createCommand(CMD_TYPE.sms, SMS_COMMAND.resendMessage),
-/*
-       * data:
-       *   message id
-       */
-      markReadMessageById: createCommand(CMD_TYPE.sms, SMS_COMMAND.markReadMessageById),
-
-      getThreads: createCommandWithNonData(CMD_TYPE.sms, SMS_COMMAND.getThreads),
-
-/*
-       * data:
-       *   message thread id
-       */
-      getThreadMessagesById: createCommand(CMD_TYPE.sms, SMS_COMMAND.getThreadMessagesById)
-    },
-
-    /***** Listen command for receiving sms *****/
+    /***** Listen command *****/
     Listen: {
       listenMessage: createListenCommand(CMD_TYPE.listen, LISTEN_COMMAND.listen)
     }

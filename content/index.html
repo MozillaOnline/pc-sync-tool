@@ -5,7 +5,6 @@
   <title data-l10n-id="ffos-assistant">Firefox OS Assistant</title>
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/main.css">
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/contact.css">
-  <link rel="stylesheet" href="chrome://ffosassistant/content/style/sms.css">
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/music.css">
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/gallery.css">
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/video.css">
@@ -25,7 +24,6 @@
   <script type="text/javascript" src="chrome://ffosassistant/content/js/vcard.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/vCardConverter.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/contactList.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/smsList.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/musicList.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/gallery.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/video.js"></script>
@@ -66,10 +64,6 @@
                  class="contact-tab item contact"
                  data-linked-view="contact-view"
                  data-l10n-id="contacts">联系人</div>
-            <div id="sms-tab"
-                 class="sms-tab item sms"
-                 data-linked-view="sms-view"
-                 data-l10n-id="sms">短信</div>
             <div id="gallery-tab"
                  class="gallery-tab item gallery"
                  data-linked-view="gallery-view"
@@ -150,68 +144,6 @@
               </div>
             </div>
             <div id="summary-infos">
-              <div id="device-storage-summary">
-                <div id="device-info-head" class="storage-total">
-                  <span class="storage-name" data-l10n-id="handset">手机</span>
-                  <span class="storage-number"></span>
-                </div>
-                <div class="storage-graph">
-                  <div class="used"></div>
-                </div>
-                <div id="device-info-body" class="hiddenElement">
-                  <div class="device-info">
-                    <span class="device-os-version" data-l10n-id="osversion">OS version</span>
-                    <span class="device-os-version-number"></span>
-                  </div>
-                  <div class="device-info">
-                    <span class="device-hardware-revision" data-l10n-id="hardwarerevision">Hardware revision</span>
-                    <span class="device-hardware-revision-number"></span>
-                  </div>
-                  <div class="device-info">
-                    <span class="device-platform-version" data-l10n-id="platformversion">Platform version</span>
-                    <span class="device-platform-version-number"></span>
-                  </div>
-                  <div class="device-info">
-                    <span class="device-build-identifier" data-l10n-id="buildidentifier">Build identifier</span>
-                    <span class="device-build-identifier-number"></span>
-                  </div>
-                </div>
-              </div>
-              <div id="sdcard-storage-summary">
-                <div id="device-storage-head" class="storage-total">
-                  <span class="storage-name" data-l10n-id="sdcard">SD卡</span>
-                  <span class="storage-number"></span>
-                </div>
-                <div class="storage-graph">
-                  <div class="used"></div>
-                </div>
-                <div id="device-storage-body">
-                  <div class="storage-detail">
-                    <span class="storage-name" data-l10n-id="sdcard-picture">图片</span>
-                    <div class="storage-detailgraph">
-                      <div class="storage-used"></div>
-                    </div>
-                  </div>
-                  <div class="storage-detail">
-                    <span class="storage-name" data-l10n-id="sdcard-music">音乐</span>
-                    <div class="storage-detailgraph">
-                      <div class="storage-used"></div>
-                    </div>
-                  </div>
-                  <div class="storage-detail">
-                    <span class="storage-name" data-l10n-id="sdcard-video">视频</span>
-                    <div class="storage-detailgraph">
-                      <div class="storage-used"></div>
-                    </div>
-                  </div>
-                  <div class="storage-detail">
-                    <span class="storage-name" data-l10n-id="sdcard-other">其它</span>
-                    <div class="storage-detailgraph">
-                      <div class="storage-used"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </section>
           <section id="contact-view" class="view" hidden="true">
@@ -247,35 +179,6 @@
             </div>
             <div id="contact-list-container">
               <div class="contact-list-item"></div>
-            </div>
-          </section>
-          <section id="sms-view" class="view" hidden="true">
-            <span class="title" data-l10n-id="sms"></span>
-            <div class="sms-ops-box">
-              <div id="selectAll-sms" data-disabled="false" class="sms-op" data-checked="false" data-disabled="true">
-                <label data-l10n-id="selectall"></label>
-              </div>
-              <div id="remove-sms" data-disabled="true" class="sms-op">
-                <label data-l10n-id="delete"></label>
-              </div>
-              <div id="export-sms" data-disabled="true" class="sms-op">
-                <label data-l10n-id="export"></label>
-              </div>
-              <div id="refresh-sms" data-disabled="false" class="sms-op">
-                <label data-l10n-id="refresh"></label>
-              </div>
-              <div id="add-new-sms" data-disabled="false"  class="sms-op">
-                <label data-l10n-id="sms-send"></label>
-              </div>
-            </div>
-            <div id="empty-sms-container">
-              <div class="empty-sms"></div>
-              <div class="empty-sms-prompt">
-                <label data-l10n-id="empty-sms"> </label>
-              </div>
-            </div>
-            <div id="threads-list-container">
-              <div class="threads-list-item"></div>
             </div>
           </section>
           <section id ="music-view" class="view" hidden="true">
@@ -448,13 +351,6 @@
                 <div id="show-contact-content">
                 </div>
               </div>
-              <div class="sms-message-quick-sender">
-                <div class="sender-ctn">
-                  <div class="count-ctn">
-                    <button class="button" data-l10n-id="sms-send" id="sms-send-incontact"></button>
-                  </div>
-                </div>
-              </div>
             </section>
             <section id="show-multi-contacts" class="card-view" hidden="true">
               <span class="title">
@@ -462,47 +358,6 @@
                 <label data-l10n-id="select-contacts"></label>
               </span>
               <div id="show-contacts-container">
-              </div>
-              <div class="sms-message-quick-sender">
-                <div class="sender-ctn">
-                  <div class="count-ctn">
-                    <button class="button" data-l10n-id="sms-send" id="sms-send-inmulticontact"></button>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </section>
-          <section id="sms-view-sub" class="sub-view" hidden="true">
-            <section id="sms-send-view" class="card-view sms-send-form">
-              <div class="sms-send-view"></div>
-              <div id="sms-send-view-header" data-l10n-id="sms-send-view-header"></div>
-              <form id="sms-send-view-form" action="#" onsubmit="return false;">
-                <button id="sms-send-button" class="button" data-l10n-id="sms-send"></button>
-              </form>
-            </section>
-            <section id="sms-select-view" class="card-view sms-form" hidden="true">
-              <span class="title">
-                <label id="select-threads-count"></label>
-                <label data-l10n-id="sms-threads-selected"></label>
-              </span>
-              <div id="show-sms-container">
-              </div>
-            </section>
-            <section id="sms-thread-view" class="card-view sms-form" hidden="true">
-              <div class="sms-thread-header" id="sms-thread-header">
-                <img id="sms-thread-header-img" class="avatar-show avatar-show-default"></img>
-                <span id="sms-thread-header-name" class="title"></span>
-                <button id="sms-thread-header-button" class="button" data-l10n-id="add-to-contacts-from-sms"></button>
-              </div>
-              <div id='message-list-container' class="sms-message-threads-ctn">
-              </div>
-              <div class="sms-message-quick-sender">
-                <div class="sender-ctn">
-                  <textarea class="input-content" id="sender-ctn-input" autofocus="true" data-l10n-id="sender-ctn-input-placeholder" placeholder="填写您的新信息..."></textarea>
-                  <div class="count-ctn">
-                    <button class="button-send primary" data-l10n-id="sms-send-button" id="sms-send-in-thread"></button>
-                  </div>
-                </div>
               </div>
             </section>
           </section>
@@ -604,180 +459,7 @@
     <button class="add-new-button" data-l10n-id="<%=addButtonLabel%>"><%=addButtonLabel%></button>;
   </script>
 
-  <!-- templates for sms list view -->
-  <script type="text/html" id="tmpl_sms_list_item">
-    <label data-checked="false"></label>
-    <div class="readflag"></div>
-    <img class="avatar avatar-default"></img>
-    <div class="sms-info">
-      <div class="name"><%=name%></div>
-      <div class="unread"><%=unread%></div>
-      <% if(isToday) {%>
-        <div class="date" data-l10n-id="today"></div>
-      <%} else {%>
-        <div class="date"><%=date%></div>
-      <%}%>
-      <div class="body"><%=body%></div>
-    </div>
-  </script>
-  <script type="text/html" id="tmpl_sms_select_item">
-    <img class="avatar avatar-default"></img>
-    <div class="select-sms-info">
-      <div class="name"><%=name%></div>
-      <div class="body"><%=body%></div>
-    </div>
-  </script>
-  <script type="text/html" id="tmpl_sms_display_item">
-    <% if(date && isToday) {%>
-      <% if(isHidden) {%>
-        <date class="sms-date" hidden="true" data-l10n-id="today"></date>
-      <%} else {%>
-        <date class="sms-date" data-l10n-id="today"></date>
-      <%}%>
-    <%} else {%>
-      <% if(isHidden) {%>
-        <date class="sms-date" hidden="true"><%=date%></date>
-      <%} else {%>
-        <date class="sms-date"><%=date%></date>
-      <%}%>
-    <%}%>
-    <div class="sms-body">
-      <%for (var i=0; i<body.length; i++) {%>
-        <%if (type[i] == 'img') {%>
-          <img region="Image" src="<%=body[i]%>"></img>
-        <%} else {%>
-          <text region="Text"><%=body[i]%></text>
-          <% if(isError) {%>
-            <div class="error-send-sms"></div>
-          <%}%>
-        <%}%>
-      <%}%>
-    </div>
-    <date class="sms-time"><%=time%></date>
-    <div class="arrow">
-      <div class="side"></div>
-    </div>
-    <div class="actions">
-      <%if (showResendButton == 'true') {%>
-        <button id="sms-resend-<%=id%>" value="<%=resendValue%>" class="button-resend"></button>
-      <%}%>
-      <%if (showForwardButton == 'true') {%>
-        <button id="sms-forward-<%=id%>" value="<%=forwardValue%>" class="button-forward"></button>
-      <%}%>
-      <%if (showDeleteButton == 'true') {%>
-        <button id="sms-delete-<%=id%>" value="<%=deleteValue%>" class="button-delete"></button>
-      <%}%>
-    </div>
-  </script>
-
   <!-- templates for widgets list view -->
-  <script type="text/javascript">
-    function deleteNode(form) {
-      form.parentNode.removeChild(form);
-      var header = _('send-sms-count', {
-        n: $expr('.select-contacts-item', form.parentNode).length
-      });
-      $id('sender-count').innerHTML = header;
-    }
-  </script>
-  <script type="text/html" id="tmpl_select_contacts_item">
-    <span title="<%=title%>"><%=title%></span>
-    <div class="button-delete" onClick="deleteNode(this.parentNode)"></div>
-  </script>
-  <script type="text/html" id="tmpl_sendSms_dialog">
-    <div class="sendSms-dialog">
-      <header class="sendSms-dialog-header">
-        <div class="sendSms-dialog-header-title" data-l10n-id="sms-send-sms"></div>
-        <div class="sendSms-dialog-header-x" style=""></div>
-      </header>
-      <div class="sendSms-dialog-body">
-        <%if (type == 'single') {%>
-          <div class="header" id="select-contact-tel-header">
-            <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
-            <%if (tel.length > 1) {%>
-              <select class="sendSms-button sendSms-menubutton" id="select-contact-tel-button">
-            <%} else {%>
-              <select class="sendSms-button sendSms-menubutton" id="select-contact-tel-button" disabled="true">
-            <%}%>
-              <%for (var i=0; i<tel.length; i++) {%>
-                <option><%=tel[i]%></option>
-              <%}%>
-            </select>
-          </div>
-        <%} else {%>
-          <div class="header">
-            <label data-l10n-id="sms-send-address" class="cf" for="address"></label>
-            <div class="address" id="senders-list">
-              <%for (var i=0; i<tel.length; i++) {%>
-                <li class="select-contacts-item">
-                  <span title="<%=tel[i]%>"><%=tel[i]%></span>
-                  <div class="button-delete" onClick="deleteNode(this.parentNode)"></div>
-              </li>
-              <%}%>
-              <input id="address" type="text" class="input-contact searchbox">
-            </div>
-            <button id="button-add-contact" data-l10n-id="sms-add-contact" class="sms-icon-btn">
-              <span class="icon add-grey"></span>
-            </button>
-          </div>
-        <%}%>
-        <div class="body">
-          <label data-l10n-id="sms-send-content" class="cf" for="content"></label>
-          <textarea id="sms-text-content" class="input-content" autofocus="true"><%=body%></textarea>
-        </div>
-        <div class="monitor text-secondary">
-          <span id="text-count" class="content-count"><%=textCount%></span>
-          <span id="sender-count" class="contacts-count"><%=senderCount%></span>
-        </div>
-      </div>
-      <footer class="sendSms-dialog-footer" style="">
-        <div class="sendSms-dialog-footer-monitor"></div>
-        <div class="sendSms-dialog-footer-button-ctn">
-          <button data-l10n-id="sms-send-button" class="button-send primary"></button>
-          <button data-l10n-id="cancel" class="button-cancel primary"></button>
-        </div>
-      </footer>
-    </div>
-  </script>
-  <script type="text/html" id="tmpl_select_contact_dialog">
-    <div class="sendSms-dialog-contact">
-      <header class="sendSms-dialog-header">
-        <div data-l10n-id="sms-add-contact" class="sendSms-dialog-header-title"></div>
-        <div class="sendSms-dialog-header-x" style=""></div>
-      </header>
-      <div class="sendSms-dialog-body">
-        <div class="sms-message-contact-selector-body">
-          <div class="list-ctn">
-            <div class="sendSms-smartlist" id="sendSms-smartlist-container">
-            </div>
-          </div>
-        </div>
-        <footer class="sendSms-dialog-footer" style="">
-          <div class="sendSms-dialog-footer-monitor">
-            <div>
-              <span id="select-contact-count" class="text-secondary count"></span>
-            </div>
-          </div>
-          <div class="sendSms-dialog-footer-button-ctn">
-            <button data-l10n-id="OK" class="button-send primary"></button>
-            <button data-l10n-id="cancel" class="button-cancel"></button>
-          </div>
-        </footer>
-      </div>
-    </div>
-  </script>
-  <script type="text/html" id="tmpl_select_contact_item">
-      <label data-checked="false"></label>
-      <% if(!img) {%>
-        <img class="avatar avatar-default"></img>
-      <%} else {%>
-        <img class="avatar" src="<%=img%>"></img>
-      <%}%>
-      <div class="contact-info">
-        <div class="name"><%=name%></div>
-        <div class="tel"><%=tel%></div>
-      </div>
-  </script>
   <script type="text/html" id="tmpl_fileOP_dialog">
     <div class="modal-container">
       <div class="select-multi-files-dialog">
@@ -985,6 +667,37 @@
         <button data-l10n-id="OK" class="button button-ok"></button>
         <button data-l10n-id="cancel" class="button-cancel"></button>
       </footer>
+    </div>
+  </script>
+
+  <!-- templates for device storage -->
+  <script type="text/html" id="tmpl_storage_summary">
+    <div id="<%=headerId%>" class="storage-total">
+      <span class="storage-name"><%=storageName%></span>
+      <span class="storage-number"><%=storageNumber%></span>
+    </div>
+    <div class="storage-graph">
+      <div class="used" style="width: <%=storageUsed%>"></div>
+    </div>
+    <div id="<%=bodyId%>">
+      <div class="storage-detail">
+        <span class="storage-name" data-l10n-id="sdcard-picture">图片</span>
+        <div class="storage-detailgraph">
+          <div class="storage-used" style="width: <%=pictureUsed%>"></div>
+        </div>
+      </div>
+      <div class="storage-detail">
+        <span class="storage-name" data-l10n-id="sdcard-music">音乐</span>
+        <div class="storage-detailgraph">
+          <div class="storage-used" style="width: <%=musicUsed%>"></div>
+        </div>
+      </div>
+      <div class="storage-detail">
+        <span class="storage-name" data-l10n-id="sdcard-video">视频</span>
+        <div class="storage-detailgraph">
+          <div class="storage-used" style="width: <%=videoUsed%>"></div>
+        </div>
+      </div>
     </div>
   </script>
 </body>
