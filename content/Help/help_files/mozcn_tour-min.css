@@ -2431,9 +2431,9 @@ div.billboard p.details {
 
 .start-ffosassistant {
   margin-top: 10px;
-  background: url("images/start-ffosassistant.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
-  height: 145px;
-  width: 353px;
+  background: url("images/start-ffosassistant.png") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
+  height: 70px;
+  width: 525px;
 }
 
 .usb-conn-success {
@@ -2445,7 +2445,7 @@ div.billboard p.details {
 
 .wifi-code {
   margin-top: 10px;
-  background: url("images/wifi-code.jpg") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
+  background: url("images/wifi-code.png") no-repeat scroll 0 0 / cover rgba(0,0,0,0);
   height: 200px;
   width: 281px;
 }

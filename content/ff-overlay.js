@@ -86,17 +86,12 @@
     if (!navbar) {
       return;
     }
-    debug('xds navbar:' + navbar);
     var bundle = Services.strings.createBundle('chrome://ffosassistant/locale/browser.properties');
-    debug('xds bundle:' + bundle);
     var label = bundle.GetStringFromName('title');
-    debug('xds label:' + label);
     var tooltip = bundle.GetStringFromName('tooltip');
-    debug('xds tooltip:' + tooltip);
     var button = document.createElement("toolbarbutton");
-    debug('xds button:' + button);
     button.id = "ffosassistant-button";
-    button.className = "firecommander-button toolbarbutton-1 chromeclass-toolbar-additional";
+    button.className = "ffosassistant-button toolbarbutton-1 chromeclass-toolbar-additional";
     button.setAttribute("label", label);
     button.tooltipText = label;
     button.addEventListener("command", function onCommand(aEvent) {
