@@ -356,6 +356,7 @@ var FFOSAssistant = (function() {
 
   function showConnectView() {
     animationLoading.reset();
+    $id('sidebar').style.display = 'none';
     MusicList.resetView();
     if (connListenSocket) {
       connListenSocket.socket.close();
@@ -374,7 +375,6 @@ var FFOSAssistant = (function() {
     $id('wifi-connection-button').onclick = function() {
       $id('wifi-connection-button').dataset.checked = true;
       $id('usb-connection-button').dataset.checked = false;
-      $id('wifi-connection-code').placeholder=_('wifi-connection-code-placeholder');
       $id('wifi-connection-code').fucus = true;
     };
 
@@ -468,7 +468,6 @@ var FFOSAssistant = (function() {
       if (!isWindows()) {
         isWifiConnected = false;
       }
-      $id('sidebar').style.display = 'none';
       showConnectView();
       ViewManager.reset();
     });
