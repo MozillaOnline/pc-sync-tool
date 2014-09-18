@@ -621,6 +621,12 @@ input[type="url"], textarea {
   float: right;
 }
 
+/******* Contact view *****/
+#show-contact-content {
+  height: 30rem;
+  overflow-y: scroll;
+}
+
 /******* Popup dialog *****/
 div.modal-mask {
   background-color: #000;
