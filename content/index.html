@@ -44,7 +44,7 @@
     </div>
     <div id="container-body">
       <div>
-        <div class="sidebar">
+        <div id="sidebar" class="sidebar">
           <div id="connect-list" class="list">
             <div id="connect-tab"
                  class="item"
@@ -86,47 +86,35 @@
             </div>
             <section id="user-guide">
               <div>
-                <div id="usb-connection-button" data-checked="true" class="usb usb-selected">
-                  <span data-l10n-id="usb-mode">
-                    使用USB数据线连接
-                  </span>
-                  <div class="arrow"></div>
-                  <div class="usb-des">
-                    <p data-l10n-id="usb-des-header">使用 USB 数据线连接手机和电脑，程序会自动检测到您的手机、并为您建立连接。USB
-                    连接是最快最稳定的连接方式。</p>
-                    <ul data-l10n-id="usb-des-list-header">已连接 USB 线后，仍无法连接？
-                      <li data-l10n-id="usb-des-list-item1">检查是否已经正确安装驱动程序
-                        <a id="help-driver" data-l10n-id="detail" href="#">详情</a>
-                      </li>
-                      <li data-l10n-id="usb-des-list-item2">检查手机端应用是否正在运行，并处于连接可用状态；</li>
-                      <li data-l10n-id="usb-des-list-item3">彻底关闭电脑上其他运行的手机助手客户端；
-                        <a id="help-app" data-l10n-id="detail" href="#">详情</a>
-                      </li>
-                      <li data-l10n-id="usb-des-list-item4">点击左上方的“尝试重连”，或拔出 USB 线重新插入</li>
-                    </ul>
-                    <div class="more-help">
-                      <a id="help-usb" data-l10n-id="more-detail" href="#">更多使用帮助</a>
-                    </div>
-                  </div>
-                </div>
-                <div id="wifi-connection-button" data-checked="false" class="wifi wifi-selected">
+                <div id="wifi-connection-button" data-checked="true" class="wifi wifi-selected">
                   <span data-l10n-id="wifi-mode">
                     使用 Wi-Fi 无线连接
                   </span>
                   <div class="arrow"></div>
                   <div class="wifi-des">
-                    <p data-l10n-id="wifi-des-header">
-                      将手机和电脑连如同一 WI-FI 网络，输入 WI-FI 连接码
-                    </p>
                     <div class="wifi-form">
                       <input type="number" id="wifi-connection-code" data-l10n-id="wifi-connection-code-placeholder" autofocus="true"/>
                       <button id="wifi-connect-button" data-l10n-id="connect" class="button">连接</button>
                     </div>
-                    <ul data-l10n-id="wifi-des-list-header">如何获取 WI-FI 连接码？
-                      <li data-l10n-id="wifi-des-list-item1"></li>
-                    </ul>
-                    <div class="more-help">
-                      <a id="help-wifi" data-l10n-id="more-detail" href="#">更多使用帮助</a>
+                  </div>
+                </div>
+                <div id="usb-connection-button" data-checked="false" class="usb usb-selected">
+                  <span data-l10n-id="usb-mode">
+                  </span>
+                  <div class="arrow"></div>
+                  <div class="usb-des">
+                    <div id="device-list">
+                      <p data-l10n-id="extenal-devices"></p>
+                      <div id="devices">
+                      </div>
+                      <button id="usb-connect-button" data-l10n-id="connect" class="button"></button>
+                    </div>
+                    <div id="device-list-empty">
+                      <p data-l10n-id="no-external-devices"></p>
+                      <p class="usb-des1" data-l10n-id="plug-in-device"></p>
+                      <p class="usb-des2" data-l10n-id="device-not-found"></p>
+                      <p class="usb-des3" data-l10n-id="usb-help"><a
+                      data-l10n-id="help" href="#"></a></p>
                     </div>
                   </div>
                 </div>

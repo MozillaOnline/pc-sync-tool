@@ -145,7 +145,7 @@ input[type="url"], textarea {
 }
 
 #welcome-msg {
-  padding: 0 2rem;
+  padding: 0 12rem;
 }
 
 #welcome-msg span {
@@ -164,99 +164,30 @@ input[type="url"], textarea {
 
 #user-guide .usb >span {
   display: block;
-  margin: 2.4rem 0 0 8rem;
+  margin: 2.4rem 0 0 11rem;
 }
 
 #user-guide .wifi >span {
   display: block;
-  margin: 2.4rem 0 0 8.5rem;
-}
-
-#user-guide .usb {
-  margin-left: 9rem;
-  height: 7.2rem;
-  width: 28rem;
-  float: left;
-}
-
-#user-guide .usb-selected[data-checked="true"] {
-  border-color: #BE462D;
-  background: url("images/usb-selected.png") no-repeat scroll 5rem 2rem #E86000;
-  color: #FFFFFF;
-}
-
-#user-guide .usb-selected[data-checked="false"] {
-  border-color: #A6A6A6;
-  background: url("images/usb-deselected.png") no-repeat scroll 5rem 2rem #E7E7E7;
-}
-
-#user-guide .usb-selected[data-checked="true"] .arrow {
-  width: 2rem;
-  height: 2rem;
-  transform: rotate(45deg);
-  background-color: #E86000;
-  margin: 1.8rem 0 0 13rem;
-}
-
-#user-guide .usb-selected[data-checked="false"] .arrow {
-  display: none;
-}
-
-#user-guide .usb-selected[data-checked="true"] .usb-des {
-  background-color: #E7E7E7;
-  height: 32rem;
-  width: 56.9rem;
-  margin-top: 0.4rem;
-}
-
-#user-guide .usb-selected[data-checked="false"] .usb-des {
-  display: none;
-}
-
-.usb-des >p {
-  line-height: 1.8rem;
-  padding: 3.2rem;
-  color: #5F5F5F;
-}
-
-.usb-des >ul {
-  font-size: 1.6rem;
-  margin-left: 3.2rem;
-  color: #333333;
-}
-
-.usb-des >ul >li {
-  font-size: 1.4rem;
-  color: #5F5F5F;
-  margin-top: 1rem;
-  list-style: decimal inside none;
-}
-
-.usb-des >ul >li >a {
-  margin-left: 1rem;
-}
-
-.more-help {
-  padding: 2rem 3.2rem 0 3.2rem;
+  margin: 2.4rem 0 0 11.5rem;
 }
 
 #user-guide .wifi {
-  margin-left: 0.9rem;
-  width: 28rem;
+  margin-left: 12rem;
   height: 7.2rem;
-  background-color: #E7E7E7;
+  width: 34rem;
   float: left;
 }
 
 #user-guide .wifi-selected[data-checked="true"] {
   border-color: #BE462D;
-  background: url("images/wifi-selected.png") no-repeat scroll 5rem 2rem #E86000;
+  background: url("images/wifi-selected.png") no-repeat scroll 8rem 2rem #E86000;
   color: #FFFFFF;
 }
 
 #user-guide .wifi-selected[data-checked="false"] {
   border-color: #A6A6A6;
-  background: url("images/wifi-deselected.png") no-repeat scroll 5rem 2rem #E7E7E7;
+  background: url("images/wifi-deselected.png") no-repeat scroll 8rem 2rem #E7E7E7;
 }
 
 #user-guide .wifi-selected[data-checked="true"] .arrow {
@@ -264,7 +195,7 @@ input[type="url"], textarea {
   height: 2rem;
   transform: rotate(45deg);
   background-color: #E86000;
-  margin: 2rem 0 0 13rem;
+  margin: 1.8rem 0 0 16rem;
 }
 
 #user-guide .wifi-selected[data-checked="false"] .arrow {
@@ -272,58 +203,108 @@ input[type="url"], textarea {
 }
 
 #user-guide .wifi-selected[data-checked="true"] .wifi-des {
-  width: 56.9rem;
-  height: 32rem;
   background-color: #E7E7E7;
-  margin: 0.4rem 0 0 -28.9rem;
+  height: 32rem;
+  width: 70rem;
+  margin-top: 0.4rem;
 }
 
 #user-guide .wifi-selected[data-checked="false"] .wifi-des {
   display: none;
 }
 
-.wifi-des >p {
-  color: #5F5F5F;
-  line-height: 1.8rem;
-  padding: 3.2rem 0 1rem 3.2rem;
+#user-guide .usb {
+  margin-left: 2rem;
+  width: 34rem;
+  height: 7.2rem;
+  background-color: #E7E7E7;
+  float: left;
 }
 
-.wifi-form {
-  height: 5rem;
+#user-guide .usb-selected[data-checked="true"] {
+  border-color: #BE462D;
+  background: url("images/usb-selected.png") no-repeat scroll 8rem 2rem #E86000;
+  color: #FFFFFF;
+}
+
+#user-guide .usb-selected[data-checked="false"] {
+  border-color: #A6A6A6;
+  background: url("images/usb-deselected.png") no-repeat scroll 8rem 2rem #E7E7E7;
+}
+
+#user-guide .usb-selected[data-checked="true"] .arrow {
+  width: 2rem;
+  height: 2rem;
+  transform: rotate(45deg);
+  background-color: #E86000;
+  margin: 2rem 0 0 16rem;
+}
+
+#user-guide .usb-selected[data-checked="false"] .arrow {
+  display: none;
+}
+
+#user-guide .usb-selected[data-checked="true"] .usb-des {
+  width: 70rem;
+  height: 32rem;
+  background-color: #E7E7E7;
+  margin: 0.4rem 0 0 -36rem;
+  color: #333333;
+}
+
+#user-guide .usb-selected[data-checked="false"] .usb-des {
+  display: none;
+}
+
+#user-guide .usb-selected[data-checked="true"] .usb-des >div {
+  padding: 3rem;
+}
+
+#user-guide .usb-selected[data-checked="true"] .usb-des input {
+  margin: 1rem;
+}
+
+.usb-des1 {
+  margin-top: 0.2rem;
+}
+
+.usb-des2 {
+  margin-top: 2rem;
+}
+
+.usb-des3 {
+  margin-top: 0.2rem;
 }
 
 #wifi-connection-code {
-  margin-left: 3rem;
-  width: 30rem;
+  margin: 6rem 15rem 3rem 15rem;
+  width: 40rem;
   float: left;
   height: 4rem;
 }
 
-.wifi-des >ul {
-  font-size: 1.6rem;
-  margin: 3rem 0 0  3.2rem;
-  color: #333333;
-}
-
-.wifi-des >ul >li {
-  font-size: 1.4rem;
-  color: #5F5F5F;
-  margin: 1rem 3.2rem 0 0;
-}
-
-.wifi-des >ul >li >a {
-  margin-left: 1rem;
-}
 #wifi-connect-button {
   height: 4rem;
   width: 14rem;
   float: left;
   font-size: 1.5rem;
-  margin: 0.5rem 0 0 1rem;
+  margin: 0.5rem 28rem;
   text-align: center;
   font-size: 1.4rem;
   border: .1rem solid #008EAB;
   background: -moz-linear-gradient(center top , #00C8F0, #00AAC8) repeat scroll 0 0 rgba(0, 0, 0, 0);
+}
+
+#usb-connect-button {
+  height: 4rem;
+  width: 14rem;
+  font-size: 1.5rem;
+  margin: 2rem 1rem;
+  text-align: center;
+  font-size: 1.4rem;
+  border: .1rem solid #008EAB;
+  background: -moz-linear-gradient(center top , #00C8F0, #00AAC8) repeat scroll 0 0 rgba(0, 0, 0, 0);
+  display: block;
 }
 
 /****** sidebar *******/
@@ -335,6 +316,7 @@ input[type="url"], textarea {
   vertical-align: top;
   float: left;
   height: 58rem;
+  display: none;
 }
 
 .sidebar .list {
@@ -475,6 +457,10 @@ input[type="url"], textarea {
 }
 
 /******** content *********/
+#connect-view {
+  width: 96rem;
+}
+
 .content {
   height: 100%;
   float: left;
@@ -496,7 +482,7 @@ input[type="url"], textarea {
 
 .content .view span.title {
   display: -moz-inline-box;
-  padding: 1.5rem 1.2rem 2rem 2rem;
+  padding: 1.5rem 1.2rem 2rem 12rem;
   font-size: 2.6rem;
 }
 

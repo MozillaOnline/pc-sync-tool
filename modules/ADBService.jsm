@@ -9,7 +9,7 @@ const {devtools} = Components.utils.import("resource://gre/modules/devtools/Load
 const {require} = devtools;
 const adbStore = require("devtools/app-manager/builtin-adb-store");
 
-let DEBUG = 1;
+let DEBUG = 0;
 
 debug = function(s) {
   if (DEBUG) {
@@ -25,9 +25,6 @@ var ADBService = {
       if (path[0] !== 'devices') {
         return;
       }
-      if (value.length == 0) {
-        return;
-      }
 
       callback(Devices.available());
     });
@@ -36,5 +33,9 @@ var ADBService = {
   setupDevice: function(name) {
     let device = Devices.getByName(name);
     device.forwardPort('tcp:25679', 'tcp:25679');
+  },
+
+  getAvailable: function() {
+      return Devices.available();
   }
 };

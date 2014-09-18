@@ -53,16 +53,13 @@
   function init() {
     debug('init');
     new Observer();
-    modules.ADBService.init(handlemessage);
+    modules.ADBService.init(handleMessage);
 
     checkFirstRun();
   }
 
-  function handlemessage(deviceList) {
+  function handleMessage(deviceList) {
     devices = deviceList;
-    if (devices.length > 0) {
-      switchToTabHavingURI('about:ffos', true);
-    }
     setTimeout(function() {
       observerService.notifyObservers(null, "ffosassistant-init-devices", JSON.stringify(devices));
     }, 1000);
