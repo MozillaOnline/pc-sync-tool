@@ -149,6 +149,11 @@ var Gallery = (function() {
       var thread = threadBody.parentNode.parentNode;
       if ($expr('li', threadBody).length == 0) {
         getListContainer().removeChild(thread);
+      } else {
+        var headerNode = threadBody.parentNode;
+        headerNode.dataset.length = parseInt(headerNode.dataset.length) - 1;
+        var numberNode = headerNode.getElementsByTagName('span')[1];
+        numberNode.textContent = ' (' + headerNode.dataset.length + ')';
       }
     }
   }
@@ -239,11 +244,9 @@ var Gallery = (function() {
       $expr('#picture-list-container li[data-checked="true"]').length === 0;
     $id('import-pictures').dataset.disabled = false;
 
-    if (isWifiConnected) {
-      $id('remove-pictures').dataset.disabled = true;
-      $id('import-pictures').dataset.disabled = true;
-      $id('export-pictures').dataset.disabled = true;
-    }
+    //$id('remove-pictures').dataset.disabled = isWifiConnected;
+    $id('import-pictures').dataset.disabled = isWifiConnected;
+    $id('export-pictures').dataset.disabled = isWifiConnected;
   }
 
   function updateUI() {

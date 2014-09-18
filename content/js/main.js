@@ -79,41 +79,12 @@ var FFOSAssistant = (function() {
     $id('usb-connection-button').dataset.checked = true;
   }
 
-  function showSummaryView(serverIP) {
+  function showSummaryView() {
     $id('connect-button').classList.add('hiddenElement');
     $id('disconnect-button').classList.remove('hiddenElement');
     $id('device-empty').classList.add('hiddenElement');
     $id('device-name').classList.remove('hiddenElement');
-    if (serverIP != 'localhost') {
-      isWifiConnected = true;
-    }
-    if (connListenSocket) {
-      connListenSocket.socket.close();
-      connListenSocket = null;
-    }
-    var socket = navigator.mozTCPSocket.open(serverIP, REMOTE_PORT, {
-      binaryType: 'arraybuffer'
-    });
-    socket.onopen = function tc_onListenSocketOpened(event) {
-      connListenSocket = new TCPSocketWrapper({
-        socket: event.target,
-        onmessage: function(socket, jsonCmd, sendCallback, recvData) {
-          if (connListenSocket == null) {
-            return;
-          }
-          var message = JSON.parse(recvData);
-          if (message == null) {
-            return;
-          }
-          var event = new CustomEvent('dataChange',{'detail': {'type': message.type, 'data': message}});
-          customEventElement.dispatchEvent(event);
-        },
-        onclose: function() {
-          connListenSocket = null;
-        }
-      });
-      CMD.Listen.listenMessage(null, null);
-    };
+
     if (isWifiConnected) {
       $id('device-image-connection').classList.add('wifiConnection');
     } else {
@@ -320,7 +291,39 @@ var FFOSAssistant = (function() {
           return;
         }
         deviceSocketState = connectState.connected;
-        showSummaryView(serverIP);
+        if (serverIP != 'localhost') {
+          isWifiConnected = true;
+        } else {
+          isWifiConnected = false;
+        }
+        if (connListenSocket) {
+          connListenSocket.socket.close();
+          connListenSocket = null;
+        }
+        var socket = navigator.mozTCPSocket.open(serverIP, REMOTE_PORT, {
+          binaryType: 'arraybuffer'
+        });
+        socket.onopen = function tc_onListenSocketOpened(event) {
+          connListenSocket = new TCPSocketWrapper({
+            socket: event.target,
+            onmessage: function(socket, jsonCmd, sendCallback, recvData) {
+              if (connListenSocket == null) {
+                return;
+              }
+              var message = JSON.parse(recvData);
+              if (message == null) {
+                return;
+              }
+              var event = new CustomEvent('dataChange',{'detail': {'type': message.type, 'data': message}});
+              customEventElement.dispatchEvent(event);
+            },
+            onclose: function() {
+              connListenSocket = null;
+            }
+          });
+          CMD.Listen.listenMessage(null, null);
+        };
+        showSummaryView();
       },
       ondisconnected: function ondisconnected() {
         animationLoading.stop(loadingGroupId);

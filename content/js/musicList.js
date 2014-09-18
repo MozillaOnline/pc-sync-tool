@@ -209,11 +209,9 @@ var MusicList = (function() {
       $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
     $id('import-musics').dataset.disabled = false;
 
-    if (isWifiConnected) {
-      $id('remove-musics').dataset.disabled = true;
-      $id('import-musics').dataset.disabled = true;
-      $id('export-musics').dataset.disabled = true;
-    }
+    //$id('remove-musics').dataset.disabled = isWifiConnected;
+    $id('import-musics').dataset.disabled = isWifiConnected;
+    $id('export-musics').dataset.disabled = isWifiConnected;
   }
 
   function musicItemClicked(elem) {

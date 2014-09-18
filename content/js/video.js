@@ -146,6 +146,11 @@ var Video = (function() {
       var thread = threadBody.parentNode.parentNode;
       if ($expr('li', threadBody).length == 0) {
         getListContainer().removeChild(thread);
+      } else {
+        var headerNode = threadBody.parentNode;
+        headerNode.dataset.length = parseInt(headerNode.dataset.length) - 1;
+        var numberNode = headerNode.getElementsByTagName('span')[1];
+        numberNode.textContent = ' (' + headerNode.dataset.length + ')';
       }
     }
   }
@@ -208,11 +213,9 @@ var Video = (function() {
       $expr('#video-list-container li[data-checked="true"]').length === 0;
     $id('import-videos').dataset.disabled = false;
 
-    if (isWifiConnected) {
-      $id('remove-videos').dataset.disabled = true;
-      $id('import-videos').dataset.disabled = true;
-      $id('export-videos').dataset.disabled = true;
-    }
+    //$id('remove-videos').dataset.disabled = isWifiConnected;
+    $id('import-videos').dataset.disabled = isWifiConnected;
+    $id('export-videos').dataset.disabled = isWifiConnected;
   }
 
   function updateUI() {
