@@ -298,10 +298,14 @@ var ContactList = (function() {
     if (contact.email && contact.email.length > 0) {
       contact.email.forEach(function(item) {
         var div = document.createElement('div');
-        div.innerHTML = tmpl('tmpl_contact_email_digest', {
-          type: item.type[0],
-          value: item.value
-        });
+        var obj ={};
+        obj.value = item.value;
+        if (item.type && item.type[0]) {
+          obj.type = item.type[0];
+        } else {
+          obj.type = 'other';
+        }
+        div.innerHTML = tmpl('tmpl_contact_email_digest', obj);
 
         div.classList.add('contact-item');
         navigator.mozL10n.translate(div);
