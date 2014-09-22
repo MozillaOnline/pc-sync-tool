@@ -265,11 +265,12 @@ vCardConverter = {
                 continue;
               }
               item.email[e].forEach(function(email) {
-                var type = /type=(.+);?/;
+                var type = /type=(.+)[;]/;
                 var results = ['type=other', 'other'];
-                if (type.test(e)) {
-                  results = e.match(type);
+                if (!type.test(e)) {
+                  type = /type=(.+)[:]/;
                 }
+                results = e.match(type);
                 contact.email.push({
                   'type': [results[1]],
                   'value': email
@@ -361,11 +362,12 @@ vCardConverter = {
                 continue;
               }
               item.tel[e].forEach(function(t) {
-                var type = /type=(.+);?/;
+                var type = /type=(.+)[;]/;
                 var results = ['type=other', 'other'];
-                if (type.test(e)) {
-                  results = e.match(type);
+                if (!type.test(e)) {
+                  type = /type=(.+)[:]/;
                 }
+                results = e.match(type);
                 contact.tel.push({
                   'type': [results[1]],
                   'carrier': carrier,
@@ -407,11 +409,12 @@ vCardConverter = {
               item.adr[e].forEach(function(adr) {
                 var length = adr.length;
                 var address = adr[length - 5].replace('\\n', '');
-                var type = /type=(.+);?/;
+                var type = /type=(.+)[;]/;
                 var results = ['type=other', 'other'];
-                if (type.test(e)) {
-                  results = e.match(type);
+                if (!type.test(e)) {
+                  type = /type=(.+)[:]/;
                 }
+                results = e.match(type);
                 contact.adr.push({
                   "type": [results[1]],
                   "streetAddress": address,
@@ -481,11 +484,12 @@ vCardConverter = {
                 continue;
               }
               item.email[e].forEach(function(email) {
-                var type = /type=(.+);?/;
+                var type = /type=(.+)[;]/;
                 var results = ['type=other', 'other'];
-                if (type.test(e)) {
-                  results = e.match(type);
+                if (!type.test(e)) {
+                  type = /type=(.+)[:]/;
                 }
+                results = e.match(type);
                 contact.email.push({
                   'type': [results[1]],
                   'value': email
@@ -577,11 +581,12 @@ vCardConverter = {
                 continue;
               }
               item.tel[e].forEach(function(t) {
-                var type = /type=(.+);?/;
+                var type = /type=(.+)[;]/;
                 var results = ['type=other', 'other'];
-                if (type.test(e)) {
-                  results = e.match(type);
+                if (!type.test(e)) {
+                  type = /type=(.+)[:]/;
                 }
+                results = e.match(type);
                 contact.tel.push({
                   'type': [results[1]],
                   'carrier': carrier,
@@ -632,11 +637,12 @@ vCardConverter = {
                   adr[index] = decodeURIComponent(adr[index].replace(/=/g, '%'));
                 }
                 var address = adr[length - 5].replace('\\n', '');
-                var type = /type=(.+);?/;
+                var type = /type=(.+)[;]/;
                 var results = ['type=other', 'other'];
-                if (type.test(e)) {
-                  results = e.match(type);
+                if (!type.test(e)) {
+                  type = /type=(.+)[:]/;
                 }
+                results = e.match(type);
                 contact.adr.push({
                   "type": [results[1]],
                   "streetAddress": address,
@@ -664,26 +670,27 @@ vCardConverter = {
   exportContact: function(contact) {
     var vcard = 'BEGIN:VCARD';
     vcard += '\nVERSION:3.0';
-    vcard += '\nN:';
+    if (contact.name && contact.name.length > 0) {
+      vcard += '\nN:';
+      if (contact.familyName && contact.familyName.length > 0) {
+        vcard += contact.familyName[0];
+      }
 
-    if (contact.familyName && contact.familyName.length > 0) {
-      vcard += contact.familyName[0];
-    }
+      vcard += ';';
+      if (contact.givenName && contact.givenName.length > 0) {
+        vcard += contact.givenName[0];
+      }
 
-    vcard += ';';
-    if (contact.givenName && contact.givenName.length > 0) {
-      vcard += contact.givenName[0];
-    }
+      vcard += ';;;';
+      vcard += '\nFN:';
 
-    vcard += ';;;';
-    vcard += '\nFN:';
+      if (contact.familyName && contact.familyName.length > 0) {
+        vcard += contact.familyName[0] + ' ';
+      }
 
-    if (contact.familyName && contact.familyName.length > 0) {
-      vcard += contact.familyName[0] + ' ';
-    }
-
-    if (contact.givenName && contact.givenName.length > 0) {
-      vcard += contact.givenName[0];
+      if (contact.givenName && contact.givenName.length > 0) {
+        vcard += contact.givenName[0];
+      }
     }
 
     if (contact.org && contact.org.length > 0) {
