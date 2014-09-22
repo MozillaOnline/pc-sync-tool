@@ -666,24 +666,24 @@ vCardConverter = {
     vcard += '\nVERSION:3.0';
     vcard += '\nN:';
 
-    if (contact.familyName) {
-      vcard += contact.familyName;
+    if (contact.familyName && contact.familyName.length > 0) {
+      vcard += contact.familyName[0];
     }
 
     vcard += ';';
-    if (contact.givenName) {
-      vcard += contact.givenName;
+    if (contact.givenName && contact.givenName.length > 0) {
+      vcard += contact.givenName[0];
     }
 
     vcard += ';;;';
     vcard += '\nFN:';
 
-    if (contact.familyName && contact.familyName != '') {
-      vcard += contact.familyName + ' ';
+    if (contact.familyName && contact.familyName.length > 0) {
+      vcard += contact.familyName[0] + ' ';
     }
 
-    if (contact.givenName) {
-      vcard += contact.givenName;
+    if (contact.givenName && contact.givenName.length > 0) {
+      vcard += contact.givenName[0];
     }
 
     if (contact.org && contact.org.length > 0) {

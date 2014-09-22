@@ -62,7 +62,7 @@
                 <li>Windows drivers (<a href="https://developer.android.com/tools/extras/oem-usb.html"><u>Download</u></a>)</li>
                 <li>Linux, add vendorId to system, for example:
                   <p>Enter the following command:</p>
-                  <i>sodu vim /etc/udev/rules.d/51-android.rules</i>
+                  <i>sudo vim /etc/udev/rules.d/51-android.rules</i>
                   <p>Add the following line:</p>
                   <i>SUBSYSTEM=="usb",ATTRS{idVendor}=="05c6",MODE=="0666"</i>
                 </li>

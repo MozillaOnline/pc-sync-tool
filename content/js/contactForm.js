@@ -204,9 +204,9 @@ var ContactForm = (function() {
       $id('avatar-add-edit').classList.add('avatar-add-edit-default');
     }
 
-    $id('givenName').dataset.value = $id('givenName').value = contact && contact.givenName ? contact.givenName.join(' ') : '';
+    $id('givenName').dataset.value = $id('givenName').value = contact && contact.givenName && contact.givenName.length > 0 ? contact.givenName[0] : '';
     $id('givenName').oninput = changed;
-    $id('familyName').dataset.value = $id('familyName').value = contact && contact.familyName ? contact.familyName.join(' ') : '';
+    $id('familyName').dataset.value = $id('familyName').value = contact && contact.familyName && contact.familyName.length > 0 ? contact.familyName[0] : '';
     $id('familyName').oninput = changed;
     $id('org').dataset.value = $id('org').value = contact && contact.org ? contact.org.join(' ') : '';
     $id('org').oninput = changed;
