@@ -62,13 +62,13 @@ ContactField.prototype = {
 
     // Register click event handler to add new button
     var self = this;
-    this._getAddNewButton().addEventListener('click', function onclick_addNewButton(event) {
+    this._getAddNewButton().onclick = function onclick_addNewButton(event) {
       if (self.options.fieldType == 'string') {
         self.addNewField([]);
       } else {
         self.addNewField({});
       }
-    });
+    };
 
     return this;
   },
@@ -99,7 +99,7 @@ ContactField.prototype = {
     navigator.mozL10n.translate(section);
 
     // Remove self when clicking on the delete button.
-    section.addEventListener('click', function onclick_deleteButton(event) {
+    section.onclick = function onclick_deleteButton(event) {
       var elem = event.target;
       if (elem instanceof HTMLDivElement && elem.className == 'action-delete') {
         var inputs = $expr('input', elem.parentNode);
@@ -114,7 +114,7 @@ ContactField.prototype = {
         this.parentNode.removeChild(this);
         ContactForm.changed();
       }
-    });
+    };
   },
 
   getValues: function cf_getValues() {
@@ -156,11 +156,6 @@ ContactField.prototype = {
 var ContactForm = (function() {
   // Hold all the contact field that we add.
   var fields = {};
-  var handlerSaveContact = null;
-  var handlerCancelEditContact = null;
-  var handlerQuickSaveContact = null;
-  var handlerAvatarAddEdit = null;
-  var handlerAvatarInput = null;
   var changedCount = 0;
 
   function changeCount(changed) {
@@ -195,13 +190,22 @@ var ContactForm = (function() {
       if ($id('contact-' + contact.id).dataset.avatar) {
         $id('avatar-add-edit').src = $id('contact-' + contact.id).dataset.avatar;
         $id('avatar-add-edit').classList.remove('avatar-add-edit-default');
+        $id('avatar-label').dataset.isAdd = false;
+        $id('avatar-label').textContent = _('avatar-remove');
+        $id('avatar-label').setAttribute('data-l10n-id', 'avatar-remove');
       } else {
         $id('avatar-add-edit').removeAttribute('src');
         $id('avatar-add-edit').classList.add('avatar-add-edit-default');
+        $id('avatar-label').dataset.isAdd = true;
+        $id('avatar-label').textContent = _('avatar-label');
+        $id('avatar-label').setAttribute('data-l10n-id', 'avatar-label');
       }
     } else {
       $id('avatar-add-edit').removeAttribute('src');
       $id('avatar-add-edit').classList.add('avatar-add-edit-default');
+      $id('avatar-label').dataset.isAdd = true;
+      $id('avatar-label').textContent = _('avatar-label');
+      $id('avatar-label').setAttribute('data-l10n-id', 'avatar-label');
     }
 
     $id('givenName').dataset.value = $id('givenName').value = contact && contact.givenName && contact.givenName.length > 0 ? contact.givenName[0] : '';
@@ -484,11 +488,9 @@ var ContactForm = (function() {
   window.addEventListener('load', function onload(event) {
     window.removeEventListener('load', onload);
 
-    if (handlerSaveContact) {
-      $id('save-contact').removeEventListener('click', handlerSaveContact, false);
-    }
 
-    handlerSaveContact = function() {
+
+    $id('save-contact').onclick = function() {
       if (saveContact()) {
         var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
         if (selectedItem === 0) {
@@ -500,13 +502,8 @@ var ContactForm = (function() {
         }
       }
     };
-    $id('save-contact').addEventListener('click', handlerSaveContact, false);
 
-    if (handlerCancelEditContact) {
-      $id('cancel-edit-contact').removeEventListener('click', handlerCancelEditContact, false);
-    }
-
-    handlerCancelEditContact = function() {
+    $id('cancel-edit-contact').onclick = function() {
       var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
       if (selectedItem === 0) {
         ViewManager.showViews('contact-quick-add-view');
@@ -516,31 +513,28 @@ var ContactForm = (function() {
         ViewManager.showViews('show-multi-contacts');
       }
     };
-    $id('cancel-edit-contact').addEventListener('click', handlerCancelEditContact, false);
 
-    if (handlerQuickSaveContact) {
-      $id('quick-save-contact').removeEventListener('click', handlerQuickSaveContact, false);
-    }
-
-    handlerQuickSaveContact = function() {
+    $id('quick-save-contact').onclick = function() {
       quickSaveContact();
     };
-    $id('quick-save-contact').addEventListener('click', handlerQuickSaveContact, false);
 
-    if (handlerAvatarAddEdit) {
-      $id('avatar-add-edit').removeEventListener('click', handlerAvatarAddEdit, false);
-    }
-
-    handlerAvatarAddEdit = function() {
+    $id('avatar-add-edit').onclick = function() {
       $id('avatar-input').click();
     };
-    $id('avatar-add-edit').addEventListener('click', handlerAvatarAddEdit, false);
 
-    if (handlerAvatarInput) {
-      $id('avatar-input').removeEventListener('change', handlerAvatarInput, false);
-    }
+    $id('avatar-label').onclick = function() {
+      if (this.dataset.isAdd == 'true') {
+        $id('avatar-input').click();
+      } else {
+        $id('avatar-add-edit').removeAttribute('src');
+        $id('avatar-add-edit').classList.add('avatar-add-edit-default');
+        this.dataset.isAdd = true;
+        this.textContent = _('avatar-label');
+        this.setAttribute('data-l10n-id', 'avatar-label');
+      }
+    };
 
-    handlerAvatarInput = function() {
+    $id('avatar-input').onchange = function() {
       var MAX_WIDTH = 320;
       var MAX_HEIGHT = 320;
       var pic = $id('avatar-add-edit');
@@ -577,13 +571,15 @@ var ContactForm = (function() {
           fr.onload = function(e) {
             pic.src = e.target.result;
             pic.classList.remove('avatar-add-edit-default');
+            $id('avatar-label').dataset.isAdd = false;
+            $id('avatar-label').textContent = _('avatar-remove');
+            $id('avatar-label').setAttribute('data-l10n-id', 'avatar-remove');
             ContactForm.changeCount(1);
             ContactForm.changed();
           };
         }, 'image/jpeg');
       };
     };
-    $id('avatar-input').addEventListener('change', handlerAvatarInput, false);
   });
 
   return {
