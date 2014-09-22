@@ -664,6 +664,7 @@ button.add-new-button {
   width: 9rem;
   margin-left: 1rem;
   overflow: hidden;
+  height: 1.7rem;
 }
 
 .contact-item .value {
@@ -672,6 +673,7 @@ button.add-new-button {
   width: 12rem;
   overflow: hidden;
   text-overflow: ellipsis;
+  height: 1.7rem;
 }
 
 .contact-ops-box .search-input {
