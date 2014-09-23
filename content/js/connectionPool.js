@@ -1,3 +1,14 @@
+'use strict'
+
+const {
+  classes: Cc,
+  interfaces: Ci,
+  utils: Cu,
+  results: Cr
+} = Components;
+
+Cu.import("resource://gre/modules/Services.jsm");
+
 function TCPConnectionPool(options) {
   this.initialize(options);
 }
@@ -26,6 +37,7 @@ TCPConnectionPool.prototype = {
       onListening: emptyFunction,
       onerror: emptyFunction
     }, options);
+    this.TCPSocket = this.createTCPSocket();
 
     this._connPool = [];
     this._currentId = 0;
@@ -48,9 +60,25 @@ TCPConnectionPool.prototype = {
     }
   },
 
+  createTCPSocket: function tc_createTCPSocket() {
+    var scope = Cu.Sandbox(Services.scriptSecurityManager.getSystemPrincipal());
+    scope.DOMError = Cu.import('resource://gre/modules/Services.jsm').DOMError;
+    var ioService = Cc['@mozilla.org/network/io-service;1'].getService(Ci.nsIIOService);
+    var scriptableStream = Cc['@mozilla.org/scriptableinputstream;1'].getService(Ci.nsIScriptableInputStream);
+    var channel = ioService.newChannel("resource://gre/components/TCPSocket.js", null, null);
+    var input = channel.open();
+    scriptableStream.init(input);
+    var script = scriptableStream.read(input.available());
+    scriptableStream.close();
+    input.close();
+    Cu.evalInSandbox(script, scope, "1.8");
+    scope.TCPSocket.prototype.initWindowless = function () true;
+    return new scope.TCPSocket();
+  },
+
   _initPool: function tc_initPool() {
     for (var i = 0; i < this.options.size; i++) {
-      var socket = navigator.mozTCPSocket.open(this.options.host, this.options.port, {
+      var socket = this.TCPSocket.open(this.options.host, this.options.port, {
         binaryType: 'arraybuffer'
       });
 

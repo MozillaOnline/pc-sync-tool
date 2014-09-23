@@ -300,7 +300,7 @@ var FFOSAssistant = (function() {
           connListenSocket.socket.close();
           connListenSocket = null;
         }
-        var socket = navigator.mozTCPSocket.open(serverIP, REMOTE_PORT, {
+        var socket = connPool.TCPSocket.open(serverIP, REMOTE_PORT, {
           binaryType: 'arraybuffer'
         });
         socket.onopen = function tc_onListenSocketOpened(event) {
