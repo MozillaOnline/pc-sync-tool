@@ -408,10 +408,18 @@
         <legend class="action">
           <select name="type" id="select-contact-type" data-selected-index=<%=selectedIndex%> onchange=ContactForm.changed(this)>
             <%for (var i = 0; i < typeList.length; i++) {%>
-              <%if (selectedIndex == i) {%>
-                <option value="<%=typeList[i]%>" data-l10n-id="<%=typeList[i]%>" selected><%=typeList[i]%></option>
+              <%if (needCustom == true && i == (typeList.length - 1)) {%>
+                <%if (selectedIndex == i) {%>
+                  <option value="<%=typeList[i]%>" id="custom-type" onclick=ContactForm.custom(this) data-l10n-id="<%=typeList[i]%>" selected><%=typeList[i]%></option>
+                <%} else {%>
+                  <option value="<%=typeList[i]%>" id="custom-type" onclick=ContactForm.custom(this) data-l10n-id="<%=typeList[i]%>"><%=typeList[i]%></option>
+                <%}%>
               <%} else {%>
-                <option value="<%=typeList[i]%>" data-l10n-id="<%=typeList[i]%>"><%=typeList[i]%></option>
+                <%if (selectedIndex == i) {%>
+                  <option value="<%=typeList[i]%>" data-l10n-id="<%=typeList[i]%>" selected><%=typeList[i]%></option>
+                <%} else {%>
+                  <option value="<%=typeList[i]%>" data-l10n-id="<%=typeList[i]%>"><%=typeList[i]%></option>
+                <%}%>
               <%}%>
             <%}%>
           </select>

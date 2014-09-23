@@ -7,6 +7,7 @@ ContactField.prototype = {
     // FIXME l10n
     this.options = extend({
       id: null,
+      needCustom: false,
       typeList: [],
       fields: [],
       initValues: [],
@@ -76,6 +77,7 @@ ContactField.prototype = {
   addNewField: function cf_addNewField(initValue) {
     var section = document.createElement('section');
     var templateData = {
+      needCustom: this.options.needCustom,
       typeList: this.options.typeList,
       fieldType: this.options.fieldType,
       fields: this.options.fields,
@@ -89,8 +91,12 @@ ContactField.prototype = {
       }
     }
     if (initValue && initValue.type && templateData.selectedIndex == -1 && this.options.typeList.length > 0) {
-      templateData.selectedIndex = this.options.typeList.length;
-      templateData.typeList.push(initValue.type[0]);
+      templateData.selectedIndex = this.options.typeList.length - 1;
+      if (this.options.needCustom) {
+        templateData.typeList[this.options.typeList.length - 1] = initValue.type[0];
+      } else {
+        templateData.typeList.push(initValue.type[0]);
+      }
     }
     section.innerHTML = tmpl('tmpl_contact_add_item', templateData);
 
@@ -218,7 +224,8 @@ var ContactForm = (function() {
 
     fields['tel'] = new ContactField({
       id: 'tel',
-      typeList: ['mobile', 'home', 'work', 'personal', 'faxHome', 'faxOffice', 'faxOther', 'another'],
+      needCustom: true,
+      typeList: ['mobile', 'home', 'work', 'personal', 'faxHome', 'faxOffice', 'faxOther', 'another', 'custom'],
       fields: [{
         name: 'value',
         l10nId: 'phone',
@@ -320,6 +327,24 @@ var ContactForm = (function() {
       }
     }
     changeSaveButtonStatus();
+  }
+
+  function custom(e) {
+    var target;
+    if (e instanceof Event) {
+      target = e.target;
+    } else {
+      target = e;
+    }
+    var customString = prompt(_('custom-title'), target.value);
+    if(customString && customString != '') {
+      target.value = customString;
+      var item = $id('custom-type');
+      if (item) {
+        item.textContent = customString;
+        item.setAttribute('data-l10n-id', customString);
+      }
+    }
   }
 
   function  checkInputsEmpty(inputs) {
@@ -586,6 +611,7 @@ var ContactForm = (function() {
     // If contact object is not given, perform adding a new contact
     editContact: editContact,
     changed: changed,
+    custom: custom,
     changeCount: changeCount
   };
 })();
