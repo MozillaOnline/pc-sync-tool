@@ -313,9 +313,16 @@ var ContactList = (function() {
       });
     }
 
-    $id('edit-contact').onclick = function doEditContact() {
-      ContactForm.editContact(contact);
-    };
+    if (contact.category && contact.category.indexOf('facebook') != -1) {
+      $id('edit-contact').disabled = true;
+      $id('edit-contact').classList.add('button-disabled');
+    } else {
+      $id('edit-contact').disabled = false;
+      $id('edit-contact').classList.remove('button-disabled');
+      $id('edit-contact').onclick = function doEditContact() {
+        ContactForm.editContact(contact);
+      };
+    }
 
     ViewManager.showViews('show-contact-view');
     var item = $id('contact-' + contact.id);
@@ -340,7 +347,7 @@ var ContactList = (function() {
       var templateData = {
         avatar: item.dataset.avatar,
         name: contact.name.join(' '),
-        tel: contact.tel.length > 0 ? contact.tel[0].value : ''
+        tel: contact.tel && contact.tel.length > 0 ? contact.tel[0].value : ''
       };
 
       var div = document.createElement('div');
