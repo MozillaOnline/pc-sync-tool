@@ -10,6 +10,35 @@
     <link rel="stylesheet" media="screen,projection,tv" href="help_files/mozcn_tour-min.css">
     <meta name="og:image" content="/media/img/firefox/firefox-100.jpg?2013-06">
     <link rel="shortcut icon" type="image/icon" href="http://www.firefox.com.cn/media/img/firefox/favicon.ico?2013-06">
+    <script>
+      var FIREFOX_LINK = "https://www.mozilla.org";
+	  var ASSISTANT_LINK = "http://download.firefox.com.cn/chinaedition/addons/ffosassistant/ffosassistant-latest.xpi";
+      var ADB_LINK = "https://ftp.mozilla.org/pub/mozilla.org/labs/fxos-simulator/adb-helper/#OS#/adbhelper-#OS#-latest.xpi";
+      var DRIVERS_LINK = "https://developer.android.com/tools/extras/oem-usb.html";
+      window.onload = function () {
+        var platform = navigator.platform;
+        var os = "";
+        if (platform.indexOf("Win") != -1) {
+          os = "win32";
+        } else if (platform.indexOf("Mac") != -1) {
+          os = "mac64";
+        } else if (platform.indexOf("Linux") != -1) {
+          if (platform.indexOf("x86_64") != -1) {
+            os = "linux64";
+          } else {
+            os = "linux";
+          }
+        }
+        var adbHelper = document.getElementById("adbhelper-stable");
+        adbHelper.href = ADB_LINK.replace(/#OS#/g, os)
+                                 .replace(/#MAJOR_VERSION#/g, "1")
+                                 .replace(/#MINOR_VERSION#/g, "3");
+        document.getElementById("assistant-stable").href = ASSISTANT_LINK;
+		document.getElementById("firefox-stable").href = FIREFOX_LINK;
+		document.getElementById("drivers-list").href = DRIVERS_LINK;
+      };
+
+    </script>
   </head>
   <body id="" class="html-ltr sky" data-latest-firefox="26.0" data-esr-versions="[10, 17, 24]">
     <div id="outer-wrapper">
@@ -28,8 +57,12 @@
         <div class="billboard" id="connection">
           <h3>Device and system configuration</h3>
           <ul>
-            <li>Make sure you have Firefox Desktop 28+ installed. (<a href="http://www.firefox.com.cn"><u>Download</u></a>)</li>
-            <li><a class="external" href="https://ftp.mozilla.org/pub/mozilla.org/labs/fxos-simulator/adb-helper/#OS#/adbhelper-#OS#-latest.xpi">Install the Firefox OS Assistant</a> add-on in Firefox Desktop.</li>
+            <li>Make sure you have Firefox Desktop 28+ installed.
+              <p><a id="firefox-stable" class="button download" href="#">Install Firefox</a><p>
+            </li>
+            <li>Install the Firefox OS Assistant add-on in Firefox Desktop.
+              <p><a id="assistant-stable" class="button download" href="#">Install Firefox OS Assistant</a></p>
+            </li>
             <li>Make sure your device is running Firefox OS 1.3+</li>
             <li>Make sure you have PC Sync installed on your device</li>
           </ul>
@@ -59,7 +92,9 @@
           <ul>
             <li id="DRIVER">Install the device driver
               <ul>
-                <li>Windows drivers (<a href="https://developer.android.com/tools/extras/oem-usb.html"><u>Download</u></a>)</li>
+                <li>Windows drivers
+                  <p><a id="drivers-list" class="button download" href="#">Download</a><p>
+                </li>
                 <li>Linux, add vendorId to system, for example:
                   <p>Enter the following command:</p>
                   <i>sudo vim /etc/udev/rules.d/51-android.rules</i>
@@ -71,7 +106,9 @@
                 </li>
               </ul>
             </li>
-            <li><a class="external" href="https://ftp.mozilla.org/pub/mozilla.org/labs/fxos-simulator/adb-helper/#OS#/adbhelper-#OS#-latest.xpi">Install the ADB Helper</a> add-on in Firefox Desktop.</li>
+            <li>Install the ADB Helper add-on in Firefox Desktop.
+              <p><a id="adbhelper-stable" class="button download" href="#">ADB Helper</a><p>
+            </li>
             <li id="SETTINGS">Set up your device
               <ul>
                 <li>In the Settings of your device, disable Screen Lock (Settings > Phone lock > Lock Screen)</li>
@@ -82,7 +119,9 @@
             </li>
             <li>Launch Firefox browser and run the addon Firefox OS Assistant
               <ul>
-                <li>You should see the name of your device in the Firefox OS Assistant's bottom bar. Click on it.</li>
+                <li>You should see the name of your device in the Firefox OS Assistant's bottom bar. Click on it.
+                  <div class="select-usb-device"></div>
+                </li>
                 <li>Now you’re ready to manage your device as follow:
                   <div class="usb-conn-success"></div>
                 </li>

@@ -423,6 +423,13 @@ var FFOSAssistant = (function() {
         }
       });
     };
+    $id('help-button').onclick = function(e) {
+      var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+      if (navigator.mozL10n.language.code == 'zh-CN') {
+        url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+      }
+      window.open(url);
+    };
     ViewManager.showContent('connect-view');
   }
 
