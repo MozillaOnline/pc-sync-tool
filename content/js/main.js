@@ -44,6 +44,7 @@ var connectState = {
   connecting: 3,
   error: 4
 };
+var storageInfoList = [];
 var connectedDevice = '';
 var animationLoading = null;
 var customEventElement = document;
@@ -115,6 +116,7 @@ var FFOSAssistant = (function() {
       var dataJSON = JSON.parse(message.data);
       var container = $id('summary-infos');
       container.innerHTML = '';
+      storageInfoList = [];
       for (var uname in dataJSON) {
         var elem = document.createElement('div');
         var templateData = {
@@ -127,21 +129,28 @@ var FFOSAssistant = (function() {
           musicUsed: '',
           videoUsed: ''
         };
-        for (var utype in dataJSON[uname]) {
-          total = dataJSON[uname].sdcard.usedSpace + dataJSON[uname].sdcard.freeSpace;
-          if (total > 0) {
-            templateData.storageUsed = Math.floor(dataJSON[uname].sdcard.usedSpace / total * 100) + '%';
-            templateData.storageNumber = formatStorage(dataJSON[uname].sdcard.usedSpace) + '/' + formatStorage(total) + ' ' + templateData.storageUsed;
-            templateData.pictureUsed = Math.floor(dataJSON[uname].pictures.usedSpace / total * 100) + '%';
-            templateData.musicUsed = Math.floor(dataJSON[uname].music.usedSpace / total * 100) + '%';
-            templateData.videoUsed = Math.floor(dataJSON[uname].videos.usedSpace / total * 100) + '%';
-          } else {
-            templateData.storageNumber = '0.00M/0.00M';
-            templateData.storageUsed = '0%';
-            templateData.pictureUsed = '0%';
-            templateData.musicUsed = '0%';
-            templateData.videoUsed = '0%';
-          }
+
+        total = dataJSON[uname].sdcard.usedSpace + dataJSON[uname].sdcard.freeSpace;
+        var storageInfo = {
+          name: uname,
+          id: dataJSON[uname].id,
+          path: '',
+          totalSpace: total,
+          freeSpace: dataJSON[uname].sdcard.freeSpace
+        };
+        storageInfoList.push(storageInfo);
+        if (total > 0) {
+          templateData.storageUsed = Math.floor(dataJSON[uname].sdcard.usedSpace / total * 100) + '%';
+          templateData.storageNumber = formatStorage(dataJSON[uname].sdcard.usedSpace) + '/' + formatStorage(total) + ' ' + templateData.storageUsed;
+          templateData.pictureUsed = Math.floor(dataJSON[uname].pictures.usedSpace / total * 100) + '%';
+          templateData.musicUsed = Math.floor(dataJSON[uname].music.usedSpace / total * 100) + '%';
+          templateData.videoUsed = Math.floor(dataJSON[uname].videos.usedSpace / total * 100) + '%';
+        } else {
+          templateData.storageNumber = '0.00M/0.00M';
+          templateData.storageUsed = '0%';
+          templateData.pictureUsed = '0%';
+          templateData.musicUsed = '0%';
+          templateData.videoUsed = '0%';
         }
         elem.innerHTML = tmpl('tmpl_storage_summary', templateData);
         container.appendChild(elem);
@@ -157,6 +166,14 @@ var FFOSAssistant = (function() {
           summaryHeadClick(this, body);
         };
       }
+      if (storageInfoList.length == 1) {
+        storageInfoList[0].path = 'sdcard';
+      } else if (storageInfoList.length > 1) {
+        for (var i = 0; i < storageInfoList.length; i ++) {
+          storageInfoList[i].path = 'storage/sdcard' + storageInfoList[i].id;
+        }
+      }
+      console.log(storageInfoList);
       animationLoading.stop(loadingGroupId);
     }, function onerror_getStorage(message) {
       animationLoading.stop(loadingGroupId);
