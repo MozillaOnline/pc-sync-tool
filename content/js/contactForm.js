@@ -556,6 +556,8 @@ var ContactForm = (function() {
         this.dataset.isAdd = true;
         this.textContent = _('avatar-label');
         this.setAttribute('data-l10n-id', 'avatar-label');
+        ContactForm.changeCount(1);
+        ContactForm.changed();
       }
     };
 
