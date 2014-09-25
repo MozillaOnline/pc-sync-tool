@@ -44,7 +44,7 @@ var connectState = {
   connecting: 3,
   error: 4
 };
-var storageInfoList = [];
+var storageInfoList = {};
 var connectedDevice = '';
 var animationLoading = null;
 var customEventElement = document;
@@ -116,7 +116,8 @@ var FFOSAssistant = (function() {
       var dataJSON = JSON.parse(message.data);
       var container = $id('summary-infos');
       container.innerHTML = '';
-      storageInfoList = [];
+      storageInfoList = {};
+      var count = 0;
       for (var uname in dataJSON) {
         var elem = document.createElement('div');
         var templateData = {
@@ -132,13 +133,12 @@ var FFOSAssistant = (function() {
 
         total = dataJSON[uname].sdcard.usedSpace + dataJSON[uname].sdcard.freeSpace;
         var storageInfo = {
-          name: uname,
-          id: dataJSON[uname].id,
-          path: '',
+          path: 'storage/sdcard' + dataJSON[uname].id,
           totalSpace: total,
           freeSpace: dataJSON[uname].sdcard.freeSpace
         };
-        storageInfoList.push(storageInfo);
+        storageInfoList[uname] = storageInfo;
+        count ++;
         if (total > 0) {
           templateData.storageUsed = Math.floor(dataJSON[uname].sdcard.usedSpace / total * 100) + '%';
           templateData.storageNumber = formatStorage(dataJSON[uname].sdcard.usedSpace) + '/' + formatStorage(total) + ' ' + templateData.storageUsed;
@@ -166,11 +166,9 @@ var FFOSAssistant = (function() {
           summaryHeadClick(this, body);
         };
       }
-      if (storageInfoList.length == 1) {
-        storageInfoList[0].path = 'sdcard';
-      } else if (storageInfoList.length > 1) {
-        for (var i = 0; i < storageInfoList.length; i ++) {
-          storageInfoList[i].path = 'storage/sdcard' + storageInfoList[i].id;
+      if (count == 1) {
+        for (var name in storageInfoList) {
+          storageInfoList[name].path = 'sdcard';
         }
       }
       console.log(storageInfoList);
