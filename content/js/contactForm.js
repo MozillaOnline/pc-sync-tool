@@ -45,6 +45,7 @@ ContactField.prototype = {
     };
     this.elem.innerHTML = tmpl('tmpl_contact_add_new_button', templateData);
 
+    navigator.mozL10n.translate(this.elem);
     // Create input fields and fill it with init values.
     var self = this;
     if (this.options.initValues.length == 0) {
