@@ -51,6 +51,7 @@ var customEventElement = document;
 var isWifiConnected = false;
 var observer = null;
 var devicesList = null;
+var device = null;
 var deviceSocketState = connectState.disconnected;
 var REMOTE_PORT = 25679;
 var FFOSAssistant = (function() {
@@ -133,7 +134,7 @@ var FFOSAssistant = (function() {
 
         total = dataJSON[uname].sdcard.usedSpace + dataJSON[uname].sdcard.freeSpace;
         var storageInfo = {
-          path: 'storage/sdcard' + dataJSON[uname].id,
+          path: '/storage/sdcard' + dataJSON[uname].id + '/',
           totalSpace: total,
           freeSpace: dataJSON[uname].sdcard.freeSpace
         };
@@ -235,7 +236,7 @@ var FFOSAssistant = (function() {
     var loadingGroupId = animationLoading.start();
     var deviceName = devicesList[0];
     $id('device-name').innerHTML = deviceName;
-    ADBService.setupDevice(deviceName);
+    device = ADBService.setupDevice(deviceName);
     setTimeout(function() {
       connectToServer('localhost');
     }, 1000);

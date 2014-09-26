@@ -254,6 +254,11 @@ var utils = {
     return FileUtils.getDir("ProfD", pathArray, false).path;
   },
 
+  getFileSize: function(path) {
+    var f = new FileUtils.File(path);
+    return f.isFile() ? f.fileSize : 0;
+  },
+
   isWindows: function() {
     return xulRuntime.OS == 'WINNT';
   },

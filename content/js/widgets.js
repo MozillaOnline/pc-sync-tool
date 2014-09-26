@@ -376,28 +376,44 @@ FilesOPDialog.prototype = {
         }
         return;
       }
-      var cmd = '';
+
+      var aFrom = '';
+      var aDest = '';
+      var type = '';
+
       switch (self.options.type) {
         case 1:
-          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" "/sdcard/Music/' + getFileName(self.options.files[self._fileIndex]) + '"';
+          type = 'push';
+          aFrom = self.options.files[self._fileIndex];
+          aDest = 'Music/' + getFileName(self.options.files[self._fileIndex]);
           break;
         case 2:
-          cmd ='adb pull "' + self.options.files[self._fileIndex].dataset.id + '" "' + decodeURI(self.options.dir) + '/' +
-                self.options.files[self._fileIndex].dataset.name + '.' + self.options.files[self._fileIndex].dataset.type + '"';
+          type = 'pull';
+          aFrom = self.options.files[self._fileIndex].dataset.id;
+          aDest = decodeURI(self.options.dir) + '/' +
+                  self.options.files[self._fileIndex].dataset.name + '.' + self.options.files[self._fileIndex].dataset.type;
           break;
         case 3:
-          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" "/sdcard/Movies/' + getFileName(self.options.files[self._fileIndex]) + '"';
+          type = 'push';
+          aFrom = self.options.files[self._fileIndex];
+          aDest = 'Movies/' + getFileName(self.options.files[self._fileIndex]);
           break;
         case 4:
-          cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.videoUrl + '" "' + decodeURI(self.options.dir) + '/' +
-              convertToOutputFileName(self.options.files[self._fileIndex].dataset.videoUrl) + '"';
+          type = 'pull';
+          aFrom = self.options.files[self._fileIndex].dataset.videoUrl;
+          aDest = decodeURI(self.options.dir) + '/' +
+                  convertToOutputFileName(self.options.files[self._fileIndex].dataset.videoUrl);
           break;
         case 5:
-          cmd = 'adb pull "' + self.options.files[self._fileIndex].dataset.picUrl + '" "' + decodeURI(self.options.dir) + '/' +
-              convertToOutputFileName(self.options.files[self._fileIndex].dataset.picUrl) + '"';
+          type = 'pull';
+          aFrom = self.options.files[self._fileIndex].dataset.picUrl;
+          aDest = decodeURI(self.options.dir) + '/' +
+                  convertToOutputFileName(self.options.files[self._fileIndex].dataset.picUrl);
           break;
         case 6:
-          cmd = 'adb push "' + self.options.files[self._fileIndex] + '" "/sdcard/DCIM/' + getFileName(self.options.files[self._fileIndex]) + '"';
+          type = 'push';
+          aFrom = self.options.files[self._fileIndex];
+          aDest = 'DCIM/' + getFileName(self.options.files[self._fileIndex]);
           break;
         case 7:
           CMD.Pictures.deletePicture(self.options.files[self._fileIndex], success, error);
@@ -410,8 +426,42 @@ FilesOPDialog.prototype = {
           break;
       }
 
-      if (cmd) {
-        runCmd(cmd, success);
+      switch(type) {
+        case 'pull':
+          if (!device) {
+            return;
+          }
+          var reg = /^\/([a-z]+)\//;
+          var result = aFrom.match(reg);
+          var storage = result[1];
+          if (!storageInfoList[storage] || !storageInfoList[storage].path) {
+            return;
+          }
+          aFrom = aFrom.replace(reg, storageInfoList[storage].path);
+          console.log('adb pull from: ' + aFrom + ' to: ' + aDest);
+          device.pull(aFrom, aDest).then(success, error);
+          break;
+        case 'push':
+          var fileSize = getFileSize(aFrom);
+          var bCanPush = false;
+          if (!device || !fileSize) {
+            return;
+          }
+          if (storageInfoList.external && storageInfoList.external.freeSpace > fileSize) {
+            aDest = storageInfoList.external.path + aDest;
+            bCanPush = true;
+          }
+          if (!bCanPush && storageInfoList.sdcard && storageInfoList.sdcard.freeSpace > fileSize) {
+            aDest = storageInfoList.sdcard.path + aDest;
+            bCanPush = true;
+          }
+
+          if (!bCanPush) {
+            return;
+          }
+          console.log('adb push from: ' + aFrom + ' to: ' + aDest);
+          device.push(aFrom, aDest).then(success, error);
+          break;
       }
 
       if (!self._timer) {

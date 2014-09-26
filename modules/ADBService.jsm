@@ -33,6 +33,7 @@ var ADBService = {
   setupDevice: function(name) {
     let device = Devices.getByName(name);
     device.forwardPort('tcp:25679', 'tcp:25679');
+    return device;
   },
 
   getAvailable: function() {
