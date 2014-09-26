@@ -213,9 +213,8 @@ var Video = (function() {
       $expr('#video-list-container li[data-checked="true"]').length === 0;
     $id('import-videos').dataset.disabled = false;
 
-    //$id('remove-videos').dataset.disabled = isWifiConnected;
-    $id('import-videos').dataset.disabled = isWifiConnected;
-    $id('export-videos').dataset.disabled = isWifiConnected;
+    $id('import-videos').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
+    $id('export-videos').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
   }
 
   function updateUI() {

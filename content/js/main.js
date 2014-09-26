@@ -54,6 +54,9 @@ var devicesList = null;
 var device = null;
 var deviceSocketState = connectState.disconnected;
 var REMOTE_PORT = 25679;
+var adbHelperInstalled = false;
+var needUpdateAdbHelper = false;
+var minAdbHelperVersion = '0.5.3';
 var FFOSAssistant = (function() {
   var connPool = null;
   var connListenSocket = null;
@@ -525,6 +528,16 @@ var FFOSAssistant = (function() {
           break;
         default:
           break;
+      }
+    });
+    getAdbHelperInfo(function(addon) {
+      if (!addon) {
+        adbHelperInstalled = false;
+        return;
+      }
+      adbHelperInstalled = true;
+      if (checkAdbHelperVersion(addon.version, minAdbHelperVersion) < 0) {
+        needUpdateAdbHelper = true;
       }
     });
     if (!animationLoading) {

@@ -209,9 +209,8 @@ var MusicList = (function() {
       $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
     $id('import-musics').dataset.disabled = false;
 
-    //$id('remove-musics').dataset.disabled = isWifiConnected;
-    $id('import-musics').dataset.disabled = isWifiConnected;
-    $id('export-musics').dataset.disabled = isWifiConnected;
+    $id('import-musics').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
+    $id('export-musics').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
   }
 
   function musicItemClicked(elem) {

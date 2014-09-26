@@ -23,6 +23,7 @@ Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, 'Services', 'resource://gre/modules/Services.jsm');
 XPCOMUtils.defineLazyModuleGetter(this, 'FileUtils', 'resource://gre/modules/FileUtils.jsm');
+XPCOMUtils.defineLazyModuleGetter(this, 'AddonManager', 'resource://gre/modules/AddonManager.jsm');
 XPCOMUtils.defineLazyServiceGetter(this, "xulRuntime", '@mozilla.org/xre/app-info;1', "nsIXULRuntime");
 XPCOMUtils.defineLazyServiceGetter(this, 'iniFactory', '@mozilla.org/xpcom/ini-processor-factory;1', 'nsIINIParserFactory');
 
@@ -265,6 +266,15 @@ var utils = {
 
   isMac: function() {
     return xulRuntime.OS == 'Darwin';
+  },
+
+  getAdbHelperInfo: function(callback) {
+    var id = 'adbhelper@mozilla.org';
+    AddonManager.getAddonByID(id, callback);
+  },
+
+  checkAdbHelperVersion: function(ver, minVer) {
+    return Services.vc.compare(ver, minVer);
   }
 };
 

@@ -245,8 +245,8 @@ var Gallery = (function() {
     $id('import-pictures').dataset.disabled = false;
 
     //$id('remove-pictures').dataset.disabled = isWifiConnected;
-    $id('import-pictures').dataset.disabled = isWifiConnected;
-    $id('export-pictures').dataset.disabled = isWifiConnected;
+    $id('import-pictures').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
+    $id('export-pictures').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
   }
 
   function updateUI() {

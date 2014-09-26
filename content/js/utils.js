@@ -197,3 +197,11 @@ function selectMultiFilesFromDisk(callback, options) {
 function getFileSize(path) {
   return module.utils.getFileSize(path);
 }
+
+function getAdbHelperInfo(callback) {
+  return module.utils.getAdbHelperInfo(callback);
+}
+
+function checkAdbHelperVersion(ver, minVer) {
+  return module.utils.checkAdbHelperVersion(ver, minVer);
+}
