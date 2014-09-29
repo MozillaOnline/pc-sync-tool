@@ -64,7 +64,7 @@ var FFOSAssistant = (function() {
   function showUsbConnection() {
     $id('wifi-connection-button').dataset.checked = false;
     $id('devices').innerHTML = '';
-    var html = '<p data-l10n-id="extenal-devices"></p>';
+    var html = '';
     devicesList = ADBService.getAvailable();
     if (devicesList.length == 0) {
       $id('device-list').style.display = 'none';
