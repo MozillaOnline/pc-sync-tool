@@ -162,7 +162,7 @@ var FFOSAssistant = (function() {
         var templateData = templateDataList[i];
         if (templateDataList.length == 1) {
           for (var name in storageInfoList) {
-            storageInfoList[name].path = 'sdcard';
+            storageInfoList[name].path = '/sdcard/';
           }
           templateData.displayName = _('sdcard');
         } else if (templateDataList.length > 1) {
