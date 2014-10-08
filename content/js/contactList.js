@@ -130,10 +130,12 @@ var ContactList = (function() {
     var loadingGroupId = animationLoading.start();
     ViewManager.showViews('contact-quick-add-view');
     selectAllContacts(false);
+    var container = getListContainer();
+    container.innerHTML = '';
     CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
       // Make sure the 'select-all' box is not checked.
       var dataJSON = JSON.parse(message.data);
-      initList(dataJSON, viewData);
+      initList(container, dataJSON, viewData);
       animationLoading.stop(loadingGroupId);
     }, function onerror_getAllContacts(message) {
       log('Error occurs when fetching all contacts.');
@@ -161,9 +163,7 @@ var ContactList = (function() {
     selectAllContacts(false);
   }
 
-  function initList(contacts, viewData) {
-    var container = getListContainer();
-    container.innerHTML = '';
+  function initList(container, contacts, viewData) {
     var searchInput = $id('search-contact-input');
     if (searchInput) {
       searchInput.value = '';
