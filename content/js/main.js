@@ -121,13 +121,13 @@ var FFOSAssistant = (function() {
       var container = $id('summary-infos');
       container.innerHTML = '';
       storageInfoList = {};
-      var count = 0;
+      var templateDataList = [];
       for (var uname in dataJSON) {
-        var elem = document.createElement('div');
         var templateData = {
           headerId: uname + '-header',
           bodyId: uname + '-body',
           storageName: uname,
+          displayName: uname,
           storageNumber: '',
           storageUsed: '',
           pictureUsed: '',
@@ -142,7 +142,6 @@ var FFOSAssistant = (function() {
           freeSpace: dataJSON[uname].sdcard.freeSpace
         };
         storageInfoList[uname] = storageInfo;
-        count ++;
         if (total > 0) {
           templateData.storageUsed = Math.floor(dataJSON[uname].sdcard.usedSpace / total * 100) + '%';
           templateData.storageNumber = formatStorage(dataJSON[uname].sdcard.usedSpace) + '/' + formatStorage(total) + ' ' + templateData.storageUsed;
@@ -156,6 +155,24 @@ var FFOSAssistant = (function() {
           templateData.musicUsed = '0%';
           templateData.videoUsed = '0%';
         }
+        templateDataList.push(templateData);
+      }
+
+      for (var i=0; i<templateDataList.length ;i++) {
+        var templateData = templateDataList[i];
+        if (templateDataList.length == 1) {
+          for (var name in storageInfoList) {
+            storageInfoList[name].path = 'sdcard';
+          }
+          templateData.displayName = _('sdcard');
+        } else if (templateDataList.length > 1) {
+          if (i == 0) {
+            templateData.displayName = _('internal');
+          } else {
+            templateData.displayName = _('sdcard');
+          }
+        }
+        var elem = document.createElement('div');
         elem.innerHTML = tmpl('tmpl_storage_summary', templateData);
         container.appendChild(elem);
         navigator.mozL10n.translate(elem);
@@ -169,11 +186,6 @@ var FFOSAssistant = (function() {
           var body = $id(this.dataset.body);
           summaryHeadClick(this, body);
         };
-      }
-      if (count == 1) {
-        for (var name in storageInfoList) {
-          storageInfoList[name].path = 'sdcard';
-        }
       }
       console.log(storageInfoList);
       animationLoading.stop(loadingGroupId);
