@@ -338,13 +338,15 @@ var ContactForm = (function() {
       target = e;
     }
     var customString = prompt(_('custom-title'), target.value);
-    if(customString && customString != '') {
+    if(customString && customString != '' && customString != target.value) {
       target.value = customString;
       var item = $id('custom-type');
       if (item) {
         item.textContent = customString;
         item.setAttribute('data-l10n-id', customString);
       }
+      ContactForm.changeCount(1);
+      ContactForm.changed();
     }
   }
 
