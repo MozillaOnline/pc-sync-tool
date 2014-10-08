@@ -49,9 +49,11 @@ var Gallery = (function() {
       if (getPicturesIndex == picturesCount) {
         updateChangedPictures();
         updateUI();
+        updateControls();
         animationLoading.stop(loadingGroupId);
       }
     }, function onerror() {
+      updateControls();
       animationLoading.stop(loadingGroupId);
     });
   }
@@ -219,11 +221,22 @@ var Gallery = (function() {
     var picList = $expr('li', getListContainer());
     if (picList[index]) {
       // TODO: check if picture has been cached already
+      var name = picList[index].dataset.picUrl.substr(picList[index].dataset.picUrl.lastIndexOf('/') + 1);
+
       var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', GALLERY_CACHE_FOLDER]);
-      var cmd = 'adb pull "' + picList[index].dataset.picUrl + '" "' + path + picList[index].dataset.picUrl + '"';
-      var cachedUrl = PRE_PATH + GALLERY_CACHE_FOLDER + picList[index].dataset.picUrl;
-      runCmd(cmd, function() {
+      if (!device) {
+        return;
+      }
+      var cachedUrl = PRE_PATH + GALLERY_CACHE_FOLDER + name;
+      device.pull(picList[index].dataset.picUrl, path + name).then(function() {
         callback(true, cachedUrl);
+        animationLoading.stop(loadingGroupId);
+      }, function() {
+        new AlertDialog({
+          message: _('operation-failed'),
+          showCancelButton: false
+        });
+        animationLoading.stop(loadingGroupId);
       });
     }
   }
@@ -240,13 +253,15 @@ var Gallery = (function() {
 
     $id('remove-pictures').dataset.disabled =
       $expr('#picture-list-container li[data-checked="true"]').length === 0;
-    $id('export-pictures').dataset.disabled =
-      $expr('#picture-list-container li[data-checked="true"]').length === 0;
-    $id('import-pictures').dataset.disabled = false;
 
     //$id('remove-pictures').dataset.disabled = isWifiConnected;
-    $id('import-pictures').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
-    $id('export-pictures').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
+    $id('import-pictures').dataset.disabled = isWifiConnected ||
+                                              !adbHelperInstalled ||
+                                              needUpdateAdbHelper;
+    $id('export-pictures').dataset.disabled = isWifiConnected ||
+                                              !adbHelperInstalled ||
+                                              needUpdateAdbHelper ||
+                                              ($expr('#picture-list-container li[data-checked="true"]').length === 0);
   }
 
   function updateUI() {

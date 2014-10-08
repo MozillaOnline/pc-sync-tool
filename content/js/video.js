@@ -46,9 +46,11 @@ var Video = (function() {
       if (getVideosIndex == videosCount) {
         updateChangedVideos();
         updateUI();
+        updateControls();
         animationLoading.stop(loadingGroupId);
       }
     }, function onerror() {
+      updateControls();
       animationLoading.stop(loadingGroupId);
     });
   }
@@ -209,12 +211,14 @@ var Video = (function() {
 
     $id('remove-videos').dataset.disabled =
       $expr('#video-list-container li[data-checked="true"]').length === 0;
-    $id('export-videos').dataset.disabled =
-      $expr('#video-list-container li[data-checked="true"]').length === 0;
-    $id('import-videos').dataset.disabled = false;
 
-    $id('import-videos').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
-    $id('export-videos').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
+    $id('import-videos').dataset.disabled = isWifiConnected ||
+                                            !adbHelperInstalled ||
+                                             needUpdateAdbHelper;
+    $id('export-videos').dataset.disabled = isWifiConnected ||
+                                            !adbHelperInstalled ||
+                                            needUpdateAdbHelper ||
+                                            ($expr('#video-list-container li[data-checked="true"]').length === 0);
   }
 
   function updateUI() {

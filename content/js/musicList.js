@@ -89,9 +89,11 @@ var MusicList = (function() {
       if (getMusicsIndex == musicsCount) {
         updateChangedMusics();
         updateUI();
+        updateControls();
         animationLoading.stop(loadingGroupId);
       }
     }, function onerror() {
+      updateControls();
       animationLoading.stop(loadingGroupId);
     });
   }
@@ -107,7 +109,7 @@ var MusicList = (function() {
 
   function createMusicListItem(music) {
     if (!music) {
-      return;
+      return null;
     }
 
     var templateData = {
@@ -176,20 +178,39 @@ var MusicList = (function() {
       return;
     }
     var loadingGroupId = animationLoading.start();
-    var file = self.id.split('music-play-');
+    var file = JSON.parse(self.parentNode.parentNode.dataset.music).name;
+    var index = file.lastIndexOf('/');
+    var name = file.substr(index + 1);
     var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', MUSIC_CACHE_FOLDER]);
-    var cmd = 'adb pull "' + file[1] + '" "' + path + file[1] + '"';
-    var cachedUrl = PRE_PATH + MUSIC_CACHE_FOLDER + file[1];
-    runCmd(cmd, function() {
+    if (!device) {
+      return;
+    }
+    var cachedUrl = PRE_PATH + MUSIC_CACHE_FOLDER + name;
+    device.pull(file, path + name).then(function() {
       self.classList.add('playing');
       playedAudio.src = cachedUrl;
       playedAudio.onended = function() {
         playedAudio.pause();
         playedAudio.src = '';
         playedAudio.removeAttribute('src');
-        playMusicBtns[i].classList.remove('playing');
+        self.classList.remove('playing');
+      }
+      playedAudio.onerror = function() {
+        playedAudio.src = '';
+        playedAudio.removeAttribute('src');
+        self.classList.remove('playing');
+        new AlertDialog({
+          message: _('operation-failed'),
+          showCancelButton: false
+        });
       }
       playedAudio.play();
+      animationLoading.stop(loadingGroupId);
+    }, function() {
+      new AlertDialog({
+        message: _('operation-failed'),
+        showCancelButton: false
+      });
       animationLoading.stop(loadingGroupId);
     });
   }
@@ -205,12 +226,14 @@ var MusicList = (function() {
     }
     $id('remove-musics').dataset.disabled =
       $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
-    $id('export-musics').dataset.disabled =
-      $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
-    $id('import-musics').dataset.disabled = false;
 
-    $id('import-musics').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
-    $id('export-musics').dataset.disabled = isWifiConnected || !adbHelperInstalled || needUpdateAdbHelper;
+    $id('import-musics').dataset.disabled = isWifiConnected ||
+                                            !adbHelperInstalled ||
+                                             needUpdateAdbHelper;
+    $id('export-musics').dataset.disabled = isWifiConnected ||
+                                            !adbHelperInstalled ||
+                                            needUpdateAdbHelper ||
+                                            ($expr('#music-list-container .music-list-item[data-checked="true"]').length === 0);
   }
 
   function musicItemClicked(elem) {
