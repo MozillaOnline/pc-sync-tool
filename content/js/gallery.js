@@ -228,7 +228,15 @@ var Gallery = (function() {
         return;
       }
       var cachedUrl = PRE_PATH + GALLERY_CACHE_FOLDER + name;
-      device.pull(picList[index].dataset.picUrl, path + name).then(function() {
+      var aFrom = picList[index].dataset.picUrl;
+      var reg = /^\/([a-z]+)\//;
+      var result = aFrom.match(reg);
+      var storage = result[1];
+      if (!storageInfoList[storage] || !storageInfoList[storage].path) {
+        return;
+      }
+      aFrom = aFrom.replace(reg, storageInfoList[storage].path);
+      device.pull(aFrom, path + name).then(function() {
         callback(true, cachedUrl);
         animationLoading.stop(loadingGroupId);
       }, function() {

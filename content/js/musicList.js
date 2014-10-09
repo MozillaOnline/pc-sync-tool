@@ -186,7 +186,15 @@ var MusicList = (function() {
       return;
     }
     var cachedUrl = PRE_PATH + MUSIC_CACHE_FOLDER + name;
-    device.pull(file, path + name).then(function() {
+    var aFrom = file;
+    var reg = /^\/([a-z]+)\//;
+    var result = aFrom.match(reg);
+    var storage = result[1];
+    if (!storageInfoList[storage] || !storageInfoList[storage].path) {
+      return;
+    }
+    aFrom = aFrom.replace(reg, storageInfoList[storage].path);
+    device.pull(aFrom, path + name).then(function() {
       self.classList.add('playing');
       playedAudio.src = cachedUrl;
       playedAudio.onended = function() {
