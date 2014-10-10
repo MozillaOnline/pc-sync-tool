@@ -34,7 +34,6 @@ TCPConnectionPool.prototype = {
       port: 25679,
       onconnected: emptyFunction,
       ondisconnected: emptyFunction,
-      onListening: emptyFunction,
       onerror: emptyFunction
     }, options);
     this.TCPSocket = this.createTCPSocket();
@@ -100,15 +99,9 @@ TCPConnectionPool.prototype = {
     return wrapper.__state__ === this.SOCKET_STATE.IDLE;
   },
 
-  _getWrapperBySocket: function tc_getWrapperBySocket(socket) {
-    if (!this._connPool) {
-      return null;
-    }
-    for (var i = 0; i < this._connPool.length; i++) {
-      var wrapper = this._connPool[i];
-      if (wrapper.socket == socket) {
-        return wrapper;
-      }
+  _getWrapper: function tc_getWrapper() {
+    if (this._connPool && this._connPool.length > 0) {
+      return this._connPool[0];
     }
     return null;
   },
@@ -179,9 +172,9 @@ TCPConnectionPool.prototype = {
    * The callback function to be called in the wrapper
    * @see TCPSocketWrapper
    */
-  _onWrapperMessage: function tc_onWrapperMessage(socket, jsonCmd, sendCallback, recvData) {
+  _onWrapperMessage: function tc_onWrapperMessage(jsonCmd, recvData) {
     try {
-      var wrapper = this._getWrapperBySocket(socket);
+      var wrapper = this._getWrapper();
       if (!wrapper) {
         return;
       }

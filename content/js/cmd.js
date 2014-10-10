@@ -49,22 +49,6 @@ var CMD = (function() {
     };
   }
 
-  function createListenCommand(target, command) {
-    return function(onresponse, onerror) {
-      FFOSAssistant.sendListenRequest({
-        cmd: {
-          type: target,
-          command: command,
-          result: 0,
-          data: null,
-          datalength: 0
-        },
-        onresponse: onresponse,
-        onerror: onerror
-      });
-    };
-  }
-
 /*
    * All the available commands grouped by targets.
    */
@@ -140,11 +124,6 @@ var CMD = (function() {
       getOldMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getOldMusicsInfo),
       getChangedMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getChangedMusicsInfo),
       deleteMusic: createCommand(CMD_TYPE.music, MUSIC_COMMAND.deleteMusic)
-    },
-
-    /***** Listen command *****/
-    Listen: {
-      listenMessage: createListenCommand(CMD_TYPE.listen, LISTEN_COMMAND.listen)
     }
   };
 })();

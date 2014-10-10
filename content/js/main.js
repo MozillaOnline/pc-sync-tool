@@ -260,6 +260,10 @@ var FFOSAssistant = (function() {
   }
 
   function releaseConnPool() {
+    if (connListenSocket) {
+      connListenSocket.socket.close();
+      connListenSocket = null;
+    }
     if (connPool) {
       connPool.finalize();
       connPool = null;
@@ -327,17 +331,13 @@ var FFOSAssistant = (function() {
         } else {
           isWifiConnected = false;
         }
-        if (connListenSocket) {
-          connListenSocket.socket.close();
-          connListenSocket = null;
-        }
         var socket = connPool.TCPSocket.open(serverIP, REMOTE_PORT, {
           binaryType: 'arraybuffer'
         });
         socket.onopen = function tc_onListenSocketOpened(event) {
           connListenSocket = new TCPSocketWrapper({
             socket: event.target,
-            onmessage: function(socket, jsonCmd, sendCallback, recvData) {
+            onmessage: function(jsonCmd, recvData) {
               if (connListenSocket == null) {
                 return;
               }
@@ -352,7 +352,6 @@ var FFOSAssistant = (function() {
               connListenSocket = null;
             }
           });
-          CMD.Listen.listenMessage(null, null);
         };
         showSummaryView();
       },
@@ -389,10 +388,7 @@ var FFOSAssistant = (function() {
     animationLoading.reset();
     $id('sidebar').style.display = 'none';
     MusicList.resetView();
-    if (connListenSocket) {
-      connListenSocket.socket.close();
-      connListenSocket = null;
-    }
+    releaseConnPool();
     $id('connect-button').classList.remove('hiddenElement');
     $id('disconnect-button').classList.add('hiddenElement');
     $id('device-empty').classList.remove('hiddenElement');
@@ -590,19 +586,6 @@ var FFOSAssistant = (function() {
     sendRequest: function(obj) {
       if (connPool) {
         connPool.send(obj);
-      }
-    },
-
-    sendListenRequest: function(obj) {
-      if (connListenSocket) {
-        obj.cmd = extend({
-          cmd: null,
-          data: null,
-          datalength: 0,
-          json: false
-        }, obj.cmd);
-        obj.cmd.id = 1;
-        connListenSocket.send(obj.cmd, obj.cmd.data);
       }
     }
   };
