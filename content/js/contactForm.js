@@ -340,11 +340,8 @@ var ContactForm = (function() {
     var customString = prompt(_('custom-title'), target.value);
     if(customString && customString != '' && customString != target.value) {
       target.value = customString;
-      var item = $id('custom-type');
-      if (item) {
-        item.textContent = customString;
-        item.setAttribute('data-l10n-id', customString);
-      }
+      e.textContent = customString;
+      e.setAttribute('data-l10n-id', customString);
       ContactForm.changeCount(1);
       ContactForm.changed();
     }

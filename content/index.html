@@ -411,9 +411,9 @@
             <%for (var i = 0; i < typeList.length; i++) {%>
               <%if (needCustom == true && i == (typeList.length - 1)) {%>
                 <%if (selectedIndex == i) {%>
-                  <option value="<%=typeList[i]%>" id="custom-type" onclick=ContactForm.custom(this) data-l10n-id="<%=typeList[i]%>" selected><%=typeList[i]%></option>
+                  <option value="<%=typeList[i]%>" onclick=ContactForm.custom(this) data-l10n-id="<%=typeList[i]%>" selected><%=typeList[i]%></option>
                 <%} else {%>
-                  <option value="<%=typeList[i]%>" id="custom-type" onclick=ContactForm.custom(this) data-l10n-id="<%=typeList[i]%>"><%=typeList[i]%></option>
+                  <option value="<%=typeList[i]%>" onclick=ContactForm.custom(this) data-l10n-id="<%=typeList[i]%>"><%=typeList[i]%></option>
                 <%}%>
               <%} else {%>
                 <%if (selectedIndex == i) {%>
