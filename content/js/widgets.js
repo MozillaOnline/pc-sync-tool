@@ -431,7 +431,7 @@ FilesOPDialog.prototype = {
           if (!device) {
             return;
           }
-          var reg = /^\/([a-z]+)\//;
+          var reg = /^\/([a-z 0-9]+)\//;
           var result = aFrom.match(reg);
           var storage = result[1];
           if (!storageInfoList[storage] || !storageInfoList[storage].path) {
