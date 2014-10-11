@@ -54,8 +54,8 @@
     debug('init');
     new Observer();
     modules.ADBService.init(handleMessage);
-
-    checkFirstRun();
+    //openFFOSInAPinnedTab();
+    loadIntoWindow();
   }
 
   function handleMessage(deviceList) {
@@ -65,16 +65,7 @@
     }, 1000);
   }
 
-  function checkFirstRun() {
-    var firstRunPref = 'extensions.' + ADDON_ID + '.firstrun';
-    if (Services.prefs.getBoolPref(firstRunPref, true)) {
-      Services.prefs.setBoolPref(firstRunPref, false);
-      openFFOSInAPinnedTab();
-      addToolbarButton();
-    }
-  }
-
-  function addToolbarButton() {
+  var loadIntoWindow = function() {
     if (!window) {
       return;
     }
@@ -83,15 +74,8 @@
     if (!navbar) {
       return;
     }
-    var bundle = Services.strings.createBundle('chrome://ffosassistant/locale/browser.properties');
-    var label = bundle.GetStringFromName('title');
-    var tooltip = bundle.GetStringFromName('tooltip');
-    var button = document.createElement("toolbarbutton");
-    button.id = "ffosassistant-button";
-    button.className = "ffosassistant-button toolbarbutton-1 chromeclass-toolbar-additional";
-    button.setAttribute("label", label);
-    button.tooltipText = label;
-    button.addEventListener("command", function onCommand(aEvent) {
+    
+    function wlaunch(aEvent) {
       var doc = aEvent.target && aEvent.target.ownerDocument;
       var win = doc && doc.defaultView;
       if (!win) {
@@ -102,7 +86,17 @@
       } else {
         win.openUILink('about:ffos');
       }
-    });
+    };
+
+    var bundle = Services.strings.createBundle('chrome://ffosassistant/locale/browser.properties');
+    var label = bundle.GetStringFromName('title');
+    var tooltip = bundle.GetStringFromName('tooltip');
+    var button = document.createElement("toolbarbutton");
+    button.id = "ffosassistant-button";
+    button.className = "ffosassistant-button toolbarbutton-1 chromeclass-toolbar-additional";
+    button.setAttribute("label", label);
+    button.tooltipText = label;
+    button.addEventListener("command", wlaunch);
     document.querySelector("#navigator-toolbox").palette.appendChild(button);
     var parent = document.querySelector("[currentset*=\"" + button.id + "\"]");
     if (parent) { /* restore position */
@@ -116,8 +110,44 @@
                       break;
               }
       }
-      if (!before) { parent.insertItem(button.id); }
+      if (!before) {
+        parent.insertItem(button.id);
+      }
+    } else { /* not present, insert on first run */
+      navbar.appendChild(button);
+      navbar.setAttribute("currentset", navbar.currentSet);
+      document.persist(navbar.id, "currentset");
     }
+
+
+    var menuitem = document.createElement("menuitem");
+    menuitem.id = "ffosassistant-menuitem";
+    menuitem.setAttribute("label", label);
+    menuitem.tooltipText = tooltip;
+    menuitem.className = "menuitem-iconic ffosassistant-button";
+    menuitem.addEventListener("command", wlaunch);
+    var menu = document.querySelector("#menu_ToolsPopup");
+    menu.insertBefore(menuitem, document.querySelector("#"+menu.id+" > menuseparator").nextSibling);
+
+    var pane = document.querySelector("#appmenuPrimaryPane");
+    if (pane) {
+      var menuitem2 = document.createElement("menuitem");
+      menuitem2.id = "ffosassistant-menuitem2";
+      menuitem2.setAttribute("label", label);
+      menuitem2.tooltipText = tooltip;
+      menuitem2.className = "menuitem-iconic ffosassistant-button";
+      menuitem2.addEventListener("command", wlaunch);
+      pane.insertBefore(menuitem2, document.querySelector("#appmenu-quit"));
+    }
+  }
+
+  var unloadFromWindow = function() {
+    if (!window) {
+      return;
+    }
+    removeById(window, "ffosassistant-toolbarbutton");
+    removeById(window, "ffosassistant-menuitem");
+    removeById(window, "ffosassistant-menuitem2");
   }
 
   function openFFOSInAPinnedTab() {

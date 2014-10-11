@@ -1,1 +1,0 @@
-pref('extensions.ffosassistant@mozillaonline.com.firstrun', true);
