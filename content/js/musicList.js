@@ -311,7 +311,7 @@ var MusicList = (function() {
       dialog.start();
     }, {
       title: _('import-music-title'),
-      fileType: 'Audio'
+      fileType: 'AudioTypes'
     });
   }
 
@@ -387,7 +387,7 @@ var MusicList = (function() {
         dialog.start();
       }, {
         title: _('export-music-title'),
-        fileType: 'Audio'
+        fileType: 'AudioTypes'
       });
     });
   });

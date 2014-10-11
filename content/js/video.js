@@ -285,7 +285,7 @@ var Video = (function() {
       dialog.start();
     }, {
       title: _('import-video-title'),
-      fileType: 'Video'
+      fileType: 'VideoTypes'
     });
   }
 
@@ -355,7 +355,7 @@ var Video = (function() {
         dialog.start();
       }, {
         title: _('export-video-title'),
-        fileType: 'Video'
+        fileType: 'VideoTypes'
       });
     });
   });

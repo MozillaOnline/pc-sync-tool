@@ -108,6 +108,10 @@ var utils = {
         filePicker.appendFilters(nsIFilePicker.filterAudio);
       } else if (options.fileType == 'Video') {
         filePicker.appendFilters(nsIFilePicker.filterVideo);
+      } else if (options.fileType == 'AudioTypes') {
+        filePicker.appendFilter('Audio Files', '*.mp3;*.m4a;*.m4b;*.m4p;*.m4r;*.mp4;*.amr;*.oga;*.ogg;*.opus;*.wav;*.3gp');
+      } else if (options.fileType == 'VideoTypes') {
+        filePicker.appendFilter('Video Files', '*.webm;*.ogv;*.ogg;*.ogx;*.mp4;*.m4v;*.mpeg;*.mpg;*.3gp');
       } else {
         filePicker.appendFilters(nsIFilePicker.filterAll);
       }
@@ -224,8 +228,10 @@ var utils = {
         filePicker.appendFilters(nsIFilePicker.filterAudio);
       } else if (options.fileType == 'Video') {
         filePicker.appendFilters(nsIFilePicker.filterVideo);
+      } else if (options.fileType == 'AudioTypes') {
+        filePicker.appendFilter('Audio Files', '*.mp3;*.m4a;*.m4b;*.m4p;*.m4r;*.mp4;*.amr;*.oga;*.ogg;*.opus;*.wav;*.3gp');
       } else if (options.fileType == 'VideoTypes') {
-        filePicker.appendFilter('Video Files', '*.webm;*.ogv;*.ogg;*.mp4;*.3gp');
+        filePicker.appendFilter('Video Files', '*.webm;*.ogv;*.ogg;*.ogx;*.mp4;*.m4v;*.mpeg;*.mpg;*.3gp');
       } else {
         filePicker.appendFilters(nsIFilePicker.filterAll);
       }
