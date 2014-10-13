@@ -111,12 +111,17 @@ var MusicList = (function() {
     if (!music) {
       return null;
     }
-
+    var musicType;
+    if (music.type.indexOf('/') < 0) {
+      musicType = music.type;
+    } else {
+      musicType = music.type.substring(music.type.indexOf('/') + 1);
+    }
     var templateData = {
       title: music.metadata.title,
       artist: music.metadata.artist,
       album: music.metadata.album,
-      type: music.type,
+      type: musicType,
       size: toSizeInMB(music.size),
       id: 'music-play-' + music.name,
       canPlay: !isWifiConnected

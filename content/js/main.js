@@ -134,20 +134,21 @@ var FFOSAssistant = (function() {
           musicUsed: '',
           videoUsed: ''
         };
-
-        total = dataJSON[uname].sdcard.usedSpace + dataJSON[uname].sdcard.freeSpace;
+        var total = 0;
+        if (dataJSON[uname].info && dataJSON[uname].info.usedSpace && dataJSON[uname].info.freeSpace)
+          total = dataJSON[uname].info.usedSpace + dataJSON[uname].info.freeSpace;
         var storageInfo = {
           path: '/storage/sdcard' + dataJSON[uname].id + '/',
           totalSpace: total,
-          freeSpace: dataJSON[uname].sdcard.freeSpace
+          freeSpace: dataJSON[uname].info.freeSpace ? dataJSON[uname].info.freeSpace : 0
         };
         storageInfoList[uname] = storageInfo;
         if (total > 0) {
-          templateData.storageUsed = Math.floor(dataJSON[uname].sdcard.usedSpace / total * 100) + '%';
-          templateData.storageNumber = formatStorage(dataJSON[uname].sdcard.usedSpace) + '/' + formatStorage(total) + ' ' + templateData.storageUsed;
-          templateData.pictureUsed = Math.floor(dataJSON[uname].pictures.usedSpace / total * 100) + '%';
-          templateData.musicUsed = Math.floor(dataJSON[uname].music.usedSpace / total * 100) + '%';
-          templateData.videoUsed = Math.floor(dataJSON[uname].videos.usedSpace / total * 100) + '%';
+          templateData.storageUsed = Math.floor(dataJSON[uname].info.usedSpace / total * 100) + '%';
+          templateData.storageNumber = formatStorage(dataJSON[uname].info.usedSpace) + '/' + formatStorage(total) + ' ' + templateData.storageUsed;
+          templateData.pictureUsed = Math.floor(dataJSON[uname].info.pictures / total * 100) + '%';
+          templateData.musicUsed = Math.floor(dataJSON[uname].info.music / total * 100) + '%';
+          templateData.videoUsed = Math.floor(dataJSON[uname].info.videos / total * 100) + '%';
         } else {
           templateData.storageNumber = '0.00M/0.00M';
           templateData.storageUsed = '0%';
@@ -227,10 +228,16 @@ var FFOSAssistant = (function() {
       if (clientVer > 2) {
         getStorageInfo();
       } else {
-        //Todo: msg-please-download-from-marketplace
+        new AlertDialog({
+          message: _('download-new-version'),
+          showCancelButton: false
+        });
       }
     }, function onerror_getStorage(message) {
-      //Todo: msg-please-download-from-marketplace
+      new AlertDialog({
+        message: _('download-new-version'),
+        showCancelButton: false
+      });
     });
   }
 
