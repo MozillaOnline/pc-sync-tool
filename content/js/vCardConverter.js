@@ -269,6 +269,9 @@ vCardConverter = {
                 if (!type.test(e)) {
                   type = /type=(.+)[:]/;
                 }
+                if (!type.test(e)) {
+                  type = /type=(.+)/;
+                }
                 results = e.match(type);
                 contact.email.push({
                   'type': [results[1]],
@@ -366,6 +369,9 @@ vCardConverter = {
                 if (!type.test(e)) {
                   type = /type=(.+)[:]/;
                 }
+                if (!type.test(e)) {
+                  type = /type=(.+)/;
+                }
                 results = e.match(type);
                 contact.tel.push({
                   'type': [results[1]],
@@ -412,6 +418,9 @@ vCardConverter = {
                 var results = ['type=other', 'other'];
                 if (!type.test(e)) {
                   type = /type=(.+)[:]/;
+                }
+                if (!type.test(e)) {
+                  type = /type=(.+)/;
                 }
                 results = e.match(type);
                 contact.adr.push({
@@ -487,6 +496,9 @@ vCardConverter = {
                 var results = ['type=other', 'other'];
                 if (!type.test(e)) {
                   type = /type=(.+)[:]/;
+                }
+                if (!type.test(e)) {
+                  type = /type=(.+)/;
                 }
                 results = e.match(type);
                 contact.email.push({
@@ -585,6 +597,9 @@ vCardConverter = {
                 if (!type.test(e)) {
                   type = /type=(.+)[:]/;
                 }
+                if (!type.test(e)) {
+                  type = /type=(.+)/;
+                }
                 results = e.match(type);
                 contact.tel.push({
                   'type': [results[1]],
@@ -640,6 +655,9 @@ vCardConverter = {
                 var results = ['type=other', 'other'];
                 if (!type.test(e)) {
                   type = /type=(.+)[:]/;
+                }
+                if (!type.test(e)) {
+                  type = /type=(.+)/;
                 }
                 results = e.match(type);
                 contact.adr.push({
