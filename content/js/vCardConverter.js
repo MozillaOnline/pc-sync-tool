@@ -37,14 +37,14 @@ vCardConverter = {
         //contacts exported from Apple
         if (item.prodid.indexOf('Apple') != -1) {
           if (item.fn && item.fn != '') {
-            var fullName = item.fn;
-            var index = fullName.indexOf(' ');
-            if (index > 0) {
-              contact.familyName = [fullName.substr(index + 1, fullName.length)];
-              contact.givenName = [fullName.substr(0, index)];
-              contact.name = [contact.givenName[0], contact.familyName[0]];
-            } else {
-              contact.name = [fullName];
+            var name = item.n.split(';');
+            contact.familyName = [name[0]];
+            contact.givenName = [name[1]];
+            if (contact.givenName[0] != '') {
+              contact.name.push(contact.givenName[0]);
+            }
+            if (contact.familyName[0] != '') {
+              contact.name.push(contact.familyName[0]);
             }
           }
           if (item.org && item.org != '') {
@@ -218,15 +218,14 @@ vCardConverter = {
       } else {
         if (item.version == '3.0' || item.version == '4.0') {
           if (item.fn && item.fn != '') {
-            var fullName = item.fn;
-            var index = fullName.indexOf(' ');
-            if (index > 0) {
-              contact.givenName = [fullName.substr(index + 1, fullName.length)];
-              contact.familyName = [fullName.substr(0, index)];
-              contact.name = [contact.givenName[0], contact.familyName[0]];
-            } else {
-              contact.givenName = [fullName];
-              contact.name = [fullName];
+            var name = item.n.split(';');
+            contact.familyName = [name[0]];
+            contact.givenName = [name[1]];
+            if (contact.givenName[0] != '') {
+              contact.name.push(contact.givenName[0]);
+            }
+            if (contact.familyName[0] != '') {
+              contact.name.push(contact.familyName[0]);
             }
           }
           if (item.org && item.org != '') {
@@ -437,15 +436,15 @@ vCardConverter = {
         }
         if (item.version == '2.1') {
           if (item.fn && item.fn != '') {
-            var fullName = decodeURIComponent(item.fn.replace(/=/g, '%'));
-            var index = fullName.indexOf(' ');
-            if (index > 0) {
-              contact.givenName = [fullName.substr(index + 1, fullName.length)];
-              contact.familyName = [fullName.substr(0, index)];
-              contact.name = [contact.givenName[0], contact.familyName[0]];
-            } else {
-              contact.givenName = [fullName];
-              contact.name = [fullName];
+            var fullName = decodeURIComponent(item.n.replace(/=/g, '%'));
+            var name = fullName.split(';');
+            contact.familyName = [name[0]];
+            contact.givenName = [name[1]];
+            if (contact.givenName[0] != '') {
+              contact.name.push(contact.givenName[0]);
+            }
+            if (contact.familyName[0] != '') {
+              contact.name.push(contact.familyName[0]);
             }
           }
           if (item.org && item.org != '') {

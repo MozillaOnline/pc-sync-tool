@@ -86,7 +86,7 @@ vCard = {
     var regexps = {
       begin: /^BEGIN:VCARD/i,
       end: /^END:VCARD/i,
-      simple: /^(prodid|version|fn|title|org|note)\:(.+)$/i,
+      simple: /^(prodid|version|n|fn|title|org|note)\:(.+)$/i,
       complex: /^([^\:\;]+);([^\:]+)\:(.*)$/,
       key: /item\d{1,2}\./,
       key2: /(\;charset=.+)\:/i,
