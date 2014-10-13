@@ -457,6 +457,10 @@ FilesOPDialog.prototype = {
           }
 
           if (!bCanPush) {
+            new AlertDialog({
+              message: _('no-free-memory'),
+              showCancelButton: false
+            });
             return;
           }
           console.log('adb push from: ' + aFrom + ' to: ' + aDest);
