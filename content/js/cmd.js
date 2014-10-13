@@ -60,6 +60,7 @@ var CMD = (function() {
       getVersion: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getVersion),
       getStorage: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorage),
       getSettings: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getSettings),
+      getStorageFree: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorageFree),
     },
 
     /***** Contacts commands *****/

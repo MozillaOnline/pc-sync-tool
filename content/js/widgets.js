@@ -447,24 +447,19 @@ FilesOPDialog.prototype = {
           if (!device || !fileSize) {
             return;
           }
-          if (storageInfoList.external && storageInfoList.external.freeSpace > fileSize) {
-            aDest = storageInfoList.external.path + aDest;
-            bCanPush = true;
+          for (var uname in storageInfoList) {
+            if (storageInfoList[uname] && storageInfoList[uname].freeSpace && storageInfoList[uname].freeSpace > fileSize) {
+              aDest = storageInfoList[uname].path + aDest;
+              bCanPush = true;
+              break;
+            }
           }
-          if (!bCanPush && storageInfoList.sdcard && storageInfoList.sdcard.freeSpace > fileSize) {
-            aDest = storageInfoList.sdcard.path + aDest;
-            bCanPush = true;
-          }
-
           if (!bCanPush) {
-            new AlertDialog({
-              message: _('no-free-memory'),
-              showCancelButton: false
-            });
-            return;
+            error();
+          } else {
+            console.log('adb push from: ' + aFrom + ' to: ' + aDest);
+            device.push(aFrom, aDest).then(success, error);
           }
-          console.log('adb push from: ' + aFrom + ' to: ' + aDest);
-          device.push(aFrom, aDest).then(success, error);
           break;
       }
 
@@ -489,7 +484,15 @@ FilesOPDialog.prototype = {
         filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
 
         if (self._fileIndex != self.options.files.length) {
-          doCmd();
+          CMD.Device.getStorageFree(function onresponse_getDeviceInfo(message) {
+            var dataJSON = JSON.parse(message.data);
+            for (var uname in dataJSON) {
+              storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
+            }
+            doCmd();
+          }, function onerror_getStorage(message) {
+            doCmd();
+          });
           return;
         }
         clearInterval(self._timer);
