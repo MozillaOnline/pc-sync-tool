@@ -185,12 +185,12 @@ var MusicList = (function() {
     var loadingGroupId = animationLoading.start();
     var file = JSON.parse(self.parentNode.parentNode.dataset.music).name;
     var index = file.lastIndexOf('/');
-    var name = file.substr(index + 1);
-    var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', MUSIC_CACHE_FOLDER]);
+    var name = file.substr(index);
+    var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER]);
     if (!device) {
       return;
     }
-    var cachedUrl = PRE_PATH + MUSIC_CACHE_FOLDER + name;
+    var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
     var aFrom = file;
     var reg = /^\/([a-z]+)\//;
     var result = aFrom.match(reg);

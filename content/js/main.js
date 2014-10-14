@@ -15,6 +15,7 @@ var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
 var browserEnumerator = wm.getEnumerator("navigator:browser");
 var bFound = false;
 var bInit = false;
+const CACHE_FOLDER = 'media_tmp';
 
 while (browserEnumerator.hasMoreElements()) {
   var browserWin = browserEnumerator.getNext();
@@ -168,9 +169,9 @@ var FFOSAssistant = (function() {
           templateData.displayName = _('sdcard');
         } else if (templateDataList.length > 1) {
           if (i == 0) {
-            templateData.displayName = _('internal');
+            templateData.displayName = 'internal';
           } else {
-            templateData.displayName = _('sdcard');
+            templateData.displayName = 'sdcard';
           }
         }
         var elem = document.createElement('div');

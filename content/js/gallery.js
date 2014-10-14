@@ -1,5 +1,4 @@
 var Gallery = (function() {
-  const GALLERY_CACHE_FOLDER = 'gallery_tmp';
   const PRE_PATH = 'chrome://ffosassistant/content/';
 
   function getListContainer() {
@@ -221,13 +220,13 @@ var Gallery = (function() {
     var picList = $expr('li', getListContainer());
     if (picList[index]) {
       // TODO: check if picture has been cached already
-      var name = picList[index].dataset.picUrl.substr(picList[index].dataset.picUrl.lastIndexOf('/') + 1);
+      var name = picList[index].dataset.picUrl.substr(picList[index].dataset.picUrl.lastIndexOf('/'));
 
-      var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', GALLERY_CACHE_FOLDER]);
+      var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER]);
       if (!device) {
         return;
       }
-      var cachedUrl = PRE_PATH + GALLERY_CACHE_FOLDER + name;
+      var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
       var aFrom = picList[index].dataset.picUrl;
       var reg = /^\/([a-z]+)\//;
       var result = aFrom.match(reg);
