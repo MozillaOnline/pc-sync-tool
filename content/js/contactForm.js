@@ -243,7 +243,8 @@ var ContactForm = (function() {
 
     fields['adr'] = new ContactField({
       id: 'address',
-      typeList: ['home', 'work'],
+      needCustom: true,
+      typeList: ['home', 'work', 'custom'],
       fields: [{
         name: 'streetAddress',
         l10nId: 'street',
@@ -268,7 +269,8 @@ var ContactForm = (function() {
 
     fields['email'] = new ContactField({
       id: 'email',
-      typeList: ['personal', 'work', 'home'],
+      needCustom: true,
+      typeList: ['personal', 'work', 'home', 'custom'],
       fields: [{
         name: 'value',
         l10nId: 'email',
