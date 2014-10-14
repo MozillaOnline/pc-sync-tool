@@ -308,9 +308,9 @@ var FFOSAssistant = (function() {
           if (isWifiConnected) {
             contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
           }
-          var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+          var url = 'chrome://ffosassistant/content/Help/help-en.html';
           if (navigator.mozL10n.language.code == 'zh-CN') {
-            url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+            url = 'chrome://ffosassistant/content/Help/help-cn.html';
           }
           new AlertDialog({
             id: 'popup_dialog',
@@ -368,9 +368,9 @@ var FFOSAssistant = (function() {
         releaseConnPool();
         if (deviceSocketState == connectState.connecting) {
           var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
-          var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+          var url = 'chrome://ffosassistant/content/Help/help-en.html';
           if (navigator.mozL10n.language.code == 'zh-CN') {
-            url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+            url = 'chrome://ffosassistant/content/Help/help-cn.html';
           }
           new AlertDialog({
             id: 'popup_dialog',
@@ -459,16 +459,16 @@ var FFOSAssistant = (function() {
       });
     };
     $id('help').onclick = function(e) {
-      var url = 'chrome://ffosassistant/content/Help/Help-en.html';
+      var url = 'chrome://ffosassistant/content/Help/help-en.html';
       if (navigator.mozL10n.language.code == 'zh-CN') {
-        url = 'chrome://ffosassistant/content/Help/Help-cn.html';
+        url = 'chrome://ffosassistant/content/Help/help-cn.html';
       }
       window.open(url);
     };
     $id('help-button').onclick = function(e) {
-      var url = 'chrome://ffosassistant/content/Help/Help-en.html#USB';
+      var url = 'chrome://ffosassistant/content/Help/help-en.html#USB';
       if (navigator.mozL10n.language.code == 'zh-CN') {
-        url = 'chrome://ffosassistant/content/Help/Help-cn.html#USB';
+        url = 'chrome://ffosassistant/content/Help/help-cn.html#USB';
       }
       window.open(url);
     };
