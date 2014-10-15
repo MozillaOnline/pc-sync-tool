@@ -380,12 +380,14 @@ FilesOPDialog.prototype = {
       var aFrom = '';
       var aDest = '';
       var type = '';
+      var aName = '';
 
       switch (self.options.type) {
         case 1:
           type = 'push';
+          aName = getFileName(self.options.files[self._fileIndex]);
           aFrom = self.options.files[self._fileIndex];
-          aDest = 'Music/' + getFileName(self.options.files[self._fileIndex]);
+          aDest = 'Music/' + encodeURIComponent(aName);
           break;
         case 2:
           type = 'pull';
@@ -395,8 +397,9 @@ FilesOPDialog.prototype = {
           break;
         case 3:
           type = 'push';
+          aName = getFileName(self.options.files[self._fileIndex]);
           aFrom = self.options.files[self._fileIndex];
-          aDest = 'Movies/' + getFileName(self.options.files[self._fileIndex]);
+          aDest = 'Movies/' + encodeURIComponent(aName);
           break;
         case 4:
           type = 'pull';
@@ -412,8 +415,9 @@ FilesOPDialog.prototype = {
           break;
         case 6:
           type = 'push';
+          aName = getFileName(self.options.files[self._fileIndex]);
           aFrom = self.options.files[self._fileIndex];
-          aDest = 'DCIM/' + getFileName(self.options.files[self._fileIndex]);
+          aDest = 'DCIM/' + encodeURIComponent(aName);
           break;
         case 7:
           CMD.Pictures.deletePicture(self.options.files[self._fileIndex], success, error);
@@ -429,12 +433,14 @@ FilesOPDialog.prototype = {
       switch(type) {
         case 'pull':
           if (!device) {
+            clear();
             return;
           }
           var reg = /^\/([a-z 0-9]+)\//;
           var result = aFrom.match(reg);
           var storage = result[1];
           if (!storageInfoList[storage] || !storageInfoList[storage].path) {
+            clear();
             return;
           }
           aFrom = aFrom.replace(reg, storageInfoList[storage].path);
@@ -445,6 +451,7 @@ FilesOPDialog.prototype = {
           var fileSize = getFileSize(aFrom);
           var bCanPush = false;
           if (!device || !fileSize) {
+            clear();
             return;
           }
           for (var uname in storageInfoList) {
@@ -533,6 +540,17 @@ FilesOPDialog.prototype = {
         }
 
         self.options.callback(filesToBeDone);
+      }
+
+      function clear() {
+        clearInterval(self._timer);
+        self._processbar.finish(self.options.files.length);
+        self.closeAll();
+        self.options.callback(filesToBeDone);
+        new AlertDialog({
+          message: _('operation-failed'),
+          showCancelButton: false
+        });
       }
     }, 0);
   },
