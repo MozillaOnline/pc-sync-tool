@@ -86,6 +86,7 @@ var FFOSAssistant = (function() {
   }
 
   function showSummaryView() {
+    $id('sidebar').style.display = 'block';
     $id('connect-button').classList.add('hiddenElement');
     $id('disconnect-button').classList.remove('hiddenElement');
     $id('device-empty').classList.add('hiddenElement');
@@ -279,9 +280,7 @@ var FFOSAssistant = (function() {
   }
 
   function resetConnect() {
-    if (!isWindows()) {
-      isWifiConnected = false;
-    }
+    isWifiConnected = false;
     showConnectView();
     ViewManager.reset();
     deviceSocketState = connectState.disconnected;
@@ -329,7 +328,6 @@ var FFOSAssistant = (function() {
       },
       onconnected: function onconnected() {
         animationLoading.stop(loadingGroupId);
-        $id('sidebar').style.display = 'block';
         if (deviceSocketState != connectState.connecting) {
           return;
         }
@@ -394,7 +392,7 @@ var FFOSAssistant = (function() {
 
   function showConnectView() {
     animationLoading.reset();
-    $id('sidebar').style.display = 'none';
+    var loadingGroupId = animationLoading.start();
     MusicList.resetView();
     releaseConnPool();
     $id('connect-button').classList.remove('hiddenElement');
@@ -405,7 +403,7 @@ var FFOSAssistant = (function() {
     $id('device-unconnected').classList.remove('hiddenElement');
     $id('views').classList.add('hidden-views');
     $id("mgmt-list").hidden = true;
-
+    $id('sidebar').style.display = 'none';
     $id('usb-connection-button').onclick = showUsbConnection;
     $id('wifi-connection-button').onclick = function() {
       $id('wifi-connection-button').dataset.checked = true;
@@ -473,6 +471,7 @@ var FFOSAssistant = (function() {
       window.open(url);
     };
     ViewManager.showContent('connect-view');
+    animationLoading.stop(loadingGroupId);
   }
 
   var observerService = Components.classes["@mozilla.org/observer-service;1"]
@@ -514,11 +513,7 @@ var FFOSAssistant = (function() {
     };
     $id('disconnect-button').onclick = function onclick_disconnect(event) {
       releaseConnPool();
-      if (!isWindows()) {
-        isWifiConnected = false;
-      }
-      showConnectView();
-      ViewManager.reset();
+      resetConnect();
     };
     customEventElement.addEventListener('firstshow', function(e) {
       switch (e.detail.type) {

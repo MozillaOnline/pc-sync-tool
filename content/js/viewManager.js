@@ -162,7 +162,8 @@ var ViewManager = (function() {
       // Link content view with tab
       linkedView.dataset.linkedTab = elem.id;
       elem.onclick = function(event) {
-        showContent(this.dataset.linkedView);
+        if (this.dataset.linkedView != 'connect-view')
+          showContent(this.dataset.linkedView);
       };
     });
   }
