@@ -499,7 +499,7 @@ var FFOSAssistant = (function() {
   };
 
   function init() {
-    $id('lang-settings').addEventListener('click', function onclick_langsetting(event) {
+    $id('lang-settings').onclick = function onclick_langsetting(event) {
       if (!event.target.classList.contains('language-code-button')) {
         return;
       }
@@ -508,18 +508,18 @@ var FFOSAssistant = (function() {
         elem.classList.remove('current');
       });
       event.target.classList.add('current');
-    });
-    $id('connect-button').addEventListener('click', function onclick_connect(event) {
+    };
+    $id('connect-button').onclick = function onclick_connect(event) {
       observerService.notifyObservers(null, 'ffosassistant-start-connection', '');
-    });
-    $id('disconnect-button').addEventListener('click', function onclick_disconnect(event) {
+    };
+    $id('disconnect-button').onclick = function onclick_disconnect(event) {
       releaseConnPool();
       if (!isWindows()) {
         isWifiConnected = false;
       }
       showConnectView();
       ViewManager.reset();
-    });
+    };
     customEventElement.addEventListener('firstshow', function(e) {
       switch (e.detail.type) {
         case 'summary-view':

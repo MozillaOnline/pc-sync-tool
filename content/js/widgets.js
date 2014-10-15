@@ -602,11 +602,11 @@ FilesOPDialog.prototype = {
   _makeDialogCancelable: function() {
     var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
     closeBtn.hidden = false;
-    closeBtn.addEventListener('click', this.close.bind(this));
+    closeBtn.onclick = this.close.bind(this);
 
     var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
     cancelBtn.hidden = false;
-    cancelBtn.addEventListener('click', this.close.bind(this));
+    cancelBtn.onclick = this.close.bind(this);
 
     var self = this;
   },
@@ -760,9 +760,9 @@ ImageViewer.prototype = {
   _addListeners: function() {
     var closeBtn = $expr('.closeX', this._modalElement)[0];
     closeBtn.hidden = false;
-    closeBtn.addEventListener('click', this.close.bind(this));
-    $id('gallery-left-arrow').addEventListener('click', this._showPreviousPic.bind(this));
-    $id('gallery-right-arrow').addEventListener('click', this._showNextPic.bind(this));
+    closeBtn.onclick = this.close.bind(this);
+    $id('gallery-left-arrow').onclick = this._showPreviousPic.bind(this);
+    $id('gallery-right-arrow').onclick = this._showNextPic.bind(this);
   },
 
   _fireEvent: function(name, data) {
@@ -859,11 +859,11 @@ WifiModePromptDialog.prototype = {
   _makeDialogCancelable: function() {
     var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
     closeBtn.hidden = false;
-    closeBtn.addEventListener('click', this.close.bind(this));
+    closeBtn.onclick = this.close.bind(this);
 
     var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
     cancelBtn.hidden = false;
-    cancelBtn.addEventListener('click', this.close.bind(this));
+    cancelBtn.onclick = this.close.bind(this);
 
     var self = this;
   },
@@ -998,14 +998,14 @@ AlertDialog.prototype = {
 
   _makeDialogCancelable: function() {
     var okBtn = $expr('.button-ok', this._modalElement)[0];
-    okBtn.addEventListener('click', this.okButtonCallback.bind(this));
+    okBtn.onclick = this.okButtonCallback.bind(this);
 
     var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
     cancelBtn.hidden = !this.options.showCancelButton;
-    cancelBtn.addEventListener('click', this.cancelButtonCallback.bind(this));
+    cancelBtn.onclick = this.cancelButtonCallback.bind(this);
 
     var closeBtn = $expr('.alert-dialog-header-x', this._modalElement)[0];
-    closeBtn.addEventListener('click', this.cancelButtonCallback.bind(this));
+    closeBtn.onclick = this.cancelButtonCallback.bind(this);
   },
 
   _adjustModalPosition: function() {

@@ -497,7 +497,7 @@ var ContactList = (function() {
   }
 
   window.addEventListener('load', function wnd_onload(event) {
-    $id('selectAll-contacts').addEventListener('click', function selectAll_onclick(event) {
+    $id('selectAll-contacts').onclick = function selectAll_onclick(event) {
       if (this.dataset.disabled == "true") {
         return;
       }
@@ -513,18 +513,18 @@ var ContactList = (function() {
         selectAllContacts(false);
         ViewManager.showViews('contact-quick-add-view');
       }
-    });
+    };
 
-    $id('search-contact-input').addEventListener('keyup', function onclick_searchContact(event) {
+    $id('search-contact-input').onkeyup = function onclick_searchContact(event) {
       showSearchList(this.value);
-    });
-    $id('search-contact-input').addEventListener('keydown', function onclick_searchContact(event) {
+    };
+    $id('search-contact-input').onkeydown = function onclick_searchContact(event) {
       if(event.keyCode == 13) {
         event.preventDefault();
       }
-    });
+    };
 
-    $id('remove-contacts').addEventListener('click', function onclick_removeContact(event) {
+    $id('remove-contacts').onclick = function onclick_removeContact(event) {
       // Do nothing if the button is disabled.
       if (this.dataset.disabled == 'true') {
         return;
@@ -550,25 +550,25 @@ var ContactList = (function() {
           ViewManager.showViews('contact-quick-add-view');
         }
       });
-    });
+    };
 
-    $id('add-new-contact').addEventListener('click', function onclick_addNewContact(event) {
+    $id('add-new-contact').onclick = function onclick_addNewContact(event) {
       ContactForm.editContact();
-    });
+    };
 
-    $id('refresh-contacts').addEventListener('click', function onclick_refreshContacts(event) {
+    $id('refresh-contacts').onclick = function onclick_refreshContacts(event) {
       init();
-    });
+    };
 
-    $id('import-contacts').addEventListener('click', function onclick_importContacts(event) {
+    $id('import-contacts').onclick = function onclick_importContacts(event) {
       readFromDisk(function(state, data) {
         if (state) {
           vCardConverter.importContacts(data);
         }
       });
-    });
+    };
 
-    $id('export-contacts').addEventListener('click', function onclick_exportContacts(event) {
+    $id('export-contacts').onclick = function onclick_exportContacts(event) {
       // Do nothing if the button is disabled.
       if (this.dataset.disabled == 'true') {
         return;
@@ -592,7 +592,7 @@ var ContactList = (function() {
         name: 'contacts.vcf',
         extension: 'vcf'
       });
-    });
+    };
   });
 
   return {

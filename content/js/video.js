@@ -290,14 +290,14 @@ var Video = (function() {
   }
 
   window.addEventListener('load', function wnd_onload(event) {
-    $id('selectAll-videos').addEventListener('click', function(event) {
+    $id('selectAll-videos').onclick = function(event) {
       if (this.dataset.disabled == 'true') {
         return;
       }
       selectAllVideos(this.dataset.checked == 'false');
-    });
+    };
 
-    $id('remove-videos').addEventListener('click', function onclick_removeVideos(event) {
+    $id('remove-videos').onclick = function onclick_removeVideos(event) {
       if (this.dataset.disabled == 'true') {
         return;
       }
@@ -320,17 +320,15 @@ var Video = (function() {
           removeVideos(files);
         }
       });
-    });
+    };
 
-    $id('refresh-videos').addEventListener('click', function onclick_refreshVideos(event) {
+    $id('refresh-videos').onclick = function onclick_refreshVideos(event) {
       updateChangedVideos();
-    });
+    };
 
-    $id('import-videos-btn').addEventListener('click', importVideos);
+    $id('import-videos-btn').onclick = $id('import-videos').onclick =importVideos;
 
-    $id('import-videos').addEventListener('click', importVideos);
-
-    $id('export-videos').addEventListener('click', function onclick_exportVideos(event) {
+    $id('export-videos').onclick = function onclick_exportVideos(event) {
       if (this.dataset.disabled == 'true') {
         return;
       }
@@ -357,7 +355,7 @@ var Video = (function() {
         title: _('export-video-title'),
         fileType: 'VideoTypes'
       });
-    });
+    };
   });
 
   return {

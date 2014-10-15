@@ -340,14 +340,14 @@ var Gallery = (function() {
   }
 
   window.addEventListener('load', function wnd_onload(event) {
-    $id('selectAll-pictures').addEventListener('click', function(event) {
+    $id('selectAll-pictures').onclick = function(event) {
       if (this.dataset.disabled == "true") {
         return;
       }
       selectAllPictures(this.dataset.checked == "false");
-    });
+    };
 
-    $id('remove-pictures').addEventListener('click', function onclick_removePictures(event) {
+    $id('remove-pictures').onclick = function onclick_removePictures(event) {
       if (this.dataset.disabled == 'true') {
         return;
       }
@@ -366,17 +366,15 @@ var Gallery = (function() {
           removePictures(files);
         }
       });
-    });
+    };
 
-    $id('refresh-pictures').addEventListener('click', function onclick_refreshPictures(event) {
+    $id('refresh-pictures').onclick = function onclick_refreshPictures(event) {
       updateChangedPictures();
-    });
+    };
 
-    $id('import-pictures-btn').addEventListener('click', importPictures);
+    $id('import-pictures-btn').onclick = $id('import-pictures').onclick = importPictures;
 
-    $id('import-pictures').addEventListener('click', importPictures);
-
-    $id('export-pictures').addEventListener('click', function onclick_exportPictures(event) {
+    $id('export-pictures').onclick = function onclick_exportPictures(event) {
       if (this.dataset.disabled == 'true') {
         return;
       }
@@ -403,7 +401,7 @@ var Gallery = (function() {
         title: _('export-picture-title'),
         fileType: 'Image'
       });
-    });
+    };
   });
 
   return {

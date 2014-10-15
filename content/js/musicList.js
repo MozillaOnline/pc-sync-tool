@@ -149,7 +149,7 @@ var MusicList = (function() {
     if (!isWifiConnected) {
       var playMusicBtns = $expr('.music-play-button', elem);
       for (var i = 0; i < playMusicBtns.length; i++) {
-        playMusicBtns[i].addEventListener('click', playMusic);
+        playMusicBtns[i].onclick = playMusic;
       }
     }
     return elem;
@@ -321,14 +321,14 @@ var MusicList = (function() {
   }
 
   window.addEventListener('load', function wnd_onload(event) {
-    $id('selectAll-musics').addEventListener('click', function onclick_selectAll(event) {
+    $id('selectAll-musics').onclick = function onclick_selectAll(event) {
       if (this.dataset.disabled == 'true') {
         return;
       }
       selectAllMusics(this.dataset.checked == 'false');
-    });
+    };
 
-    $id('remove-musics').addEventListener('click', function onclick_removeMusic(event) {
+    $id('remove-musics').onclick = function onclick_removeMusic(event) {
       // Do nothing if the button is disabled.
       if (this.dataset.disabled == 'true') {
         return;
@@ -358,16 +358,15 @@ var MusicList = (function() {
           removeMusics(files);
         }
       });
-    });
+    };
 
-    $id('refresh-musics').addEventListener('click', function onclick_refreshMusics(event) {
+    $id('refresh-musics').onclick = function onclick_refreshMusics(event) {
       updateChangedMusics();
-    });
+    };
 
-    $id('import-musics-btn').addEventListener('click', importMusics);
-    $id('import-musics').addEventListener('click', importMusics);
+    $id('import-musics-btn').onclick = $id('import-musics').onclick = importMusics;
 
-    $id('export-musics').addEventListener('click', function(event) {
+    $id('export-musics').onclick = function(event) {
       if (this.dataset.disabled == 'true') {
         return;
       }
@@ -394,7 +393,7 @@ var MusicList = (function() {
         title: _('export-music-title'),
         fileType: 'AudioTypes'
       });
-    });
+    };
   });
 
   return {
