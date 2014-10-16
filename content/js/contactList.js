@@ -112,6 +112,7 @@ var ContactList = (function() {
     var isEmpty = groupedList.count() == 0;
     $id('selectAll-contacts').dataset.disabled = isEmpty;
     $id('empty-contact-container').hidden = !isEmpty;
+    $id('contact-list-container').hidden = isEmpty;
     updateControls();
     var searchInput = $id('search-contact-input');
     if (searchInput && searchInput.value.trim()) {
