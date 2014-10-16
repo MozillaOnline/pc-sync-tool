@@ -12,9 +12,10 @@
     <link rel="shortcut icon" type="image/icon" href="http://www.firefox.com.cn/media/img/firefox/favicon.ico?2013-06">
     <script>
       var FIREFOX_LINK = "http://www.firefox.com.cn";
-	  var ASSISTANT_LINK = "http://download.firefox.com.cn/chinaedition/addons/ffosassistant/ffosassistant-latest.xpi";
+      var ASSISTANT_LINK = "http://download.firefox.com.cn/chinaedition/addons/ffosassistant/ffosassistant-latest.xpi";
       var ADB_LINK = "https://ftp.mozilla.org/pub/mozilla.org/labs/fxos-simulator/adb-helper/#OS#/adbhelper-#OS#-latest.xpi";
-      var DRIVERS_LINK = "https://developer.android.com/tools/extras/oem-usb.html";
+      var DRIVERHELPER_LINK = "http://download.firefox.com.cn/chinaedition/addons/driverhelper/driverhelper-latest.xpi";
+      var ADBUSB_LINK = "http://download.firefox.com.cn/chinaedition/addons/driverhelper/adb_usb.ini";
       window.onload = function () {
         var platform = navigator.platform;
         var os = "";
@@ -34,8 +35,9 @@
                                  .replace(/#MAJOR_VERSION#/g, "1")
                                  .replace(/#MINOR_VERSION#/g, "3");
         document.getElementById("assistant-stable").href = ASSISTANT_LINK;
-		document.getElementById("firefox-stable").href = FIREFOX_LINK;
-		document.getElementById("drivers-list").href = DRIVERS_LINK;
+	document.getElementById("firefox-stable").href = FIREFOX_LINK;
+	document.getElementById("driver-helper").href = DRIVERHELPER_LINK;
+	document.getElementById("adb-usb").href = ADBUSB_LINK;
       };
 
     </script>
@@ -90,14 +92,19 @@
 
           <h3 id="USB">USB 连接</h3>
           <ul>
-            <li id="DRIVER">安装设备驱动
+            <li id="DRIVER">在Windows上，安装设备驱动
               <ul>
-                <li>在Windows上，请安装你的手机制造商提供的驱动程序
-                </li>
+                <li>请优先选择安装你的手机制造商提供的驱动程序</li>
+		<li>安装 Driver Helper 附加组件，可以为你安装第三方提供的设备驱动
+		  <p><a id="driver-helper" class="button download" href="#">安装 Driver Helper</a><p>
+		</li>
+	        <li>对于很少的一部分设备，需要拷贝 adb_usb.ini 到当前账户的 .android 目录(例如："C:\Users\用户名\.android\")，并重启你的Windows
+		  <p><a id="adb-usb" class="button download" href="#">下载 adb_usb.ini</a><p>
+		</li>
               </ul>
             </li>
             <li>为桌面版 Firefox 安装附加组件 ADB Helper
-              <p><a id="adbhelper-stable" class="button download" href="#">ADB Helper</a><p>
+              <p><a id="adbhelper-stable" class="button download" href="#">安装 ADB Helper</a><p>
             </li>
             <li id="SETTINGS">配置你的设备
               <ul>

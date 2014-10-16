@@ -12,9 +12,10 @@
     <link rel="shortcut icon" type="image/icon" href="http://www.firefox.com.cn/media/img/firefox/favicon.ico?2013-06">
     <script>
       var FIREFOX_LINK = "https://www.mozilla.org";
-	  var ASSISTANT_LINK = "http://download.firefox.com.cn/chinaedition/addons/ffosassistant/ffosassistant-latest.xpi";
+      var ASSISTANT_LINK = "http://download.firefox.com.cn/chinaedition/addons/ffosassistant/ffosassistant-latest.xpi";
       var ADB_LINK = "https://ftp.mozilla.org/pub/mozilla.org/labs/fxos-simulator/adb-helper/#OS#/adbhelper-#OS#-latest.xpi";
-      var DRIVERS_LINK = "https://developer.android.com/tools/extras/oem-usb.html";
+      var DRIVERHELPER_LINK = "http://download.firefox.com.cn/chinaedition/addons/driverhelper/driverhelper-latest.xpi";
+      var ADBUSB_LINK = "http://download.firefox.com.cn/chinaedition/addons/driverhelper/adb_usb.ini";
       window.onload = function () {
         var platform = navigator.platform;
         var os = "";
@@ -34,8 +35,9 @@
                                  .replace(/#MAJOR_VERSION#/g, "1")
                                  .replace(/#MINOR_VERSION#/g, "3");
         document.getElementById("assistant-stable").href = ASSISTANT_LINK;
-		document.getElementById("firefox-stable").href = FIREFOX_LINK;
-		document.getElementById("drivers-list").href = DRIVERS_LINK;
+	document.getElementById("firefox-stable").href = FIREFOX_LINK;
+	document.getElementById("driver-helper").href = DRIVERHELPER_LINK;
+	document.getElementById("adb-usb").href = ADBUSB_LINK;
       };
 
     </script>
@@ -90,14 +92,20 @@
 
           <h3 id="USB">USB connection</h3>
           <ul>
-            <li id="DRIVER">Install the device driver
+	    <li id="DRIVER">Install the device driver in Windows
               <ul>
-                <li>On Windows, make sure to install the drivers provided by your phone manufacturer
-                </li>
+                <li>Preferred to install the driver provided by your phone manufacturer</li>
+		<li>Driver Helper add-on provide a third party driver
+		  <p><a id="driver-helper" class="button download" href="#">Install Driver Helper</a><p>
+		</li>
+	        <li>For a few devices, please copy file adb_usb.ini to .android folder under your
+account(e.g. "C:\Users\account-name\.android\")，and restart your Windows
+		  <p><a id="adb-usb" class="button download" href="#">Download adb_usb.ini</a><p>
+		</li>
               </ul>
             </li>
             <li>Install the ADB Helper add-on in Firefox Desktop.
-              <p><a id="adbhelper-stable" class="button download" href="#">ADB Helper</a><p>
+              <p><a id="adbhelper-stable" class="button download" href="#">Install ADB Helper</a><p>
             </li>
             <li id="SETTINGS">Set up your device
               <ul>
