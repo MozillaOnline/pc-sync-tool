@@ -5,10 +5,15 @@ var Video = (function() {
 
   function init() {
     getListContainer().innerHTML = '';
-    $id('empty-video-container').hidden = true;
-    customEventElement.removeEventListener('dataChange', onMessage);
-    customEventElement.addEventListener('dataChange', onMessage);
-    getAllVideos();
+    for (var uname in storageInfoList) {
+      if(storageInfoList[uname].totalSpace && storageInfoList[uname].totalSpace > 0) {
+        $id('empty-video-container').hidden = true;
+        customEventElement.removeEventListener('dataChange', onMessage);
+        customEventElement.addEventListener('dataChange', onMessage);
+        getAllVideos();
+        return;
+      }
+    }
   }
 
   function onMessage(e) {

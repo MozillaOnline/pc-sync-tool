@@ -7,10 +7,15 @@ var Gallery = (function() {
 
   function init() {
     getListContainer().innerHTML = '';
-    $id('empty-picture-container').hidden = true;
-    customEventElement.removeEventListener('dataChange', onMessage);
-    customEventElement.addEventListener('dataChange', onMessage);
-    getAllPictures();
+    for (var uname in storageInfoList) {
+      if(storageInfoList[uname].totalSpace && storageInfoList[uname].totalSpace > 0) {
+        $id('empty-picture-container').hidden = true;
+        customEventElement.removeEventListener('dataChange', onMessage);
+        customEventElement.addEventListener('dataChange', onMessage);
+        getAllPictures();
+        return;
+      }
+    }
   }
 
   function onMessage(e) {

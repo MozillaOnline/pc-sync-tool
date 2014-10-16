@@ -38,12 +38,17 @@ var MusicList = (function() {
   }
 
   function init() {
-    playedAudio = new Audio();
     getListContainer().innerHTML = '';
-    $id('empty-music-container').hidden = true;
-    customEventElement.removeEventListener('dataChange', onMessage);
-    customEventElement.addEventListener('dataChange', onMessage);
-    getAllMusics();
+    playedAudio = new Audio();
+    for (var uname in storageInfoList) {
+      if(storageInfoList[uname].totalSpace && storageInfoList[uname].totalSpace > 0) {
+        $id('empty-music-container').hidden = true;
+        customEventElement.removeEventListener('dataChange', onMessage);
+        customEventElement.addEventListener('dataChange', onMessage);
+        getAllMusics();
+        return;
+      }
+    }
   }
 
   function onMessage(e) {
