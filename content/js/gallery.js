@@ -267,6 +267,7 @@ var Gallery = (function() {
       $expr('#picture-list-container li[data-checked="true"]').length === 0;
 
     //$id('remove-pictures').dataset.disabled = isWifiConnected;
+    $id('import-pictures-btn').hidden =
     $id('import-pictures').dataset.disabled = isWifiConnected ||
                                               !adbHelperInstalled ||
                                               needUpdateAdbHelper;

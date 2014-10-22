@@ -217,6 +217,7 @@ var Video = (function() {
     $id('remove-videos').dataset.disabled =
       $expr('#video-list-container li[data-checked="true"]').length === 0;
 
+    $id('import-videos-btn').hidden =
     $id('import-videos').dataset.disabled = isWifiConnected ||
                                             !adbHelperInstalled ||
                                              needUpdateAdbHelper;
