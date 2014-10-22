@@ -273,10 +273,17 @@ vCardConverter = {
                   type = /type=(.+)/;
                 }
                 results = e.match(type);
-                contact.email.push({
-                  'type': [results[1]],
-                  'value': email
-                });
+                if (!results || results.length < 2) {
+                  contact.email.push({
+                    'type': ['custom'],
+                    'value': email
+                  });
+                } else {
+                  contact.email.push({
+                    'type': [results[1]],
+                    'value': email
+                  });
+                }
               });
             }
           }
@@ -373,11 +380,19 @@ vCardConverter = {
                   type = /type=(.+)/;
                 }
                 results = e.match(type);
-                contact.tel.push({
-                  'type': [results[1]],
-                  'carrier': carrier,
-                  'value': t
-                });
+                if (!results || results.length < 2) {
+                  contact.tel.push({
+                    'type': ['custom'],
+                    'carrier': carrier,
+                    'value': t
+                  });
+                } else {
+                  contact.tel.push({
+                    'type': [results[1]],
+                    'carrier': carrier,
+                    'value': t
+                  });
+                }
               });
             }
           }
@@ -423,13 +438,23 @@ vCardConverter = {
                   type = /type=(.+)/;
                 }
                 results = e.match(type);
-                contact.adr.push({
-                  "type": [results[1]],
-                  "streetAddress": address,
-                  "locality": adr[length - 3],
-                  "postalCode": adr[length - 2],
-                  "countryName": adr[length - 1]
-                });
+                if (!results || results.length < 2) {
+                  contact.adr.push({
+                    "type": ['custom'],
+                    "streetAddress": address,
+                    "locality": adr[length - 3],
+                    "postalCode": adr[length - 2],
+                    "countryName": adr[length - 1]
+                  });
+                } else {
+                  contact.adr.push({
+                    "type": [results[1]],
+                    "streetAddress": address,
+                    "locality": adr[length - 3],
+                    "postalCode": adr[length - 2],
+                    "countryName": adr[length - 1]
+                  });
+                }
               });
             }
           }
@@ -501,10 +526,17 @@ vCardConverter = {
                   type = /type=(.+)/;
                 }
                 results = e.match(type);
-                contact.email.push({
-                  'type': [results[1]],
-                  'value': email
-                });
+                if (!results || results.length < 2) {
+                  contact.email.push({
+                    'type': ['custom'],
+                    'value': email
+                  });
+                } else {
+                  contact.email.push({
+                    'type': [results[1]],
+                    'value': email
+                  });
+                }
               });
             }
           }
@@ -601,11 +633,19 @@ vCardConverter = {
                   type = /type=(.+)/;
                 }
                 results = e.match(type);
-                contact.tel.push({
-                  'type': [results[1]],
-                  'carrier': carrier,
-                  'value': t
-                });
+                if (!results || results.length < 2) {
+                  contact.tel.push({
+                    'type': ['custom'],
+                    'carrier': carrier,
+                    'value': t
+                  });
+                } else {
+                  contact.tel.push({
+                    'type': [results[1]],
+                    'carrier': carrier,
+                    'value': t
+                  });
+                }
               });
             }
           }
@@ -660,13 +700,23 @@ vCardConverter = {
                   type = /type=(.+)/;
                 }
                 results = e.match(type);
-                contact.adr.push({
-                  "type": [results[1]],
-                  "streetAddress": address,
-                  "locality": adr[length - 3],
-                  "postalCode": adr[length - 2],
-                  "countryName": adr[length - 1]
-                });
+                if (!results || results.length < 2) {
+                  contact.adr.push({
+                    "type": ['custom'],
+                    "streetAddress": address,
+                    "locality": adr[length - 3],
+                    "postalCode": adr[length - 2],
+                    "countryName": adr[length - 1]
+                  });
+                } else {
+                  contact.adr.push({
+                    "type": [results[1]],
+                    "streetAddress": address,
+                    "locality": adr[length - 3],
+                    "postalCode": adr[length - 2],
+                    "countryName": adr[length - 1]
+                  });
+                }
               });
             }
           }

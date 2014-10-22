@@ -167,7 +167,7 @@ var FFOSAssistant = (function() {
           for (var name in storageInfoList) {
             storageInfoList[name].path = '/sdcard/';
           }
-          templateData.displayName = _('sdcard');
+          templateData.displayName = 'sdcard';
         } else if (templateDataList.length > 1) {
           if (i == 0) {
             templateData.displayName = 'internal';

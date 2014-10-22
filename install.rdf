@@ -8,7 +8,7 @@
         <em:iconURL>chrome://ffosassistant/content/style/icons/ffosassistant64.png</em:iconURL>
         <em:description>Manage Firefox OS device</em:description>
         <em:creator>Mozilla Online Limited.</em:creator>
-        <em:homepageURL>http://www.firefox.com.cn/</em:homepageURL>
+        <em:homepageURL>https://github.com/MozillaOnline/pc-sync-tool</em:homepageURL>
         <em:type>2</em:type> <!-- type=extension --> 
         <em:unpack>true</em:unpack>
         <em:targetApplication>
