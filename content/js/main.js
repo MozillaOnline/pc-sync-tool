@@ -137,7 +137,7 @@ var FFOSAssistant = (function() {
           videoUsed: ''
         };
         var total = 0;
-        if (dataJSON[uname].info && dataJSON[uname].info.usedSpace && dataJSON[uname].info.freeSpace)
+        if (dataJSON[uname].info && dataJSON[uname].info.usedSpace != null && dataJSON[uname].info.freeSpace != null)
           total = dataJSON[uname].info.usedSpace + dataJSON[uname].info.freeSpace;
         var storageInfo = {
           path: '/storage/sdcard' + dataJSON[uname].id + '/',
@@ -173,6 +173,11 @@ var FFOSAssistant = (function() {
             templateData.displayName = 'internal';
           } else {
             templateData.displayName = 'sdcard';
+          }
+          //Dolphin is special
+          if (templateDataList.length == 2 && storageInfoList['sdcard'] && storageInfoList['sdcard0']) {
+            storageInfoList['sdcard'].path = '/storage/emulated/';
+            storageInfoList['sdcard0'].path = '/storage/sdcard0/';
           }
         }
         var elem = document.createElement('div');

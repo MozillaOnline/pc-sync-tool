@@ -187,7 +187,6 @@ var MusicList = (function() {
     if (isPlay) {
       return;
     }
-    var loadingGroupId = animationLoading.start();
     var file = JSON.parse(self.parentNode.parentNode.dataset.music).name;
     var index = file.lastIndexOf('/');
     var name = file.substr(index);
@@ -197,12 +196,13 @@ var MusicList = (function() {
     }
     var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
     var aFrom = file;
-    var reg = /^\/([a-z]+)\//;
+    var reg = /^\/([a-z0-9]+)\//;
     var result = aFrom.match(reg);
     var storage = result[1];
     if (!storageInfoList[storage] || !storageInfoList[storage].path) {
       return;
     }
+    var loadingGroupId = animationLoading.start();
     aFrom = aFrom.replace(reg, storageInfoList[storage].path);
     device.pull(aFrom, path + name).then(function() {
       self.classList.add('playing');

@@ -233,7 +233,7 @@ var Gallery = (function() {
       }
       var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
       var aFrom = picList[index].dataset.picUrl;
-      var reg = /^\/([a-z]+)\//;
+      var reg = /^\/([a-z0-9]+)\//;
       var result = aFrom.match(reg);
       var storage = result[1];
       if (!storageInfoList[storage] || !storageInfoList[storage].path) {
