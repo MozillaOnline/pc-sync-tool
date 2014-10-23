@@ -8,6 +8,8 @@ function extractCarrier(tel) {
 
 vCardConverter = {
   importContacts: function(data) {
+    var loadingGroupId = animationLoading.start();
+    var index = 0;
     var items = vCard.initialize(data);
     items.forEach(function(item) {
       var contact = {
@@ -731,7 +733,15 @@ vCardConverter = {
           }
         }
       }
-      CMD.Contacts.addContact(JSON.stringify(contact), null, null);
+      CMD.Contacts.addContact(JSON.stringify(contact), function () {
+          index ++;
+          if (index == items.length)
+            animationLoading.stop(loadingGroupId);
+        }, function () {
+          index ++;
+          if (index == items.length)
+            animationLoading.stop(loadingGroupId);
+      });
     })
   },
   exportContact: function(contact) {
