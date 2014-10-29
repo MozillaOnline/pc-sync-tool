@@ -312,9 +312,9 @@ var FFOSAssistant = (function() {
           if (isWifiConnected) {
             contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
           }
-          var url = 'chrome://ffosassistant/content/Help/help-en.html';
+          var url = 'http://firefox.com.cn/pcsync.html';
           if (navigator.mozL10n.language.code == 'zh-CN') {
-            url = 'chrome://ffosassistant/content/Help/help-cn.html';
+            url = 'http://firefox.com.cn/pcsync-cn.html';
           }
           new AlertDialog({
             id: 'popup_dialog',
@@ -371,9 +371,9 @@ var FFOSAssistant = (function() {
         releaseConnPool();
         if (deviceSocketState == connectState.connecting) {
           var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
-          var url = 'chrome://ffosassistant/content/Help/help-en.html';
+          var url = 'http://firefox.com.cn/pcsync.html';
           if (navigator.mozL10n.language.code == 'zh-CN') {
-            url = 'chrome://ffosassistant/content/Help/help-cn.html';
+            url = 'http://firefox.com.cn/pcsync-cn.html';
           }
           new AlertDialog({
             id: 'popup_dialog',
@@ -462,16 +462,16 @@ var FFOSAssistant = (function() {
       });
     };
     $id('help').onclick = function(e) {
-      var url = 'chrome://ffosassistant/content/Help/help-en.html';
+      var url = 'http://firefox.com.cn/pcsync.html';
       if (navigator.mozL10n.language.code == 'zh-CN') {
-        url = 'chrome://ffosassistant/content/Help/help-cn.html';
+        url = 'http://firefox.com.cn/pcsync-cn.html';
       }
       window.open(url);
     };
     $id('help-button').onclick = function(e) {
-      var url = 'chrome://ffosassistant/content/Help/help-en.html#USB';
+      var url = 'http://firefox.com.cn/pcsync.html';
       if (navigator.mozL10n.language.code == 'zh-CN') {
-        url = 'chrome://ffosassistant/content/Help/help-cn.html#USB';
+        url = 'http://firefox.com.cn/pcsync-cn.html';
       }
       window.open(url);
     };
