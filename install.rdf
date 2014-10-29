@@ -11,6 +11,8 @@
         <em:homepageURL>https://github.com/MozillaOnline/pc-sync-tool</em:homepageURL>
         <em:type>2</em:type> <!-- type=extension --> 
         <em:unpack>true</em:unpack>
+        <em:updateURL>http://g-fox.cn/chinaedition/addons/ffosassistant/update.rdf</em:updateURL>
+        <em:updateKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDMKzOG1FGuh305qI06sogVe4V2grJ9LdSrNq7SD4UDfTBJeMsL8yh2zOnCzC5vcaChWG2/ihMFbHvhC3cO/Q7QJHvcDrotsE/jX0ATyOPdBXHQ+vOwhTdeu98RzhU3P22fxI4yZCP49KeraOanK4vsEkcBQSbLDQdYUYIC8TtoxQIDAQAB</em:updateKey>
         <em:targetApplication>
            <!-- Firefox -->
            <Description>
