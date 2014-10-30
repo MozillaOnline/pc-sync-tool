@@ -190,6 +190,7 @@ var MusicList = (function() {
     var file = JSON.parse(self.parentNode.parentNode.dataset.music).name;
     var index = file.lastIndexOf('/');
     var name = file.substr(index);
+    name = decodeURIComponent(name);
     var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER]);
     if (!device) {
       return;

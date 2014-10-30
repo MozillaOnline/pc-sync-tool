@@ -133,6 +133,7 @@ var ContactList = (function() {
     selectAllContacts(false);
     var container = getListContainer();
     container.innerHTML = '';
+    groupedList = null;
     CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
       // Make sure the 'select-all' box is not checked.
       var dataJSON = JSON.parse(message.data);

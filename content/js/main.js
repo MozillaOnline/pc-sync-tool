@@ -177,6 +177,7 @@ var FFOSAssistant = (function() {
           //Dolphin is special
           if (templateDataList.length == 2 && storageInfoList['sdcard'] && storageInfoList['sdcard0']) {
             storageInfoList['sdcard'].path = '/storage/emulated/';
+            storageInfoList['sdcard'].freeSpace = 0;
             storageInfoList['sdcard0'].path = '/storage/sdcard0/';
           }
         }
