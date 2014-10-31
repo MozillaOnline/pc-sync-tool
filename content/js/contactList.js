@@ -187,6 +187,9 @@ var ContactList = (function() {
         quickNumber.value = viewData.number;
       }
     }
+    
+    container.innerHTML = '';
+    groupedList = null;
 
     groupedList = new GroupedList({
       dataList: contacts,
