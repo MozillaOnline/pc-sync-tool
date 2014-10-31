@@ -231,6 +231,7 @@ var Gallery = (function() {
       if (!device) {
         return;
       }
+      name = decodeURIComponent(name);
       var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
       var aFrom = picList[index].dataset.picUrl;
       var reg = /^\/([a-z0-9]+)\//;
