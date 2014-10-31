@@ -66,6 +66,18 @@ var FFOSAssistant = (function() {
     $id('wifi-connection-button').dataset.checked = false;
     $id('devices').innerHTML = '';
     var html = '';
+    getAdbHelperInfo(function(addon) {
+      if (!addon) {
+        adbHelperInstalled = false;
+        return;
+      }
+      adbHelperInstalled = true;
+      if (checkAdbHelperVersion(addon.version, minAdbHelperVersion) < 0) {
+        needUpdateAdbHelper = true;
+      } else {
+        needUpdateAdbHelper = false;
+      }
+    });
     devicesList = ADBService.getAvailable();
     if (devicesList.length == 0) {
       $id('device-list').style.display = 'none';
@@ -552,16 +564,6 @@ var FFOSAssistant = (function() {
           break;
         default:
           break;
-      }
-    });
-    getAdbHelperInfo(function(addon) {
-      if (!addon) {
-        adbHelperInstalled = false;
-        return;
-      }
-      adbHelperInstalled = true;
-      if (checkAdbHelperVersion(addon.version, minAdbHelperVersion) < 0) {
-        needUpdateAdbHelper = true;
       }
     });
     if (!animationLoading) {
