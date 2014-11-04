@@ -361,12 +361,12 @@ FilesOPDialog.prototype = {
 
   start: function() {
     var filesToBeDone = [];
-    var filesCannotBeDone = [];
     var self = this;
     var filesIndicator = $id('files-indicator');
     filesIndicator.innerHTML = '0/' + this.options.files.length;
-
-    setTimeout(function doCmd() {
+    var defaultFreeSpace = 0;
+    doCmd();
+    function doCmd() {
       if (self._closed) {
         if (self._timer) {
           clearInterval(self._timer);
@@ -449,24 +449,25 @@ FilesOPDialog.prototype = {
           break;
         case 'push':
           var fileSize = getFileSize(aFrom);
-          var bCanPush = false;
           if (!device || !fileSize) {
             clear();
             return;
           }
-          for (var uname in storageInfoList) {
-            if (storageInfoList[uname] && storageInfoList[uname].freeSpace && storageInfoList[uname].freeSpace > fileSize) {
-              aDest = storageInfoList[uname].path + aDest;
-              bCanPush = true;
-              break;
+          CMD.Device.getStorageFree(function onresponse_getDeviceInfo(message) {
+            var dataJSON = JSON.parse(message.data);
+            for (var uname in dataJSON) {
+              defaultFreeSpace = storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
+              if (storageInfoList[uname] && defaultFreeSpace > fileSize) {
+                aDest = storageInfoList[uname].path + aDest;
+                console.log('adb push from: ' + aFrom + ' to: ' + aDest);
+                device.push(aFrom, aDest).then(success, error);
+                return;
+              }
             }
-          }
-          if (!bCanPush) {
             error();
-          } else {
-            console.log('adb push from: ' + aFrom + ' to: ' + aDest);
-            device.push(aFrom, aDest).then(success, error);
-          }
+          }, function onerror_getStorage(message) {
+            error();
+          });
           break;
       }
 
@@ -491,39 +492,6 @@ FilesOPDialog.prototype = {
         filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
 
         if (self._fileIndex != self.options.files.length) {
-          CMD.Device.getStorageFree(function onresponse_getDeviceInfo(message) {
-            var dataJSON = JSON.parse(message.data);
-            for (var uname in dataJSON) {
-              storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
-            }
-            doCmd();
-          }, function onerror_getStorage(message) {
-            doCmd();
-          });
-          return;
-        }
-        clearInterval(self._timer);
-        self._processbar.finish(self.options.files.length);
-        self.closeAll();
-
-        if (filesCannotBeDone.length > 0) {
-          new AlertDialog({
-            message: _(self.options.alert_prompt, {
-              n: filesCannotBeDone.length
-            })
-          });
-        }
-
-        self.options.callback(filesToBeDone);
-      }
-
-      function error(e) {
-        filesCannotBeDone.push(self.options.files[self._fileIndex]);
-        self._fileIndex++;
-        self._processbar.finish(filesToBeDone.length);
-        filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
-
-        if (self._fileIndex != self.options.files.length) {
           doCmd();
           return;
         }
@@ -531,14 +499,20 @@ FilesOPDialog.prototype = {
         self._processbar.finish(self.options.files.length);
         self.closeAll();
 
-        if (filesCannotBeDone.length > 0) {
-          new AlertDialog({
-            message: _(self.options.alert_prompt, {
-              n: filesCannotBeDone.length
-            })
-          });
-        }
+        self.options.callback(filesToBeDone);
+      }
 
+      function error(e) {
+        self._fileIndex++;
+        self._processbar.finish(filesToBeDone.length);
+        filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
+        clearInterval(self._timer);
+        self._processbar.finish(self.options.files.length);
+        self.closeAll();
+        new AlertDialog({
+          message: _('space-not-enough'),
+          showCancelButton: false
+        });
         self.options.callback(filesToBeDone);
       }
 
@@ -552,7 +526,7 @@ FilesOPDialog.prototype = {
           showCancelButton: false
         });
       }
-    }, 0);
+    };
   },
 
   closeAll: function() {

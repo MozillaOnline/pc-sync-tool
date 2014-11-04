@@ -186,11 +186,13 @@ var FFOSAssistant = (function() {
           } else {
             templateData.displayName = 'sdcard';
           }
-          //Dolphin is special
-          if (templateDataList.length == 2 && storageInfoList['sdcard'] && storageInfoList['sdcard0']) {
+          if (templateDataList.length == 2 && storageInfoList['sdcard'] && storageInfoList['sdcard0']) { //Dolphin is special
             storageInfoList['sdcard'].path = '/storage/emulated/';
             storageInfoList['sdcard'].freeSpace = 0;
             storageInfoList['sdcard0'].path = '/storage/sdcard0/';
+          } else if (templateDataList.length == 2 && storageInfoList['sdcard'] && storageInfoList['sdcard1']) { //flame v1.4 is special
+            storageInfoList['sdcard'].path = '/storage/sdcard/';
+            storageInfoList['sdcard1'].path = '/storage/sdcard1/';
           }
         }
         var elem = document.createElement('div');
