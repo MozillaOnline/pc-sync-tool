@@ -125,6 +125,12 @@ var CMD = (function() {
       getOldMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getOldMusicsInfo),
       getChangedMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getChangedMusicsInfo),
       deleteMusic: createCommand(CMD_TYPE.music, MUSIC_COMMAND.deleteMusic)
+    },
+
+    /***** Files commands ******/
+    Files: {
+      filePull: createCommand(CMD_TYPE.file, FILE_COMMAND.filePull),
+      filePush: createCommand(CMD_TYPE.file, FILE_COMMAND.filePush)
     }
   };
 })();

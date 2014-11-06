@@ -261,9 +261,16 @@ var utils = {
     return FileUtils.getDir("ProfD", pathArray, false).path;
   },
 
-  getFileSize: function(path) {
+  getFileInfo: function(path) {
     var f = new FileUtils.File(path);
-    return f.isFile() ? f.fileSize : 0;
+    var contentType = Components.classes["@mozilla.org/mime;1"]
+                      .getService(Components.interfaces.nsIMIMEService)
+                      .getTypeFromFile(f);
+    var info = {
+      size: f.isFile() ? f.fileSize : 0,
+      type: contentType
+    }
+    return info;
   },
 
   isWindows: function() {

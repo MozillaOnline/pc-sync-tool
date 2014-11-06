@@ -269,12 +269,10 @@ var Gallery = (function() {
 
     //$id('remove-pictures').dataset.disabled = isWifiConnected;
     $id('import-pictures-btn').hidden =
-    $id('import-pictures').dataset.disabled = isWifiConnected ||
-                                              !adbHelperInstalled ||
-                                              needUpdateAdbHelper;
-    $id('export-pictures').dataset.disabled = isWifiConnected ||
-                                              !adbHelperInstalled ||
-                                              needUpdateAdbHelper ||
+    $id('import-pictures').dataset.disabled = !isWifiConnected &&
+                                              (!adbHelperInstalled || needUpdateAdbHelper);
+
+    $id('export-pictures').dataset.disabled = (!isWifiConnected && (!adbHelperInstalled || needUpdateAdbHelper)) ||
                                               ($expr('#picture-list-container li[data-checked="true"]').length === 0);
   }
 

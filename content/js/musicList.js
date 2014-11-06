@@ -247,12 +247,9 @@ var MusicList = (function() {
       $expr('#music-list-container .music-list-item[data-checked="true"]').length === 0;
 
     $id('import-musics-btn').hidden =
-    $id('import-musics').dataset.disabled = isWifiConnected ||
-                                            !adbHelperInstalled ||
-                                             needUpdateAdbHelper;
-    $id('export-musics').dataset.disabled = isWifiConnected ||
-                                            !adbHelperInstalled ||
-                                            needUpdateAdbHelper ||
+    $id('import-musics').dataset.disabled = !isWifiConnected &&
+                                            (!adbHelperInstalled || needUpdateAdbHelper);
+    $id('export-musics').dataset.disabled = (!isWifiConnected && (!adbHelperInstalled || needUpdateAdbHelper)) ||
                                             ($expr('#music-list-container .music-list-item[data-checked="true"]').length === 0);
   }
 

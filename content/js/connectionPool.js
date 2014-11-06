@@ -8,6 +8,7 @@ const {
 } = Components;
 
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/osfile.jsm");
 
 function TCPConnectionPool(options) {
   this.initialize(options);
@@ -185,38 +186,26 @@ TCPConnectionPool.prototype = {
         }
         return;
       }
-      if (jsonCmd.result != RS_MIDDLE) {
+      var result = jsonCmd.result;
+      if (result != RS_MIDDLE) {
         this._deleteRequestCallback(jsonCmd.id);
-        if (callback.json) {
-          // Parse the result as the object
-          callback.onresponse({
-            result: jsonCmd.result,
-            data: JSON.parse(recvData)
-          });
-        } else {
-          // Pass back the raw result
-          callback.onresponse({
-            result: jsonCmd.result,
-            data: recvData
-          });
-        }
+      } else {
+        result = RS_OK;
+      }
+      if (result == RS_OK) {
+        callback.onresponse({
+          result: result,
+          data: callback.json ? JSON.parse(recvData) : recvData
+        });
+      } else {
+        callback.onerror({
+          result: result,
+          data: callback.json ? JSON.parse(recvData) : recvData
+        });
+      }
+      if (jsonCmd.result != RS_MIDDLE) {
         // Reset socket state
         this._setSocketWrapperIdle(wrapper);
-      } else {
-        jsonCmd.result = RS_OK;
-        if (callback.json) {
-          // Parse the result as the object
-          callback.onresponse({
-            result: jsonCmd.result,
-            data: JSON.parse(recvData)
-          });
-        } else {
-          // Pass back the raw result
-          callback.onresponse({
-            result: jsonCmd.result,
-            data: recvData
-          });
-        }
       }
     } catch (e) {
       if (jsonCmd.result != RS_MIDDLE) {

@@ -432,10 +432,6 @@ FilesOPDialog.prototype = {
 
       switch(type) {
         case 'pull':
-          if (!device) {
-            clear();
-            return;
-          }
           var reg = /^\/([a-z 0-9]+)\//;
           var result = aFrom.match(reg);
           var storage = result[1];
@@ -443,30 +439,78 @@ FilesOPDialog.prototype = {
             clear();
             return;
           }
-          aFrom = aFrom.replace(reg, storageInfoList[storage].path);
-          console.log('adb pull from: ' + aFrom + ' to: ' + aDest);
-          device.pull(aFrom, aDest).then(success, error);
+          if (isWifiConnected) {
+            var name = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
+            var fileInfo = {
+              storageName: storage,
+              fileName: name
+            };
+            CMD.Files.filePull(JSON.stringify(fileInfo), function (message) {
+              var data = message.data;;
+              var dataPacket = new Uint8Array(new ArrayBuffer(data.length));
+              var array = [];
+              for (var i = 0; i < data.length; i++) {
+                array.push(data.charCodeAt(i));
+              }
+              dataPacket.set(new Uint8Array(array));
+              OS.File.writeAtomic(aDest, dataPacket, {}).then(
+                function onSuccess(number) {
+                  success();
+                },
+                function onFailure(reason) {
+                  error();
+                }
+              );
+            }, error);
+          } else {
+            if (!device) {
+              clear();
+              return;
+            }
+            console.log('adb pull from: ' + aFrom + ' to: ' + aDest);
+            aFrom = aFrom.replace(reg, storageInfoList[storage].path);
+            device.pull(aFrom, aDest).then(success, error);
+          }
           break;
         case 'push':
-          var fileSize = getFileSize(aFrom);
-          if (!device || !fileSize) {
-            clear();
-            return;
-          }
+          var file = getFileInfo(aFrom);
           CMD.Device.getStorageFree(function onresponse_getDeviceInfo(message) {
             var dataJSON = JSON.parse(message.data);
             for (var uname in dataJSON) {
               defaultFreeSpace = storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
-              if (storageInfoList[uname] && defaultFreeSpace > fileSize) {
-                aDest = storageInfoList[uname].path + aDest;
-                console.log('adb push from: ' + aFrom + ' to: ' + aDest);
-                device.push(aFrom, aDest).then(success, error);
+              if (storageInfoList[uname] && defaultFreeSpace > file.size) {
+                if (isWifiConnected) {
+                  OS.File.read(aFrom).then(
+                    function onSuccess(array) {
+                      var dataString = String.fromCharCode.apply(null, array);
+                      var fileInfo = {
+                        storageName: uname,
+                        fileName: aDest,
+                        fileType: file.type,
+                        data: dataString
+                      };
+                      CMD.Files.filePush(JSON.stringify(fileInfo), success, error);
+                    },
+                    function onFailure(reason) {
+                      error();
+                    }
+                  );
+                }
+                else {
+                  if (!device || !file.size) {
+                    clear();
+                    return;
+                  }
+                  aDest = storageInfoList[uname].path + aDest;
+                  console.log('adb push from: ' + aFrom + ' to: ' + aDest);
+                  device.push(aFrom, aDest).then(success, error);
+                }
                 return;
               }
             }
-            error();
+            error('space-not-enough');
           }, function onerror_getStorage(message) {
-            error();
+            error('space-not-enough');
           });
           break;
       }
@@ -509,8 +553,11 @@ FilesOPDialog.prototype = {
         clearInterval(self._timer);
         self._processbar.finish(self.options.files.length);
         self.closeAll();
+        var mId = 'operation-failed';
+        if (e == 'space-not-enough')
+          mId = 'space-not-enough';
         new AlertDialog({
-          message: _('space-not-enough'),
+          message: _(mId),
           showCancelButton: false
         });
         self.options.callback(filesToBeDone);

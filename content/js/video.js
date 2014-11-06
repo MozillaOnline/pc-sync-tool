@@ -218,12 +218,9 @@ var Video = (function() {
       $expr('#video-list-container li[data-checked="true"]').length === 0;
 
     $id('import-videos-btn').hidden =
-    $id('import-videos').dataset.disabled = isWifiConnected ||
-                                            !adbHelperInstalled ||
-                                             needUpdateAdbHelper;
-    $id('export-videos').dataset.disabled = isWifiConnected ||
-                                            !adbHelperInstalled ||
-                                            needUpdateAdbHelper ||
+    $id('import-videos').dataset.disabled = !isWifiConnected &&
+                                            (!adbHelperInstalled || needUpdateAdbHelper);
+    $id('export-videos').dataset.disabled = (!isWifiConnected && (!adbHelperInstalled || needUpdateAdbHelper)) ||
                                             ($expr('#video-list-container li[data-checked="true"]').length === 0);
   }
 
