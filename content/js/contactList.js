@@ -24,7 +24,7 @@ var ContactList = (function() {
     }
 
     // Update contact
-    CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {}, function onerror_updateContact() {});
+    CMD.Contacts.updateContact(JSON.stringify(contact), null, function onresponse_updatecontact(message) {}, function onerror_updateContact() {});
   }
 
   function createContactListItem(contact) {
@@ -136,7 +136,7 @@ var ContactList = (function() {
     groupedList = null;
     CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
       // Make sure the 'select-all' box is not checked.
-      var dataJSON = JSON.parse(message.data);
+      var dataJSON = JSON.parse(array2String(message.data));
       initList(container, dataJSON, viewData);
       animationLoading.stop(loadingGroupId);
     }, function onerror_getAllContacts(message) {
@@ -224,7 +224,7 @@ var ContactList = (function() {
 
   function removeContact(id) {
     var loadingGroupId = animationLoading.start();
-    CMD.Contacts.removeContact(id, function onresponse_removeContact(message) {
+    CMD.Contacts.removeContact(id, null, function onresponse_removeContact(message) {
       animationLoading.stop(loadingGroupId);
     }, function onerror_removeContact(message) {
       animationLoading.stop(loadingGroupId);
@@ -481,17 +481,19 @@ var ContactList = (function() {
         groupedList.remove(item);
         break;
       case 'update':
-        CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
-          if (result.data != '' && groupedList) {
-            var contactData = JSON.parse(result.data);
+        CMD.Contacts.getContactById(changeEvent.contactID, null, function(result) {
+          var data = array2String(result.data);
+          if (data != '' && groupedList) {
+            var contactData = JSON.parse(data);
             updateContact(contactData);
           }
         }, null);
         break;
       case 'create':
-        CMD.Contacts.getContactById(changeEvent.contactID, function(result) {
-          if (result.data != '' && groupedList) {
-            var contactData = JSON.parse(result.data);
+        CMD.Contacts.getContactById(changeEvent.contactID, null, function(result) {
+          var data = array2String(result.data);
+          if (data != '' && groupedList) {
+            var contactData = JSON.parse(data);
             addContact(contactData);
           }
         }, null);

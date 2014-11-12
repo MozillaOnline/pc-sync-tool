@@ -175,6 +175,7 @@ TCPConnectionPool.prototype = {
    */
   _onWrapperMessage: function tc_onWrapperMessage(jsonCmd, recvData) {
     try {
+      console.log(recvData);
       var wrapper = this._getWrapper();
       if (!wrapper) {
         return;
@@ -195,12 +196,12 @@ TCPConnectionPool.prototype = {
       if (result == RS_OK) {
         callback.onresponse({
           result: result,
-          data: callback.json ? JSON.parse(recvData) : recvData
+          data: recvData
         });
       } else {
         callback.onerror({
           result: result,
-          data: callback.json ? JSON.parse(recvData) : recvData
+          data: recvData
         });
       }
       if (jsonCmd.result != RS_MIDDLE) {
@@ -227,11 +228,10 @@ TCPConnectionPool.prototype = {
     return null;
   },
 
-  _cacheCallback: function(id, json, onresponse, onerror) {
+  _cacheCallback: function(id, onresponse, onerror) {
     this._callbacks[id] = {
       onresponse: onresponse ? onresponse : emptyFunction,
-      onerror: onerror ? onerror : emptyFunction,
-      json: json
+      onerror: onerror ? onerror : emptyFunction
     };
   },
 
@@ -265,7 +265,7 @@ TCPConnectionPool.prototype = {
 
   _doSend: function tc_doSend(wrapper, obj) {
     this._setSocketWrapperBusy(wrapper);
-    wrapper.send(obj.cmd, obj.cmd.data);
+    wrapper.send(obj.cmd.title, obj.cmd.dataString, obj.cmd.dataArray);
   },
 
   /**
@@ -278,16 +278,9 @@ TCPConnectionPool.prototype = {
    * };
    */
   send: function tc_send(obj) {
-    obj.cmd = extend({
-      cmd: null,
-      data: null,
-      datalength: 0,
-      json: false // Indicates if the reulst is an JSON string
-    }, obj.cmd);
-
     var wrapper = this._getAvailableSocketWrapper();
-    obj.cmd.id = this._getNextId();
-    this._cacheCallback(obj.cmd.id, obj.cmd.json, obj.onresponse, obj.onerror);
+    obj.cmd.title.id = this._getNextId();
+    this._cacheCallback(obj.cmd.title.id, obj.onresponse, obj.onerror);
     if (!wrapper) {
       // queue the message
       this._messageQueue.push(obj);

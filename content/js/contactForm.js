@@ -438,14 +438,14 @@ var ContactForm = (function() {
 
     if (updateContact) {
       // Save to device
-      CMD.Contacts.updateContact(JSON.stringify(contact), function onresponse_updatecontact(message) {
+      CMD.Contacts.updateContact(JSON.stringify(contact), null, function onresponse_updatecontact(message) {
         animationLoading.stop(loadingGroupId);
       }, function onerror_updatecontact(message) {
         animationLoading.stop(loadingGroupId);
       });
     } else {
       // Create new contact
-      CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
+      CMD.Contacts.addContact(JSON.stringify(contact), null, function onresponse_addcontact(message) {
         animationLoading.stop(loadingGroupId);
       }, function onerror_addcontact(message) {
         animationLoading.stop(loadingGroupId);
@@ -503,7 +503,7 @@ var ContactForm = (function() {
       "value": mobile,
       "carrier": ""
     }];
-    CMD.Contacts.addContact(JSON.stringify(contact), function onresponse_addcontact(message) {
+    CMD.Contacts.addContact(JSON.stringify(contact), null, function onresponse_addcontact(message) {
       $id('fullName').value = '';
       $id('mobile').value = '';
       animationLoading.stop(loadingGroupId);

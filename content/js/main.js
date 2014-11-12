@@ -131,7 +131,7 @@ var FFOSAssistant = (function() {
   function getStorageInfo() {
     var loadingGroupId = animationLoading.start();
     CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
-      var dataJSON = JSON.parse(message.data);
+      var dataJSON = JSON.parse(array2String(message.data));
       var container = $id('summary-infos');
       container.innerHTML = '';
       storageInfoList = {};
@@ -210,7 +210,6 @@ var FFOSAssistant = (function() {
           summaryHeadClick(this, body);
         };
       }
-      console.log(storageInfoList);
       animationLoading.stop(loadingGroupId);
     }, function onerror_getStorage(message) {
       animationLoading.stop(loadingGroupId);
@@ -246,7 +245,7 @@ var FFOSAssistant = (function() {
 
   function getVersionandShow() {
     CMD.Device.getVersion(function onresponse_getDeviceInfo(message) {
-      var clientVer = parseInt(message.data);
+      var clientVer = parseInt(array2String(message.data));
       if (clientVer > 2) {
         getStorageInfo();
       } else {
@@ -367,7 +366,7 @@ var FFOSAssistant = (function() {
               if (connListenSocket == null) {
                 return;
               }
-              var message = JSON.parse(recvData);
+              var message = JSON.parse(array2String(recvData));
               if (message == null) {
                 return;
               }

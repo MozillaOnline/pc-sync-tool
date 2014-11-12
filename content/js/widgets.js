@@ -420,13 +420,13 @@ FilesOPDialog.prototype = {
           aDest = 'DCIM/' + encodeURIComponent(aName);
           break;
         case 7:
-          CMD.Pictures.deletePicture(self.options.files[self._fileIndex], success, error);
+          CMD.Pictures.deletePicture(self.options.files[self._fileIndex], null, success, error);
           break;
         case 8:
-          CMD.Musics.deleteMusic(self.options.files[self._fileIndex], success, error);
+          CMD.Musics.deleteMusic(self.options.files[self._fileIndex], null, success, error);
           break;
         case 9:
-          CMD.Videos.deleteVideo(self.options.files[self._fileIndex], success, error);
+          CMD.Videos.deleteVideo(self.options.files[self._fileIndex], null, success, error);
           break;
       }
 
@@ -445,15 +445,8 @@ FilesOPDialog.prototype = {
               storageName: storage,
               fileName: name
             };
-            CMD.Files.filePull(JSON.stringify(fileInfo), function (message) {
-              var data = message.data;;
-              var dataPacket = new Uint8Array(new ArrayBuffer(data.length));
-              var array = [];
-              for (var i = 0; i < data.length; i++) {
-                array.push(data.charCodeAt(i));
-              }
-              dataPacket.set(new Uint8Array(array));
-              OS.File.writeAtomic(aDest, dataPacket, {}).then(
+            CMD.Files.filePull(JSON.stringify(fileInfo), null, function (message) {
+              OS.File.writeAtomic(aDest, message.data, {}).then(
                 function onSuccess(number) {
                   success();
                 },
@@ -475,21 +468,19 @@ FilesOPDialog.prototype = {
         case 'push':
           var file = getFileInfo(aFrom);
           CMD.Device.getStorageFree(function onresponse_getDeviceInfo(message) {
-            var dataJSON = JSON.parse(message.data);
+            var dataJSON = JSON.parse(array2String(message.data));
             for (var uname in dataJSON) {
               defaultFreeSpace = storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
               if (storageInfoList[uname] && defaultFreeSpace > file.size) {
                 if (isWifiConnected) {
                   OS.File.read(aFrom).then(
                     function onSuccess(array) {
-                      var dataString = String.fromCharCode.apply(null, array);
                       var fileInfo = {
                         storageName: uname,
                         fileName: aDest,
-                        fileType: file.type,
-                        data: dataString
+                        fileType: file.type
                       };
-                      CMD.Files.filePush(JSON.stringify(fileInfo), success, error);
+                      CMD.Files.filePush(JSON.stringify(fileInfo), array, success, error);
                     },
                     function onFailure(reason) {
                       error();

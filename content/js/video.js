@@ -40,7 +40,7 @@ var Video = (function() {
     var videosCount = 0;
     var loadingGroupId = animationLoading.start();
     CMD.Videos.getOldVideosInfo(function(oldVideo) {
-      var video = JSON.parse(oldVideo.data);
+      var video = JSON.parse(array2String(oldVideo.data));
       if (video.callbackID == 'enumerate') {
         getVideosIndex++;
         addVideo(video.detail);

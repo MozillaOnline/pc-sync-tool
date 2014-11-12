@@ -42,7 +42,7 @@ var Gallery = (function() {
     var picturesCount = 0;
     var loadingGroupId = animationLoading.start();
     CMD.Pictures.getOldPicturesInfo(function(oldPicture) {
-      var picture = JSON.parse(oldPicture.data);
+      var picture = JSON.parse(array2String(oldPicture.data));
       if (picture.callbackID == 'enumerate') {
         getPicturesIndex++;
         addPicture(picture.detail);

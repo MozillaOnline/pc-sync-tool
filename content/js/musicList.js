@@ -83,7 +83,7 @@ var MusicList = (function() {
     var musicsCount = 0;
     var loadingGroupId = animationLoading.start();
     CMD.Musics.getOldMusicsInfo(function(oldMusic) {
-      var music = JSON.parse(oldMusic.data);
+      var music = JSON.parse(array2String(oldMusic.data));
       if (music.callbackID == 'enumerate') {
         getMusicsIndex++;
         getListContainer().appendChild(createMusicListItem(music.detail));

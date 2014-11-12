@@ -733,7 +733,7 @@ vCardConverter = {
           }
         }
       }
-      CMD.Contacts.addContact(JSON.stringify(contact), function () {
+      CMD.Contacts.addContact(JSON.stringify(contact), null, function () {
           index ++;
           if (index == items.length)
             animationLoading.stop(loadingGroupId);

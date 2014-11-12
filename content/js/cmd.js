@@ -14,14 +14,19 @@ var CMD = (function() {
    */
 
   function createCommand(target, command) {
-    return function(data, onresponse, onerror) {
+    return function(dataString, dataArray, onresponse, onerror) {
       FFOSAssistant.sendRequest({
         cmd: {
-          type: target,
-          command: command,
-          result: 0,
-          data: data,
-          datalength: data.length
+          title: {
+            id: 0,
+            type: target,
+            command: command,
+            result: RS_OK,
+            datalength: 0,
+            subdatalength: 0
+          },
+          dataString: dataString,
+          dataArray: dataArray
         },
         onresponse: onresponse,
         onerror: onerror
@@ -37,11 +42,16 @@ var CMD = (function() {
     return function(onresponse, onerror) {
       FFOSAssistant.sendRequest({
         cmd: {
-          type: target,
-          command: command,
-          result: 0,
-          data: null,
-          datalength: 0
+          title: {
+            id: 0,
+            type: target,
+            command: command,
+            result: RS_OK,
+            datalength: 0,
+            subdatalength: 0
+          },
+          dataString: null,
+          dataArray: null
         },
         onresponse: onresponse,
         onerror: onerror
@@ -69,12 +79,6 @@ var CMD = (function() {
 
 /*
        * data:
-       *   contact ID
-       * */
-      getContactProfilePic: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactPicById),
-
-/*
-       * data:
        *   contact object
        */
       updateContact: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.updateContactById),
@@ -92,12 +96,6 @@ var CMD = (function() {
       removeContact: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.removeContactById),
 
       clearAllContacts: createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.clearAllContacts),
-
-/*
-       * data:
-       *   phone number
-       */
-      getContactByPhoneNumber: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactByPhoneNumber),
 
 /*
        * data:
