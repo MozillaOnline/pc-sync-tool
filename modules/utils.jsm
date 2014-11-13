@@ -263,13 +263,15 @@ var utils = {
 
   getFileInfo: function(path) {
     var f = new FileUtils.File(path);
-    var contentType = Components.classes["@mozilla.org/mime;1"]
-                      .getService(Components.interfaces.nsIMIMEService)
-                      .getTypeFromFile(f);
     var info = {
       size: f.isFile() ? f.fileSize : 0,
-      type: contentType
-    }
+      type: 'text/plain'
+    };
+    try {
+      var mimeService = Components.classes["@mozilla.org/mime;1"]
+                        .getService(Components.interfaces.nsIMIMEService);
+      info.type = mimeService.getTypeFromFile(f);
+    } catch (e) { /* just use text/plain */ }
     return info;
   },
 
