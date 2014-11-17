@@ -278,7 +278,7 @@ var FFOSAssistant = (function() {
 
     var loadingGroupId = animationLoading.start();
     var deviceName = devicesList[0];
-    $id('device-name').innerHTML = deviceName;
+    //$id('device-name').innerHTML = deviceName;
     device = ADBService.setupDevice(deviceName);
     setTimeout(function() {
       connectToServer('localhost');
@@ -462,7 +462,7 @@ var FFOSAssistant = (function() {
       }
       ip = int8Array[0].toString() + '.' + int8Array[1].toString() + '.' + int8Array[2].toString() + '.' + int8Array[3].toString();
       if (ip) {
-        $id('device-name').innerHTML = wifiCode.value;
+        //$id('device-name').innerHTML = wifiCode.value;
         deviceSocketState = connectState.connecting;
         connectToServer(ip);
       }
