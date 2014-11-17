@@ -371,6 +371,8 @@ FilesOPDialog.prototype = {
         if (self._timer) {
           clearInterval(self._timer);
         }
+        self._processbar.finish(self.options.files.length);
+        self.closeAll();
         if (filesToBeDone.length > 0) {
           self.options.callback(filesToBeDone);
         }
@@ -632,11 +634,11 @@ FilesOPDialog.prototype = {
   _makeDialogCancelable: function() {
     var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
     closeBtn.hidden = false;
-    closeBtn.onclick = this.close.bind(this);
+    closeBtn.onclick = this.cancel.bind(this);
 
     var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
     cancelBtn.hidden = false;
-    cancelBtn.onclick = this.close.bind(this);
+    cancelBtn.onclick = this.cancel.bind(this);
 
     var self = this;
   },
@@ -665,6 +667,10 @@ FilesOPDialog.prototype = {
     document.removeEventListener('FilesOPDialog:show', this._onModalDialogShown);
     window.removeEventListener('resize', this._onWindowResize)
     this.options.onclose();
+  },
+
+  cancel: function() {
+    this._closed = true;
   }
 };
 

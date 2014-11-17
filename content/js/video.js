@@ -14,6 +14,7 @@ var Video = (function() {
         return;
       }
     }
+    updateControls();
   }
 
   function onMessage(e) {

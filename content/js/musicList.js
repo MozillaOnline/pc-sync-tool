@@ -49,6 +49,7 @@ var MusicList = (function() {
         return;
       }
     }
+    updateControls();
   }
 
   function onMessage(e) {

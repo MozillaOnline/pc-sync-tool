@@ -16,6 +16,7 @@ var Gallery = (function() {
         return;
       }
     }
+    updateControls();
   }
 
   function onMessage(e) {
