@@ -28,6 +28,7 @@
  *   - ondatachange
  *     Function to be invoked if the data is added or removed
  */
+var MAX_WIFI_FILE_SIZE = 50 * 1024 * 1024;
 var GroupedList = function(options) {
   this.initialize(options);
   this.DEFAULT_INDEX = '__DEF_INDEX__';
@@ -469,6 +470,10 @@ FilesOPDialog.prototype = {
           break;
         case 'push':
           var file = getFileInfo(aFrom);
+          if (isWifiConnected && file.size > MAX_WIFI_FILE_SIZE) {
+            error('file-too-big');
+            break;
+          }
           CMD.Device.getStorageFree(function onresponse_getDeviceInfo(message) {
             var dataJSON = JSON.parse(array2String(message.data));
             for (var uname in dataJSON) {
@@ -549,6 +554,8 @@ FilesOPDialog.prototype = {
         var mId = 'operation-failed';
         if (e == 'space-not-enough')
           mId = 'space-not-enough';
+        else if (e == 'file-too-big')
+          mId = 'file-too-big';
         new AlertDialog({
           message: _(mId),
           showCancelButton: false
@@ -659,7 +666,6 @@ FilesOPDialog.prototype = {
   },
 
   close: function() {
-    this._closed = true;
     this._mask.parentNode.removeChild(this._mask);
     this._modalElement.parentNode.removeChild(this._modalElement);
     this._mask = null;
