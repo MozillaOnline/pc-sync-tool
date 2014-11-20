@@ -245,8 +245,8 @@ var FFOSAssistant = (function() {
 
   function getVersionandShow() {
     CMD.Device.getVersion(function onresponse_getDeviceInfo(message) {
-      var clientVer = parseInt(array2String(message.data));
-      if (clientVer > 2) {
+      var clientVer = parseFloat(array2String(message.data));
+      if (clientVer > 3) {
         getStorageInfo();
       } else {
         new AlertDialog({
