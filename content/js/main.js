@@ -322,7 +322,7 @@ var FFOSAssistant = (function() {
           resetConnect();
         } else if (deviceSocketState == connectState.connecting) {
           releaseConnPool();
-          var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
+          var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
           if (isWifiConnected) {
             contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
           }
@@ -384,7 +384,7 @@ var FFOSAssistant = (function() {
         animationLoading.stop(loadingGroupId);
         releaseConnPool();
         if (deviceSocketState == connectState.connecting) {
-          var contentInfo = [_('connection-alert-dialog-message-check-runapp')];
+          var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
           var url = 'http://os.firefox.com.cn/pcsync.html';
           if (navigator.mozL10n.language.code == 'zh-CN') {
             url = 'http://os.firefox.com.cn/pcsync-cn.html';
