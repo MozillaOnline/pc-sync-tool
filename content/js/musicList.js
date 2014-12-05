@@ -180,33 +180,7 @@ var MusicList = (function() {
 
   function playMusic() {
     var self = this;
-    if (!playedAudio) {
-      return;
-    }
-    var isPlay = self.classList.contains('playing');
-    stopMusic();
-    if (isPlay) {
-      return;
-    }
-    var file = JSON.parse(self.parentNode.parentNode.dataset.music).name;
-    var index = file.lastIndexOf('/');
-    var name = file.substr(index);
-    name = decodeURIComponent(name);
-    var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER]);
-    if (!device) {
-      return;
-    }
-    var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
-    var aFrom = file;
-    var reg = /^\/([a-z0-9]+)\//;
-    var result = aFrom.match(reg);
-    var storage = result[1];
-    if (!storageInfoList[storage] || !storageInfoList[storage].path) {
-      return;
-    }
-    var loadingGroupId = animationLoading.start();
-    aFrom = aFrom.replace(reg, storageInfoList[storage].path);
-    device.pull(aFrom, path + name).then(function() {
+    function onsuccess () {
       self.classList.add('playing');
       playedAudio.src = cachedUrl;
       playedAudio.onended = function() {
@@ -226,13 +200,59 @@ var MusicList = (function() {
       }
       playedAudio.play();
       animationLoading.stop(loadingGroupId);
-    }, function() {
+    };
+    function onerror () {
       new AlertDialog({
         message: _('operation-failed'),
         showCancelButton: false
       });
       animationLoading.stop(loadingGroupId);
-    });
+    };
+    if (!playedAudio) {
+      return;
+    }
+    var isPlay = self.classList.contains('playing');
+    stopMusic();
+    if (isPlay) {
+      return;
+    }
+    var file = JSON.parse(self.parentNode.parentNode.dataset.music).name;
+    var index = file.lastIndexOf('/');
+    var name = file.substr(index);
+    name = decodeURIComponent(name);
+    var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER]);
+    var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
+    var aFrom = file;
+    var reg = /^\/([a-z0-9]+)\//;
+    var result = aFrom.match(reg);
+    var storage = result[1];
+    if (!storageInfoList[storage] || !storageInfoList[storage].path) {
+      return;
+    }
+    var loadingGroupId = animationLoading.start();
+    if (isWifiConnected) {
+      var name = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
+      var fileInfo = {
+        storageName: storage,
+        fileName: name
+      };
+      CMD.Files.filePull(JSON.stringify(fileInfo), null, function (message) {
+        OS.File.writeAtomic(path + name, message.data, {}).then(
+          function onSuccess(number) {
+            onsuccess();
+          },
+          function onFailure(reason) {
+            onerror();
+          }
+        );
+      }, onerror);
+    } else {
+      if (!device) {
+        return;
+      }
+      aFrom = aFrom.replace(reg, storageInfoList[storage].path);
+      device.pull(aFrom, path + name).then(onsuccess, onerror);
+    }
   }
 
   function updateControls() {

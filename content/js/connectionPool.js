@@ -175,7 +175,6 @@ TCPConnectionPool.prototype = {
    */
   _onWrapperMessage: function tc_onWrapperMessage(jsonCmd, recvData) {
     try {
-      console.log(recvData);
       var wrapper = this._getWrapper();
       if (!wrapper) {
         return;

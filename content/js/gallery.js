@@ -224,14 +224,22 @@ var Gallery = (function() {
 
   function getPictureAt(index, callback) {
     var picList = $expr('li', getListContainer());
+    function onsuccess () {
+      callback(true, cachedUrl);
+      animationLoading.stop(loadingGroupId);
+    };
+    function onerror () {
+      new AlertDialog({
+        message: _('operation-failed'),
+        showCancelButton: false
+      });
+      animationLoading.stop(loadingGroupId);
+    };
     if (picList[index]) {
       // TODO: check if picture has been cached already
       var name = picList[index].dataset.picUrl.substr(picList[index].dataset.picUrl.lastIndexOf('/'));
 
       var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER]);
-      if (!device) {
-        return;
-      }
       name = decodeURIComponent(name);
       var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
       var aFrom = picList[index].dataset.picUrl;
@@ -241,17 +249,29 @@ var Gallery = (function() {
       if (!storageInfoList[storage] || !storageInfoList[storage].path) {
         return;
       }
-      aFrom = aFrom.replace(reg, storageInfoList[storage].path);
-      device.pull(aFrom, path + name).then(function() {
-        callback(true, cachedUrl);
-        animationLoading.stop(loadingGroupId);
-      }, function() {
-        new AlertDialog({
-          message: _('operation-failed'),
-          showCancelButton: false
-        });
-        animationLoading.stop(loadingGroupId);
-      });
+      if (isWifiConnected) {
+        var name = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
+        var fileInfo = {
+          storageName: storage,
+          fileName: name
+        };
+        CMD.Files.filePull(JSON.stringify(fileInfo), null, function (message) {
+          OS.File.writeAtomic(path + name, message.data, {}).then(
+            function onSuccess(number) {
+              onsuccess();
+            },
+            function onFailure(reason) {
+              onerror();
+            }
+          );
+        }, onerror);
+      } else {
+        if (!device) {
+          return;
+        }
+        aFrom = aFrom.replace(reg, storageInfoList[storage].path);
+        device.pull(aFrom, path + name).then(onsuccess, onerror);
+      }
     }
   }
 
