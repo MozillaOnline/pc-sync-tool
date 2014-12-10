@@ -189,9 +189,6 @@ var Gallery = (function() {
 
     listItem.ondblclick = function(e) {
       $id('tip').hidden = true;
-      if (isWifiConnected) {
-        return;
-      }
       var picList = $expr('li', getListContainer());
       var currentIndex = 0;
       for (; currentIndex < picList.length; currentIndex++) {
@@ -250,10 +247,10 @@ var Gallery = (function() {
         return;
       }
       if (isWifiConnected) {
-        var name = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
+        var fileName = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
         var fileInfo = {
           storageName: storage,
-          fileName: name
+          fileName: fileName
         };
         CMD.Files.filePull(JSON.stringify(fileInfo), null, function (message) {
           OS.File.writeAtomic(path + name, message.data, {}).then(

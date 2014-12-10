@@ -130,7 +130,7 @@ var MusicList = (function() {
       type: musicType,
       size: toSizeInMB(music.size),
       id: 'music-play-' + music.name,
-      canPlay: !isWifiConnected
+      canPlay: true
     };
     var elem = document.createElement('div');
     elem.classList.add('music-header');
@@ -152,11 +152,9 @@ var MusicList = (function() {
         musicItemClicked(elem);
       }
     };
-    if (!isWifiConnected) {
-      var playMusicBtns = $expr('.music-play-button', elem);
-      for (var i = 0; i < playMusicBtns.length; i++) {
-        playMusicBtns[i].onclick = playMusic;
-      }
+    var playMusicBtns = $expr('.music-play-button', elem);
+    for (var i = 0; i < playMusicBtns.length; i++) {
+      playMusicBtns[i].onclick = playMusic;
     }
     return elem;
   }
@@ -231,10 +229,10 @@ var MusicList = (function() {
     }
     var loadingGroupId = animationLoading.start();
     if (isWifiConnected) {
-      var name = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
+      var fileName = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
       var fileInfo = {
         storageName: storage,
-        fileName: name
+        fileName: fileName
       };
       CMD.Files.filePull(JSON.stringify(fileInfo), null, function (message) {
         OS.File.writeAtomic(path + name, message.data, {}).then(
