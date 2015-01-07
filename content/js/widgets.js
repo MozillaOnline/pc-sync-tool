@@ -423,13 +423,43 @@ FilesOPDialog.prototype = {
           aDest = 'DCIM/' + encodeURIComponent(aName);
           break;
         case 7:
-          CMD.Pictures.deletePicture(self.options.files[self._fileIndex], null, success, error);
+          var cmd = CMD.Pictures.deletePicture(self.options.files[self._fileIndex], null);
+          socketsManager.send(cmd);
+          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+            var result = evt.detail.result;
+            if (result != RS_OK) {
+              error();
+              return;
+            }
+            success();
+          });
           break;
         case 8:
-          CMD.Musics.deleteMusic(self.options.files[self._fileIndex], null, success, error);
+          var cmd = CMD.Musics.deleteMusic(self.options.files[self._fileIndex], null);
+          socketsManager.send(cmd);
+          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+            var result = evt.detail.result;
+            if (result != RS_OK) {
+              error();
+              return;
+            }
+            success();
+          });
           break;
         case 9:
-          CMD.Videos.deleteVideo(self.options.files[self._fileIndex], null, success, error);
+          var cmd = CMD.Videos.deleteVideo(self.options.files[self._fileIndex], null);
+          socketsManager.send(cmd);
+          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+            var result = evt.detail.result;
+            if (result != RS_OK) {
+              error();
+              return;
+            }
+            success();
+          });
           break;
       }
 
@@ -448,8 +478,16 @@ FilesOPDialog.prototype = {
               storageName: storage,
               fileName: name
             };
-            CMD.Files.filePull(JSON.stringify(fileInfo), null, function (message) {
-              OS.File.writeAtomic(aDest, message.data, {}).then(
+            var cmd = CMD.Files.filePull(JSON.stringify(fileInfo), null);
+            socketsManager.send(cmd);
+            document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+              document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+              var result = evt.detail.result;
+              if (result != RS_OK) {
+                error();
+                return;
+              }
+              OS.File.writeAtomic(aDest, evt.detail.data, {}).then(
                 function onSuccess(number) {
                   success();
                 },
@@ -457,7 +495,7 @@ FilesOPDialog.prototype = {
                   error();
                 }
               );
-            }, error);
+            });
           } else {
             if (!device) {
               clear();
@@ -474,8 +512,16 @@ FilesOPDialog.prototype = {
             error('file-too-big');
             break;
           }
-          CMD.Device.getStorageFree(function onresponse_getDeviceInfo(message) {
-            var dataJSON = JSON.parse(array2String(message.data));
+          var cmd = CMD.Device.getStorageFree();
+          socketsManager.send(cmd);
+          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+            var result = evt.detail.result;
+            if (result != RS_OK) {
+              error('space-not-enough');
+              return;
+            }
+            var dataJSON = JSON.parse(array2String(evt.detail.data));
             for (var uname in dataJSON) {
               defaultFreeSpace = storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
               if (storageInfoList[uname] && defaultFreeSpace > file.size) {
@@ -487,14 +533,19 @@ FilesOPDialog.prototype = {
                         fileName: aDest,
                         fileType: file.type
                       };
-                      CMD.Files.filePush(JSON.stringify(fileInfo), array, success, error);
-                    },
-                    function onFailure(reason) {
-                      error();
-                    }
-                  );
-                }
-                else {
+                      var cmd = CMD.Files.filePush(JSON.stringify(fileInfo), array);
+                      socketsManager.send(cmd);
+                      document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+                        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+                        var result = evt.detail.result;
+                        if (result != RS_OK) {
+                          error();
+                          return;
+                        }
+                        success();
+                      });
+                  });
+                } else {
                   if (!device || !file.size) {
                     clear();
                     return;
@@ -506,9 +557,6 @@ FilesOPDialog.prototype = {
                 return;
               }
             }
-            error('space-not-enough');
-          }, function onerror_getStorage(message) {
-            error('space-not-enough');
           });
           break;
       }

@@ -438,16 +438,18 @@ var ContactForm = (function() {
 
     if (updateContact) {
       // Save to device
-      CMD.Contacts.updateContact(JSON.stringify(contact), null, function onresponse_updatecontact(message) {
-        animationLoading.stop(loadingGroupId);
-      }, function onerror_updatecontact(message) {
+      var cmd = CMD.Contacts.updateContact(JSON.stringify(contact), null);
+      socketsManager.send(cmd);
+      document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
         animationLoading.stop(loadingGroupId);
       });
     } else {
       // Create new contact
-      CMD.Contacts.addContact(JSON.stringify(contact), null, function onresponse_addcontact(message) {
-        animationLoading.stop(loadingGroupId);
-      }, function onerror_addcontact(message) {
+      var cmd = CMD.Contacts.addContact(JSON.stringify(contact), null);
+      socketsManager.send(cmd);
+      document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
         animationLoading.stop(loadingGroupId);
       });
     }
@@ -503,11 +505,17 @@ var ContactForm = (function() {
       "value": mobile,
       "carrier": ""
     }];
-    CMD.Contacts.addContact(JSON.stringify(contact), null, function onresponse_addcontact(message) {
+    var cmd = CMD.Contacts.addContact(JSON.stringify(contact), null);
+    socketsManager.send(cmd);
+    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+      document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+      var result = evt.detail.result;
+      if (result != RS_OK) {
+        animationLoading.stop(loadingGroupId);
+        return;
+      }
       $id('fullName').value = '';
       $id('mobile').value = '';
-      animationLoading.stop(loadingGroupId);
-    }, function onerror_addcontact(message) {
       animationLoading.stop(loadingGroupId);
     });
   }

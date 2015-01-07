@@ -3,6 +3,7 @@
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 var CMD = (function() {
+  var commandId = 0;
 /*
    * Return function with three parameters:
    *  - data
@@ -13,49 +14,20 @@ var CMD = (function() {
    *    the callback function when error occurs
    */
 
-  function createCommand(target, command) {
-    return function(dataString, dataArray, onresponse, onerror) {
-      socketsManager.send({
-        cmd: {
-          title: {
-            id: 0,
-            type: target,
-            command: command,
-            result: RS_OK,
-            datalength: 0,
-            subdatalength: 0
-          },
-          dataString: dataString,
-          dataArray: dataArray
+  function createCommand(target, command, dataString, dataArray) {
+    return {
+      cmd: {
+        title: {
+          id: commandId++,
+          type: target,
+          command: command,
+          result: RS_OK,
+          datalength: 0,
+          subdatalength: 0
         },
-        onresponse: onresponse,
-        onerror: onerror
-      });
-    };
-  }
-
-/*
-   * Return function only with onresponse and onerror callbacks
-   */
-
-  function createCommandWithNonData(target, command) {
-    return function(onresponse, onerror) {
-      socketsManager.send({
-        cmd: {
-          title: {
-            id: 0,
-            type: target,
-            command: command,
-            result: RS_OK,
-            datalength: 0,
-            subdatalength: 0
-          },
-          dataString: null,
-          dataArray: null
-        },
-        onresponse: onresponse,
-        onerror: onerror
-      });
+        dataString: dataString,
+        dataArray: dataArray
+      }
     };
   }
 
@@ -67,68 +39,103 @@ var CMD = (function() {
       /**
        * get the summary info of the device
        */
-      getVersion: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getVersion),
-      getStorage: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorage),
-      getSettings: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getSettings),
-      getStorageFree: createCommandWithNonData(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorageFree),
+      getVersion: function() {
+        return createCommand(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getVersion)
+      },
+      getStorage: function() {
+        return createCommand(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorage);
+      },
+      getStorageFree: function() {
+        return createCommand(CMD_TYPE.deviceInfo, DEVICEINFO_COMMAND.getStorageFree);
+      }
     },
 
     /***** Contacts commands *****/
     Contacts: {
-      getAllContacts: createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.getAllContacts),
+      getAllContacts: function() {
+        return createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getAllContacts);
+      },
 
-/*
+      /*
        * data:
        *   contact object
        */
-      updateContact: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.updateContactById),
+      updateContact: function(strData, arrayData) {
+        return createCommand(CMD_TYPE.contact, CONTACT_COMMAND.updateContactById, strData, arrayData);
+      },
 
-/*
+      /*
        * data:
        *   contact array
        */
-      addContact: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.addContact),
+      addContact: function(strData, arrayData) {
+        return createCommand(CMD_TYPE.contact, CONTACT_COMMAND.addContact, strData, arrayData);
+      },
 
-/*
+      /*
        * data:
        *   contact id array
        */
-      removeContact: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.removeContactById),
+      removeContact: function(dataStr, dataArray) {
+        return createCommand(CMD_TYPE.contact, CONTACT_COMMAND.removeContactById, dataStr, dataArray);
+      },
 
-      clearAllContacts: createCommandWithNonData(CMD_TYPE.contact, CONTACT_COMMAND.clearAllContacts),
-
-/*
+      /*
        * data:
        *   contact id
        */
-      getContactById: createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactById)
+      getContactById: function(dataStr, dataArray) {
+        return createCommand(CMD_TYPE.contact, CONTACT_COMMAND.getContactById, dataStr, dataArray);
+      }
     },
 
     /***** Picture commands ******/
     Pictures: {
-      getOldPicturesInfo: createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getOldPicturesInfo),
-      getChangedPicturesInfo: createCommandWithNonData(CMD_TYPE.picture, PICTURE_COMMAND.getChangedPicturesInfo),
-      deletePicture: createCommand(CMD_TYPE.picture, PICTURE_COMMAND.deletePicture)
+      getOldPicturesInfo: function() {
+        return createCommand(CMD_TYPE.picture, PICTURE_COMMAND.getOldPicturesInfo);
+      },
+      getChangedPicturesInfo: function() {
+        return  createCommand(CMD_TYPE.picture, PICTURE_COMMAND.getChangedPicturesInfo);
+      },
+      deletePicture: function(dataStr, dataArray) {
+        return createCommand(CMD_TYPE.picture, PICTURE_COMMAND.deletePicture, dataStr, dataArray);
+      }
     },
 
     /***** Videos commands ******/
     Videos: {
-      getOldVideosInfo: createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getOldVideosInfo),
-      getChangedVideosInfo: createCommandWithNonData(CMD_TYPE.video, VIDEO_COMMAND.getChangedVideosInfo),
-      deleteVideo: createCommand(CMD_TYPE.video, VIDEO_COMMAND.deleteVideo)
+      getOldVideosInfo: function() {
+        return createCommand(CMD_TYPE.video, VIDEO_COMMAND.getOldVideosInfo);
+      },
+      getChangedVideosInfo: function() {
+        return createCommand(CMD_TYPE.video, VIDEO_COMMAND.getChangedVideosInfo);
+      },
+      deleteVideo: function(dataStr, dataArray) {
+        return createCommand(CMD_TYPE.video, VIDEO_COMMAND.deleteVideo, dataStr, dataArray);
+      }
     },
 
     /***** Musics commands ******/
     Musics: {
-      getOldMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getOldMusicsInfo),
-      getChangedMusicsInfo: createCommandWithNonData(CMD_TYPE.music, MUSIC_COMMAND.getChangedMusicsInfo),
-      deleteMusic: createCommand(CMD_TYPE.music, MUSIC_COMMAND.deleteMusic)
+      getOldMusicsInfo: function() {
+        return createCommand(CMD_TYPE.music, MUSIC_COMMAND.getOldMusicsInfo);
+      },
+      getChangedMusicsInfo: function() {
+        return createCommand(CMD_TYPE.music, MUSIC_COMMAND.getChangedMusicsInfo);
+      },
+      deleteMusic: function(dataStr, dataArray) {
+        return createCommand(CMD_TYPE.music, MUSIC_COMMAND.deleteMusic, dataStr, dataArray);
+      }
     },
 
     /***** Files commands ******/
     Files: {
-      filePull: createCommand(CMD_TYPE.file, FILE_COMMAND.filePull),
-      filePush: createCommand(CMD_TYPE.file, FILE_COMMAND.filePush)
+      filePull: function(dataStr, dataArray) {
+        return createCommand(CMD_TYPE.file, FILE_COMMAND.filePull, dataStr, dataArray);
+      },
+      filePush: function(dataStr, dataArray) {
+        return createCommand(CMD_TYPE.file, FILE_COMMAND.filePush, dataStr, dataArray);
+      }
     }
   };
 })();

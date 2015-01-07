@@ -128,8 +128,19 @@ var FFOSAssistant = (function() {
 
   function getStorageInfo() {
     var loadingGroupId = animationLoading.start();
-    CMD.Device.getStorage(function onresponse_getDeviceInfo(message) {
-      var dataJSON = JSON.parse(array2String(message.data));
+    var cmd = CMD.Device.getStorage();
+    socketsManager.send(cmd);
+
+    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+      document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+      var result = evt.detail.result;
+      if (result != RS_OK) {
+        animationLoading.stop(loadingGroupId);
+        console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
+        return;
+      }
+
+      var dataJSON = JSON.parse(array2String(evt.detail.data));
       var container = $id('summary-infos');
       container.innerHTML = '';
       storageInfoList = {};
@@ -209,9 +220,6 @@ var FFOSAssistant = (function() {
         };
       }
       animationLoading.stop(loadingGroupId);
-    }, function onerror_getStorage(message) {
-      animationLoading.stop(loadingGroupId);
-      console.log('Error occurs when fetching device infos, see: ' + JSON.stringify(message));
     });
   }
 
@@ -242,21 +250,23 @@ var FFOSAssistant = (function() {
   }
 
   function getVersionandShow() {
-    CMD.Device.getVersion(function onresponse_getDeviceInfo(message) {
-      var clientVer = parseFloat(array2String(message.data));
-      if (clientVer > 3) {
+    var cmd = CMD.Device.getVersion();
+    socketsManager.send(cmd);
+
+    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+      document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+      var result = evt.detail.result;
+      var clientVer = parseFloat(array2String(evt.detail.data));
+      if (result == RS_OK && clientVer > 3) {
         getStorageInfo();
-      } else {
+      }
+
+      if (result != RS_OK || clientVer <= 3) {
         new AlertDialog({
           message: _('download-new-version'),
           showCancelButton: false
         });
       }
-    }, function onerror_getStorage(message) {
-      new AlertDialog({
-        message: _('download-new-version'),
-        showCancelButton: false
-      });
     });
   }
 

@@ -42,8 +42,16 @@ var Gallery = (function() {
     var getPicturesIndex = 0;
     var picturesCount = 0;
     var loadingGroupId = animationLoading.start();
-    CMD.Pictures.getOldPicturesInfo(function(oldPicture) {
-      var picture = JSON.parse(array2String(oldPicture.data));
+    var cmd = CMD.Pictures.getOldPicturesInfo();
+    socketsManager.send(cmd);
+    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+      var result = evt.detail.result;
+      if (result != RS_OK && result !== RS_MIDDLE) {
+        updateControls();
+        animationLoading.stop(loadingGroupId);
+        return;
+      }
+      var picture = JSON.parse(array2String(evt.detail.data));
       if (picture.callbackID == 'enumerate') {
         getPicturesIndex++;
         addPicture(picture.detail);
@@ -52,19 +60,18 @@ var Gallery = (function() {
         picturesCount = picture.detail;
       }
       if (getPicturesIndex == picturesCount) {
+        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
         updateChangedPictures();
         updateUI();
         updateControls();
         animationLoading.stop(loadingGroupId);
       }
-    }, function onerror() {
-      updateControls();
-      animationLoading.stop(loadingGroupId);
     });
   }
 
   function updateChangedPictures() {
-    CMD.Pictures.getChangedPicturesInfo();
+    var cmd = CMD.Pictures.getChangedPicturesInfo();
+    socketsManager.send(cmd);
   }
 
   function addPicture(picture) {
@@ -252,7 +259,15 @@ var Gallery = (function() {
           storageName: storage,
           fileName: fileName
         };
-        CMD.Files.filePull(JSON.stringify(fileInfo), null, function (message) {
+        var cmd = CMD.Files.filePull(JSON.stringify(fileInfo), null);
+        socketsManager.send(cmd);
+        document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+          document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+          var result = evt.detail.result;
+          if (result != RS_OK) {
+            onerror();
+            return;
+          }
           OS.File.writeAtomic(path + name, message.data, {}).then(
             function onSuccess(number) {
               onsuccess();
@@ -261,7 +276,7 @@ var Gallery = (function() {
               onerror();
             }
           );
-        }, onerror);
+        });
       } else {
         if (!device) {
           return;

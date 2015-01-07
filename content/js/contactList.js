@@ -24,7 +24,8 @@ var ContactList = (function() {
     }
 
     // Update contact
-    CMD.Contacts.updateContact(JSON.stringify(contact), null, function onresponse_updatecontact(message) {}, function onerror_updateContact() {});
+    var cmd = CMD.Contacts.updateContact(JSON.stringify(contact), null);
+    socketsManager.send(cmd);
   }
 
   function createContactListItem(contact) {
@@ -134,13 +135,20 @@ var ContactList = (function() {
     var container = getListContainer();
     container.innerHTML = '';
     groupedList = null;
-    CMD.Contacts.getAllContacts(function onresponse_getAllContacts(message) {
+    var cmd = CMD.Contacts.getAllContacts();
+    socketsManager.send(cmd);
+    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+      document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+      var result = evt.detail.result;
+      if (result != RS_OK) {
+        log('Error occurs when fetching all contacts.');
+        animationLoading.stop(loadingGroupId);
+        return;
+      }
+
       // Make sure the 'select-all' box is not checked.
-      var dataJSON = JSON.parse(array2String(message.data));
+      var dataJSON = JSON.parse(array2String(evt.detail.data));
       initList(container, dataJSON, viewData);
-      animationLoading.stop(loadingGroupId);
-    }, function onerror_getAllContacts(message) {
-      log('Error occurs when fetching all contacts.');
       animationLoading.stop(loadingGroupId);
     });
   }
@@ -224,9 +232,10 @@ var ContactList = (function() {
 
   function removeContact(id) {
     var loadingGroupId = animationLoading.start();
-    CMD.Contacts.removeContact(id, null, function onresponse_removeContact(message) {
-      animationLoading.stop(loadingGroupId);
-    }, function onerror_removeContact(message) {
+    var cmd = CMD.Contacts.removeContact(id, null);
+    socketsManager.send(cmd);
+    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+      document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
       animationLoading.stop(loadingGroupId);
     });
   }
@@ -481,22 +490,36 @@ var ContactList = (function() {
         groupedList.remove(item);
         break;
       case 'update':
-        CMD.Contacts.getContactById(changeEvent.contactID, null, function(result) {
-          var data = array2String(result.data);
+        var cmd = CMD.Contacts.getContactById(changeEvent.contactID, null);
+        socketsManager.send(cmd);
+        document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+          document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+          var result = evt.detail.result;
+          if (result != RS_OK) {
+            return;
+          }
+          var data = array2String(evt.detail.data);
           if (data != '' && groupedList) {
             var contactData = JSON.parse(data);
             updateContact(contactData);
           }
-        }, null);
+        });
         break;
       case 'create':
-        CMD.Contacts.getContactById(changeEvent.contactID, null, function(result) {
-          var data = array2String(result.data);
+        var cmd = CMD.Contacts.getContactById(changeEvent.contactID, null);
+        socketsManager.send(cmd);
+        document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+          document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+          var result = evt.detail.result;
+          if (result != RS_OK) {
+            return;
+          }
+          var data = array2String(evt.detail.data);
           if (data != '' && groupedList) {
             var contactData = JSON.parse(data);
             addContact(contactData);
           }
-        }, null);
+        });
         break;
       default:
         break;

@@ -40,8 +40,17 @@ var Video = (function() {
     var getVideosIndex = 0;
     var videosCount = 0;
     var loadingGroupId = animationLoading.start();
-    CMD.Videos.getOldVideosInfo(function(oldVideo) {
-      var video = JSON.parse(array2String(oldVideo.data));
+    var cmd = CMD.Videos.getOldVideosInfo();
+    socketsManager.send(cmd);
+    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+      var result = evt.detail.result;
+      if (result != RS_OK && result !== RS_MIDDLE) {
+        updateControls();
+        animationLoading.stop(loadingGroupId);
+        return;
+      }
+
+      var video = JSON.parse(array2String(evt.detail.data));
       if (video.callbackID == 'enumerate') {
         getVideosIndex++;
         addVideo(video.detail);
@@ -50,19 +59,18 @@ var Video = (function() {
         videosCount = video.detail;
       }
       if (getVideosIndex == videosCount) {
+        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
         updateChangedVideos();
         updateUI();
         updateControls();
         animationLoading.stop(loadingGroupId);
       }
-    }, function onerror() {
-      updateControls();
-      animationLoading.stop(loadingGroupId);
     });
   }
 
   function updateChangedVideos() {
-    CMD.Videos.getChangedVideosInfo();
+    var cmd = CMD.Videos.getChangedVideosInfo();
+    socketsManager.send(cmd);
   }
 
   function addVideo(video) {

@@ -25,9 +25,7 @@ var socketsManager = (function() {
   var host = '';
   var port = -1;
   var callbacks = null;
-  var handlers = {};
   var connectingTimer = undefined;
-  var currentId = 0;
 
   // 0 : socket is idle
   // 1 : socket is in use
@@ -74,12 +72,9 @@ var socketsManager = (function() {
     mainSocket.onopen = function(event) {
       var socketWrapper = new TCPSocketWrapper({
         socket: event.target,
-        onconnected: onMainSocketConnected,
         onmessage: handleChangedData,
         onerror: onSocketError,
-        onclose: onSocketClosed,
-        onrejected: onRejected,
-        onaccepted: onAccepted
+        onclose: onSocketClosed
       });
 
       connectingTimer =  window.setInterval(onSocketError, 10000);
@@ -94,7 +89,6 @@ var socketsManager = (function() {
     dataSocket.onopen = function(event) {
       dataSocketWrapper = new TCPSocketWrapper({
         socket: event.target,
-        onconnected: onDataSocketConnected,
         onmessage: onWrapperMessage,
         onerror: function() {
           console.log('error occured in data socket');
@@ -135,7 +129,18 @@ var socketsManager = (function() {
   };
 
   // When user data changed in mobile device, update it.
-  var handleChangedData = function(jsonCmd, recvData) {
+  var handleChangedData = function(cmd, recvData) {
+    switch(cmd.type) {
+      case CMD_TYPE.connected:
+        onMainSocketConnected();
+        return;
+      case CMD_TYPE.rejected:
+        onRejected();
+        return;
+      case CMD_TYPE.accepted:
+        onAccepted();
+        return;
+    }
     var message = JSON.parse(array2String(recvData));
     if (message == null) {
       return;
@@ -147,6 +152,7 @@ var socketsManager = (function() {
       }
     });
     document.dispatchEvent(evt);
+    return;
   };
 
   // Main socket closed
@@ -165,7 +171,6 @@ var socketsManager = (function() {
 
   // Error occured in main socket.
   var onSocketError = function sm_onSocketError(event) {
-    console.log('error occured in main socket.');
     window.clearInterval(connectingTimer);
     connectingTimer = undefined;
 
@@ -179,64 +184,22 @@ var socketsManager = (function() {
   };
 
   // Handle received data from data socket
-  var onWrapperMessage = function sm_onWrapperMessage(jsonCmd, recvData) {
-    try {
-      var handler = handlers[jsonCmd.id];
-      if (!handler) {
-        if (jsonCmd.result != RS_MIDDLE) {
-          dataSocketState = 0;
-        }
-        return;
-      }
-
-      var result = jsonCmd.result;
-      switch(result) {
-        case RS_MIDDLE:
-          handler.onresponse({
-            result: result,
-            data: recvData
-          });
-          break;
-        case RS_OK:
-          dataSocketState = 0;
-          deleteHandler(jsonCmd.id);
-          handler.onresponse({
-            result: result,
-            data: recvData
-          });
-          break;
-        case RS_ERROR:
-          dataSocketState = 0;
-          deleteHandler(jsonCmd.id);
-          handler.onerror({
-            result: result,
-            data: recvData
-          });
-          break;
-      }
-    } catch (e) {
-      if (jsonCmd.result != RS_MIDDLE) {
-        dataSocketState = 0;
-      }
-      handler.onerror(e);
+  var onWrapperMessage = function sm_onWrapperMessage(cmd, recvData) {
+    if (cmd.type == CMD_TYPE.connected) {
+      onDataSocketConnected();
+      return;
     }
-  };
-
-  var deleteHandler = function sm_deleteHandler(id) {
-    if (handlers[id]) {
-      delete handlers[id];
-    }
+    var evt = new CustomEvent(cmd.id +'_onData', {
+      'detail': {
+        'result': cmd.result,
+        'data': recvData
+      }
+    });
+    document.dispatchEvent(evt);
   };
 
   var send = function sm_send(obj) {
-    obj.cmd.title.id = currentId++;
-    handlers[obj.cmd.title.id] = {
-      onresponse: obj.onresponse || function() {},
-      onerror: obj.onerror || function() {}
-    };
-
     sendMsgQueue.push(obj);
-    return obj.cmd.title.id;
   };
 
   var doSend = function sm_doSend(obj) {
@@ -269,43 +232,12 @@ var socketsManager = (function() {
     mainSocket = null;
   };
 
-  var cancel = function sm_cancel(tasks) {
-    /*
-    window.clearInterval(sendTimer);
-
-    // current running task needs to be canceld.
-    if (tasks.indexOf(currentTaskId) != -1) {
-      dataSocket.close();
-      dataSocketState = 0;
-      dataSocket = null;
-    }
-    */
-
-    tasks.forEach(function(task) {
-      deleteHandler(task);
-      sendMsgQueue.forEach(function(message, index) {
-        if (message.cmd.title.id == task) {
-          sendMsgQueue.splice(index, 1);
-        }
-      });
-    });
-
-    /*
-    if (!dataSocket) {
-      createDataSocket();
-    } else {
-      sendTimer = window.setInterval(sendQueuedMsg, 500);
-    }
-    */
-  };
-
   return {
     initialize: initialize,
     createMainSocket: createMainSocket,
     createDataSocket: createDataSocket,
     createTCPSocket: createTCPSocket,
     send: send,
-    reset: reset,
-    cancel: cancel
+    reset: reset
   };
 })(window);

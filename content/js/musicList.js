@@ -83,8 +83,16 @@ var MusicList = (function() {
     var getMusicsIndex = 0;
     var musicsCount = 0;
     var loadingGroupId = animationLoading.start();
-    CMD.Musics.getOldMusicsInfo(function(oldMusic) {
-      var music = JSON.parse(array2String(oldMusic.data));
+    var cmd = CMD.Musics.getOldMusicsInfo();
+    socketsManager.send(cmd);
+    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+      var result = evt.detail.result;
+      if (result != RS_OK && result !== RS_MIDDLE) {
+        updateControls();
+        animationLoading.stop(loadingGroupId);
+        return;
+      }
+      var music = JSON.parse(array2String(evt.detail.data));
       if (music.callbackID == 'enumerate') {
         getMusicsIndex++;
         getListContainer().appendChild(createMusicListItem(music.detail));
@@ -93,19 +101,18 @@ var MusicList = (function() {
         musicsCount = music.detail;
       }
       if (getMusicsIndex == musicsCount) {
+        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
         updateChangedMusics();
         updateUI();
         updateControls();
         animationLoading.stop(loadingGroupId);
       }
-    }, function onerror() {
-      updateControls();
-      animationLoading.stop(loadingGroupId);
     });
   }
 
   function updateChangedMusics() {
-    CMD.Musics.getChangedMusicsInfo();
+    var cmd = CMD.Musics.getChangedMusicsInfo();
+    socketsManager.send(cmd);
   }
 
   function updateUI() {
@@ -234,7 +241,15 @@ var MusicList = (function() {
         storageName: storage,
         fileName: fileName
       };
-      CMD.Files.filePull(JSON.stringify(fileInfo), null, function (message) {
+      var cmd = CMD.Files.filePull(JSON.stringify(fileInfo), null);
+      socketsManager.send(cmd);
+      document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+        var result = evt.detail.result;
+        if (result != RS_OK) {
+          onerror();
+          return;
+        }
         OS.File.writeAtomic(path + name, message.data, {}).then(
           function onSuccess(number) {
             onsuccess();
@@ -243,7 +258,7 @@ var MusicList = (function() {
             onerror();
           }
         );
-      }, onerror);
+      });
     } else {
       if (!device) {
         return;
