@@ -54,12 +54,10 @@ var observer = null;
 var devicesList = null;
 var device = null;
 var deviceSocketState = connectState.disconnected;
-var REMOTE_PORT = 25679;
 var adbHelperInstalled = false;
 var needUpdateAdbHelper = false;
 var minAdbHelperVersion = '0.6.0';
 var FFOSAssistant = (function() {
-  var connPool = null;
   var connListenSocket = null;
 
   function showUsbConnection() {
@@ -264,7 +262,7 @@ var FFOSAssistant = (function() {
 
   function connectToDevice() {
     if (deviceSocketState == connectState.connected) {
-      releaseConnPool();
+      socketsManager.reset();
       resetConnect();
     }
     if (deviceSocketState == connectState.connecting) {
@@ -287,17 +285,6 @@ var FFOSAssistant = (function() {
     return;
   }
 
-  function releaseConnPool() {
-    if (connListenSocket) {
-      connListenSocket.socket.close();
-      connListenSocket = null;
-    }
-    if (connPool) {
-      connPool.finalize();
-      connPool = null;
-    }
-  }
-
   function resetConnect() {
     isWifiConnected = false;
     showConnectView();
@@ -310,110 +297,93 @@ var FFOSAssistant = (function() {
       return;
     }
     var loadingGroupId = animationLoading.start();
-    releaseConnPool();
-    connPool = new TCPConnectionPool({
+    socketsManager.reset();
+    socketsManager.initialize({
       host: serverIP,
-      port: REMOTE_PORT,
-      size: 1,
-      onerror: function onerror() {
-        animationLoading.stop(loadingGroupId);
-        if (deviceSocketState == connectState.connected) {
-          releaseConnPool();
-          resetConnect();
-        } else if (deviceSocketState == connectState.connecting) {
-          releaseConnPool();
-          var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
-          if (isWifiConnected) {
-            contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
-          }
-          var url = 'http://os.firefox.com.cn/pcsync.html';
-          if (navigator.mozL10n.language.code == 'zh-CN') {
-            url = 'http://os.firefox.com.cn/pcsync-cn.html';
-          }
-          new AlertDialog({
-            id: 'popup_dialog',
-            titleL10nId: 'alert-dialog-title',
-            message: {
-              head: _('connection-alert-dialog-title'),
-              description: _('connection-alert-dialog-message-header'),
-              content: contentInfo,
-              detail: _('connection-alert-dialog-detail'),
-              href: url
-            },
-            okCallback: resetConnect,
-            cancelCallback: resetConnect
-          });
-        }
-      },
-      onconnected: function onconnected() {
-        animationLoading.stop(loadingGroupId);
-        if (deviceSocketState != connectState.connecting) {
-          return;
-        }
-        deviceSocketState = connectState.connected;
-        if (serverIP != 'localhost') {
-          isWifiConnected = true;
-        } else {
-          isWifiConnected = false;
-        }
-        var socket = connPool.TCPSocket.open(serverIP, REMOTE_PORT, {
-          binaryType: 'arraybuffer'
-        });
-        socket.onopen = function tc_onListenSocketOpened(event) {
-          connListenSocket = new TCPSocketWrapper({
-            socket: event.target,
-            onmessage: function(jsonCmd, recvData) {
-              if (connListenSocket == null) {
-                return;
-              }
-              var message = JSON.parse(array2String(recvData));
-              if (message == null) {
-                return;
-              }
-              var event = new CustomEvent('dataChange',{'detail': {'type': message.type, 'data': message}});
-              customEventElement.dispatchEvent(event);
-            },
-            onclose: function() {
-              connListenSocket = null;
+      callbacks: {
+        onerror: function onerror() {
+          animationLoading.stop(loadingGroupId);
+          if (deviceSocketState == connectState.connected) {
+            socketsManager.reset();
+            resetConnect();
+          } else if (deviceSocketState == connectState.connecting) {
+            socketsManager.reset();
+            var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
+            if (isWifiConnected) {
+              contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
             }
-          });
-        };
-        showSummaryView();
-      },
-      ondisconnected: function ondisconnected() {
-        animationLoading.stop(loadingGroupId);
-        releaseConnPool();
-        if (deviceSocketState == connectState.connecting) {
-          var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
-          var url = 'http://os.firefox.com.cn/pcsync.html';
-          if (navigator.mozL10n.language.code == 'zh-CN') {
-            url = 'http://os.firefox.com.cn/pcsync-cn.html';
+            var url = 'http://os.firefox.com.cn/pcsync.html';
+            if (navigator.mozL10n.language.code == 'zh-CN') {
+              url = 'http://os.firefox.com.cn/pcsync-cn.html';
+            }
+            new AlertDialog({
+              id: 'popup_dialog',
+              titleL10nId: 'alert-dialog-title',
+              message: {
+                head: _('connection-alert-dialog-title'),
+                description: _('connection-alert-dialog-message-header'),
+                content: contentInfo,
+                detail: _('connection-alert-dialog-detail'),
+                href: url
+              },
+              okCallback: resetConnect,
+              cancelCallback: resetConnect
+            });
           }
-          new AlertDialog({
-            id: 'popup_dialog',
-            titleL10nId: 'alert-dialog-title',
-            message: {
-              head: _('connection-alert-dialog-title'),
-              description: _('connection-alert-dialog-message-header'),
-              content: contentInfo,
-              detail: _('connection-alert-dialog-detail'),
-              href: url
-            },
-            okCallback: resetConnect,
-            cancelCallback: resetConnect
-          });
-        } else{
-           resetConnect();
+        },
+        mainSocketOnConnected: function onconnected() {
+          animationLoading.stop(loadingGroupId);
+          if (deviceSocketState != connectState.connecting) {
+            return;
+          }
+          deviceSocketState = connectState.connected;
+          if (serverIP != 'localhost') {
+            isWifiConnected = true;
+          } else {
+            isWifiConnected = false;
+          }
+
+         socketsManager.createDataSocket();
+        },
+        dataSocketOnConnected: function onconnected() {
+         showSummaryView();
+        },
+        ondisconnected: function ondisconnected() {
+          animationLoading.stop(loadingGroupId);
+          socketsManager.reset();
+          if (deviceSocketState == connectState.connecting) {
+            var contentInfo = [_('connection-alert-dialog-message-check-version'), _('connection-alert-dialog-message-check-runapp')];
+            var url = 'http://os.firefox.com.cn/pcsync.html';
+            if (navigator.mozL10n.language.code == 'zh-CN') {
+              url = 'http://os.firefox.com.cn/pcsync-cn.html';
+            }
+            new AlertDialog({
+              id: 'popup_dialog',
+              titleL10nId: 'alert-dialog-title',
+              message: {
+                head: _('connection-alert-dialog-title'),
+                description: _('connection-alert-dialog-message-header'),
+                content: contentInfo,
+                detail: _('connection-alert-dialog-detail'),
+                href: url
+              },
+              okCallback: resetConnect,
+              cancelCallback: resetConnect
+            });
+          } else{
+             resetConnect();
+          }
         }
       }
     });
+    socketsManager.createMainSocket();
   }
 
   function showConnectView() {
     animationLoading.reset();
     var loadingGroupId = animationLoading.start();
     MusicList.resetView();
-    releaseConnPool();
+    socketsManager.reset();
     $id('connect-button').classList.remove('hiddenElement');
     $id('disconnect-button').classList.add('hiddenElement');
     $id('device-empty').classList.remove('hiddenElement');
@@ -462,7 +432,6 @@ var FFOSAssistant = (function() {
       }
       ip = int8Array[0].toString() + '.' + int8Array[1].toString() + '.' + int8Array[2].toString() + '.' + int8Array[3].toString();
       if (ip) {
-        //$id('device-name').innerHTML = wifiCode.value;
         deviceSocketState = connectState.connecting;
         connectToServer(ip);
       }
@@ -531,7 +500,7 @@ var FFOSAssistant = (function() {
       observerService.notifyObservers(null, 'ffosassistant-start-connection', '');
     };
     $id('disconnect-button').onclick = function onclick_disconnect(event) {
-      releaseConnPool();
+      socketsManager.reset();
       resetConnect();
     };
     customEventElement.addEventListener('firstshow', function(e) {
@@ -581,7 +550,7 @@ var FFOSAssistant = (function() {
     if (observer) {
       observer.unregister();
     }
-    releaseConnPool();
+    socketsManager.reset();
   });
 
   window.addEventListener('localized', function showBody() {
@@ -600,12 +569,4 @@ var FFOSAssistant = (function() {
       init();
     }
   });
-
-  return {
-    sendRequest: function(obj) {
-      if (connPool) {
-        connPool.send(obj);
-      }
-    }
-  };
 })();

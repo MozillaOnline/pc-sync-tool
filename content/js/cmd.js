@@ -15,7 +15,7 @@ var CMD = (function() {
 
   function createCommand(target, command) {
     return function(dataString, dataArray, onresponse, onerror) {
-      FFOSAssistant.sendRequest({
+      socketsManager.send({
         cmd: {
           title: {
             id: 0,
@@ -40,7 +40,7 @@ var CMD = (function() {
 
   function createCommandWithNonData(target, command) {
     return function(onresponse, onerror) {
-      FFOSAssistant.sendRequest({
+      socketsManager.send({
         cmd: {
           title: {
             id: 0,
