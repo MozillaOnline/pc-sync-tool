@@ -733,14 +733,14 @@ vCardConverter = {
           }
         }
       }
-      CMD.Contacts.addContact(JSON.stringify(contact), null, function () {
-          index ++;
-          if (index == items.length)
-            animationLoading.stop(loadingGroupId);
-        }, function () {
-          index ++;
-          if (index == items.length)
-            animationLoading.stop(loadingGroupId);
+      var cmd = CMD.Contacts.addContact(JSON.stringify(contact), null);
+      socketsManager.send(cmd);
+      document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+        index++;
+        if (index == items.length) {
+          animationLoading.stop(loadingGroupId);
+        }
       });
     })
   },

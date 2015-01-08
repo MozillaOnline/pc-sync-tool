@@ -95,7 +95,7 @@ var CMD = (function() {
         return createCommand(CMD_TYPE.picture, PICTURE_COMMAND.getOldPicturesInfo);
       },
       getChangedPicturesInfo: function() {
-        return  createCommand(CMD_TYPE.picture, PICTURE_COMMAND.getChangedPicturesInfo);
+        return createCommand(CMD_TYPE.picture, PICTURE_COMMAND.getChangedPicturesInfo);
       },
       deletePicture: function(dataStr, dataArray) {
         return createCommand(CMD_TYPE.picture, PICTURE_COMMAND.deletePicture, dataStr, dataArray);
