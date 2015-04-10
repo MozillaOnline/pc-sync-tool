@@ -4,8 +4,12 @@
 
 var module = {};
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(module, 'utils', 'resource://ffosassistant/utils.jsm');
-XPCOMUtils.defineLazyModuleGetter(module, 'ADBService', 'resource://ffosassistant/ADBService.jsm');
+XPCOMUtils.defineLazyModuleGetter(module,
+                                  'utils',
+                                  'resource://ffosassistant/utils.jsm');
+XPCOMUtils.defineLazyModuleGetter(module,
+                                  'ADBService',
+                                  'resource://ffosassistant/ADBService.jsm');
 
 function $id(id) {
   return document.getElementById(id);
@@ -158,7 +162,9 @@ function isToday(date) {
   var curMonth = today.getMonth();
   var curDate = today.getDate();
 
-  if (curYear == date.getFullYear() && curMonth == date.getMonth() && curDate == date.getDate()) {
+  if (curYear == date.getFullYear() &&
+      curMonth == date.getMonth() &&
+      curDate == date.getDate()) {
     return true;
   } else {
     return false;

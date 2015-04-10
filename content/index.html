@@ -4,32 +4,29 @@
   <meta http-equiv="Content-Type" content="text/html;charset=utf8">
   <title data-l10n-id="ffos-assistant">Firefox OS Assistant</title>
   <link rel="stylesheet" href="chrome://ffosassistant/content/style/main.css">
-  <link rel="stylesheet" href="chrome://ffosassistant/content/style/contact.css">
-  <link rel="stylesheet" href="chrome://ffosassistant/content/style/music.css">
-  <link rel="stylesheet" href="chrome://ffosassistant/content/style/gallery.css">
-  <link rel="stylesheet" href="chrome://ffosassistant/content/style/video.css">
   <link rel="resource" type="application/l10n" href="chrome://ffosassistant/content/locales/locales.ini">
   <link rel="shortcut icon" href="chrome://ffosassistant/content/style/icons/favicon.ico">
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/l10n.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/encoding-indexes.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/encoding.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/common.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/socket.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/utils.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/3rd/encoding-indexes.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/3rd/encoding.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/3rd/pinyin.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/3rd/tmpl.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/cmd.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/connectionPool.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/widgets.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/vcard.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/vCardConverter.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/contactList.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/musicList.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/gallery.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/video.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/contactForm.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/common.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/socket.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/l10n.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/utils.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/widgets.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/vcard.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/common/vCardConverter.js"></script>
+
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/storageView.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/connectView.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/contactView.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/pictureView.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/musicView.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/videoView.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/socketManager.js"></script>
+  <script type="text/javascript" src="chrome://ffosassistant/content/js/appManager.js"></script>
   <script type="text/javascript" src="chrome://ffosassistant/content/js/main.js"></script>
-  <script type="text/javascript" src="chrome://ffosassistant/content/js/viewManager.js"></script>
 </head>
 <body hidden="true">
   <div id="container">
@@ -43,314 +40,213 @@
       </div>
     </div>
     <div id="container-body">
-      <div>
-        <div id="sidebar" class="sidebar">
-          <div id="connect-list" class="list">
-            <div id="connect-tab"
-                 class="item"
-                 data-linked-view="connect-view">
-                 <p id="device-empty" class="header" data-l10n-id="pls_connect_device"></p>
-                 <p id="device-name" data-l10n-id="device-title" class="header hiddenElement">My Device</p>
-                 <p id="connect-button" class="reconnect" data-l10n-id="pls_reconnect-device">点击尝试重连</p>
-                 <p id="disconnect-button" class="disconnect hiddenElement" data-l10n-id="pls_disconnect-device">点击断开连接</p>
-            </div>
-          </div>
-          <div id="mgmt-list" class="list" hidden>
-            <div id="summary-tab"
-                 class=" summary-tab-selected item summary selected"
-                 data-linked-view="summary-view"
-                 data-l10n-id="summary">基本信息</div>
-            <div id="contact-tab"
-                 class="contact-tab item contact"
-                 data-linked-view="contact-view"
-                 data-l10n-id="contacts">联系人</div>
-            <div id="gallery-tab"
-                 class="gallery-tab item gallery"
-                 data-linked-view="gallery-view"
-                 data-l10n-id="gallery">相册图片</div>
-            <div id="music-tab"
-                 class="music-tab item music"
-                 data-linked-view="music-view"
-                 data-l10n-id="music">音乐</div>
-            <div id="videos-tab"
-                 class="videos-tab item videos"
-                 data-linked-view="video-view"
-                 data-l10n-id="videos">视频</div>
-          </div>
+      <div id="side-view" class="sideview">
+        <div id="connect-device" class="sideview-header">
+          <p id="device-name" data-l10n-id="device-title" class="sideview-header-name">My Device</p>
+          <p id="disconnect-button" class="sideview-header-button" data-l10n-id="pls_disconnect-device">点击断开连接</p>
         </div>
-        <div id="content" class="content">
-          <section id="connect-view" class="view">
-            <span class="title" data-l10n-id="pls_connect_device">连接手机</span>
-            <div id="welcome-msg">
-              <p data-l10n-id="ffos-description"><a
-                      data-l10n-id="help" id="help" href="#"></a></p>
-            </div>
-            <section id="user-guide">
-              <div>
-                <div id="wifi-connection-button" data-checked="true" class="wifi wifi-selected">
-                  <span data-l10n-id="wifi-mode">
-                    使用 Wi-Fi 无线连接
-                  </span>
-                  <div class="arrow"></div>
-                  <div class="wifi-des">
-                    <div class="wifi-form">
-                      <input type="tel" id="wifi-connection-code" data-l10n-id="wifi-connection-code-placeholder" autofocus="true"/>
-                      <button id="wifi-connect-button" data-l10n-id="connect" class="button">连接</button>
-                    </div>
-                  </div>
-                </div>
-                <div id="usb-connection-button" data-checked="false" class="usb usb-selected">
-                  <span data-l10n-id="usb-mode">
-                  </span>
-                  <div class="arrow"></div>
-                  <div class="usb-des">
-                    <div id="device-list">
-                      <p data-l10n-id="extenal-devices"></p>
-                      <div id="devices">
-                      </div>
-                      <button id="usb-connect-button" data-l10n-id="connect" class="button"></button>
-                    </div>
-                    <div id="device-list-empty">
-                      <p data-l10n-id="no-external-devices"></p>
-                      <p class="usb-des1" data-l10n-id="plug-in-device"></p>
-                      <p class="usb-des2" data-l10n-id="device-not-found"></p>
-                      <p class="usb-des3" data-l10n-id="usb-help"><a
-                      data-l10n-id="help" id="help-button" href="#"></a></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </section>
-          <section id="summary-view" class="view" hidden>
+        <div id="storage-tab" class="sideview-item" data-l10n-id="summary">基本信息</div>
+        <div id="contact-tab" class="sideview-item" data-l10n-id="contacts">联系人</div>
+        <div id="picture-tab" class="sideview-item" data-l10n-id="gallery">相册图片</div>
+        <div id="music-tab" class="sideview-item" data-l10n-id="music">音乐</div>
+        <div id="video-tab" class="sideview-item" data-l10n-id="videos">视频</div>
+      </div>
+      <div id="content-view" class="contentview">
+        <section id="connect-view" class="content-view-item">
+          <span class="title" data-l10n-id="pls_connect_device">连接手机</span>
+          <div id="welcome-msg">
+            <p data-l10n-id="ffos-description"><a
+                    data-l10n-id="help" id="help" href="#"></a></p>
+          </div>
+          <section id="user-guide">
             <div>
-              <div>
-                <span data-l10n-id="summary" class="title">基本信息</span>
-              </div>
-              <div id="device-image">
-                <div id="device-image-screen" class="device-picture"></div>
-                <div id="device-image-connection" class="device-connect"></div>
-              </div>
-            </div>
-            <div id="summary-infos">
-            </div>
-          </section>
-          <section id="contact-view" class="view" hidden="true">
-            <span class="title" data-l10n-id="contacts">联系人</span>
-            <div class="contact-ops-box">
-              <div id="selectAll-contacts" data-disabled="false" data-checked="false" class="contact-op">
-                <label data-l10n-id="selectall">全选</label>
-              </div>
-              <div id="remove-contacts" data-disabled="true" class="contact-op">
-                <label data-l10n-id="delete">删除</label>
-              </div>
-              <div id="export-contacts" data-disabled="true" class="contact-op">
-                <label data-l10n-id="export">导出</label>
-              </div>
-              <div id="import-contacts" class="contact-op">
-                <label data-l10n-id="import">导入</label>
-              </div>
-              <div id="refresh-contacts" class="contact-op">
-                <label data-l10n-id="refresh">刷新</label>
-              </div>
-              <div id="add-new-contact" class="contact-op">
-                <label data-l10n-id="new">新建</label>
-              </div>
-              <div class="search-input">
-                <textarea id="search-contact-input" class="input-content" data-l10n-id="search-contact-input-placeholder" placeholder="搜索联系人..." autofocus="true"></textarea>
-              </div>
-            </div>
-            <div id="empty-contact-container">
-              <div class="empty-contacts"></div>
-              <div class="empty-contacts-prompt">
-                <label data-l10n-id="empty-contacts">There are no contacts.</label>
-              </div>
-            </div>
-            <div id="contact-list-container">
-              <div class="contact-list-item"></div>
-            </div>
-          </section>
-          <section id ="music-view" class="view" hidden="true">
-            <span class="title" data-l10n-id="music">音乐</span>
-            <div class="music-ops-box">
-              <div id="selectAll-musics" data-disabled="true" data-checked="false" class="music-op">
-                <label data-l10n-id="selectall">全选</label>
-              </div>
-              <div id="remove-musics" data-disabled="true" class="music-op">
-                <label data-l10n-id="delete">删除</label>
-              </div>
-              <div id="import-musics" data-disabled="true" class="music-op">
-                <label data-l10n-id="import">导入</label>
-              </div>
-              <div id="export-musics" data-disabled="true" class="music-op">
-                <label data-l10n-id="export">导出</label>
-              </div>
-              <div id="refresh-musics" class="music-op">
-                <label data-l10n-id="refresh">刷新</label>
-              </div>
-            </div>
-            <div class="music-header">
-              <label class="empty"></label>
-              <div class="music-names"> <label data-l10n-id="songs">歌曲</label></div>
-              <div class="music-singer"> <label data-l10n-id="singer">演唱</label></div>
-              <div class="music-album"> <label data-l10n-id="album">专辑</label></div>
-              <div class="music-type"> <label data-l10n-id="type">类型</label></div>
-              <div class="music-size"> <label data-l10n-id="size">大小</label></div>
-            </div>
-            <div id="empty-music-container" class="empty-container">
-              <div class="empty-musics"></div>
-              <div class="empty-musics-prompt">
-                <label data-l10n-id="empty-musics">There are no music.</label>
-              </div>
-              <div class="import-musics-btn-container">
-                <a id="import-musics-btn" class="button import-musics" href="javascript: void(0);" data-l10n-id="import-musics">Import Music</a>
-              </div>
-            </div>
-            <div id="music-list-container">
-            </div>
-          </section>
-          <section id ="gallery-view" class="view" hidden="true">
-            <span class="title" data-l10n-id="gallery">相册图片</span>
-            <div id="modal-container">
-              <div class="gallery-ops-box">
-                <div id="selectAll-pictures" data-disabled="true" data-checked="false" class="gallery-op">
-                  <label data-l10n-id="selectall">全选</label>
-                </div>
-                <div id="remove-pictures" data-disabled="true" class="gallery-op">
-                  <label data-l10n-id="delete">删除</label>
-                </div>
-                <div id="import-pictures" data-disabled="true" class="gallery-op">
-                  <label data-l10n-id="import">导入</label>
-                </div>
-                <div id="export-pictures" data-disabled="true" class="gallery-op">
-                  <label data-l10n-id="export">导出</label>
-                </div>
-                <div id="refresh-pictures" class="gallery-op">
-                  <label data-l10n-id="refresh">刷新</label>
-                </div>
-              </div>
-              <div id="empty-picture-container" class="empty-container">
-                <div class="empty-pictures"></div>
-                <div class="empty-pictures-prompt">
-                  <label data-l10n-id="empty-pictures">There are no pictures.</label>
-                </div>
-                <div class="import-pictures-btn-container">
-                  <a id="import-pictures-btn" class="button import-pictures" href="javascript: void(0);" data-l10n-id="import-pictures">Import Pictures</a>
-                </div>
-              </div>
-              <div id="picture-list-container">
-              </div>
-            </div>
-          </section>
-          <section id="video-view" class="view" hidden="true">
-            <span class="title" data-l10n-id="videos">视频</span>
-            <div class="videos-ops-box">
-              <div id="selectAll-videos" data-disabled="true" data-checked="false" class="video-op">
-                <label data-l10n-id="selectall">全选</label>
-              </div>
-              <div id="remove-videos" data-disabled="true" class="video-op">
-                <label data-l10n-id="delete">删除</label>
-              </div>
-              <div id="import-videos" data-disabled="true" class="video-op">
-                <label data-l10n-id="import">导入</label>
-              </div>
-              <div id="export-videos" data-disabled="true" class="video-op">
-                <label data-l10n-id="export">导出</label>
-              </div>
-              <div id="refresh-videos" class="video-op">
-                <label data-l10n-id="refresh">刷新</label>
-              </div>
-            </div>
-            <div id="empty-video-container" class="empty-container">
-              <div class="empty-videos"></div>
-              <div class="empty-videos-prompt">
-                <label data-l10n-id="empty-videos">There are no videos.</label>
-              </div>
-              <div class="import-videos-btn-container">
-                <a id="import-videos-btn" class="button import-videos" href="javascript: void(0);" data-l10n-id="import-videos">Import Videos</a>
-              </div>
-            </div>
-            <div id="video-list-container">
-            </div>
-          </section>
-          <div class="tip" id="tip" hidden="true"></div>
-        </div>
-        <div id="views" class="views hidden-views">
-          <section id="contact-view-sub" class="sub-view">
-            <section id="contact-quick-add-view" class="card-view" hidden="true">
-              <div class="quick-add-view"></div>
-              <div id="quick-add-contact-header" data-l10n-id="quick-add-contact-header"></div>
-              <form id="contact-quick-add-form" action="#" onsubmit="return false;">
-                <div>
-                  <div>
-                    <label data-l10n-id="contact-quick-add-name"></label>
+              <div id="wifi-connection-button" data-checked="true" class="wifi wifi-selected">
+                <span data-l10n-id="wifi-mode">
+                  使用 Wi-Fi 无线连接
+                </span>
+                <div class="arrow"></div>
+                <div class="wifi-des">
+                  <div class="wifi-form">
+                    <input type="tel" id="wifi-connection-code" data-l10n-id="wifi-connection-code-placeholder" autofocus="true"/>
+                    <button id="wifi-connect-button" data-l10n-id="connect" class="button">连接</button>
                   </div>
-                  <input id="fullName" class="quick-input" type="text" value="" data-l10n-id="full-name"></input>
                 </div>
-                <div>
-                  <div>
-                     <label data-l10n-id="contact-quick-add-mobile"></label>
-                 </div>
-                  <input id="mobile" class="quick-input" type="tel" value="" data-l10n-id="mobile"></input>
-                </div>
-                <div>
-                  <button id="quick-save-contact" class="button" data-l10n-id="save">保存</button>
-                </div>
-              </form>
-            </section>
-            <section id="contact-edit-view" class="card-view contact-form" hidden="true">
-              <span id="add-contact-header" class="title" data-l10n-id="add-contact-header"></span>
-              <span id="edit-contact-header" class="title" data-l10n-id="edit-contact-header"></span>
-              <form id="contact-form" action="#" onsubmit="return false;">
-                <input id="contact-form-id" name="id" type="hidden" value="" />
-                <section>
-                  <div>
-                    <img id="avatar-add-edit" class="avatar-add-edit avatar-add-edit-default" src=""></img>
-                    <div id="add-avatar">
-                      <div id="avatar-label" data-l10n-id="avatar-label">添加头像</div>
+              </div>
+              <div id="usb-connection-button" data-checked="false" class="usb usb-selected">
+                <span data-l10n-id="usb-mode">
+                </span>
+                <div class="arrow"></div>
+                <div class="usb-des">
+                  <div id="device-list">
+                    <p data-l10n-id="extenal-devices"></p>
+                    <div id="devices">
                     </div>
-                    <input id="avatar-input" type="file" accept="image/*" hidden/>
+                    <button id="usb-connect-button" data-l10n-id="connect" class="button"></button>
                   </div>
-                  <div class="item-body-exp">
-                    <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
-                    <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
+                  <div id="device-list-empty">
+                    <p data-l10n-id="no-external-devices"></p>
+                    <p class="usb-des1" data-l10n-id="plug-in-device"></p>
+                    <p class="usb-des2" data-l10n-id="device-not-found"></p>
+                    <p class="usb-des3" data-l10n-id="usb-help"><a
+                    data-l10n-id="help" id="help-button" href="#"></a></p>
                   </div>
-                  <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
-                </section>
-                <!-- Contact field containter -->
-                <ul></ul>
-                <div class="saveAndCancel">
-                  <button id="save-contact" class="button button-disabled" data-l10n-id="save">保存</button>
-                  <button id="cancel-edit-contact" class="button-cancel" data-l10n-id="cancel">取消</button>
-                </div>
-              </form>
-            </section>
-            <section id="show-contact-view" class="card-view" hidden="true">
-              <span class="title" data-l10n-id="show-contact-header"></span>
-              <div class="show-contact-header">
-                <img id="show-avatar" class="avatar-show avatar-show-default"></img>
-                <div class="contact-head">
-                  <div id="show-contact-full-name"></div>
-                  <div id="show-contact-company"></div>
-                  <button id="edit-contact" class="button" data-l10n-id="edit-contact"></button>
                 </div>
               </div>
-              <div class="contact-content">
-                <div class="header" data-l10n-id="show-contact-content">联系信息</div>
-                <div id="show-contact-content">
-                </div>
-              </div>
-            </section>
-            <section id="show-multi-contacts" class="card-view" hidden="true">
-              <span class="title">
-                <label id="show-contacts-header"></label>
-                <label data-l10n-id="select-contacts"></label>
-              </span>
-              <div id="show-contacts-container">
-              </div>
-            </section>
+            </div>
           </section>
-        </div>
+        </section>
+        <section id="storage-view" class="content-view-item">
+          <div>
+            <div>
+              <span data-l10n-id="summary" class="title">基本信息</span>
+            </div>
+            <div id="device-image">
+              <div id="device-image-screen" class="device-picture"></div>
+              <div id="device-image-connection" class="device-connect"></div>
+            </div>
+          </div>
+          <div id="summary-infos">
+          </div>
+        </section>
+        <section id="contact-view" class="content-view-item">
+          <span class="title" data-l10n-id="contacts">联系人</span>
+          <div class="contact-ops-box">
+            <div id="selectAll-contacts" data-disabled="false" data-checked="false" class="contact-op">
+              <label data-l10n-id="selectall">全选</label>
+            </div>
+            <div id="remove-contacts" data-disabled="true" class="contact-op">
+              <label data-l10n-id="delete">删除</label>
+            </div>
+            <div id="export-contacts" data-disabled="true" class="contact-op">
+              <label data-l10n-id="export">导出</label>
+            </div>
+            <div id="import-contacts" class="contact-op">
+              <label data-l10n-id="import">导入</label>
+            </div>
+            <div id="refresh-contacts" class="contact-op">
+              <label data-l10n-id="refresh">刷新</label>
+            </div>
+            <div id="add-new-contact" class="contact-op">
+              <label data-l10n-id="new">新建</label>
+            </div>
+            <div class="search-input">
+              <textarea id="search-contact-input" class="input-content" data-l10n-id="search-contact-input-placeholder" placeholder="搜索联系人..." autofocus="true"></textarea>
+            </div>
+          </div>
+          <div id="empty-contact-container">
+            <div class="empty-contacts"></div>
+            <div class="empty-contacts-prompt">
+              <label data-l10n-id="empty-contacts">There are no contacts.</label>
+            </div>
+          </div>
+          <div id="contact-list-container">
+            <div class="contact-list-item"></div>
+          </div>
+        </section>
+        <section id ="picture-view" class="content-view-item">
+          <span class="title" data-l10n-id="gallery">相册图片</span>
+          <div id="modal-container">
+            <div class="gallery-ops-box">
+              <div id="selectAll-pictures" data-disabled="true" data-checked="false" class="gallery-op">
+                <label data-l10n-id="selectall">全选</label>
+              </div>
+              <div id="remove-pictures" data-disabled="true" class="gallery-op">
+                <label data-l10n-id="delete">删除</label>
+              </div>
+              <div id="import-pictures" data-disabled="true" class="gallery-op">
+                <label data-l10n-id="import">导入</label>
+              </div>
+              <div id="export-pictures" data-disabled="true" class="gallery-op">
+                <label data-l10n-id="export">导出</label>
+              </div>
+              <div id="refresh-pictures" class="gallery-op">
+                <label data-l10n-id="refresh">刷新</label>
+              </div>
+            </div>
+            <div id="empty-picture-container" class="empty-container">
+              <div class="empty-pictures"></div>
+              <div class="empty-pictures-prompt">
+                <label data-l10n-id="empty-pictures">There are no pictures.</label>
+              </div>
+              <div class="import-pictures-btn-container">
+                <a id="import-pictures-btn" class="button import-pictures" href="javascript: void(0);" data-l10n-id="import-pictures">Import Pictures</a>
+              </div>
+            </div>
+            <div id="picture-list-container">
+            </div>
+          </div>
+        </section>
+        <section id ="music-view" class="content-view-item">
+          <span class="title" data-l10n-id="music">音乐</span>
+          <div class="music-ops-box">
+            <div id="selectAll-musics" data-disabled="true" data-checked="false" class="music-op">
+              <label data-l10n-id="selectall">全选</label>
+            </div>
+            <div id="remove-musics" data-disabled="true" class="music-op">
+              <label data-l10n-id="delete">删除</label>
+            </div>
+            <div id="import-musics" data-disabled="true" class="music-op">
+              <label data-l10n-id="import">导入</label>
+            </div>
+            <div id="export-musics" data-disabled="true" class="music-op">
+              <label data-l10n-id="export">导出</label>
+            </div>
+            <div id="refresh-musics" class="music-op">
+              <label data-l10n-id="refresh">刷新</label>
+            </div>
+          </div>
+          <div class="music-header">
+            <label class="empty"></label>
+            <div class="music-names"> <label data-l10n-id="songs">歌曲</label></div>
+            <div class="music-singer"> <label data-l10n-id="singer">演唱</label></div>
+            <div class="music-album"> <label data-l10n-id="album">专辑</label></div>
+            <div class="music-type"> <label data-l10n-id="type">类型</label></div>
+            <div class="music-size"> <label data-l10n-id="size">大小</label></div>
+          </div>
+          <div id="empty-music-container" class="empty-container">
+            <div class="empty-musics"></div>
+            <div class="empty-musics-prompt">
+              <label data-l10n-id="empty-musics">There are no music.</label>
+            </div>
+            <div class="import-musics-btn-container">
+              <a id="import-musics-btn" class="button import-musics" href="javascript: void(0);" data-l10n-id="import-musics">Import Music</a>
+            </div>
+          </div>
+          <div id="music-list-container">
+          </div>
+        </section>
+        <section id="video-view" class="content-view-item">
+          <span class="title" data-l10n-id="videos">视频</span>
+          <div class="videos-ops-box">
+            <div id="selectAll-videos" data-disabled="true" data-checked="false" class="video-op">
+              <label data-l10n-id="selectall">全选</label>
+            </div>
+            <div id="remove-videos" data-disabled="true" class="video-op">
+              <label data-l10n-id="delete">删除</label>
+            </div>
+            <div id="import-videos" data-disabled="true" class="video-op">
+              <label data-l10n-id="import">导入</label>
+            </div>
+            <div id="export-videos" data-disabled="true" class="video-op">
+              <label data-l10n-id="export">导出</label>
+            </div>
+            <div id="refresh-videos" class="video-op">
+              <label data-l10n-id="refresh">刷新</label>
+            </div>
+          </div>
+          <div id="empty-video-container" class="empty-container">
+            <div class="empty-videos"></div>
+            <div class="empty-videos-prompt">
+              <label data-l10n-id="empty-videos">There are no videos.</label>
+            </div>
+            <div class="import-videos-btn-container">
+              <a id="import-videos-btn" class="button import-videos" href="javascript: void(0);" data-l10n-id="import-videos">Import Videos</a>
+            </div>
+          </div>
+          <div id="video-list-container">
+          </div>
+        </section>
+        <div class="tip" id="tip" hidden="true"></div>
       </div>
     </div>
   </div>
@@ -670,8 +566,8 @@
   <!-- templates for device storage -->
   <script type="text/html" id="tmpl_storage_summary">
     <div id="<%=headerId%>" class="storage-total">
-      <span class="storage-name" data-l10n-id="<%=displayName%>"></span>
-      <span class="storage-number"><%=storageNumber%></span>
+      <div class="storage-name" data-l10n-id="<%=displayName%>"></div>
+      <div class="storage-number"><%=storageNumber%></div>
     </div>
     <div class="storage-graph">
       <div class="used" style="width: <%=storageUsed%>"></div>
@@ -696,6 +592,17 @@
         </div>
       </div>
     </div>
+  </script>
+
+  <!-- templates for adb devices -->
+  <script type="text/html" id="tmpl_adb_devices">
+    <%for (var i = 0; i < devicesList.length; i++) {%>
+      <%if (i == 0) {%>
+        <input type="radio" name="device" checked value="<%=devicesList[i]%>"><%=devicesList[i]%></input><br/>
+      <%} else {%>
+        <input type="radio" name="device" value="<%=devicesList[i]%>"><%=devicesList[i]%></input></br>
+      <%}%>
+    <%}%>
   </script>
 </body>
 </html>

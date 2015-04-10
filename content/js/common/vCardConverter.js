@@ -8,7 +8,7 @@ function extractCarrier(tel) {
 
 vCardConverter = {
   importContacts: function(data) {
-    var loadingGroupId = animationLoading.start();
+    var contacts = [];
     var index = 0;
     var items = vCard.initialize(data);
     items.forEach(function(item) {
@@ -83,7 +83,8 @@ vCardConverter = {
           if (item.tel) {
             for (var e in item.tel) {
               if (e.indexOf('type=voice') != -1) {
-                if (e.indexOf('type=cell') != -1 && e.indexOf('type=iphone') == -1) {
+                if (e.indexOf('type=cell') != -1 &&
+                    e.indexOf('type=iphone') == -1) {
                   item.tel[e].forEach(function(t) {
                     contact.tel.push({
                       'type': ['mobile'],
@@ -92,7 +93,8 @@ vCardConverter = {
                   });
                   continue;
                 }
-                if (e.indexOf('type=cell') != -1 && e.indexOf('type=iphone') != -1) {
+                if (e.indexOf('type=cell') != -1 &&
+                    e.indexOf('type=iphone') != -1) {
                   item.tel[e].forEach(function(t) {
                     contact.tel.push({
                       'type': ['personal'],
@@ -196,7 +198,8 @@ vCardConverter = {
                     });
                   });
                 }
-                if (e.indexOf('type=home') == -1 && e.indexOf('type=work') == -1) {
+                if (e.indexOf('type=home') == -1 &&
+                    e.indexOf('type=work') == -1) {
                   var type = /type=(.+);?/;
                   if (type.test(e)) {
                     var results = e.match(type);
@@ -238,7 +241,8 @@ vCardConverter = {
           }
           if (item.email) {
             for (var e in item.email) {
-              if (e.indexOf('type=cell') != -1 || e.indexOf('type=personal') != -1) {
+              if (e.indexOf('type=cell') != -1 ||
+                  e.indexOf('type=personal') != -1) {
                 item.email[e].forEach(function(email) {
                   contact.email.push({
                     'type': ['personal'],
@@ -292,7 +296,8 @@ vCardConverter = {
           if (item.tel) {
             for (var e in item.tel) {
               var carrier = extractCarrier(e);
-              if (e.indexOf('type=cell') != -1 || e.indexOf('type=mobile') != -1) {
+              if (e.indexOf('type=cell') != -1 ||
+                  e.indexOf('type=mobile') != -1) {
                 item.tel[e].forEach(function(t) {
                   contact.tel.push({
                     'type': ['mobile'],
@@ -322,7 +327,8 @@ vCardConverter = {
                 });
                 continue;
               }
-              if (e.indexOf('type=voice') != -1 || e.indexOf('type=personal') != -1) {
+              if (e.indexOf('type=voice') != -1 ||
+                  e.indexOf('type=personal') != -1) {
                 item.tel[e].forEach(function(t) {
                   contact.tel.push({
                     'type': ['personal'],
@@ -484,10 +490,12 @@ vCardConverter = {
             }
           }
           if (item.org && item.org != '') {
-            contact.org = decodeURIComponent(item.org.replace(/=/g, '%')).split(';');
+            contact.org =
+              decodeURIComponent(item.org.replace(/=/g, '%')).split(';');
           }
           //if (item.note && item.note != '') {
-          //  contact.note = decodeURIComponent(item.note.replace(/=/g,'%')).split(';');
+          //  contact.note =
+          //      decodeURIComponent(item.note.replace(/=/g,'%')).split(';');
           //}
           if (item.email) {
             for (var e in item.email) {
@@ -657,7 +665,8 @@ vCardConverter = {
                 item.adr[e].forEach(function(adr) {
                   var length = adr.length;
                   for (var index = 0; index < length; index++) {
-                    adr[index] = decodeURIComponent(adr[index].replace(/=/g, '%'));
+                    adr[index] =
+                      decodeURIComponent(adr[index].replace(/=/g, '%'));
                   }
                   var address = adr[length - 5].replace('\\n', '');
                   contact.adr.push({
@@ -674,7 +683,8 @@ vCardConverter = {
                 item.adr[e].forEach(function(adr) {
                   var length = adr.length;
                   for (var index = 0; index < length; index++) {
-                    adr[index] = decodeURIComponent(adr[index].replace(/=/g, '%'));
+                    adr[index] =
+                      decodeURIComponent(adr[index].replace(/=/g, '%'));
                   }
                   var address = adr[length - 5].replace('\\n', '');
                   contact.adr.push({
@@ -690,7 +700,8 @@ vCardConverter = {
               item.adr[e].forEach(function(adr) {
                 var length = adr.length;
                 for (var index = 0; index < length; index++) {
-                  adr[index] = decodeURIComponent(adr[index].replace(/=/g, '%'));
+                  adr[index] =
+                    decodeURIComponent(adr[index].replace(/=/g, '%'));
                 }
                 var address = adr[length - 5].replace('\\n', '');
                 var type = /type=(.+)[;]/;
@@ -733,16 +744,9 @@ vCardConverter = {
           }
         }
       }
-      CMD.Contacts.addContact(JSON.stringify(contact), null, function () {
-          index ++;
-          if (index == items.length)
-            animationLoading.stop(loadingGroupId);
-        }, function () {
-          index ++;
-          if (index == items.length)
-            animationLoading.stop(loadingGroupId);
-      });
-    })
+      contacts.push(JSON.stringify(contact));
+    });
+    return contacts;
   },
   exportContact: function(contact) {
     var vcard = 'BEGIN:VCARD';

@@ -1,3 +1,4 @@
+/****** common style *******/
 * {
   margin: 0;
   padding: 0;
@@ -53,81 +54,7 @@ input[type="url"], textarea {
   margin: 0.5rem 0;
 }
 
-.clear-fix {
-  clear: both;
-}
-
-.coming-soon {
-  height: 50rem;
-  background: url("images/coming-soon.jpg") no-repeat center center transparent;
-}
-
-.button {
-  color: #FFFFFF;
-  cursor: pointer;
-  border-radius: .2rem;
-  padding: .1rem 3rem;
-  text-align: center;
-  text-decoration: none;
-  margin: 1rem 0;
-  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
-}
-
-.button:hover,
-.active-button {
-  background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
-}
-
-.button-ok {
-  width: 11rem;
-}
-
-.button-cancel {
-  border: 0.1rem solid;
-  border-radius: 0.2rem;
-  color: #808080;
-  padding: 0.1rem 3rem;
-  text-decoration: none;
-}
-
-.button-disabled {
-  background: -moz-linear-gradient(center top , #CCCCCC, #CCCCCC) repeat scroll 0 0 transparent;
-}
-
-.button-disabled:hover {
-  background: -moz-linear-gradient(center top , #CCCCCC, #CCCCCC) repeat scroll 0 0 transparent;
-}
-
-#container {
-  width: 96rem;
-  margin: auto;
-  overflow: hidden;
-  background-color: #FFF;
-  box-shadow: 0 0 1.9rem 0 #5F5F5F;
-}
-
-.title-bar {
-  color: #FFF;
-  background-color: #E86000;
-  height: 3.5rem;
-}
-
-.title-bar .assistant {
-  float: left;
-  margin: 0.8rem 1rem 0 1rem;
-  font-size: 1.5rem;
-}
-
-.device-state{
-  float: left;
-  margin: 1.05rem 0 0 0;
-  font-size: 1.2rem;
-}
-
-.hiddenElement {
-  display: none;
-}
-
+/****** language setting *******/
 #lang-settings {
   float: right;
   font-size: 1.2rem;
@@ -144,17 +71,134 @@ input[type="url"], textarea {
   color: #952108;
 }
 
-#welcome-msg {
-  padding: 0 12rem;
+/****** side view *******/
+.sideview {
+  width: 18rem;
+  height: 100%;
+  box-shadow: 0.6rem 0 0 0 #EFEFEF;
+  background-color: #F4F4F4;
+  vertical-align: top;
+  float: left;
+  height: 58rem;
 }
 
-#welcome-msg span {
-  font-size: 2.5rem;
-  padding: 2rem 1rem 1rem 2rem;
+.sideview-header {
+  margin-top: 4rem;
+  font-size: 2rem;
+  padding: 1rem;
+  color: #333333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 13rem;
 }
 
-#welcome-msg p {
-  color: #858585;
+.sideview-header-name {
+  font-size: 1.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 13rem;
+}
+
+.sideview-header-button {
+  font-size: 1.3rem;
+  background: url("images/disconnect.png") no-repeat 0rem center;
+  color: #00A5C5;
+  margin-left: 1rem;
+  padding-left: 3rem;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.sideview-header-button:active {
+  background-color: #DEF3F8;
+}
+
+.sideview-header-button:hover {
+  background-color: #DEF3F8;
+}
+
+.sideview-item {
+  padding: 1rem 5rem;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: 2rem  center;
+  -moz-user-select: none;
+}
+
+.sideview-item:active {
+  background-color: #FFF;
+}
+
+.sideview-item:hover {
+  background-color: #FFF;
+}
+
+.selected {
+  border-left: 0.3rem solid #E86000;
+  background-color: #DEF3F8;
+  margin-right: -0.2rem;
+  color: #05CEF4;
+}
+
+#storage-tab {
+  background-image: url("images/phone.png");
+}
+
+#contact-tab {
+  background-image: url("images/contact.png");
+}
+
+#picture-tab {
+  background-image: url("images/camera.png");
+}
+
+#music-tab {
+  background-image: url("images/music.png");
+}
+
+#video-tab {
+  background-image: url("images/video.png");
+}
+
+/******** content view *********/
+#connect-view {
+  width: 96rem;
+}
+
+.contentview {
+  height: 100%;
+  float: left;
+  height: 58rem;
+  width: 75rem;
+}
+
+.narrow-content {
+  width: 47rem;
+}
+
+.contentview .content-view-item {
+  min-height: 55rem;
+}
+
+.contentview .content-view-item .view-body {
+  overflow: hidden;
+}
+
+.contentview .content-view-item span.title {
+  display: -moz-inline-box;
+  padding: 1.5rem 1.2rem 2rem 12rem;
+  font-size: 2.6rem;
+}
+
+/******** connect view ******/
+#wifi-connection-button {
+  cursor: pointer;
+}
+
+#usb-connection-button {
+  cursor: pointer;
 }
 
 #user-guide {
@@ -207,6 +251,7 @@ input[type="url"], textarea {
   height: 32rem;
   width: 70rem;
   margin-top: 0.4rem;
+  cursor: auto;
 }
 
 #user-guide .wifi-selected[data-checked="false"] .wifi-des {
@@ -250,6 +295,7 @@ input[type="url"], textarea {
   background-color: #E7E7E7;
   margin: 0.4rem 0 0 -36rem;
   color: #333333;
+  cursor: auto;
 }
 
 #user-guide .usb-selected[data-checked="false"] .usb-des {
@@ -307,199 +353,6 @@ input[type="url"], textarea {
   display: block;
 }
 
-/****** sidebar *******/
-.sidebar {
-  width: 18rem;
-  height: 100%;
-  box-shadow: 0.6rem 0 0 0 #EFEFEF;
-  background-color: #F4F4F4;
-  vertical-align: top;
-  float: left;
-  height: 58rem;
-  display: none;
-}
-
-.sidebar .list {
-  margin-top: 0.5rem;
-}
-
-#connect-list {
-  background-color: #DEF3F8;
-  margin-top: 4rem;
-}
-
-.sidebar .list2 {
-  margin-top: 2rem;
-}
-
-.sidebar .list .header {
-  font-size: 1.8rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 13rem;
-}
-
-.sidebar .list .item {
-  padding: .5rem 4.5rem;
-  cursor: pointer;
-  background-repeat: no-repeat;
-  background-position: 2rem  center;
-  -moz-user-select: none;
-}
-
-.sidebar .list .item:active {
-  background-color: #FFF;
-}
-
-.sidebar .list .selected {
-  background-color: #DEF3F8;
-  margin-right: -0.2rem;
-  color: #05CEF4;
-}
-
-#connect-list .item {
-  border-left: 0.3rem solid #E86000;
-  background-color: #DEF3F8;
-  font-size: 2rem;
-  padding: 1rem;
-  color: #333333;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 13rem;
-}
-
-#connect-list .reconnect {
-  font-size: 1.3rem;
-  background: url("images/reconnect.png") no-repeat 0rem center #DEF3F8;
-  padding-left: 2.5rem;
-  color: #00A5C5;
-}
-
-#connect-list .disconnect {
-  font-size: 1.3rem;
-  background: url("images/disconnect.png") no-repeat 0rem center #DEF3F8;
-  padding-left: 2.5rem;
-  color: #00A5C5;
-}
-
-.summary-tab {
-  background-image: url("images/phone.png");
-}
-
-.summary-tab-selected {
-  background-image: url("images/phone-selected.png");
-}
-
-.contact-tab {
-  background-image: url("images/contact.png");
-}
-
-.contact-tab-selected {
-  background-image: url("images/contact-selected.png");
-}
-
-.apps-tab {
-  background-image: url("images/app.png");
-}
-
-.apps-tab-selected {
-  background-image: url("images/app-selected.png");
-}
-
-.music-tab {
-  background-image: url("images/music.png");
-}
-
-.music-tab-selected {
-  background-image: url("images/music-selected.png");
-}
-
-.gallery-tab {
-  background-image: url("images/camera.png");
-}
-
-.gallery-tab-selected {
-  background-image: url("images/camera-selected.png");
-}
-
-.videos-tab {
-  background-image: url("images/video.png");
-}
-
-.videos-tab-selected {
-  background-image: url("images/video-selected.png");
-}
-
-.marketplace-tab {
-  background-image: url("images/marketplace.png");
-}
-
-.marketplace-tab-selected {
-  background-image: url("images/marketplace-selected.png");
-}
-
-.themes-tab {
-  background-image: url("images/theme.png");
-}
-
-.themes-tab-selected {
-  background-image: url("images/theme-selected.png");
-}
-
-.ringtone-tab {
-  background-image: url("images/ringtone.png");
-}
-
-.ringtone-tab-selected {
-  background-image: url("images/ringtone-selected.png");
-}
-
-/******** content *********/
-#connect-view {
-  width: 96rem;
-}
-
-.content {
-  height: 100%;
-  float: left;
-  height: 58rem;
-  width: 75rem;
-}
-
-.narrow-content {
-  width: 47rem;
-}
-
-.content .view {
-  min-height: 55rem;
-}
-
-.content .view .view-body {
-  overflow: hidden;
-}
-
-.content .view span.title {
-  display: -moz-inline-box;
-  padding: 1.5rem 1.2rem 2rem 12rem;
-  font-size: 2.6rem;
-}
-
-/******** views ******/
-.views {
-  height: 58rem;
-  width: 29rem;
-  background-color: #FAFAFA;
-  padding: 0 1rem;
-  vertical-align: top;
-  float: right;
-}
-
-.hidden-views {
-  display: none;
-}
-
 /******** summary view ******/
 #device-image {
   float: left;
@@ -539,6 +392,7 @@ input[type="url"], textarea {
 
 #summary-infos .storage-total{
   height: 2.5rem;
+  cursor: pointer;
 }
 
 #summary-infos .storage-total > div:first-child {
@@ -613,6 +467,16 @@ input[type="url"], textarea {
   margin-top: 5rem !important;
 }
 
+.storage-name {
+  width: 40%;
+  float: left;
+}
+
+.storage-number {
+  width: 40%;
+  float: left;
+}
+
 #backup-button {
   float: left;
 }
@@ -620,6 +484,105 @@ input[type="url"], textarea {
 #restore-button {
   float: right;
 }
+
+.coming-soon {
+  height: 50rem;
+  background: url("images/coming-soon.jpg") no-repeat center center transparent;
+}
+
+.button {
+  color: #FFFFFF;
+  cursor: pointer;
+  border-radius: .2rem;
+  padding: .1rem 3rem;
+  text-align: center;
+  text-decoration: none;
+  margin: 1rem 0;
+  background: -moz-linear-gradient(center top , #00AACF, #00AACF) repeat scroll 0 0 transparent;
+}
+
+.button:hover,
+.active-button {
+  background: -moz-linear-gradient(center top , #00C3ED, #00C3ED) repeat scroll 0 0 transparent;
+}
+
+.button-ok {
+  width: 11rem;
+}
+
+.button-cancel {
+  border: 0.1rem solid;
+  border-radius: 0.2rem;
+  color: #808080;
+  padding: 0.1rem 3rem;
+  text-decoration: none;
+}
+
+.button-disabled {
+  background: -moz-linear-gradient(center top , #CCCCCC, #CCCCCC) repeat scroll 0 0 transparent;
+}
+
+.button-disabled:hover {
+  background: -moz-linear-gradient(center top , #CCCCCC, #CCCCCC) repeat scroll 0 0 transparent;
+}
+
+#container {
+  width: 96rem;
+  margin: auto;
+  overflow: hidden;
+  background-color: #FFF;
+  box-shadow: 0 0 1.9rem 0 #5F5F5F;
+}
+
+.title-bar {
+  color: #FFF;
+  background-color: #E86000;
+  height: 3.5rem;
+}
+
+.title-bar .assistant {
+  float: left;
+  margin: 0.8rem 1rem 0 1rem;
+  font-size: 1.5rem;
+}
+
+.device-state{
+  float: left;
+  margin: 1.05rem 0 0 0;
+  font-size: 1.2rem;
+}
+
+.hiddenElement {
+  display: none;
+}
+
+#welcome-msg {
+  padding: 0 12rem;
+}
+
+#welcome-msg span {
+  font-size: 2.5rem;
+  padding: 2rem 1rem 1rem 2rem;
+}
+
+#welcome-msg p {
+  color: #858585;
+}
+
+/******** views ******/
+.views {
+  height: 58rem;
+  width: 29rem;
+  background-color: #FAFAFA;
+  padding: 0 1rem;
+  vertical-align: top;
+  float: right;
+}
+
+.hidden-views {
+  display: none;
+}
+
 
 /******* Contact view *****/
 #show-contact-content {
