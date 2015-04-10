@@ -28,6 +28,7 @@
  *   - ondatachange
  *     Function to be invoked if the data is added or removed
  */
+/*
 var MAX_WIFI_FILE_SIZE = 50 * 1024 * 1024;
 var GroupedList = function(options) {
   this.initialize(options);
@@ -49,7 +50,9 @@ GroupedList.prototype = {
       ondatachange: function() {}
     }, options);
 
-    if (!this.options.dataList || !this.options.dataIndexer || !this.options.renderFunc) {
+    if (!this.options.dataList ||
+        !this.options.dataIndexer ||
+        !this.options.renderFunc) {
       throw new Error('Init arguments are not complete.');
     }
   },
@@ -66,7 +69,8 @@ GroupedList.prototype = {
   _dataSorter: function gl_dataSorter(a, b) {
     var aSorter = a['dataSorterName'].toString();
     var bSorter = b['dataSorterName'].toString();
-    var length = aSorter.length < bSorter.length ? aSorter.length : bSorter.length;
+    var length = aSorter.length < bSorter.length ?
+                   aSorter.length : bSorter.length;
     for (var i = 0; i < length; i++) {
       if (aSorter[i] == bSorter[i]) {
         continue;
@@ -133,9 +137,7 @@ GroupedList.prototype = {
     return group;
   },
 
-  /**
-   * Remove data object, and return the contained group
-   */
+
   _removeFromGroup: function gl_removeFromGroup(dataObj) {
     var self = this;
     var index = this.options.dataIndexer(dataObj);
@@ -423,13 +425,43 @@ FilesOPDialog.prototype = {
           aDest = 'DCIM/' + encodeURIComponent(aName);
           break;
         case 7:
-          CMD.Pictures.deletePicture(self.options.files[self._fileIndex], null, success, error);
+          var cmd = CMD.Pictures.deletePicture(self.options.files[self._fileIndex], null);
+          socketsManager.send(cmd);
+          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+            var result = evt.detail.result;
+            if (result != RS_OK) {
+              error();
+              return;
+            }
+            success();
+          });
           break;
         case 8:
-          CMD.Musics.deleteMusic(self.options.files[self._fileIndex], null, success, error);
+          var cmd = CMD.Musics.deleteMusic(self.options.files[self._fileIndex], null);
+          socketsManager.send(cmd);
+          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+            var result = evt.detail.result;
+            if (result != RS_OK) {
+              error();
+              return;
+            }
+            success();
+          });
           break;
         case 9:
-          CMD.Videos.deleteVideo(self.options.files[self._fileIndex], null, success, error);
+          var cmd = CMD.Videos.deleteVideo(self.options.files[self._fileIndex], null);
+          socketsManager.send(cmd);
+          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+            var result = evt.detail.result;
+            if (result != RS_OK) {
+              error();
+              return;
+            }
+            success();
+          });
           break;
       }
 
@@ -448,8 +480,16 @@ FilesOPDialog.prototype = {
               storageName: storage,
               fileName: name
             };
-            CMD.Files.filePull(JSON.stringify(fileInfo), null, function (message) {
-              OS.File.writeAtomic(aDest, message.data, {}).then(
+            var cmd = CMD.Files.filePull(JSON.stringify(fileInfo), null);
+            socketsManager.send(cmd);
+            document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+              document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+              var result = evt.detail.result;
+              if (result != RS_OK) {
+                error();
+                return;
+              }
+              OS.File.writeAtomic(aDest, evt.detail.data, {}).then(
                 function onSuccess(number) {
                   success();
                 },
@@ -457,7 +497,7 @@ FilesOPDialog.prototype = {
                   error();
                 }
               );
-            }, error);
+            });
           } else {
             if (!device) {
               clear();
@@ -474,8 +514,16 @@ FilesOPDialog.prototype = {
             error('file-too-big');
             break;
           }
-          CMD.Device.getStorageFree(function onresponse_getDeviceInfo(message) {
-            var dataJSON = JSON.parse(array2String(message.data));
+          var cmd = CMD.Device.getStorageFree();
+          socketsManager.send(cmd);
+          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+            var result = evt.detail.result;
+            if (result != RS_OK) {
+              error('space-not-enough');
+              return;
+            }
+            var dataJSON = JSON.parse(array2String(evt.detail.data));
             for (var uname in dataJSON) {
               defaultFreeSpace = storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
               if (storageInfoList[uname] && defaultFreeSpace > file.size) {
@@ -487,14 +535,19 @@ FilesOPDialog.prototype = {
                         fileName: aDest,
                         fileType: file.type
                       };
-                      CMD.Files.filePush(JSON.stringify(fileInfo), array, success, error);
-                    },
-                    function onFailure(reason) {
-                      error();
-                    }
-                  );
-                }
-                else {
+                      var cmd = CMD.Files.filePush(JSON.stringify(fileInfo), array);
+                      socketsManager.send(cmd);
+                      document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
+                        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
+                        var result = evt.detail.result;
+                        if (result != RS_OK) {
+                          error();
+                          return;
+                        }
+                        success();
+                      });
+                  });
+                } else {
                   if (!device || !file.size) {
                     clear();
                     return;
@@ -506,9 +559,6 @@ FilesOPDialog.prototype = {
                 return;
               }
             }
-            error('space-not-enough');
-          }, function onerror_getStorage(message) {
-            error('space-not-enough');
           });
           break;
       }
@@ -824,119 +874,8 @@ ImageViewer.prototype = {
     this.options.onclose();
   }
 };
-
-function WifiModePromptDialog(options) {
-  this.initialize(options);
-}
-
-WifiModePromptDialog.prototype = {
-  initialize: function(options) {
-    this.options = extend({
-      onclose: emptyFunction,
-      title_l10n_id: '',
-      prompt_l10n_id: ''
-    }, options);
-
-    this._modalElement = null;
-    this._mask = null;
-    this._build();
-  },
-
-  closeAll: function() {
-    var evt = document.createEvent('Event');
-    evt.initEvent('WifiModePromptDialog:show', true, true);
-    document.dispatchEvent(evt);
-  },
-
-  _build: function() {
-    this._mask = document.createElement('div');
-    this._mask.className = 'modal-mask';
-    document.body.appendChild(this._mask);
-
-    this._modalElement = document.createElement('div');
-    this._modalElement.className = 'modal-dialog';
-    var templateData = {
-      title_l10n_id: '',
-      prompt_l10n_id: ''
-    };
-    if (this.options.title_l10n_id != '') {
-      templateData.title_l10n_id = this.options.title_l10n_id;
-    }
-    if (this.options.prompt_l10n_id != '') {
-      templateData.prompt_l10n_id = this.options.prompt_l10n_id;
-    }
-    this._modalElement.innerHTML = tmpl('tmpl_wifiMode_dialog', templateData);
-    document.body.appendChild(this._modalElement);
-    this._adjustModalPosition();
-    this._makeDialogCancelable();
-
-    // Translate l10n value
-    navigator.mozL10n.translate(this._modalElement);
-
-    // Only one modal dialog is shown at a time.
-    var self = this;
-    this._onModalDialogShown = function(event) {
-      // Show a popup dialog at a time.
-      if (event.targetElement == self._modalElement) {
-        return;
-      }
-
-      self.close();
-    }
-    document.addEventListener('WifiModePromptDialog:show', this._onModalDialogShown);
-
-    // Make sure other modal dialog has a chance to close itself.
-    this._fireEvent('WifiModePromptDialog:show');
-
-    // Tweak modal dialog position when resizing.
-    this._onWindowResize = function(event) {
-      self._adjustModalPosition();
-    };
-    window.addEventListener('resize', this._onWindowResize);
-    window.addEventListener('CloseWidget', function() {
-      self.close();
-    });
-  },
-
-  _makeDialogCancelable: function() {
-    var closeBtn = $expr('.select-multi-files-dialog-header-x', this._modalElement)[0];
-    closeBtn.hidden = false;
-    closeBtn.onclick = this.close.bind(this);
-
-    var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
-    cancelBtn.hidden = false;
-    cancelBtn.onclick = this.close.bind(this);
-
-    var self = this;
-  },
-
-  _adjustModalPosition: function() {
-    var container = $expr('.modal-container', this._modalElement)[0];
-    var documentHeight = document.documentElement.clientHeight;
-    var containerHeight = container.clientHeight;
-    container.style.top = (documentHeight > containerHeight ? (documentHeight - containerHeight) / 2 : 0) + 'px';
-  },
-
-  _fireEvent: function(name, data) {
-    var evt = document.createEvent('Event');
-    evt.initEvent(name, true, true);
-    evt.data = data;
-    evt.targetElement = this._modalElement;
-    document.dispatchEvent(evt);
-  },
-
-  close: function() {
-    this._mask.parentNode.removeChild(this._mask);
-    this._modalElement.parentNode.removeChild(this._modalElement);
-    this._mask = null;
-    this._modalElement = null;
-    document.removeEventListener('WifiModePromptDialog:show', this._onModalDialogShown);
-    window.removeEventListener('resize', this._onWindowResize)
-    this.options.onclose();
-  }
-};
-
-var animationLoadingDialog = function() {
+*/
+var AnimationLoadingDialog = function() {
   this.groupId = 0;
   this.startNum = 0;
   this._modalElement = document.createElement('div');
@@ -945,8 +884,8 @@ var animationLoadingDialog = function() {
   this._modalElement.innerHTML = tmpl('tmpl_loading_dialog', templateData);
 };
 
-animationLoadingDialog.prototype = {
-  start: function() {
+AnimationLoadingDialog.prototype = {
+  startAnimation: function() {
     this.startNum++;
     if (this.startNum > 1) {
       return this.groupId;
@@ -965,7 +904,7 @@ animationLoadingDialog.prototype = {
     return this.groupId;
   },
 
-  stop: function(groupId) {
+  stopAnimation: function(groupId) {
     if ((this.startNum <= 0) || (groupId != this.groupId)) {
       return;
     }
@@ -975,7 +914,7 @@ animationLoadingDialog.prototype = {
     }
   },
 
-  reset: function() {
+  resetAnimation: function() {
     if (this.startNum > 0) {
       this.startNum = 0;
       this.groupId++;
@@ -991,7 +930,8 @@ function AlertDialog(options) {
 AlertDialog.prototype = {
   initialize: function(options) {
     this.options = extend({
-      showCancelButton: false,
+      showOkButton: true,
+      showCancelButton: true,
       message: {},
       okCallback: emptyFunction,
       cancelCallback: emptyFunction,
@@ -1040,6 +980,7 @@ AlertDialog.prototype = {
 
   _makeDialogCancelable: function() {
     var okBtn = $expr('.button-ok', this._modalElement)[0];
+    okBtn.hidden = !this.options.showOkButton;
     okBtn.onclick = this.okButtonCallback.bind(this);
 
     var cancelBtn = $expr('.button-cancel', this._modalElement)[0];
@@ -1047,6 +988,7 @@ AlertDialog.prototype = {
     cancelBtn.onclick = this.cancelButtonCallback.bind(this);
 
     var closeBtn = $expr('.alert-dialog-header-x', this._modalElement)[0];
+    closeBtn.hidden = !this.options.showCancelButton;
     closeBtn.onclick = this.cancelButtonCallback.bind(this);
   },
 

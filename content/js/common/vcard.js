@@ -36,7 +36,8 @@ if (typeof Prototype != "undefined" || !Array.prototype.filter) {
 }["forEach", "map", "filter", "slice", "concat"].forEach(function(a) {
   if (!Array[a]) {
     Array[a] = function(b) {
-      return this.prototype[a].apply(b, Array.prototype.slice.call(arguments, 1))
+      return this.prototype[a].apply(b,
+                                     Array.prototype.slice.call(arguments, 1))
     }
   }
 });
@@ -128,8 +129,12 @@ vCard = {
         key = results[1].replace(regexps['key'], '').toLowerCase();
 
         //properties = results[2].split(';');
-        //properties = Array.filter(properties, function(p) { return ! p.match(/[a-z]+=[a-z]+/) });
-        //properties = Array.map(properties, function(p) { return p.replace(/type=/g, '') });
+        //properties = Array.filter(properties, function(p) {
+        //    return ! p.match(/[a-z]+=[a-z]+/)
+        //});
+        //properties = Array.map(properties, function(p) {
+        //  return p.replace(/type=/g, '')
+        //});
         //type = properties.pop() || 'default';
         type = results[2];
         type = type.toLowerCase();
