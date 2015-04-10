@@ -1,6 +1,0 @@
-[submodule "content/js/common"]
-	path = content/js/common
-	url = https://github.com/MozillaOnline/common.git
-[submodule "components/binary"]
-	path = components/binary
-	url = https://github.com/MozillaOnline/binary.git
