@@ -10,11 +10,32 @@ var PictureView = (function() {
     $id(pictureViewId).hidden = true;
   }
 
+  function deletePicture(fileName, onSuccess, onError) {
+    var sendData = {
+      cmd: {
+        id: SocketManager.commandId ++,
+        flag: CMD_TYPE.picture_delete,
+        datalength: 0
+      },
+      dataArray: string2Array(fileName)
+    };
+    SocketManager.send(sendData);
+
+    document.addEventListener(sendData.cmd.id, function _onData(evt) {
+      document.removeEventListener(sendData.cmd.id, _onData);
+      if (!evt.detail || array2Int(evt.detail) != RS_OK) {
+        onError();
+        return;
+      }
+      onSuccess();
+    });
+  }
 
   return {
     init: init,
     show: show,
-    hide: hide
+    hide: hide,
+    deletePicture: deletePicture
   };
 })();
 /*

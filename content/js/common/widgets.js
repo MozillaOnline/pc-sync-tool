@@ -28,9 +28,9 @@
  *   - ondatachange
  *     Function to be invoked if the data is added or removed
  */
-/*
+
 var MAX_WIFI_FILE_SIZE = 50 * 1024 * 1024;
-var GroupedList = function(options) {
+/*var GroupedList = function(options) {
   this.initialize(options);
   this.DEFAULT_INDEX = '__DEF_INDEX__';
 };
@@ -294,7 +294,7 @@ GroupedList.prototype = {
     return count;
   }
 };
-
+*/
 function ProcessBar(options) {
   this.initialize(options);
 }
@@ -425,43 +425,13 @@ FilesOPDialog.prototype = {
           aDest = 'DCIM/' + encodeURIComponent(aName);
           break;
         case 7:
-          var cmd = CMD.Pictures.deletePicture(self.options.files[self._fileIndex], null);
-          socketsManager.send(cmd);
-          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-            var result = evt.detail.result;
-            if (result != RS_OK) {
-              error();
-              return;
-            }
-            success();
-          });
+          MusicView.deletePicture(self.options.files[self._fileIndex], successCallback, errorCallback);
           break;
         case 8:
-          var cmd = CMD.Musics.deleteMusic(self.options.files[self._fileIndex], null);
-          socketsManager.send(cmd);
-          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-            var result = evt.detail.result;
-            if (result != RS_OK) {
-              error();
-              return;
-            }
-            success();
-          });
+          MusicView.deleteMusic(self.options.files[self._fileIndex], successCallback, errorCallback);
           break;
         case 9:
-          var cmd = CMD.Videos.deleteVideo(self.options.files[self._fileIndex], null);
-          socketsManager.send(cmd);
-          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-            var result = evt.detail.result;
-            if (result != RS_OK) {
-              error();
-              return;
-            }
-            success();
-          });
+          MusicView.deleteVideo(self.options.files[self._fileIndex], successCallback, errorCallback);
           break;
       }
 
@@ -470,64 +440,48 @@ FilesOPDialog.prototype = {
           var reg = /^\/([a-z 0-9]+)\//;
           var result = aFrom.match(reg);
           var storage = result[1];
-          if (!storageInfoList[storage] || !storageInfoList[storage].path) {
+          if (!StorageView.storageInfoList[storage] || !StorageView.storageInfoList[storage].path) {
             clear();
             return;
           }
-          if (isWifiConnected) {
+          if (ConnectView.isWifiConnected) {
             var name = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
             var fileInfo = {
               storageName: storage,
               fileName: name
             };
-            var cmd = CMD.Files.filePull(JSON.stringify(fileInfo), null);
-            socketsManager.send(cmd);
-            document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-              document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-              var result = evt.detail.result;
-              if (result != RS_OK) {
-                error();
-                return;
-              }
-              OS.File.writeAtomic(aDest, evt.detail.data, {}).then(
-                function onSuccess(number) {
-                  success();
-                },
-                function onFailure(reason) {
-                  error();
-                }
-              );
-            });
+            StorageView.pullFile(JSON.stringify(fileInfo), aDest, successCallback, errorCallback);
           } else {
             if (!device) {
               clear();
               return;
             }
             console.log('adb pull from: ' + aFrom + ' to: ' + aDest);
-            aFrom = aFrom.replace(reg, storageInfoList[storage].path);
-            device.pull(aFrom, aDest).then(success, error);
+            aFrom = aFrom.replace(reg, StorageView.storageInfoList[storage].path);
+            device.pull(aFrom, aDest).then(successCallback, errorCallback);
           }
           break;
         case 'push':
           var file = getFileInfo(aFrom);
-          if (isWifiConnected && file.size > MAX_WIFI_FILE_SIZE) {
-            error('file-too-big');
+          if (ConnectView.isWifiConnected && file.size > MAX_WIFI_FILE_SIZE) {
+            errorCallback('file-too-big');
             break;
           }
-          var cmd = CMD.Device.getStorageFree();
-          socketsManager.send(cmd);
-          document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-            document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-            var result = evt.detail.result;
-            if (result != RS_OK) {
-              error('space-not-enough');
+          StorageView.getStorageFree(function _onData(evt) {
+            if (!evt.detail) {
+              errorCallback('space-not-enough');
               return;
             }
-            var dataJSON = JSON.parse(array2String(evt.detail.data));
+            var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
+            if (recvLength == 4) {
+              errorCallback('space-not-enough');
+              return;
+            }
+            var dataJSON = JSON.parse(array2String(evt.detail));
             for (var uname in dataJSON) {
-              defaultFreeSpace = storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
-              if (storageInfoList[uname] && defaultFreeSpace > file.size) {
-                if (isWifiConnected) {
+              defaultFreeSpace = StorageView.storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
+              if (StorageView.storageInfoList[uname] && defaultFreeSpace > file.size) {
+                if (ConnectView.isWifiConnected) {
                   OS.File.read(aFrom).then(
                     function onSuccess(array) {
                       var fileInfo = {
@@ -535,26 +489,20 @@ FilesOPDialog.prototype = {
                         fileName: aDest,
                         fileType: file.type
                       };
-                      var cmd = CMD.Files.filePush(JSON.stringify(fileInfo), array);
-                      socketsManager.send(cmd);
-                      document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-                        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-                        var result = evt.detail.result;
-                        if (result != RS_OK) {
-                          error();
-                          return;
-                        }
-                        success();
-                      });
-                  });
+                      StorageView.pushFile(JSON.stringify(fileInfo), array, successCallback, errorCallback);
+                    },
+                    function onError(e) {
+                      errorCallback();
+                    }
+                  );
                 } else {
                   if (!device || !file.size) {
                     clear();
                     return;
                   }
-                  aDest = storageInfoList[uname].path + aDest;
+                  aDest = StorageView.storageInfoList[uname].path + aDest;
                   console.log('adb push from: ' + aFrom + ' to: ' + aDest);
-                  device.push(aFrom, aDest).then(success, error);
+                  device.push(aFrom, aDest).then(successCallback, errorCallback);
                 }
                 return;
               }
@@ -577,7 +525,7 @@ FilesOPDialog.prototype = {
         }, 100);
       }
 
-      function success(e) {
+      function successCallback(e) {
         filesToBeDone.push(self.options.files[self._fileIndex]);
         self._fileIndex++;
         self._processbar.finish(filesToBeDone.length);
@@ -594,7 +542,7 @@ FilesOPDialog.prototype = {
         self.options.callback(filesToBeDone);
       }
 
-      function error(e) {
+      function errorCallback(e) {
         self._fileIndex++;
         self._processbar.finish(filesToBeDone.length);
         filesIndicator.innerHTML = filesToBeDone.length + '/' + self.options.files.length;
@@ -874,7 +822,7 @@ ImageViewer.prototype = {
     this.options.onclose();
   }
 };
-*/
+
 var AnimationLoadingDialog = function() {
   this.groupId = 0;
   this.startNum = 0;

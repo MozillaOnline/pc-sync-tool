@@ -6,6 +6,8 @@ var CHANGE_SELECTED_VIEW = "change-selected-view";
 var DISCONNECT_CURRENT_DEVICE = "disconnect-current-device";
 var AppManager = (function() {
 
+  const PRE_PATH = 'chrome://ffosassistant/content/';
+  const CACHE_FOLDER = 'media_tmp';
   var viewList = [{tabId: "side-view", viewHandler: ConnectView},
                   {tabId: "storage-tab", viewHandler: StorageView},
                   {tabId: "contact-tab", viewHandler: ContactView},
@@ -55,7 +57,9 @@ var AppManager = (function() {
 
   return {
     init: init,
-    animationLoadingDialog: animationLoadingDialog
+    animationLoadingDialog: animationLoadingDialog,
+    CACHE_FOLDER: CACHE_FOLDER,
+    PRE_PATH: PRE_PATH
   };
 })();
 
