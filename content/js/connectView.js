@@ -22,6 +22,10 @@ var ConnectView = (function() {
     this.isWifiConnected = false;
     this.connectLoadingId = -1;
     document.addEventListener(CMD_ID.app_connected, function(e) {
+      if (ConnectView.connectLoadingId >= 0) {
+        AppManager.animationLoadingDialog.stopAnimation(ConnectView.connectLoadingId);
+        ConnectView.connectLoadingId = -1;
+      }
       ConnectView.deviceSocketState = connectState.connected;
       ConnectView.alertDialog = new AlertDialog({
         message: _('connection-info-wait-accept'),
@@ -273,8 +277,16 @@ var ConnectView = (function() {
   return {
     isWifiConnected: isWifiConnected,
     connectLoadingId: connectLoadingId,
+    needUpdateAdbHelper: needUpdateAdbHelper,
+    adbHelperInstalled: adbHelperInstalled,
+    deviceSocketState: deviceSocketState,
+    observer: observer,
+    devicesList: devicesList,
+    minAdbHelperVersion: minAdbHelperVersion,
+    alertDialog: alertDialog,
     init: init,
     show: show,
-    hide: hide
+    hide: hide,
+    reset: reset
   };
 })();

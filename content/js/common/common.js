@@ -32,10 +32,15 @@ var CMD_ID = {
   app_accepted: 2,
   app_rejected: 3,
   app_error: 4,
-  listen_contact: 5,
-  listen_picture: 6,
-  listen_music: 7,
-  listen_video: 8,
+  listen_contact_create: 5,
+  listen_contact_update: 6,
+  listen_contact_delete: 7,
+  listen_picture_create: 8,
+  listen_picture_delete: 9,
+  listen_music_create: 10,
+  listen_music_delete: 11,
+  listen_video_create: 12,
+  listen_video_delete: 13,
 };
 
 var RS_OK = 0;
