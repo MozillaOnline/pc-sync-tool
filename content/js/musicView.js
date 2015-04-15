@@ -2,7 +2,9 @@ var MusicView = (function() {
   var musicViewId = "music-view";
   var playedAudio = null;
   var connectLoadingId = -1;
+  var isFirstShow = true;
   function init() {
+    MusicView.isFirstShow = true;
     $id('selectAll-musics').onclick = function onclick_selectAll(event) {
       // Do nothing if the button is disabled.
       if (this.dataset.disabled == 'true') {
@@ -99,14 +101,17 @@ var MusicView = (function() {
 
   function show() {
     $id(musicViewId).hidden = false;
-    _getListContainer().innerHTML = '';
-    MusicView.playedAudio = new Audio();
-    for (var uname in StorageView.storageInfoList) {
-      if(StorageView.storageInfoList[uname].totalSpace &&
-         StorageView.storageInfoList[uname].totalSpace > 0) {
-        $id('empty-music-container').hidden = true;
-        _getAllMusics();
-        return;
+    if (MusicView.isFirstShow) {
+      _getListContainer().innerHTML = '';
+      MusicView.playedAudio = new Audio();
+      for (var uname in StorageView.storageInfoList) {
+        if(StorageView.storageInfoList[uname].totalSpace &&
+           StorageView.storageInfoList[uname].totalSpace > 0) {
+          $id('empty-music-container').hidden = true;
+          _getAllMusics();
+          MusicView.isFirstShow = false;
+          return;
+        }
       }
     }
     _updateControls();
@@ -227,6 +232,12 @@ var MusicView = (function() {
         MusicView.connectLoadingId = -1;
       }
     };
+    function oncancel () {
+      if (MusicView.connectLoadingId >= 0) {
+        AppManager.animationLoadingDialog.stopAnimation(MusicView.connectLoadingId);
+        MusicView.connectLoadingId = -1;
+      }
+    };
     if (!MusicView.playedAudio) {
       return;
     }
@@ -241,57 +252,8 @@ var MusicView = (function() {
     name = decodeURIComponent(name);
     var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', AppManager.CACHE_FOLDER]);
     var cachedUrl = AppManager.PRE_PATH + AppManager.CACHE_FOLDER + name;
-    var aFrom = file;
-    var reg = /^\/([a-z0-9]+)\//;
-    var result = aFrom.match(reg);
-    var storage = result[1];
-    if (!StorageView.storageInfoList[storage] ||
-        !StorageView.storageInfoList[storage].path) {
-      return;
-    }
-    if (ConnectView.isWifiConnected) {
-      var fileName = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
-      var fileInfo = {
-        storageName: storage,
-        fileName: fileName
-      };
-
-      var sendData = {
-        cmd: {
-          id: SocketManager.commandId ++,
-          flag: CMD_TYPE.file_pull,
-          datalength: 0
-        },
-        dataArray: string2Array(JSON.stringify(fileInfo))
-      };
-      MusicView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
-      SocketManager.send(sendData);
-  
-      document.addEventListener(sendData.cmd.id, function _onData(evt) {
-        document.removeEventListener(sendData.cmd.id, _onData);
-        if (!evt.detail) {
-          if (MusicView.connectLoadingId >= 0) {
-            AppManager.animationLoadingDialog.stopAnimation(MusicView.connectLoadingId);
-            MusicView.connectLoadingId = -1;
-          }
-          return;
-        }
-        OS.File.writeAtomic(path + name, evt.detail, {}).then(
-          function onSuccess(number) {
-            onsuccess();
-          },
-          function onFailure(reason) {
-            onerror();
-          }
-        );
-      });
-    } else {
-      if (!device) {
-        return;
-      }
-      aFrom = aFrom.replace(reg, storageInfoList[storage].path);
-      device.pull(aFrom, path + name).then(onsuccess, onerror);
-    }
+    MusicView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+    StorageView.pullFile(file, path + name, onsuccess, onerror, oncancel);
   }
 
   function _updateControls() {
@@ -486,11 +448,11 @@ var MusicView = (function() {
   }
 
   return {
-    connectLoadingId: connectLoadingId,
-    playedAudio: playedAudio,
     init: init,
     show: show,
     hide: hide,
-    deleteMusic: deleteMusic
+    deleteMusic: deleteMusic,
+    connectLoadingId: connectLoadingId,
+    playedAudio: playedAudio
   };
 })();

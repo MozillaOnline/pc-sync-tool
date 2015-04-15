@@ -1,10 +1,104 @@
 var VideoView = (function() {
   var videoViewId = "video-view";
+  var isFirstShow = true;
+  var connectLoadingId = -1;
   function init() {
+    VideoView.isFirstShow = true;
+    document.addEventListener(CMD_ID.listen_video_create, function(e) {
+      var video = JSON.parse(array2String(e.detail));
+      _addVideo(video);
+      _updateUI();
+    });
+    document.addEventListener(CMD_ID.listen_video_delete, function(e) {
+      if (!e.detail) {
+        return;
+      }
+      var video = JSON.parse(array2String(e.detail));
+      _updateRemovedVideos(video);
+      _updateUI();
+    });
+    $id('selectAll-videos').onclick = function(event) {
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+      _selectAllVideos(this.dataset.checked == 'false');
+    };
+
+    $id('remove-videos').onclick = function onclick_removeVideos(event) {
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      var files = [];
+      $expr('#video-list-container li[data-checked="true"]').forEach(function(item) {
+        var fileInfo = {
+          'fileName': item.dataset.videoUrl,
+          'previewName': item.dataset.previewName
+        };
+        files.push(JSON.stringify(fileInfo));
+      });
+
+      new AlertDialog({
+        message: _('delete-videos-confirm', {
+          n: files.length
+        }),
+        showCancelButton: true,
+        okCallback: function() {
+          _removeVideos(files);
+        }
+      });
+    };
+
+    $id('refresh-videos').onclick = function onclick_refreshVideos(event) {
+      _updateChangedVideos();
+    };
+
+    $id('import-videos-btn').onclick = $id('import-videos').onclick = _importVideos;
+
+    $id('export-videos').onclick = function onclick_exportVideos(event) {
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      var videos = $expr('#video-list-container li[data-checked="true"]');
+
+      if (videos.length == 0) {
+        return;
+      }
+
+      selectDirectory(function(dir) {
+        var dialog = new FilesOPDialog({
+          title_l10n_id: 'export-videos-dialog-header',
+          processbar_l10n_id: 'processbar-export-videos-prompt',
+          dir: dir,
+          type: 4,
+          files: videos,
+          alert_prompt: 'files-cannot-be-exported',
+          maxSteps: 50
+        });
+
+        dialog.start();
+      }, {
+        title: _('export-video-title'),
+        fileType: 'VideoTypes'
+      });
+    };
   }
 
   function show() {
     $id(videoViewId).hidden = false;
+    if (VideoView.isFirstShow) {
+      _getListContainer().innerHTML = '';
+      for (var uname in StorageView.storageInfoList) {
+        if(StorageView.storageInfoList[uname].totalSpace && StorageView.storageInfoList[uname].totalSpace > 0) {
+          $id('empty-video-container').hidden = true;
+          _getAllVideos();
+          VideoView.isFirstShow = false;
+          return;
+        }
+      }
+    }
+    _updateControls();
   }
 
   function hide() {
@@ -32,99 +126,75 @@ var VideoView = (function() {
     });
   }
 
-  return {
-    init: init,
-    show: show,
-    hide: hide,
-    deleteVideo: deleteVideo
-  };
-})();
-/*
-var Video = (function() {
-  function getListContainer() {
+  function _getListContainer() {
     return $id('video-list-container');
   }
 
-  function init() {
-    getListContainer().innerHTML = '';
-    for (var uname in storageInfoList) {
-      if(storageInfoList[uname].totalSpace && storageInfoList[uname].totalSpace > 0) {
-        $id('empty-video-container').hidden = true;
-        customEventElement.removeEventListener('dataChange', onMessage);
-        customEventElement.addEventListener('dataChange', onMessage);
-        getAllVideos();
-        return;
-      }
-    }
-    updateControls();
-  }
-
-  function onMessage(e) {
-    if (e.detail.type != 'video') {
-      return;
-    }
-    var msg = e.detail.data;
-    switch (msg.callbackID) {
-      case 'ondeleted':
-        updateRemovedVideos(msg.detail);
-        updateUI();
-        break;
-      case 'enumerate':
-        addVideo(msg.detail);
-        updateUI();
-        break;
-      default:
-        break;
-    }
-  }
-
-  function getAllVideos() {
+  function _getAllVideos() {
     var getVideosIndex = 0;
     var videosCount = 0;
-    var loadingGroupId = animationLoading.start();
-    var cmd = CMD.Videos.getOldVideosInfo();
-    socketsManager.send(cmd);
-    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-      var result = evt.detail.result;
-      if (result != RS_OK && result !== RS_MIDDLE) {
-        updateControls();
-        animationLoading.stop(loadingGroupId);
+
+    var sendData = {
+      cmd: {
+        id: SocketManager.commandId ++,
+        flag: CMD_TYPE.video_getOld,
+        datalength: 0
+      },
+      dataArray: null
+    };
+    VideoView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+    SocketManager.send(sendData);
+
+    document.addEventListener(sendData.cmd.id, function _onData(evt) {
+      if (!evt.detail) {
+        if (VideoView.connectLoadingId >= 0) {
+          AppManager.animationLoadingDialog.stopAnimation(VideoView.connectLoadingId);
+          VideoView.connectLoadingId = -1;
+        }
+        _updateControls();
         return;
       }
-
-      var video = JSON.parse(array2String(evt.detail.data));
-      if (video.callbackID == 'enumerate') {
-        getVideosIndex++;
-        addVideo(video.detail);
+      var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
+      if (recvLength == 4) {
+        document.removeEventListener(sendData.cmd.id, _onData);
+        _updateChangedVideos();
+        _updateUI();
+        _updateControls();
+        if (VideoView.connectLoadingId >= 0) {
+          AppManager.animationLoadingDialog.stopAnimation(VideoView.connectLoadingId);
+          VideoView.connectLoadingId = -1;
+        }
+        videosCount = getVideosIndex;
+        return;
       }
-      else if (video.callbackID == 'enumerate-done') {
-        videosCount = video.detail;
-      }
-      if (getVideosIndex == videosCount) {
-        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-        updateChangedVideos();
-        updateUI();
-        updateControls();
-        animationLoading.stop(loadingGroupId);
-      }
+      var video = JSON.parse(array2String(evt.detail));
+      getVideosIndex++;
+      _addVideo(video.detail);
     });
   }
 
-  function updateChangedVideos() {
-    var cmd = CMD.Videos.getChangedVideosInfo();
-    socketsManager.send(cmd);
+  function _updateChangedVideos() {
+    var sendData = {
+      cmd: {
+        id: SocketManager.commandId ++,
+        flag: CMD_TYPE.video_getChanged,
+        datalength: 0
+      },
+      dataArray: null
+    };
+    SocketManager.send(sendData);
   }
 
-  function addVideo(video) {
+  function _addVideo(video) {
     if (!video) {
       return;
     }
     var threadId = formatDate(parseInt(video.date));
     var threadContainer = $id('video-' + threadId);
-    var container = getListContainer();
+    var container = _getListContainer();
     if (threadContainer) {
       var threadBody = threadContainer.getElementsByTagName('ul')[0];
-      threadBody.appendChild(createVideoListItem(video));
+      threadBody.appendChild(_createVideoListItem(video));
       threadContainer.dataset.length = 1 + parseInt(threadContainer.dataset.length);
       var title = threadContainer.getElementsByTagName('label')[0];
       var templateData = {
@@ -183,14 +253,14 @@ var Video = (function() {
         item.dataset.checked = !bChecked;
       });
 
-      updateControls();
+      _updateControls();
     };
 
     var threadBody = $expr('ul', div)[0];
-    threadBody.appendChild(createVideoListItem(video));
+    threadBody.appendChild(_createVideoListItem(video));
   }
 
-  function updateRemovedVideos(videos) {
+  function _updateRemovedVideos(videos) {
     if (!videos || !videos.length) {
       return;
     }
@@ -203,7 +273,7 @@ var Video = (function() {
       threadBody.removeChild(video);
       var thread = threadBody.parentNode.parentNode;
       if ($expr('li', threadBody).length == 0) {
-        getListContainer().removeChild(thread);
+        _getListContainer().removeChild(thread);
       } else {
         var headerNode = threadBody.parentNode;
         headerNode.dataset.length = parseInt(headerNode.dataset.length) - 1;
@@ -213,7 +283,7 @@ var Video = (function() {
     }
   }
 
-  function createVideoListItem(video) {
+  function _createVideoListItem(video) {
     var listItem = document.createElement('li');
     listItem.dataset.checked = 'false';
     listItem.dataset.videoUrl = video.name;
@@ -237,7 +307,7 @@ var Video = (function() {
       var threadBody = this.parentNode;
       var threadContainer = threadBody.parentNode;
       threadContainer.dataset.checked = $expr('li[data-checked=true]', threadBody).length == threadContainer.dataset.length;
-      updateControls();
+      _updateControls();
     };
 
     templateData = {
@@ -255,7 +325,7 @@ var Video = (function() {
     return listItem;
   }
 
-  function updateControls() {
+  function _updateControls() {
     if ($expr('#video-list-container .video-thread').length == 0) {
       $id('selectAll-videos').dataset.checked = false;
       $id('selectAll-videos').dataset.disabled = true;
@@ -269,18 +339,18 @@ var Video = (function() {
       $expr('#video-list-container li[data-checked="true"]').length === 0;
 
     $id('import-videos-btn').hidden =
-    $id('import-videos').dataset.disabled = !isWifiConnected &&
-                                            (!adbHelperInstalled || needUpdateAdbHelper);
-    $id('export-videos').dataset.disabled = (!isWifiConnected && (!adbHelperInstalled || needUpdateAdbHelper)) ||
+    $id('import-videos').dataset.disabled = !ConnectView.isWifiConnected &&
+                                            (!ConnectView.adbHelperInstalled || ConnectView.needUpdateAdbHelper);
+    $id('export-videos').dataset.disabled = (!ConnectView.isWifiConnected && (!ConnectView.adbHelperInstalled || ConnectView.needUpdateAdbHelper)) ||
                                             ($expr('#video-list-container li[data-checked="true"]').length === 0);
   }
 
-  function updateUI() {
+  function _updateUI() {
     $id('empty-video-container').hidden = !!$expr('#video-list-container li').length;
-    selectAllVideos(false);
+    _selectAllVideos(false);
   }
 
-  function selectAllVideos(selected) {
+  function _selectAllVideos(selected) {
     $expr('#video-list-container .video-thread').forEach(function(thread) {
       thread.dataset.checked = selected;
       $expr('li', thread).forEach(function(item) {
@@ -288,10 +358,10 @@ var Video = (function() {
       });
     });
 
-    updateControls();
+    _updateControls();
   }
 
-  function removeVideos(files) {
+  function _removeVideos(files) {
     var items = files || [];
     if (items.length == 0) {
       // TODO: prompt selecting videos to remove...
@@ -310,7 +380,7 @@ var Video = (function() {
     dialog.start();
   }
 
-  function importVideos() {
+  function _importVideos() {
     if (this.dataset.disabled == 'true') {
       return;
     }
@@ -331,7 +401,7 @@ var Video = (function() {
         processbar_l10n_id: 'processbar-import-videos-prompt',
         type: 3,
         files: videos,
-        callback: updateChangedVideos,
+        callback: _updateChangedVideos,
         alert_prompt: 'files-cannot-be-imported',
         maxSteps: 50
       });
@@ -343,77 +413,11 @@ var Video = (function() {
     });
   }
 
-  window.addEventListener('load', function wnd_onload(event) {
-    $id('selectAll-videos').onclick = function(event) {
-      if (this.dataset.disabled == 'true') {
-        return;
-      }
-      selectAllVideos(this.dataset.checked == 'false');
-    };
-
-    $id('remove-videos').onclick = function onclick_removeVideos(event) {
-      if (this.dataset.disabled == 'true') {
-        return;
-      }
-
-      var files = [];
-      $expr('#video-list-container li[data-checked="true"]').forEach(function(item) {
-        var fileInfo = {
-          'fileName': item.dataset.videoUrl,
-          'previewName': item.dataset.previewName
-        };
-        files.push(JSON.stringify(fileInfo));
-      });
-
-      new AlertDialog({
-        message: _('delete-videos-confirm', {
-          n: files.length
-        }),
-        showCancelButton: true,
-        okCallback: function() {
-          removeVideos(files);
-        }
-      });
-    };
-
-    $id('refresh-videos').onclick = function onclick_refreshVideos(event) {
-      updateChangedVideos();
-    };
-
-    $id('import-videos-btn').onclick = $id('import-videos').onclick =importVideos;
-
-    $id('export-videos').onclick = function onclick_exportVideos(event) {
-      if (this.dataset.disabled == 'true') {
-        return;
-      }
-
-      var videos = $expr('#video-list-container li[data-checked="true"]');
-
-      if (videos.length == 0) {
-        return;
-      }
-
-      selectDirectory(function(dir) {
-        var dialog = new FilesOPDialog({
-          title_l10n_id: 'export-videos-dialog-header',
-          processbar_l10n_id: 'processbar-export-videos-prompt',
-          dir: dir,
-          type: 4,
-          files: videos,
-          alert_prompt: 'files-cannot-be-exported',
-          maxSteps: 50
-        });
-
-        dialog.start();
-      }, {
-        title: _('export-video-title'),
-        fileType: 'VideoTypes'
-      });
-    };
-  });
-
   return {
-    init: init
+    init: init,
+    show: show,
+    hide: hide,
+    deleteVideo: deleteVideo,
+    connectLoadingId: connectLoadingId
   };
 })();
-*/

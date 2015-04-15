@@ -12,6 +12,7 @@ var ConnectView = (function() {
   var isWifiConnected = false;
   var observer = null;
   var devicesList = null;
+  var usbDevice = null;
   var needUpdateAdbHelper = false;
   var adbHelperInstalled = false;
   var minAdbHelperVersion = '0.6.0';
@@ -34,6 +35,10 @@ var ConnectView = (function() {
       });
     });
     document.addEventListener(CMD_ID.app_disconnect, function(e) {
+      if (ConnectView.connectLoadingId >= 0) {
+        AppManager.animationLoadingDialog.stopAnimation(ConnectView.connectLoadingId);
+        ConnectView.connectLoadingId = -1;
+      }
       ConnectView.reset();
       var event = new CustomEvent(CHANGE_SELECTED_VIEW,
                                   {'detail': "side-view"});
@@ -54,6 +59,10 @@ var ConnectView = (function() {
       ConnectView.reset();
     });
     document.addEventListener(CMD_ID.app_error, function(e) {
+      if (ConnectView.connectLoadingId >= 0) {
+        AppManager.animationLoadingDialog.stopAnimation(ConnectView.connectLoadingId);
+        ConnectView.connectLoadingId = -1;
+      }
       ConnectView.reset();
       var event = new CustomEvent(CHANGE_SELECTED_VIEW,
                                   {'detail': "side-view"});
@@ -82,6 +91,10 @@ var ConnectView = (function() {
       });
     });
     document.addEventListener(DISCONNECT_CURRENT_DEVICE, function(e) {
+      if (ConnectView.connectLoadingId >= 0) {
+        AppManager.animationLoadingDialog.stopAnimation(ConnectView.connectLoadingId);
+        ConnectView.connectLoadingId = -1;
+      }
       ConnectView.reset();
     });
     $id('usb-connection-button').onclick = function() {
@@ -139,7 +152,7 @@ var ConnectView = (function() {
     $id('usb-connect-button').onclick = function() {
       $expr('input[name="device"]').forEach(function(input) {
         if (input.checked) {
-          ADBService.setupDevice(input.value);
+          ConnectView.usbDevice = ADBService.setupDevice(input.value);
           _connectToDevice();
         }
       });
@@ -166,6 +179,7 @@ var ConnectView = (function() {
   function show() {
     $id(connectViewId).hidden = false;
     $id('wifi-connection-code').focus();
+    ConnectView.usbDevice = null;
   }
 
   function hide() {
@@ -275,18 +289,18 @@ var ConnectView = (function() {
   });
 
   return {
-    isWifiConnected: isWifiConnected,
-    connectLoadingId: connectLoadingId,
-    needUpdateAdbHelper: needUpdateAdbHelper,
-    adbHelperInstalled: adbHelperInstalled,
-    deviceSocketState: deviceSocketState,
-    observer: observer,
-    devicesList: devicesList,
-    minAdbHelperVersion: minAdbHelperVersion,
-    alertDialog: alertDialog,
     init: init,
     show: show,
     hide: hide,
-    reset: reset
+    reset: reset,
+    connectLoadingId: connectLoadingId,
+    isWifiConnected: isWifiConnected,
+    needUpdateAdbHelper: needUpdateAdbHelper,
+    adbHelperInstalled: adbHelperInstalled,
+    deviceSocketState: deviceSocketState,
+    devicesList: devicesList,
+    minAdbHelperVersion: minAdbHelperVersion,
+    observer: observer,
+    alertDialog: alertDialog,
   };
 })();

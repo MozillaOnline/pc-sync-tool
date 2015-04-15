@@ -425,89 +425,22 @@ FilesOPDialog.prototype = {
           aDest = 'DCIM/' + encodeURIComponent(aName);
           break;
         case 7:
-          MusicView.deletePicture(self.options.files[self._fileIndex], successCallback, errorCallback);
+          PictureView.deletePicture(self.options.files[self._fileIndex], successCallback, errorCallback);
           break;
         case 8:
           MusicView.deleteMusic(self.options.files[self._fileIndex], successCallback, errorCallback);
           break;
         case 9:
-          MusicView.deleteVideo(self.options.files[self._fileIndex], successCallback, errorCallback);
+          VideoView.deleteVideo(self.options.files[self._fileIndex], successCallback, errorCallback);
           break;
       }
 
       switch(type) {
         case 'pull':
-          var reg = /^\/([a-z 0-9]+)\//;
-          var result = aFrom.match(reg);
-          var storage = result[1];
-          if (!StorageView.storageInfoList[storage] || !StorageView.storageInfoList[storage].path) {
-            clear();
-            return;
-          }
-          if (ConnectView.isWifiConnected) {
-            var name = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
-            var fileInfo = {
-              storageName: storage,
-              fileName: name
-            };
-            StorageView.pullFile(JSON.stringify(fileInfo), aDest, successCallback, errorCallback);
-          } else {
-            if (!device) {
-              clear();
-              return;
-            }
-            console.log('adb pull from: ' + aFrom + ' to: ' + aDest);
-            aFrom = aFrom.replace(reg, StorageView.storageInfoList[storage].path);
-            device.pull(aFrom, aDest).then(successCallback, errorCallback);
-          }
+          StorageView.pullFile(aFrom, aDest, successCallback, errorCallback, clear);
           break;
         case 'push':
-          var file = getFileInfo(aFrom);
-          if (ConnectView.isWifiConnected && file.size > MAX_WIFI_FILE_SIZE) {
-            errorCallback('file-too-big');
-            break;
-          }
-          StorageView.getStorageFree(function _onData(evt) {
-            if (!evt.detail) {
-              errorCallback('space-not-enough');
-              return;
-            }
-            var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
-            if (recvLength == 4) {
-              errorCallback('space-not-enough');
-              return;
-            }
-            var dataJSON = JSON.parse(array2String(evt.detail));
-            for (var uname in dataJSON) {
-              defaultFreeSpace = StorageView.storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
-              if (StorageView.storageInfoList[uname] && defaultFreeSpace > file.size) {
-                if (ConnectView.isWifiConnected) {
-                  OS.File.read(aFrom).then(
-                    function onSuccess(array) {
-                      var fileInfo = {
-                        storageName: uname,
-                        fileName: aDest,
-                        fileType: file.type
-                      };
-                      StorageView.pushFile(JSON.stringify(fileInfo), array, successCallback, errorCallback);
-                    },
-                    function onError(e) {
-                      errorCallback();
-                    }
-                  );
-                } else {
-                  if (!device || !file.size) {
-                    clear();
-                    return;
-                  }
-                  aDest = StorageView.storageInfoList[uname].path + aDest;
-                  console.log('adb push from: ' + aFrom + ' to: ' + aDest);
-                  device.push(aFrom, aDest).then(successCallback, errorCallback);
-                }
-                return;
-              }
-            }
-          });
+          StorageView.pushFile(aFrom, aDest, successCallback, errorCallback, clear);
           break;
       }
 
