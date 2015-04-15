@@ -165,10 +165,10 @@ var SocketManager = (function() {
   };
 
   return {
-    commandId: commandId,
     init: init,
     start: start,
     send: send,
-    stop: stop
+    stop: stop,
+    commandId: commandId
   };
 })(window);

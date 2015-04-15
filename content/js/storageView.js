@@ -18,61 +18,130 @@ var StorageView = (function() {
     $id(storageViewId).hidden = true;
   }
 
-  function pullFile(fileInfo, destName, successCallback, errorCallback) {
-    var sendData = {
-      cmd: {
-        id: SocketManager.commandId ++,
-        flag: CMD_TYPE.file_pull,
-        datalength: 0
-      },
-      dataArray: string2Array(fileInfo)
-    };
-    SocketManager.send(sendData);
+  function pullFile(aFrom, aDest, successCallback, errorCallback, cancelCallback) {
+    var reg = /^\/([a-z 0-9]+)\//;
+    var result = aFrom.match(reg);
+    var storage = result[1];
+    if (!StorageView.storageInfoList[storage] || !StorageView.storageInfoList[storage].path) {
+      cancelCallback();
+      return;
+    }
+    if (ConnectView.isWifiConnected) {
+      var name = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
+      var fileInfo = {
+        storageName: storage,
+        fileName: name
+      };
+      var sendData = {
+        cmd: {
+          id: SocketManager.commandId ++,
+          flag: CMD_TYPE.file_pull,
+          datalength: 0
+        },
+        dataArray: string2Array(JSON.stringify(fileInfo))
+      };
+      SocketManager.send(sendData);
 
-    document.addEventListener(sendData.cmd.id, function _onData(evt) {
-      document.removeEventListener(sendData.cmd.id, _onData);
+      document.addEventListener(sendData.cmd.id, function _onData(evt) {
+        document.removeEventListener(sendData.cmd.id, _onData);
+        if (!evt.detail) {
+          errorCallback();
+          return;
+        }
+        var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
+        if (recvLength == 4) {
+          errorCallback();
+          return;
+        }
+        OS.File.writeAtomic(aDest, evt.detail, {}).then(
+          function onSuccess(number) {
+            successCallback();
+          },
+          function onFailure(reason) {
+            errorCallback();
+          }
+        );
+      });
+    } else {
+      if (!ConnectView.usbDevice) {
+        cancelCallback();
+        return;
+      }
+      console.log('adb pull from: ' + aFrom + ' to: ' + aDest);
+      aFrom = aFrom.replace(reg, StorageView.storageInfoList[storage].path);
+      ConnectView.usbDevice.pull(aFrom, aDest).then(successCallback, errorCallback);
+    }
+  }
+
+  function pushFile(aFrom, aDest, successCallback, errorCallback, cancelCallback) {
+    var file = getFileInfo(aFrom);
+    if (ConnectView.isWifiConnected && file.size > MAX_WIFI_FILE_SIZE) {
+      errorCallback('file-too-big');
+      return;
+    }
+    StorageView.getStorageFree(function _onData(evt) {
       if (!evt.detail) {
-        errorCallback();
+        errorCallback('space-not-enough');
         return;
       }
       var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
       if (recvLength == 4) {
-        errorCallback();
+        errorCallback('space-not-enough');
         return;
       }
-      OS.File.writeAtomic(destName, evt.detail, {}).then(
-        function onSuccess(number) {
-          successCallback();
-        },
-        function onFailure(reason) {
-          errorCallback();
+      var dataJSON = JSON.parse(array2String(evt.detail));
+      for (var uname in dataJSON) {
+        defaultFreeSpace = StorageView.storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
+        if (defaultFreeSpace < file.size) {
+          errorCallback('space-not-enough');
+          return;
         }
-      );
-    });
-  }
+        if (ConnectView.isWifiConnected) {
+          OS.File.read(aFrom).then(
+            function onSuccess(array) {
+              var fileInfo = {
+                storageName: uname,
+                fileName: aDest,
+                fileType: file.type
+              };
+              var fileInfoArray = string2Array(JSON.stringify(fileInfo));
+              var fileInfoArrayLen = fileInfoArray.byteLength !== undefined ? fileInfoArray.byteLength : fileInfoArray.length;
+              var arrayLen = array.byteLength !== undefined ? array.byteLength : array.length;
+              var sendData = {
+                cmd: {
+                  id: SocketManager.commandId ++,
+                  flag: CMD_TYPE.file_push,
+                  datalength: 0
+                },
+                dataArray: arraycat(arraycat(int2Array(fileInfoArrayLen), fileInfoArray),
+                  arraycat(int2Array(arrayLen), array))
+              };
+              SocketManager.send(sendData);
 
-  function pushFile(fileInfo, array, successCallback, errorCallback) {
-    var fileInfoArray = string2Array(fileInfo);
-    var fileInfoArrayLen = fileInfoArray.byteLength !== undefined ? fileInfoArray.byteLength : fileInfoArray.length;
-    var arrayLen = array.byteLength !== undefined ? array.byteLength : array.length;
-    var sendData = {
-      cmd: {
-        id: SocketManager.commandId ++,
-        flag: CMD_TYPE.file_push,
-        datalength: 0
-      },
-      dataArray: arraycat(arraycat(int2Array(fileInfoArrayLen), fileInfoArray), 
-        arraycat(int2Array(arrayLen), array))
-    };
-    SocketManager.send(sendData);
-
-    document.addEventListener(sendData.cmd.id, function _onData(evt) {
-      document.removeEventListener(sendData.cmd.id, _onData);
-      if (!evt.detail || array2Int(evt.detail) != RS_OK) {
-        errorCallback();
+              document.addEventListener(sendData.cmd.id, function _onData(evt) {
+                document.removeEventListener(sendData.cmd.id, _onData);
+                if (!evt.detail || array2Int(evt.detail) != RS_OK) {
+                  errorCallback();
+                  return;
+                }
+                successCallback();
+              });
+            },
+            function onError(e) {
+              errorCallback();
+            }
+          );
+        } else {
+          if (!ConnectView.usbDevice || !file.size) {
+            cancelCallback();
+            return;
+          }
+          aDest = StorageView.storageInfoList[uname].path + aDest;
+          console.log('adb push from: ' + aFrom + ' to: ' + aDest);
+          ConnectView.usbDevice.push(aFrom, aDest).then(successCallback, errorCallback);
+        }
         return;
       }
-      successCallback();
     });
   }
 
@@ -239,13 +308,13 @@ var StorageView = (function() {
   }
 
   return {
-    storageInfoList: storageInfoList,
-    connectLoadingId: connectLoadingId,
     init: init,
     show: show,
     hide: hide,
     pullFile: pullFile,
     pushFile: pushFile,
-    getStorageFree: getStorageFree
+    getStorageFree: getStorageFree,
+    connectLoadingId: connectLoadingId,
+    storageInfoList: storageInfoList
   };
 })();
