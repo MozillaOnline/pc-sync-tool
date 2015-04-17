@@ -30,7 +30,8 @@
  */
 
 var MAX_WIFI_FILE_SIZE = 50 * 1024 * 1024;
-/*var GroupedList = function(options) {
+
+var GroupedList = function(options) {
   this.initialize(options);
   this.DEFAULT_INDEX = '__DEF_INDEX__';
 };
@@ -294,7 +295,7 @@ GroupedList.prototype = {
     return count;
   }
 };
-*/
+
 function ProcessBar(options) {
   this.initialize(options);
 }
@@ -757,20 +758,16 @@ ImageViewer.prototype = {
 };
 
 var AnimationLoadingDialog = function() {
-  this.groupId = 0;
-  this.startNum = 0;
   this._modalElement = document.createElement('div');
   this._modalElement.className = 'loading-dialog';
   var templateData = {};
   this._modalElement.innerHTML = tmpl('tmpl_loading_dialog', templateData);
+  this.isStart = false;
 };
 
 AnimationLoadingDialog.prototype = {
   startAnimation: function() {
-    this.startNum++;
-    if (this.startNum > 1) {
-      return this.groupId;
-    }
+    this.isStart = true;
     var containerHeight = $id('container').clientHeight;
     var documentHeight = document.documentElement.clientHeight;
     var loading = $expr('.loading', this._modalElement)[0];
@@ -782,26 +779,14 @@ AnimationLoadingDialog.prototype = {
       loadingTop = (containerHeight - loading.clientHeight) / 2
     }
     loading.style.top = loadingTop + 'px';
-    return this.groupId;
   },
 
-  stopAnimation: function(groupId) {
-    if ((this.startNum <= 0) || (groupId != this.groupId)) {
-      return;
-    }
-    this.startNum--;
-    if (this.startNum == 0) {
+  stopAnimation: function() {
+    if (this.isStart == true && this._modalElement.parentNode) {
+      this.isStart = false;
       this._modalElement.parentNode.removeChild(this._modalElement);
     }
-  },
-
-  resetAnimation: function() {
-    if (this.startNum > 0) {
-      this.startNum = 0;
-      this.groupId++;
-      this._modalElement.parentNode.removeChild(this._modalElement);
-    }
-  },
+  }
 };
 
 function AlertDialog(options) {

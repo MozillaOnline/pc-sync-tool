@@ -1,7 +1,6 @@
 var MusicView = (function() {
   var musicViewId = "music-view";
   var playedAudio = null;
-  var connectLoadingId = -1;
   var isFirstShow = true;
   function init() {
     MusicView.isFirstShow = true;
@@ -109,6 +108,7 @@ var MusicView = (function() {
            StorageView.storageInfoList[uname].totalSpace > 0) {
           $id('empty-music-container').hidden = true;
           _getAllMusics();
+          _updateChangedMusics();
           MusicView.isFirstShow = false;
           return;
         }
@@ -217,26 +217,17 @@ var MusicView = (function() {
         });
       }
       MusicView.playedAudio.play();
-      if (MusicView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(MusicView.connectLoadingId);
-        MusicView.connectLoadingId = -1;
-      }
+      AppManager.animationLoadingDialog.stopAnimation();
     };
     function onerror () {
       new AlertDialog({
         message: _('operation-failed'),
         showCancelButton: false
       });
-      if (MusicView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(MusicView.connectLoadingId);
-        MusicView.connectLoadingId = -1;
-      }
+      AppManager.animationLoadingDialog.stopAnimation();
     };
     function oncancel () {
-      if (MusicView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(MusicView.connectLoadingId);
-        MusicView.connectLoadingId = -1;
-      }
+      AppManager.animationLoadingDialog.stopAnimation();
     };
     if (!MusicView.playedAudio) {
       return;
@@ -252,7 +243,7 @@ var MusicView = (function() {
     name = decodeURIComponent(name);
     var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', AppManager.CACHE_FOLDER]);
     var cachedUrl = AppManager.PRE_PATH + AppManager.CACHE_FOLDER + name;
-    MusicView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+    AppManager.animationLoadingDialog.startAnimation();
     StorageView.pullFile(file, path + name, onsuccess, onerror, oncancel);
   }
 
@@ -325,15 +316,13 @@ var MusicView = (function() {
       },
       dataArray: null
     };
-    MusicView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+    AppManager.animationLoadingDialog.startAnimation();
     SocketManager.send(sendData);
   
     document.addEventListener(sendData.cmd.id, function _onData(evt) {
       if (!evt.detail) {
-        if (MusicView.connectLoadingId >= 0) {
-          AppManager.animationLoadingDialog.stopAnimation(MusicView.connectLoadingId);
-          MusicView.connectLoadingId = -1;
-        }
+        document.removeEventListener(sendData.cmd.id, _onData);
+        AppManager.animationLoadingDialog.stopAnimation();
         _updateControls();
         return;
       }
@@ -343,10 +332,7 @@ var MusicView = (function() {
         _updateChangedMusics();
         _updateUI();
         _updateControls();
-        if (MusicView.connectLoadingId >= 0) {
-          AppManager.animationLoadingDialog.stopAnimation(MusicView.connectLoadingId);
-          MusicView.connectLoadingId = -1;
-        }
+        AppManager.animationLoadingDialog.stopAnimation();
         musicsCount = getMusicsIndex;
         return;
       }
@@ -452,7 +438,7 @@ var MusicView = (function() {
     show: show,
     hide: hide,
     deleteMusic: deleteMusic,
-    connectLoadingId: connectLoadingId,
+    isFirstShow: isFirstShow,
     playedAudio: playedAudio
   };
 })();

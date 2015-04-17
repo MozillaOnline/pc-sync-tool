@@ -171,7 +171,7 @@ input[type="url"], textarea {
   height: 100%;
   float: left;
   height: 58rem;
-  width: 75rem;
+  width: 78rem;
 }
 
 .narrow-content {
@@ -581,13 +581,6 @@ input[type="url"], textarea {
 
 .hidden-views {
   display: none;
-}
-
-
-/******* Contact view *****/
-#show-contact-content {
-  height: 30rem;
-  overflow-y: scroll;
 }
 
 /******* Popup dialog *****/

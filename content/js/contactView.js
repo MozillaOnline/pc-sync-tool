@@ -1,32 +1,357 @@
 var ContactView = (function() {
   var contactViewId = "contact-view";
+  var isFirstShow = true;
+  var groupedList = null;
+  // Hold all the contact field that we add.
+  var fields = {};
+  var changedCount = 0;
   function init() {
+    ContactView.isFirstShow = true;
+    document.addEventListener(CMD_ID.listen_contact_create, function(e) {
+      if (!e.detail) {
+        return;
+      }
+      var sendData = {
+        cmd: {
+          id: SocketManager.commandId ++,
+          flag: CMD_TYPE.contact_getById,
+          datalength: 0
+        },
+        dataArray: e.detail
+      };
+      SocketManager.send(sendData);
+
+      document.addEventListener(sendData.cmd.id, function _onData(evt) {
+        document.removeEventListener(sendData.cmd.id, _onData);
+        if (!evt.detail) {
+          return;
+        }
+        var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
+        if (recvLength == 4) {
+          return;
+        }
+        var data = array2String(evt.detail);
+        if (data != '' && ContactView.groupedList) {
+          var contactData = JSON.parse(data);
+          _addContact(contactData);
+        }
+      });
+    });
+    document.addEventListener(CMD_ID.listen_contact_delete, function(e) {
+      if (!e.detail) {
+        return;
+      }
+      var item = _getContact(array2String(e.detail));
+      if (!item) {
+        return;
+      }
+      ContactView.groupedList.remove(item);
+    });
+    document.addEventListener(CMD_ID.listen_contact_update, function(e) {
+      if (!e.detail) {
+        return;
+      }
+      var sendData = {
+        cmd: {
+          id: SocketManager.commandId ++,
+          flag: CMD_TYPE.contact_getById,
+          datalength: 0
+        },
+        dataArray: e.detail
+      };
+      SocketManager.send(sendData);
+
+      document.addEventListener(sendData.cmd.id, function _onData(evt) {
+        document.removeEventListener(sendData.cmd.id, _onData);
+        if (!evt.detail) {
+          return;
+        }
+        var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
+        if (recvLength == 4) {
+          return;
+        }
+        var data = array2String(evt.detail);
+        if (data != '' && ContactView.groupedList) {
+          var contactData = JSON.parse(data);
+          _updateContact(contactData);
+        }
+      });
+    });
+
+    $id('selectAll-contacts').onclick = function selectAll_onclick(event) {
+      if (this.dataset.disabled == "true") {
+        return;
+      }
+      if (this.dataset.checked == "false") {
+        _selectAllContacts(true);
+        if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 1) {
+          _showContactInfo(JSON.parse(elem.dataset.contact));
+        }
+        if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length > 1) {
+          _showMultiContactInfo();
+        }
+      } else {
+        _selectAllContacts(false);
+        _showSubView('contact-quick-add-view');
+      }
+    };
+
+    $id('search-contact-input').onkeyup = function onclick_searchContact(event) {
+      _showSearchList(this.value);
+    };
+    $id('search-contact-input').onkeydown = function onclick_searchContact(event) {
+      if(event.keyCode == 13) {
+        event.preventDefault();
+      }
+    };
+
+    $id('remove-contacts').onclick = function onclick_removeContact(event) {
+      // Do nothing if the button is disabled.
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      var ids = [];
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
+        ids.push(item.dataset.contactId);
+      });
+
+      new AlertDialog({
+        message: _('delete-contacts-confirm', {
+          n: ids.length
+        }),
+        showCancelButton: true,
+        okCallback: function() {
+          if ($id('selectAll-contacts').dataset.checked == "true") {
+            $id('selectAll-contacts').dataset.checked = false;
+          }
+          _removeContact(ids);
+          _showSubView('contact-quick-add-view');
+        }
+      });
+    };
+
+    $id('add-new-contact').onclick = function onclick_addNewContact(event) {
+      _editContact();
+    };
+
+    $id('refresh-contacts').onclick = function onclick_refreshContacts(event) {
+      ContactView.isFirstShow = true;
+      ContactView.show();
+    };
+
+    $id('import-contacts').onclick = function onclick_importContacts(event) {
+      readFromDisk(function(state, data) {
+        if (state) {
+          AppManager.animationLoadingDialog.startAnimation();
+          var contacts = vCardConverter.importContacts(data);
+          if (!contacts || contacts.length == 0) {
+            AppManager.animationLoadingDialog.stopAnimation();
+            return;
+          }
+          var index = 0;
+          for (var i=0; i<contacts.length; i++) {
+            var sendData = {
+              cmd: {
+                id: SocketManager.commandId ++,
+                flag: CMD_TYPE.contact_add,
+                datalength: 0
+              },
+              dataArray: string2Array(contacts[i])
+            };
+            SocketManager.send(sendData);
+            document.addEventListener(sendData.cmd.id, function _onData(evt) {
+              document.removeEventListener(sendData.cmd.id, _onData);
+              index ++;
+              if (index >= contacts.length) {
+                AppManager.animationLoadingDialog.stopAnimation();
+              }
+            });
+          }
+        }
+      });
+    };
+
+    $id('export-contacts').onclick = function onclick_exportContacts(event) {
+      // Do nothing if the button is disabled.
+      if (this.dataset.disabled == 'true') {
+        return;
+      }
+
+      var content = '';
+      $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
+        var contact = JSON.parse(item.dataset.contact);
+        var vcard = vCardConverter.exportContact(contact);
+        content += vcard + '\n';
+      });
+
+      saveToDisk(content, function(status) {
+        if (status) {
+          new AlertDialog({
+            message: _('export-contacts-success')
+          });
+        }
+      }, {
+        title: _('export-contacts-title'),
+        name: 'contacts.vcf',
+        extension: 'vcf'
+      });
+    };
+
+    $id('save-contact').onclick = function() {
+      if (_saveContact()) {
+        var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+        if (selectedItem === 0) {
+          _showSubView('contact-quick-add-view');
+        } else if (selectedItem === 1) {
+          _showSubView('show-contact-view');
+        } else {
+          _showSubView('show-multi-contacts');
+        }
+      }
+    };
+
+    $id('cancel-edit-contact').onclick = function() {
+      var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+      if (selectedItem === 0) {
+        _showSubView('contact-quick-add-view');
+      } else if (selectedItem === 1) {
+        _showSubView('show-contact-view');
+      } else {
+        _showSubView('show-multi-contacts');
+      }
+    };
+
+    $id('quick-save-contact').onclick = function() {
+      _quickSaveContact();
+    };
+
+    $id('avatar-add-edit').onclick = function() {
+      $id('avatar-input').click();
+    };
+
+    $id('avatar-label').onclick = function() {
+      if (this.dataset.isAdd == 'true') {
+        $id('avatar-input').click();
+      } else {
+        $id('avatar-add-edit').removeAttribute('src');
+        $id('avatar-add-edit').classList.add('avatar-add-edit-default');
+        this.dataset.isAdd = true;
+        this.textContent = _('avatar-label');
+        this.setAttribute('data-l10n-id', 'avatar-label');
+        ContactView.changeCount(1);
+        ContactView.changed();
+      }
+    };
+
+    $id('avatar-input').onchange = function() {
+      var MAX_WIDTH = 320;
+      var MAX_HEIGHT = 320;
+      var pic = $id('avatar-add-edit');
+
+      var offscreenImage = document.createElement('img');
+      var url = URL.createObjectURL(this.files[0]);
+      offscreenImage.src = url;
+
+      offscreenImage.onerror = function() {
+        URL.revokeObjectURL(url);
+      };
+
+      offscreenImage.onload = function() {
+        var image_width = offscreenImage.width;
+        var image_height = offscreenImage.height;
+        var scalex = image_width / MAX_WIDTH;
+        var scaley = image_height / MAX_HEIGHT;
+        var scale = Math.min(scalex, scaley);
+
+        var w = MAX_WIDTH * scale;
+        var h = MAX_HEIGHT * scale;
+        var x = (image_width - w) / 2;
+        var y = (image_height - h) / 2;
+
+        var canvas = document.createElement('canvas');
+        canvas.width = MAX_WIDTH;
+        canvas.height = MAX_HEIGHT;
+        var context = canvas.getContext('2d');
+        context.drawImage(offscreenImage, x, y, w, h, 0, 0, MAX_WIDTH, MAX_HEIGHT);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(function(blob) {
+          var fr = new FileReader();
+          fr.readAsDataURL(blob);
+          fr.onload = function(e) {
+            pic.src = e.target.result;
+            pic.classList.remove('avatar-add-edit-default');
+            $id('avatar-label').dataset.isAdd = false;
+            $id('avatar-label').textContent = _('avatar-remove');
+            $id('avatar-label').setAttribute('data-l10n-id', 'avatar-remove');
+            ContactView.changeCount(1);
+            ContactView.changed();
+          };
+        }, 'image/jpeg');
+      };
+    };
   }
+
   function show() {
     $id(contactViewId).hidden = false;
+    if (ContactView.isFirstShow) {
+      ContactView.isFirstShow = false;
+      _showSubView('contact-quick-add-view');
+      _selectAllContacts(false);
+      var container = _getListContainer();
+      container.innerHTML = '';
+      ContactView.groupedList = null;
+
+      var sendData = {
+        cmd: {
+          id: SocketManager.commandId ++,
+          flag: CMD_TYPE.contact_getAll,
+          datalength: 0
+        },
+        dataArray: null
+      };
+      AppManager.animationLoadingDialog.startAnimation();
+      SocketManager.send(sendData);
+      document.addEventListener(sendData.cmd.id, function _onData(evt) {
+        document.removeEventListener(sendData.cmd.id, _onData);
+        var dataJSON = [];
+        if (evt.detail) {
+        var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
+          if (recvLength > 4) {
+            dataJSON = JSON.parse(array2String(evt.detail));
+          }
+        }
+        _initList(container, dataJSON, null);
+        AppManager.animationLoadingDialog.stopAnimation();
+      });
+    }
   }
 
   function hide() {
     $id(contactViewId).hidden = true;
   }
 
-  return {
-    init: init,
-    show: show,
-    hide: hide
-  };
-})();
-/*
-var ContactList = (function() {
-  var groupedList = null;
-
-  function getListContainer() {
+  function _getListContainer() {
     return $id('contact-list-container');
   }
 
-  function toggleFavorite(item) {
+  function _showSubView(viewId) {
+    var subViewList = ["contact-quick-add-view",
+                       "contact-edit-view",
+                       "show-contact-view",
+                       "show-multi-contacts"];
+    for (var i=0; i<subViewList.length; i++) {
+      if (subViewList[i] == viewId) {
+        $id(subViewList[i]).hidden = false;
+      } else {
+        $id(subViewList[i]).hidden = true;
+      }
+    }
+  }
+
+  function _toggleFavorite(item) {
     var favorite = item.classList.toggle('favorite');
-    var contact = getContact(item.dataset.contactId);
+    var contact = _getContact(item.dataset.contactId);
 
     if (favorite) {
       contact.category.push('favorite');
@@ -42,12 +367,18 @@ var ContactList = (function() {
       }
     }
 
-    // Update contact
-    var cmd = CMD.Contacts.updateContact(JSON.stringify(contact), null);
-    socketsManager.send(cmd);
+    var sendData = {
+      cmd: {
+        id: SocketManager.commandId ++,
+        flag: CMD_TYPE.contact_updateById,
+        datalength: 0
+      },
+      dataArray: string2Array(JSON.stringify(contact))
+    };
+    SocketManager.send(sendData);
   }
 
-  function createContactListItem(contact) {
+  function _createContactListItem(contact) {
     var elem = document.createElement('ul');
     elem.classList.add('contact-list-item');
 
@@ -81,11 +412,11 @@ var ContactList = (function() {
     elem.onclick = function onclick_contact_list(event) {
       var target = event.target;
       if (target instanceof HTMLLabelElement) {
-        toggleContactItem(elem);
+        _toggleContactItem(elem);
       } else if (target.classList.contains('bookmark')) {
-        toggleFavorite(elem);
+        _toggleFavorite(elem);
       } else {
-        contactItemClicked(elem);
+        _contactItemClicked(elem);
       }
     };
 
@@ -96,14 +427,14 @@ var ContactList = (function() {
     }
 
     var searchInfo = getSearchString(contact);
-    var escapedValue = escapeHTML(searchInfo.join(' '), true);
+    var escapedValue = _escapeHTML(searchInfo.join(' '), true);
     //search key word
     var key = searchInput.value;
     elem.hidden = !escapedValue || escapedValue.indexOf(key) == -1;
     return elem;
   }
 
-  function getSearchString(contact) {
+  function _getSearchString(contact) {
     var searchString = [];
     var searchTable = ['givenName', 'familyName', 'org', 'tel', 'email'];
     searchTable.forEach(function(field) {
@@ -128,15 +459,15 @@ var ContactList = (function() {
     return searchString;
   }
 
-  function updateUI() {
-    var isEmpty = groupedList.count() == 0;
+  function _updateUI() {
+    var isEmpty = ContactView.groupedList.count() == 0;
     $id('selectAll-contacts').dataset.disabled = isEmpty;
     $id('empty-contact-container').hidden = !isEmpty;
     $id('contact-list-container').hidden = isEmpty;
-    updateControls();
+    _updateControls();
     var searchInput = $id('search-contact-input');
     if (searchInput && searchInput.value.trim()) {
-      var allContactData = groupedList.getGroupedData();
+      var allContactData = ContactView.groupedList.getGroupedData();
       allContactData.forEach(function(group) {
         var groupIndexItem = $id('id-grouped-data-' + group.index);
         if (groupIndexItem) {
@@ -147,52 +478,7 @@ var ContactList = (function() {
     }
   }
 
-  function init(viewData) {
-    var loadingGroupId = animationLoading.start();
-    ViewManager.showViews('contact-quick-add-view');
-    selectAllContacts(false);
-    var container = getListContainer();
-    container.innerHTML = '';
-    groupedList = null;
-    var cmd = CMD.Contacts.getAllContacts();
-    socketsManager.send(cmd);
-    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-      document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-      var result = evt.detail.result;
-      if (result != RS_OK) {
-        log('Error occurs when fetching all contacts.');
-        animationLoading.stop(loadingGroupId);
-        return;
-      }
-
-      // Make sure the 'select-all' box is not checked.
-      var dataJSON = JSON.parse(array2String(evt.detail.data));
-      initList(container, dataJSON, viewData);
-      animationLoading.stop(loadingGroupId);
-    });
-  }
-
-  function show(viewData) {
-    var searchInput = $id('search-contact-input');
-    searchInput.value = '';
-    showSearchList(searchInput.value);
-    var quickName = $id('fullName');
-    var quickNumber = $id('mobile');
-    if (quickName) {
-      quickName.value = '';
-    }
-    if (quickNumber) {
-      if (viewData && (viewData.type == 'add')) {
-        quickNumber.value = viewData.number;
-      } else {
-        quickNumber.value = '';
-      }
-    }
-    ViewManager.showViews('contact-quick-add-view');
-    selectAllContacts(false);
-  }
-
-  function initList(container, contacts, viewData) {
+  function _initList(container, contacts, viewData) {
     var searchInput = $id('search-contact-input');
     if (searchInput) {
       searchInput.value = '';
@@ -201,7 +487,7 @@ var ContactList = (function() {
     var quickName = $id('fullName');
     var quickNumber = $id('mobile');
 
-    ViewManager.showViews('contact-quick-add-view');
+    _showSubView('contact-quick-add-view');
     if (quickName) {
       quickName.value = '';
     }
@@ -216,11 +502,11 @@ var ContactList = (function() {
     }
     
     container.innerHTML = '';
-    groupedList = null;
+    ContactView.groupedList = null;
 
-    groupedList = new GroupedList({
+    ContactView.groupedList = new GroupedList({
       dataList: contacts,
-      dataIndexer: function getContactIndex(contact) {
+      dataIndexer: function _getContactIndex(contact) {
         // TODO
         // - index family name for Chinese name
         // - filter the special chars
@@ -238,36 +524,51 @@ var ContactList = (function() {
         return pinyin[0].toUpperCase();
       },
       dataSorterName: 'name',
-      renderFunc: createContactListItem,
+      renderFunc: _createContactListItem,
       container: container,
-      ondatachange: updateUI
+      ondatachange: _updateUI
     });
 
-    groupedList.render();
-    updateUI();
-    customEventElement.removeEventListener('dataChange', onMessage);
-    customEventElement.addEventListener('dataChange', onMessage);
+    ContactView.groupedList.render();
+    _updateUI();
   }
 
-  function removeContact(id) {
-    var loadingGroupId = animationLoading.start();
-    var cmd = CMD.Contacts.removeContact(id, null);
-    socketsManager.send(cmd);
-    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-      document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-      animationLoading.stop(loadingGroupId);
-    });
+  function _removeContact(ids) {
+    if (!ids || ids.length == 0) {
+      return;
+    }
+    AppManager.animationLoadingDialog.startAnimation();
+    var index = 0;
+    for (var i=0; i<ids.length; i++) {
+      var sendData = {
+        cmd: {
+          id: SocketManager.commandId ++,
+          flag: CMD_TYPE.contact_removeById,
+          datalength: 0
+        },
+        dataArray: string2Array(ids[i])
+      };
+      SocketManager.send(sendData);
+
+      document.addEventListener(sendData.cmd.id, function _onData(evt) {
+        document.removeEventListener(sendData.cmd.id, _onData);
+        index ++;
+        if (index >= ids.length) {
+          AppManager.animationLoadingDialog.stopAnimation();
+        }
+      });
+    }
   }
 
-  function selectAllContacts(select) {
+  function _selectAllContacts(select) {
     $expr('#contact-list-container .contact-list-item').forEach(function(elem) {
       elem.dataset.checked = elem.dataset.focused = select;
     });
 
-    updateControls();
+    _updateControls();
   }
 
-  function contactItemClicked(elem) {
+  function _contactItemClicked(elem) {
     $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(e) {
       if (e == elem) {
         return;
@@ -276,40 +577,25 @@ var ContactList = (function() {
     });
 
     elem.dataset.checked = elem.dataset.focused = true;
-    updateControls();
-    showContactInfo(JSON.parse(elem.dataset.contact));
+    _updateControls();
+    _showContactInfo(JSON.parse(elem.dataset.contact));
   }
 
-  function toggleContactItem(elem) {
+  function _toggleContactItem(elem) {
     var select = elem.dataset.checked == 'false';
     elem.dataset.checked = elem.dataset.focused = select;
-    updateControls();
+    _updateControls();
     item = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
     if (item.length == 0) {
-      ViewManager.showViews('contact-quick-add-view');
+      _showSubView('contact-quick-add-view');
     } else if (item.length == 1) {
-      showContactInfo(JSON.parse(item[0].dataset.contact));
+      _showContactInfo(JSON.parse(item[0].dataset.contact));
     } else {
-      showMultiContactInfo();
+      _showMultiContactInfo();
     }
   }
 
-  function updateControls() {
-    if ($expr('#contact-list-container .contact-list-item').length == 0) {
-      $id('selectAll-contacts').dataset.checked = false;
-      $id('selectAll-contacts').dataset.disabled = true;
-    } else {
-      $id('selectAll-contacts').dataset.checked =
-      $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
-      $id('selectAll-contacts').dataset.disabled = false;
-    }
-    $id('remove-contacts').dataset.disabled =
-    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
-    $id('export-contacts').dataset.disabled =
-    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
-  }
-
-  function showContactInfo(contact) {
+  function _showContactInfo(contact) {
     $id('show-contact-full-name').innerHTML = contact && contact.name ? contact.name.join(' ') : '';
     $id('show-contact-company').innerHTML = contact && contact.org ? contact.org.join(' ') : '';
     var container = $id('show-contact-content');
@@ -353,11 +639,11 @@ var ContactList = (function() {
       $id('edit-contact').disabled = false;
       $id('edit-contact').classList.remove('button-disabled');
       $id('edit-contact').onclick = function doEditContact() {
-        ContactForm.editContact(contact);
+        _editContact(contact);
       };
     }
 
-    ViewManager.showViews('show-contact-view');
+    _showSubView('show-contact-view');
     var item = $id('contact-' + contact.id);
 
     if (item.dataset.avatar) {
@@ -369,7 +655,22 @@ var ContactList = (function() {
     }
   }
 
-  function showMultiContactInfo() {
+  function _updateControls() {
+    if ($expr('#contact-list-container .contact-list-item').length == 0) {
+      $id('selectAll-contacts').dataset.checked = false;
+      $id('selectAll-contacts').dataset.disabled = true;
+    } else {
+      $id('selectAll-contacts').dataset.checked =
+      $expr('#contact-list-container .contact-list-item').length === $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
+      $id('selectAll-contacts').dataset.disabled = false;
+    }
+    $id('remove-contacts').dataset.disabled =
+    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+    $id('export-contacts').dataset.disabled =
+    $expr('#contact-list-container .contact-list-item[data-checked="true"]').length === 0;
+  }
+
+  function _showMultiContactInfo() {
     var num = "";
     var selectedContacts = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
     var container = $id('show-contacts-container');
@@ -394,21 +695,21 @@ var ContactList = (function() {
       }
     });
 
-    ViewManager.showViews('show-multi-contacts');
+    _showSubView('show-multi-contacts');
   }
 
-  function addContact(contact) {
+  function _addContact(contact) {
     if (!contact.id) {
       return;
     }
-    groupedList.add(contact);
+    ContactView.groupedList.add(contact);
   }
 
-  function updateContact(contact) {
+  function _updateContact(contact) {
     if (!contact.id) {
       return;
     }
-    var existingContact = getContact(contact.id);
+    var existingContact = _getContact(contact.id);
     var isChecked = false;
     var contactListItems = $expr('#contact-list-container .contact-list-item[data-checked="true"]');
     for (var i = 0; i < contactListItems.length; i++) {
@@ -418,9 +719,8 @@ var ContactList = (function() {
         break;
       }
     }
-    groupedList.remove(existingContact);
-    groupedList.add(contact);
-
+    ContactView.groupedList.remove(existingContact);
+    ContactView.groupedList.add(contact);
     var item = $id('contact-' + contact.id);
     if (!item) {
       return;
@@ -438,13 +738,14 @@ var ContactList = (function() {
     }
     if (isChecked) {
       if (contactListItems.length == 1) {
-        showContactInfo(contact);
+        _showContactInfo(contact);
       }
       item.dataset.checked = item.dataset.focused = isChecked;
     }
+    _updateUI();
   }
 
-  function getContact(id) {
+  function _getContact(id) {
     var contactItem = $id('contact-' + id);
 
     if (!contactItem) {
@@ -454,9 +755,9 @@ var ContactList = (function() {
     return JSON.parse(contactItem.dataset.contact);
   }
 
-  function escapeHTML(str, escapeQuotes) {
+  function _escapeHTML(str, escapeQuotes) {
     if (Array.isArray(str)) {
-      return escapeHTML(str.join(' '), escapeQuotes);
+      return _escapeHTML(str.join(' '), escapeQuotes);
     }
 
     if (!str || typeof str != 'string') return '';
@@ -466,8 +767,8 @@ var ContactList = (function() {
     return escaped;
   }
 
-  function showSearchList (value) {
-    var allContactData = groupedList.getGroupedData();
+  function _showSearchList (value) {
+    var allContactData = ContactView.groupedList.getGroupedData();
     allContactData.forEach(function(group) {
       var groupIndexItem = $id('id-grouped-data-' + group.index);
 
@@ -482,8 +783,8 @@ var ContactList = (function() {
           contactItem.hidden = false;
           return;
         }
-        var searchInfo = getSearchString(contact);
-        var escapedValue = escapeHTML(searchInfo.join(' '), true).toLowerCase();
+        var searchInfo = _getSearchString(contact);
+        var escapedValue = _escapeHTML(searchInfo.join(' '), true).toLowerCase();
         // search key words
         var search = value;
         if ((escapedValue.length > 0) && (escapedValue.indexOf(search.toLowerCase()) >= 0)) {
@@ -495,159 +796,376 @@ var ContactList = (function() {
     });
   }
 
-  function onMessage(e) {
-    if (e.detail.type != 'contact') {
+  function changeCount(changed) {
+    ContactView.changedCount += changed;
+  }
+
+  function _editContact(contact) {
+    _showSubView('contact-edit-view');
+    $id('save-contact').classList.add('button-disabled');
+    $id('save-contact').dataset.disabled = true;
+    ContactView.changedCount = 0;
+
+    var inputs = $expr('input', $id('contact-edit-view'));
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].dataset.changed = false;
+    }
+
+    // Mark form as adding new contact
+    $id('contact-edit-view').dataset.addContact = !contact;
+
+    var container = $expr('#contact-form ul')[0];
+    container.innerHTML = '';
+    ContactView.fields = [];
+
+    $id('contact-form-id').value = contact ? contact.id : '';
+
+    if (contact) {
+      if ($id('contact-' + contact.id).dataset.avatar) {
+        $id('avatar-add-edit').src = $id('contact-' + contact.id).dataset.avatar;
+        $id('avatar-add-edit').classList.remove('avatar-add-edit-default');
+        $id('avatar-label').dataset.isAdd = false;
+        $id('avatar-label').textContent = _('avatar-remove');
+        $id('avatar-label').setAttribute('data-l10n-id', 'avatar-remove');
+      } else {
+        $id('avatar-add-edit').removeAttribute('src');
+        $id('avatar-add-edit').classList.add('avatar-add-edit-default');
+        $id('avatar-label').dataset.isAdd = true;
+        $id('avatar-label').textContent = _('avatar-label');
+        $id('avatar-label').setAttribute('data-l10n-id', 'avatar-label');
+      }
+    } else {
+      $id('avatar-add-edit').removeAttribute('src');
+      $id('avatar-add-edit').classList.add('avatar-add-edit-default');
+      $id('avatar-label').dataset.isAdd = true;
+      $id('avatar-label').textContent = _('avatar-label');
+      $id('avatar-label').setAttribute('data-l10n-id', 'avatar-label');
+    }
+
+    $id('givenName').dataset.value = $id('givenName').value = contact && contact.givenName && contact.givenName.length > 0 ? contact.givenName[0] : '';
+    $id('givenName').oninput = changed;
+    $id('familyName').dataset.value = $id('familyName').value = contact && contact.familyName && contact.familyName.length > 0 ? contact.familyName[0] : '';
+    $id('familyName').oninput = changed;
+    $id('org').dataset.value = $id('org').value = contact && contact.org ? contact.org.join(' ') : '';
+    $id('org').oninput = changed;
+    $id('givenName').focus();
+
+    ContactView.fields['tel'] = new ContactField({
+      id: 'tel',
+      needCustom: true,
+      typeList: ['mobile', 'home', 'work', 'personal', 'faxHome', 'faxOffice', 'faxOther', 'another', 'custom'],
+      fields: [{
+        name: 'value',
+        l10nId: 'phone',
+        type: 'tel'
+      }, {
+        name: 'carrier',
+        l10nId: 'carrier-name',
+        type: 'text'
+      }],
+      initValues: contact && contact.tel ? contact.tel : [],
+      container: container,
+      addButtonLabel: 'add-new-phone'
+    }).render();
+
+    ContactView.fields['adr'] = new ContactField({
+      id: 'address',
+      needCustom: true,
+      typeList: ['home', 'work', 'custom'],
+      fields: [{
+        name: 'streetAddress',
+        l10nId: 'street',
+        type: 'text'
+      }, {
+        name: 'postalCode',
+        l10nId: 'zipcode',
+        type: 'number'
+      }, {
+        name: 'locality',
+        l10nId: 'city',
+        type: 'text'
+      }, {
+        name: 'countryName',
+        l10nId: 'country',
+        type: 'text'
+      }],
+      initValues: contact && contact.adr ? contact.adr : [],
+      container: container,
+      addButtonLabel: 'add-new-address'
+    }).render();
+
+    ContactView.fields['email'] = new ContactField({
+      id: 'email',
+      needCustom: true,
+      typeList: ['personal', 'work', 'home', 'custom'],
+      fields: [{
+        name: 'value',
+        l10nId: 'email',
+        type: 'text'
+      }],
+      initValues: contact && contact.email ? contact.email : [],
+      container: container,
+      addButtonLabel: 'add-new-email'
+    }).render();
+
+    ContactView.fields['note'] = new ContactField({
+      id: 'note',
+      // Default is ContactField
+      fieldType: 'string',
+      fields: [{
+        l10nId: 'comment',
+        type: 'text'
+      }],
+      initValues: contact && contact.note ? contact.note : [],
+      container: container,
+      addButtonLabel: 'add-new-comment'
+    }).render();
+  }
+
+  function changed(e) {
+    if (e instanceof HTMLSelectElement) {
+      var inputs = $expr('input', e.parentNode.parentNode);
+      if (_checkInputsEmpty(inputs))
+        return;
+
+      if (e.dataset.selectedIndex != e.selectedIndex && e.dataset.changed != 'true') {
+        e.dataset.changed = 'true';
+        ContactView.changedCount++;
+      }
+      if (e.dataset.selectedIndex == e.selectedIndex && e.dataset.changed == 'true') {
+        e.dataset.changed = 'false';
+        ContactView.changedCount--;
+      }
+      _changeSaveButtonStatus();
       return;
     }
-    var changeEvent = e.detail.data;
-    switch (changeEvent.reason) {
-      case 'remove':
-        var item = getContact(changeEvent.contactID);
-        if (!item) {
-          return;
-        }
-        groupedList.remove(item);
-        break;
-      case 'update':
-        var cmd = CMD.Contacts.getContactById(changeEvent.contactID, null);
-        socketsManager.send(cmd);
-        document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-          document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-          var result = evt.detail.result;
-          if (result != RS_OK) {
-            return;
-          }
-          var data = array2String(evt.detail.data);
-          if (data != '' && groupedList) {
-            var contactData = JSON.parse(data);
-            updateContact(contactData);
-          }
-        });
-        break;
-      case 'create':
-        var cmd = CMD.Contacts.getContactById(changeEvent.contactID, null);
-        socketsManager.send(cmd);
-        document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-          document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-          var result = evt.detail.result;
-          if (result != RS_OK) {
-            return;
-          }
-          var data = array2String(evt.detail.data);
-          if (data != '' && groupedList) {
-            var contactData = JSON.parse(data);
-            addContact(contactData);
-          }
-        });
-        break;
-      default:
-        break;
+
+    var target;
+    if (e instanceof Event) {
+      target = e.target;
+    } else {
+      target = e;
+    }
+    if (target) {
+      if (target.dataset.value != target.value && target.dataset.changed != 'true') {
+        ContactView.changedCount++;
+        target.dataset.changed = 'true';
+      }
+      if (target.dataset.value == target.value && target.dataset.changed == 'true') {
+        ContactView.changedCount--;
+        target.dataset.changed = 'false';
+      }
+    }
+    _changeSaveButtonStatus();
+  }
+
+  function custom(e) {
+    var target;
+    if (e instanceof Event) {
+      target = e.target;
+    } else {
+      target = e;
+    }
+    var customString = prompt(_('custom-title'), target.value);
+    if(customString && customString != '' && customString != target.value) {
+      target.value = customString;
+      e.textContent = customString;
+      e.setAttribute('data-l10n-id', customString);
+      ContactView.changeCount(1);
+      ContactView.changed();
     }
   }
 
-  window.addEventListener('load', function wnd_onload(event) {
-    $id('selectAll-contacts').onclick = function selectAll_onclick(event) {
-      if (this.dataset.disabled == "true") {
-        return;
+  function  _checkInputsEmpty(inputs) {
+    var ret = true;
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].value != '') {
+        ret = false;
+        break;
       }
-      if (this.dataset.checked == "false") {
-        selectAllContacts(true);
-        if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length == 1) {
-          showContactInfo(JSON.parse(elem.dataset.contact));
-        }
-        if ($expr('#contact-list-container .contact-list-item[data-checked="true"]').length > 1) {
-          showMultiContactInfo();
-        }
-      } else {
-        selectAllContacts(false);
-        ViewManager.showViews('contact-quick-add-view');
-      }
+    }
+    return ret;
+  }
+
+  function _changeSaveButtonStatus() {
+    if (ContactView.changedCount > 0) {
+      $id('save-contact').classList.remove('button-disabled');
+      $id('save-contact').dataset.disabled = false;
+    } else {
+      $id('save-contact').classList.add('button-disabled');
+      $id('save-contact').dataset.disabled = true;
+    }
+  }
+
+  function _getFieldValue(id) {
+    if (ContactView.fields[id]) {
+      return ContactView.fields[id].getValues();
+    } else if ($id(id) && $id(id).value.trim()) {
+      return [$id(id).value];
+    }
+
+    return [];
+  }
+
+  function _saveContact() {
+    if ($id('save-contact').dataset.disabled == 'true') {
+      return false;
+    }
+    var contactId = $id('contact-form-id').value;
+    var updateContact = !! contactId;
+    var contact = null;
+
+    AppManager.animationLoadingDialog.startAnimation();
+    if (updateContact) {
+      // Update contact
+      contact = _getContact(contactId);
+    } else {
+      // create a new one
+      contact = {
+        id: null,
+        photo: [],
+        name: [],
+        honorificPrefix: [],
+        givenName: [],
+        familyName: [],
+        additionalName: [],
+        honorificSuffix: [],
+        nickname: [],
+        email: [],
+        url: [],
+        category: [],
+        adr: [],
+        tel: [],
+        org: [],
+        jobTitle: [],
+        bday: null,
+        note: [],
+        impp: [],
+        anniversary: null,
+        sex: 'male',
+        genderIdentity: null
+      };
+    }
+
+    // Read modified fields
+    contact.familyName = _getFieldValue('familyName');
+    contact.givenName = _getFieldValue('givenName');
+    // Concat given name with family name as the name
+    contact.name = _getFieldValue('givenName').concat(_getFieldValue('familyName'));
+    contact.tel = _getFieldValue('tel');
+    contact.adr = _getFieldValue('adr');
+    contact.email = _getFieldValue('email');
+    contact.org = _getFieldValue('org');
+    contact.note = _getFieldValue('note');
+    if ($id('avatar-add-edit').classList.contains('avatar-add-edit-default')) {
+      contact.photo = [];
+    } else {
+      contact.photo = $id('avatar-add-edit').src;
+    }
+    var sendData = {
+      cmd: {
+        id: SocketManager.commandId ++,
+        flag: CMD_TYPE.contact_add,
+        datalength: 0
+      },
+      dataArray: string2Array(JSON.stringify(contact))
     };
+    if (updateContact) {
+      // Save to device
+      sendData.cmd.flag = CMD_TYPE.contact_updateById;
+    }
+    SocketManager.send(sendData);
+    document.addEventListener(sendData.cmd.id, function _onData(evt) {
+      document.removeEventListener(sendData.cmd.id, _onData);
+      AppManager.animationLoadingDialog.stopAnimation();
+    });
+    return true;
+  }
 
-    $id('search-contact-input').onkeyup = function onclick_searchContact(event) {
-      showSearchList(this.value);
-    };
-    $id('search-contact-input').onkeydown = function onclick_searchContact(event) {
-      if(event.keyCode == 13) {
-        event.preventDefault();
-      }
-    };
-
-    $id('remove-contacts').onclick = function onclick_removeContact(event) {
-      // Do nothing if the button is disabled.
-      if (this.dataset.disabled == 'true') {
-        return;
-      }
-
-      var ids = [];
-      $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
-        ids.push(item.dataset.contactId);
-      });
-
+  function _quickSaveContact() {
+    var fullName = $id('fullName').value.trim();
+    var mobile = $id('mobile').value.trim();
+    if (fullName == '') {
       new AlertDialog({
-        message: _('delete-contacts-confirm', {
-          n: ids.length
-        }),
-        showCancelButton: true,
-        okCallback: function() {
-          if ($id('selectAll-contacts').dataset.checked == "true") {
-            $id('selectAll-contacts').dataset.checked = false;
-          }
-          ids.forEach(function(item) {
-            removeContact(item);
-          });
-          ViewManager.showViews('contact-quick-add-view');
-        }
+        message: _('EmptyName')
       });
+      return;
+    }
+    AppManager.animationLoadingDialog.startAnimation();
+    contact = {
+      id: null,
+      photo: [],
+      name: [],
+      honorificPrefix: [],
+      givenName: [],
+      familyName: [],
+      additionalName: [],
+      honorificSuffix: [],
+      nickname: [],
+      email: [],
+      url: [],
+      category: [],
+      adr: [],
+      tel: [],
+      org: [],
+      jobTitle: [],
+      bday: null,
+      note: [],
+      impp: [],
+      anniversary: null,
+      sex: 'male',
+      genderIdentity: null
     };
-
-    $id('add-new-contact').onclick = function onclick_addNewContact(event) {
-      ContactForm.editContact();
+    var index = fullName.lastIndexOf(' ');
+    if (index != -1) {
+      contact.familyName = [fullName.substr(index + 1, fullName.length)];
+      contact.givenName = [fullName.substr(0, index)];
+      contact.name = contact.givenName.concat(contact.familyName);
+    } else {
+      contact.familyName = [];
+      contact.givenName = [fullName];
+      contact.name = contact.givenName;
+    }
+    contact.tel = [{
+      "type": ["Mobile"],
+      "value": mobile,
+      "carrier": ""
+    }];
+    var sendData = {
+      cmd: {
+        id: SocketManager.commandId ++,
+        flag: CMD_TYPE.contact_add,
+        datalength: 0
+      },
+      dataArray: string2Array(JSON.stringify(contact))
     };
-
-    $id('refresh-contacts').onclick = function onclick_refreshContacts(event) {
-      init();
-    };
-
-    $id('import-contacts').onclick = function onclick_importContacts(event) {
-      readFromDisk(function(state, data) {
-        if (state) {
-          var contacts = vCardConverter.importContacts(data);
-        }
-      });
-    };
-
-    $id('export-contacts').onclick = function onclick_exportContacts(event) {
-      // Do nothing if the button is disabled.
-      if (this.dataset.disabled == 'true') {
+    SocketManager.send(sendData);
+    document.addEventListener(sendData.cmd.id, function _onData(evt) {
+      document.removeEventListener(sendData.cmd.id, _onData);
+      AppManager.animationLoadingDialog.stopAnimation();
+      if (!evt.detail) {
         return;
       }
-
-      var content = '';
-      $expr('#contact-list-container .contact-list-item[data-checked="true"]').forEach(function(item) {
-        var contact = JSON.parse(item.dataset.contact);
-        var vcard = vCardConverter.exportContact(contact);
-        content += vcard + '\n';
-      });
-
-      saveToDisk(content, function(status) {
-        if (status) {
-          new AlertDialog({
-            message: _('export-contacts-success')
-          });
-        }
-      }, {
-        title: _('export-contacts-title'),
-        name: 'contacts.vcf',
-        extension: 'vcf'
-      });
-    };
-  });
+      var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
+      if (recvLength == 4 && array2Int(evt.detail) != RS_OK) {
+        return;
+      }
+      $id('fullName').value = '';
+      $id('mobile').value = '';
+    });
+  }
 
   return {
     init: init,
     show: show,
-    getContact: getContact
+    hide: hide,
+    changeCount: changeCount,
+    changed: changed,
+    custom: custom,
+    isFirstShow: isFirstShow,
+    groupedList: groupedList,
+    fields: fields,
+    changedCount: changedCount
   };
 })();
 
@@ -765,14 +1283,14 @@ ContactField.prototype = {
         var inputs = $expr('input', elem.parentNode);
         for (var i = 0; i < inputs.length; i++) {
           if(inputs[i].dataset.value != '' && inputs[i].dataset.changed != 'true') {
-            ContactForm.changeCount(1);
+            ContactView.changeCount(1);
           }
           if(inputs[i].dataset.value == '' && inputs[i].dataset.changed == 'true') {
-            ContactForm.changeCount(-1);
+            ContactView.changeCount(-1);
           }
         }
         this.parentNode.removeChild(this);
-        ContactForm.changed();
+        ContactView.changed();
       }
     };
   },
@@ -812,468 +1330,3 @@ ContactField.prototype = {
     return values;
   }
 };
-
-var ContactForm = (function() {
-  // Hold all the contact field that we add.
-  var fields = {};
-  var changedCount = 0;
-
-  function changeCount(changed) {
-    changedCount += changed;
-  }
-
-  function editContact(contact) {
-    ViewManager.showViews('contact-edit-view');
-    $id('save-contact').classList.add('button-disabled');
-    $id('save-contact').dataset.disabled = true;
-    changedCount = 0;
-
-    var inputs = $expr('input', $id('contact-edit-view'));
-    for (var i = 0; i < inputs.length; i++) {
-      inputs[i].dataset.changed = false;
-    }
-
-    // Mark form as adding new contact
-    $id('contact-edit-view').dataset.addContact = !contact;
-
-    var container = $expr('#contact-form ul')[0];
-    container.innerHTML = '';
-    fields = [];
-
-    $id('contact-form-id').value = contact ? contact.id : '';
-
-    if (contact) {
-      if ($id('contact-' + contact.id).dataset.avatar) {
-        $id('avatar-add-edit').src = $id('contact-' + contact.id).dataset.avatar;
-        $id('avatar-add-edit').classList.remove('avatar-add-edit-default');
-        $id('avatar-label').dataset.isAdd = false;
-        $id('avatar-label').textContent = _('avatar-remove');
-        $id('avatar-label').setAttribute('data-l10n-id', 'avatar-remove');
-      } else {
-        $id('avatar-add-edit').removeAttribute('src');
-        $id('avatar-add-edit').classList.add('avatar-add-edit-default');
-        $id('avatar-label').dataset.isAdd = true;
-        $id('avatar-label').textContent = _('avatar-label');
-        $id('avatar-label').setAttribute('data-l10n-id', 'avatar-label');
-      }
-    } else {
-      $id('avatar-add-edit').removeAttribute('src');
-      $id('avatar-add-edit').classList.add('avatar-add-edit-default');
-      $id('avatar-label').dataset.isAdd = true;
-      $id('avatar-label').textContent = _('avatar-label');
-      $id('avatar-label').setAttribute('data-l10n-id', 'avatar-label');
-    }
-
-    $id('givenName').dataset.value = $id('givenName').value = contact && contact.givenName && contact.givenName.length > 0 ? contact.givenName[0] : '';
-    $id('givenName').oninput = changed;
-    $id('familyName').dataset.value = $id('familyName').value = contact && contact.familyName && contact.familyName.length > 0 ? contact.familyName[0] : '';
-    $id('familyName').oninput = changed;
-    $id('org').dataset.value = $id('org').value = contact && contact.org ? contact.org.join(' ') : '';
-    $id('org').oninput = changed;
-    $id('givenName').focus();
-
-    fields['tel'] = new ContactField({
-      id: 'tel',
-      needCustom: true,
-      typeList: ['mobile', 'home', 'work', 'personal', 'faxHome', 'faxOffice', 'faxOther', 'another', 'custom'],
-      fields: [{
-        name: 'value',
-        l10nId: 'phone',
-        type: 'tel'
-      }, {
-        name: 'carrier',
-        l10nId: 'carrier-name',
-        type: 'text'
-      }],
-      initValues: contact && contact.tel ? contact.tel : [],
-      container: container,
-      addButtonLabel: 'add-new-phone'
-    }).render();
-
-    fields['adr'] = new ContactField({
-      id: 'address',
-      needCustom: true,
-      typeList: ['home', 'work', 'custom'],
-      fields: [{
-        name: 'streetAddress',
-        l10nId: 'street',
-        type: 'text'
-      }, {
-        name: 'postalCode',
-        l10nId: 'zipcode',
-        type: 'number'
-      }, {
-        name: 'locality',
-        l10nId: 'city',
-        type: 'text'
-      }, {
-        name: 'countryName',
-        l10nId: 'country',
-        type: 'text'
-      }],
-      initValues: contact && contact.adr ? contact.adr : [],
-      container: container,
-      addButtonLabel: 'add-new-address'
-    }).render();
-
-    fields['email'] = new ContactField({
-      id: 'email',
-      needCustom: true,
-      typeList: ['personal', 'work', 'home', 'custom'],
-      fields: [{
-        name: 'value',
-        l10nId: 'email',
-        type: 'text'
-      }],
-      initValues: contact && contact.email ? contact.email : [],
-      container: container,
-      addButtonLabel: 'add-new-email'
-    }).render();
-
-    fields['note'] = new ContactField({
-      id: 'note',
-      // Default is ContactField
-      fieldType: 'string',
-      fields: [{
-        l10nId: 'comment',
-        type: 'text'
-      }],
-      initValues: contact && contact.note ? contact.note : [],
-      container: container,
-      addButtonLabel: 'add-new-comment'
-    }).render();
-  }
-
-  function changed(e) {
-    if (e instanceof HTMLSelectElement) {
-      var inputs = $expr('input', e.parentNode.parentNode);
-      if (checkInputsEmpty(inputs))
-        return;
-
-      if (e.dataset.selectedIndex != e.selectedIndex && e.dataset.changed != 'true') {
-        e.dataset.changed = 'true';
-        changedCount++;
-      }
-      if (e.dataset.selectedIndex == e.selectedIndex && e.dataset.changed == 'true') {
-        e.dataset.changed = 'false';
-        changedCount--;
-      }
-      changeSaveButtonStatus();
-      return;
-    }
-
-    var target;
-    if (e instanceof Event) {
-      target = e.target;
-    } else {
-      target = e;
-    }
-    if (target) {
-      if (target.dataset.value != target.value && target.dataset.changed != 'true') {
-        changedCount++;
-        target.dataset.changed = 'true';
-      }
-      if (target.dataset.value == target.value && target.dataset.changed == 'true') {
-        changedCount--;
-        target.dataset.changed = 'false';
-      }
-    }
-    changeSaveButtonStatus();
-  }
-
-  function custom(e) {
-    var target;
-    if (e instanceof Event) {
-      target = e.target;
-    } else {
-      target = e;
-    }
-    var customString = prompt(_('custom-title'), target.value);
-    if(customString && customString != '' && customString != target.value) {
-      target.value = customString;
-      e.textContent = customString;
-      e.setAttribute('data-l10n-id', customString);
-      ContactForm.changeCount(1);
-      ContactForm.changed();
-    }
-  }
-
-  function  checkInputsEmpty(inputs) {
-    var ret = true;
-    for (var i = 0; i < inputs.length; i++) {
-      if (inputs[i].value != '') {
-        ret = false;
-        break;
-      }
-    }
-    return ret;
-  }
-
-  function changeSaveButtonStatus() {
-    if (changedCount > 0) {
-      $id('save-contact').classList.remove('button-disabled');
-      $id('save-contact').dataset.disabled = false;
-    } else {
-      $id('save-contact').classList.add('button-disabled');
-      $id('save-contact').dataset.disabled = true;
-    }
-  }
-
-  function getFieldValue(id) {
-    if (fields[id]) {
-      return fields[id].getValues();
-    } else if ($id(id) && $id(id).value.trim()) {
-      return [$id(id).value];
-    }
-
-    return [];
-  }
-
-  function saveContact() {
-    if ($id('save-contact').dataset.disabled == 'true') {
-      return false;
-    }
-    var contactId = $id('contact-form-id').value;
-    var updateContact = !! contactId;
-    var contact = null;
-    var loadingGroupId = animationLoading.start();
-
-    if (updateContact) {
-      // Update contact
-      contact = ContactList.getContact(contactId);
-    } else {
-      // create a new one
-      contact = {
-        id: null,
-        photo: [],
-        name: [],
-        honorificPrefix: [],
-        givenName: [],
-        familyName: [],
-        additionalName: [],
-        honorificSuffix: [],
-        nickname: [],
-        email: [],
-        url: [],
-        category: [],
-        adr: [],
-        tel: [],
-        org: [],
-        jobTitle: [],
-        bday: null,
-        note: [],
-        impp: [],
-        anniversary: null,
-        sex: 'male',
-        genderIdentity: null
-      };
-    }
-
-    // Read modified fields
-    contact.familyName = getFieldValue('familyName');
-    contact.givenName = getFieldValue('givenName');
-    // Concat given name with family name as the name
-    contact.name = getFieldValue('givenName').concat(getFieldValue('familyName'));
-    contact.tel = getFieldValue('tel');
-    contact.adr = getFieldValue('adr');
-    contact.email = getFieldValue('email');
-    contact.org = getFieldValue('org');
-    contact.note = getFieldValue('note');
-    if ($id('avatar-add-edit').classList.contains('avatar-add-edit-default')) {
-      contact.photo = [];
-    } else {
-      contact.photo = $id('avatar-add-edit').src;
-    }
-
-    if (updateContact) {
-      // Save to device
-      var cmd = CMD.Contacts.updateContact(JSON.stringify(contact), null);
-      socketsManager.send(cmd);
-      document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-        animationLoading.stop(loadingGroupId);
-      });
-    } else {
-      // Create new contact
-      var cmd = CMD.Contacts.addContact(JSON.stringify(contact), null);
-      socketsManager.send(cmd);
-      document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-        document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-        animationLoading.stop(loadingGroupId);
-      });
-    }
-    return true;
-  }
-
-  function quickSaveContact() {
-    var fullName = $id('fullName').value.trim();
-    var mobile = $id('mobile').value.trim();
-    if (fullName == '') {
-      new AlertDialog({
-        message: _('EmptyName')
-      });
-      return;
-    }
-    var loadingGroupId = animationLoading.start();
-    contact = {
-      id: null,
-      photo: [],
-      name: [],
-      honorificPrefix: [],
-      givenName: [],
-      familyName: [],
-      additionalName: [],
-      honorificSuffix: [],
-      nickname: [],
-      email: [],
-      url: [],
-      category: [],
-      adr: [],
-      tel: [],
-      org: [],
-      jobTitle: [],
-      bday: null,
-      note: [],
-      impp: [],
-      anniversary: null,
-      sex: 'male',
-      genderIdentity: null
-    };
-    var index = fullName.lastIndexOf(' ');
-    if (index != -1) {
-      contact.familyName = [fullName.substr(index + 1, fullName.length)];
-      contact.givenName = [fullName.substr(0, index)];
-      contact.name = contact.givenName.concat(contact.familyName);
-    } else {
-      contact.familyName = [];
-      contact.givenName = [fullName];
-      contact.name = contact.givenName;
-    }
-    contact.tel = [{
-      "type": ["Mobile"],
-      "value": mobile,
-      "carrier": ""
-    }];
-    var cmd = CMD.Contacts.addContact(JSON.stringify(contact), null);
-    socketsManager.send(cmd);
-    document.addEventListener(cmd.cmd.title.id + '_onData', function _onData(evt) {
-      document.removeEventListener(cmd.cmd.title.id + '_onData', _onData);
-      var result = evt.detail.result;
-      if (result != RS_OK) {
-        animationLoading.stop(loadingGroupId);
-        return;
-      }
-      $id('fullName').value = '';
-      $id('mobile').value = '';
-      animationLoading.stop(loadingGroupId);
-    });
-  }
-
-  window.addEventListener('load', function onload(event) {
-    window.removeEventListener('load', onload);
-
-
-
-    $id('save-contact').onclick = function() {
-      if (saveContact()) {
-        var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
-        if (selectedItem === 0) {
-          ViewManager.showViews('contact-quick-add-view');
-        } else if (selectedItem === 1) {
-          ViewManager.showViews('show-contact-view');
-        } else {
-          ViewManager.showViews('show-multi-contacts');
-        }
-      }
-    };
-
-    $id('cancel-edit-contact').onclick = function() {
-      var selectedItem = $expr('#contact-list-container .contact-list-item[data-checked="true"]').length;
-      if (selectedItem === 0) {
-        ViewManager.showViews('contact-quick-add-view');
-      } else if (selectedItem === 1) {
-        ViewManager.showViews('show-contact-view');
-      } else {
-        ViewManager.showViews('show-multi-contacts');
-      }
-    };
-
-    $id('quick-save-contact').onclick = function() {
-      quickSaveContact();
-    };
-
-    $id('avatar-add-edit').onclick = function() {
-      $id('avatar-input').click();
-    };
-
-    $id('avatar-label').onclick = function() {
-      if (this.dataset.isAdd == 'true') {
-        $id('avatar-input').click();
-      } else {
-        $id('avatar-add-edit').removeAttribute('src');
-        $id('avatar-add-edit').classList.add('avatar-add-edit-default');
-        this.dataset.isAdd = true;
-        this.textContent = _('avatar-label');
-        this.setAttribute('data-l10n-id', 'avatar-label');
-        ContactForm.changeCount(1);
-        ContactForm.changed();
-      }
-    };
-
-    $id('avatar-input').onchange = function() {
-      var MAX_WIDTH = 320;
-      var MAX_HEIGHT = 320;
-      var pic = $id('avatar-add-edit');
-
-      var offscreenImage = document.createElement('img');
-      var url = URL.createObjectURL(this.files[0]);
-      offscreenImage.src = url;
-
-      offscreenImage.onerror = function() {
-        URL.revokeObjectURL(url);
-      };
-
-      offscreenImage.onload = function() {
-        var image_width = offscreenImage.width;
-        var image_height = offscreenImage.height;
-        var scalex = image_width / MAX_WIDTH;
-        var scaley = image_height / MAX_HEIGHT;
-        var scale = Math.min(scalex, scaley);
-
-        var w = MAX_WIDTH * scale;
-        var h = MAX_HEIGHT * scale;
-        var x = (image_width - w) / 2;
-        var y = (image_height - h) / 2;
-
-        var canvas = document.createElement('canvas');
-        canvas.width = MAX_WIDTH;
-        canvas.height = MAX_HEIGHT;
-        var context = canvas.getContext('2d');
-        context.drawImage(offscreenImage, x, y, w, h, 0, 0, MAX_WIDTH, MAX_HEIGHT);
-        URL.revokeObjectURL(url);
-        canvas.toBlob(function(blob) {
-          var fr = new FileReader();
-          fr.readAsDataURL(blob);
-          fr.onload = function(e) {
-            pic.src = e.target.result;
-            pic.classList.remove('avatar-add-edit-default');
-            $id('avatar-label').dataset.isAdd = false;
-            $id('avatar-label').textContent = _('avatar-remove');
-            $id('avatar-label').setAttribute('data-l10n-id', 'avatar-remove');
-            ContactForm.changeCount(1);
-            ContactForm.changed();
-          };
-        }, 'image/jpeg');
-      };
-    };
-  });
-
-  return {
-    // If contact object is not given, perform adding a new contact
-    editContact: editContact,
-    changed: changed,
-    custom: custom,
-    changeCount: changeCount
-  };
-})();
-*/

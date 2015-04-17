@@ -1,7 +1,6 @@
 var StorageView = (function() {
   var storageViewId = "storage-view";
   var storageInfoList = {};
-  var connectLoadingId = -1;
   function init() {
   }
   function show() {
@@ -185,15 +184,12 @@ var StorageView = (function() {
       },
       dataArray: null
     };
-    StorageView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+    AppManager.animationLoadingDialog.startAnimation();
     SocketManager.send(sendData);
 
     document.addEventListener(sendData.cmd.id, function _onData(evt) {
       document.removeEventListener(sendData.cmd.id, _onData);
-      if (StorageView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(StorageView.connectLoadingId);
-        StorageView.connectLoadingId = -1;
-      }
+      AppManager.animationLoadingDialog.stopAnimation();
       if (!evt.detail) {
         return;
       }
@@ -314,7 +310,6 @@ var StorageView = (function() {
     pullFile: pullFile,
     pushFile: pushFile,
     getStorageFree: getStorageFree,
-    connectLoadingId: connectLoadingId,
     storageInfoList: storageInfoList
   };
 })();

@@ -1,7 +1,6 @@
 var VideoView = (function() {
   var videoViewId = "video-view";
   var isFirstShow = true;
-  var connectLoadingId = -1;
   function init() {
     VideoView.isFirstShow = true;
     document.addEventListener(CMD_ID.listen_video_create, function(e) {
@@ -93,6 +92,7 @@ var VideoView = (function() {
         if(StorageView.storageInfoList[uname].totalSpace && StorageView.storageInfoList[uname].totalSpace > 0) {
           $id('empty-video-container').hidden = true;
           _getAllVideos();
+          _updateChangedVideos();
           VideoView.isFirstShow = false;
           return;
         }
@@ -142,15 +142,13 @@ var VideoView = (function() {
       },
       dataArray: null
     };
-    VideoView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+    AppManager.animationLoadingDialog.startAnimation();
     SocketManager.send(sendData);
 
     document.addEventListener(sendData.cmd.id, function _onData(evt) {
       if (!evt.detail) {
-        if (VideoView.connectLoadingId >= 0) {
-          AppManager.animationLoadingDialog.stopAnimation(VideoView.connectLoadingId);
-          VideoView.connectLoadingId = -1;
-        }
+        document.removeEventListener(sendData.cmd.id, _onData);
+        AppManager.animationLoadingDialog.stopAnimation();
         _updateControls();
         return;
       }
@@ -160,16 +158,13 @@ var VideoView = (function() {
         _updateChangedVideos();
         _updateUI();
         _updateControls();
-        if (VideoView.connectLoadingId >= 0) {
-          AppManager.animationLoadingDialog.stopAnimation(VideoView.connectLoadingId);
-          VideoView.connectLoadingId = -1;
-        }
+        AppManager.animationLoadingDialog.stopAnimation();
         videosCount = getVideosIndex;
         return;
       }
       var video = JSON.parse(array2String(evt.detail));
       getVideosIndex++;
-      _addVideo(video.detail);
+      _addVideo(video);
     });
   }
 
@@ -418,6 +413,6 @@ var VideoView = (function() {
     show: show,
     hide: hide,
     deleteVideo: deleteVideo,
-    connectLoadingId: connectLoadingId
+    isFirstShow: isFirstShow
   };
 })();
