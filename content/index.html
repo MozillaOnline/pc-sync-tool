@@ -114,38 +114,113 @@
           </div>
         </section>
         <section id="contact-view" class="content-view-item">
-          <span class="title" data-l10n-id="contacts">联系人</span>
-          <div class="contact-ops-box">
-            <div id="selectAll-contacts" data-disabled="false" data-checked="false" class="contact-op">
-              <label data-l10n-id="selectall">全选</label>
+          <div class="contact-main-view">
+            <span class="title" data-l10n-id="contacts">联系人</span>
+            <div class="contact-ops-box">
+              <div id="selectAll-contacts" data-disabled="false" data-checked="false" class="contact-op">
+                <label data-l10n-id="selectall">全选</label>
+              </div>
+              <div id="remove-contacts" data-disabled="true" class="contact-op">
+                <label data-l10n-id="delete">删除</label>
+              </div>
+              <div id="export-contacts" data-disabled="true" class="contact-op">
+                <label data-l10n-id="export">导出</label>
+              </div>
+              <div id="import-contacts" class="contact-op">
+                <label data-l10n-id="import">导入</label>
+              </div>
+              <div id="refresh-contacts" class="contact-op">
+                <label data-l10n-id="refresh">刷新</label>
+              </div>
+              <div id="add-new-contact" class="contact-op">
+                <label data-l10n-id="new">新建</label>
+              </div>
+              <div class="search-input">
+                <textarea id="search-contact-input" class="input-content" data-l10n-id="search-contact-input-placeholder" placeholder="搜索联系人..." autofocus="true"></textarea>
+              </div>
             </div>
-            <div id="remove-contacts" data-disabled="true" class="contact-op">
-              <label data-l10n-id="delete">删除</label>
+            <div id="empty-contact-container">
+              <div class="empty-contacts"></div>
+              <div class="empty-contacts-prompt">
+                <label data-l10n-id="empty-contacts">There are no contacts.</label>
+              </div>
             </div>
-            <div id="export-contacts" data-disabled="true" class="contact-op">
-              <label data-l10n-id="export">导出</label>
-            </div>
-            <div id="import-contacts" class="contact-op">
-              <label data-l10n-id="import">导入</label>
-            </div>
-            <div id="refresh-contacts" class="contact-op">
-              <label data-l10n-id="refresh">刷新</label>
-            </div>
-            <div id="add-new-contact" class="contact-op">
-              <label data-l10n-id="new">新建</label>
-            </div>
-            <div class="search-input">
-              <textarea id="search-contact-input" class="input-content" data-l10n-id="search-contact-input-placeholder" placeholder="搜索联系人..." autofocus="true"></textarea>
+            <div id="contact-list-container">
+              <div class="contact-list-item"></div>
             </div>
           </div>
-          <div id="empty-contact-container">
-            <div class="empty-contacts"></div>
-            <div class="empty-contacts-prompt">
-              <label data-l10n-id="empty-contacts">There are no contacts.</label>
-            </div>
-          </div>
-          <div id="contact-list-container">
-            <div class="contact-list-item"></div>
+          <div class="contact-sub-view">
+            <section id="contact-quick-add-view" class="contact-sub-card">
+              <div id="quick-add-contact-header" class="sub-view-title" data-l10n-id="quick-add-contact-header"></div>
+              <form id="contact-quick-add-form" action="#" onsubmit="return false;">
+                <div>
+                  <div>
+                    <label data-l10n-id="contact-quick-add-name"></label>
+                  </div>
+                  <input id="fullName" class="quick-input" type="text" value="" data-l10n-id="full-name"></input>
+                </div>
+                <div>
+                  <div>
+                    <label data-l10n-id="contact-quick-add-mobile"></label>
+                  </div>
+                  <input id="mobile" class="quick-input" type="tel" value="" data-l10n-id="mobile"></input>
+                </div>
+                <div>
+                  <button id="quick-save-contact" class="button" data-l10n-id="save">保存</button>
+                </div>
+              </form>
+            </section>
+            <section id="contact-edit-view" class="contact-sub-card contact-form">
+              <div id="add-contact-header" class="sub-view-title" data-l10n-id="add-contact-header"></div>
+              <div id="edit-contact-header" class="sub-view-title" data-l10n-id="edit-contact-header"></div>
+              <form id="contact-form" action="#" onsubmit="return false;">
+                <input id="contact-form-id" name="id" type="hidden" value="" />
+                <section>
+                  <div>
+                    <img id="avatar-add-edit" class="avatar-add-edit avatar-add-edit-default" src=""></img>
+                    <div id="add-avatar">
+                      <div id="avatar-label" data-l10n-id="avatar-label">添加头像</div>
+                    </div>
+                    <input id="avatar-input" type="file" accept="image/*" hidden/>
+                  </div>
+                  <div class="item-body-exp">
+                    <p><input id="givenName" type="text" value="" data-l10n-id="givenName"></input></p>
+                    <p><input id="familyName" type="text" value="" data-l10n-id="familyName"></input></p>
+                  </div>
+                  <p><input id="org" type="text" value="" data-l10n-id="company"></input></p>
+                </section>
+                <!-- Contact field containter -->
+                <ul></ul>
+                <div class="saveAndCancel">
+                  <button id="save-contact" class="button button-disabled" data-l10n-id="save">保存</button>
+                  <button id="cancel-edit-contact" class="button-cancel" data-l10n-id="cancel">取消</button>
+                </div>
+              </form>
+            </section>
+            <section id="show-contact-view" class="contact-sub-card">
+              <div class="sub-view-title" data-l10n-id="show-contact-header"></div>
+              <div class="show-contact-header">
+                <img id="show-avatar" class="avatar-show avatar-show-default"></img>
+                <div class="contact-head">
+                  <div id="show-contact-full-name"></div>
+                  <div id="show-contact-company"></div>
+                  <button id="edit-contact" class="button" data-l10n-id="edit-contact"></button>
+                </div>
+              </div>
+              <div class="contact-content">
+                <div class="header" data-l10n-id="show-contact-content">联系信息</div>
+                <div id="show-contact-content">
+                </div>
+              </div>
+            </section>
+            <section id="show-multi-contacts" class="contact-sub-card">
+              <div class="sub-view-title">
+                <label id="show-contacts-header"></label>
+                <label data-l10n-id="select-contacts"></label>
+              </div>
+              <div id="show-contacts-container">
+              </div>
+            </section>
           </div>
         </section>
         <section id ="picture-view" class="content-view-item">
@@ -308,13 +383,13 @@
       <fieldset class="form-row">
         <%if (typeList && typeList.length > 0) {%>
         <legend class="action">
-          <select name="type" id="select-contact-type" data-selected-index=<%=selectedIndex%> onchange=ContactForm.changed(this)>
+          <select name="type" id="select-contact-type" data-selected-index=<%=selectedIndex%> onchange=ContactView.changed(this)>
             <%for (var i = 0; i < typeList.length; i++) {%>
               <%if (needCustom == true && i == (typeList.length - 1)) {%>
                 <%if (selectedIndex == i) {%>
-                  <option value="<%=typeList[i]%>" onclick=ContactForm.custom(this) data-l10n-id="<%=typeList[i]%>" selected><%=typeList[i]%></option>
+                  <option value="<%=typeList[i]%>" onclick=ContactView.custom(this) data-l10n-id="<%=typeList[i]%>" selected><%=typeList[i]%></option>
                 <%} else {%>
-                  <option value="<%=typeList[i]%>" onclick=ContactForm.custom(this) data-l10n-id="<%=typeList[i]%>"><%=typeList[i]%></option>
+                  <option value="<%=typeList[i]%>" onclick=ContactView.custom(this) data-l10n-id="<%=typeList[i]%>"><%=typeList[i]%></option>
                 <%}%>
               <%} else {%>
                 <%if (selectedIndex == i) {%>
@@ -332,16 +407,16 @@
           <p>
           <%if (fieldType == 'string') {%>
             <input data-l10n-id="<%=fields[i].l10nId%>" type="<%=fields[i].type%>" value="<%=initValue%>"
-              data-value="<%=initValue%>" oninput=ContactForm.changed(this)>
+              data-value="<%=initValue%>" oninput=ContactView.changed(this)>
             </input>
           <%} else {%>
             <%if (!initValue || !initValue[fields[i].name]) {%>
               <input data-name="<%=fields[i].name%>" type="<%=fields[i].type%>" data-l10n-id="<%=fields[i].l10nId%>" value="" data-value=""
-                oninput=ContactForm.changed(this)>
+                oninput=ContactView.changed(this)>
               </input>
             <%} else {%>
               <input data-name="<%=fields[i].name%>" type="<%=fields[i].type%>" data-l10n-id="<%=fields[i].l10nId%>" value="<%=initValue[fields[i].name]%>"
-                data-value="<%=initValue[fields[i].name]%>" oninput=ContactForm.changed(this)>
+                data-value="<%=initValue[fields[i].name]%>" oninput=ContactView.changed(this)>
               </input>
             <%}%>
           <%}%>

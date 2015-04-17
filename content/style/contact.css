@@ -1,6 +1,23 @@
 /*** contact ***/
 #contact-view {
   width: 100%;
+  height: 100%;
+}
+
+.contact-main-view {
+  width: 65%;
+  float: left;
+}
+
+.contact-sub-view {
+  width: 35%;
+  float: left;
+  height: 100%;
+  background-color: #F4F4F4;
+}
+
+.contact-sub-card {
+  padding: 1rem;
 }
 
 .contact-list-box {
@@ -169,16 +186,18 @@
 
 #mobile, #fullName {
   float: right;
-  width: 19.5rem;
+  width: 20.5rem;
   height: 2.5rem;
   margin-right: 2rem;
 }
 
-#quick-add-contact-header {
-  padding-left: 1rem;
-  padding-bottom: 2rem;
-  font-size: 1.8rem;
-  margin-top: 8rem;
+.sub-view-title {
+  padding: 1.5rem 1.2rem 2rem 1rem;
+  font-size: 2rem;
+}
+
+#contact-quick-add-view {
+  margin-top: 14rem;
 }
 
 #contact-quick-add-form > div {
@@ -198,7 +217,7 @@
 }
 
 #quick-save-contact {
-  margin: 0.6rem 0 0 7.5rem;
+  margin: 0.6rem 0 0 4rem;
   float: left;
   height: 3.2rem;
   width: 15rem;
@@ -321,6 +340,11 @@
 }
 
 /**** vcard box styles ****/
+#show-contact-content {
+  height: 30rem;
+  overflow-y: auto;
+}
+
 #contact-vcard-box {
   -moz-box-sizing: border-box;
   padding: 1rem;
@@ -434,7 +458,7 @@
 
 #contact-form ul {
   padding-bottom: 1rem;
-  max-height: 27rem;
+  max-height: 30rem;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -477,9 +501,9 @@ fieldset legend {
   -moz-box-sizing: border-box;
   position: relative;
   float: left;
-  width: 12.5rem;
+  width: 10.5rem;
   height: 4rem;
-  padding: 0 0.5rem 0 1.8rem;
+  padding: 0 0.5rem 0 0.8rem;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;

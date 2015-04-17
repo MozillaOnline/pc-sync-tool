@@ -18,15 +18,10 @@ var ConnectView = (function() {
   var minAdbHelperVersion = '0.6.0';
   var deviceSocketState = connectState.disconnected;
   var alertDialog = null;
-  var connectLoadingId = -1;
   function init() {
     this.isWifiConnected = false;
-    this.connectLoadingId = -1;
     document.addEventListener(CMD_ID.app_connected, function(e) {
-      if (ConnectView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(ConnectView.connectLoadingId);
-        ConnectView.connectLoadingId = -1;
-      }
+      AppManager.animationLoadingDialog.stopAnimation();
       ConnectView.deviceSocketState = connectState.connected;
       ConnectView.alertDialog = new AlertDialog({
         message: _('connection-info-wait-accept'),
@@ -35,10 +30,6 @@ var ConnectView = (function() {
       });
     });
     document.addEventListener(CMD_ID.app_disconnect, function(e) {
-      if (ConnectView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(ConnectView.connectLoadingId);
-        ConnectView.connectLoadingId = -1;
-      }
       ConnectView.reset();
       var event = new CustomEvent(CHANGE_SELECTED_VIEW,
                                   {'detail': "side-view"});
@@ -59,10 +50,6 @@ var ConnectView = (function() {
       ConnectView.reset();
     });
     document.addEventListener(CMD_ID.app_error, function(e) {
-      if (ConnectView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(ConnectView.connectLoadingId);
-        ConnectView.connectLoadingId = -1;
-      }
       ConnectView.reset();
       var event = new CustomEvent(CHANGE_SELECTED_VIEW,
                                   {'detail': "side-view"});
@@ -91,10 +78,6 @@ var ConnectView = (function() {
       });
     });
     document.addEventListener(DISCONNECT_CURRENT_DEVICE, function(e) {
-      if (ConnectView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(ConnectView.connectLoadingId);
-        ConnectView.connectLoadingId = -1;
-      }
       ConnectView.reset();
     });
     $id('usb-connection-button').onclick = function() {
@@ -145,7 +128,7 @@ var ConnectView = (function() {
       ip = int8Array[0].toString() + '.' + int8Array[1].toString() + '.' + int8Array[2].toString() + '.' + int8Array[3].toString();
       if (ip) {
         ConnectView.deviceSocketState = connectState.connecting;
-        ConnectView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+        AppManager.animationLoadingDialog.startAnimation();
         _connectToServer(ip);
       }
     };
@@ -195,10 +178,7 @@ var ConnectView = (function() {
       ConnectView.alertDialog.close();
       ConnectView.alertDialog = null;
     }
-    if (ConnectView.connectLoadingId >= 0) {
-      AppManager.animationLoadingDialog.stopAnimation(ConnectView.connectLoadingId);
-      ConnectView.connectLoadingId = -1;
-    }
+    AppManager.animationLoadingDialog.stopAnimation();
   }
 
   function _showUsbConnection() {
@@ -240,7 +220,7 @@ var ConnectView = (function() {
     if (ConnectView.devicesList.length == 0 ) {
       return;
     }
-    ConnectView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+    AppManager.animationLoadingDialog.startAnimation();
     ADBService.setupDevice(ConnectView.devicesList[0]);
     setTimeout(function() {
       _connectToServer('localhost');
@@ -293,7 +273,6 @@ var ConnectView = (function() {
     show: show,
     hide: hide,
     reset: reset,
-    connectLoadingId: connectLoadingId,
     isWifiConnected: isWifiConnected,
     needUpdateAdbHelper: needUpdateAdbHelper,
     adbHelperInstalled: adbHelperInstalled,

@@ -1,7 +1,6 @@
 var PictureView = (function() {
   var pictureViewId = "picture-view";
   var isFirstShow = true;
-  var connectLoadingId = -1;
   function init() {
     PictureView.isFirstShow = true;
     document.addEventListener(CMD_ID.listen_picture_create, function(e) {
@@ -89,6 +88,7 @@ var PictureView = (function() {
         if(StorageView.storageInfoList[uname].totalSpace && StorageView.storageInfoList[uname].totalSpace > 0) {
           $id('empty-picture-container').hidden = true;
           _getAllPictures();
+          _updateChangedPictures();
           PictureView.isFirstShow = false;
           return;
         }
@@ -138,15 +138,13 @@ var PictureView = (function() {
       },
       dataArray: null
     };
-    PictureView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+    AppManager.animationLoadingDialog.startAnimation();
     SocketManager.send(sendData);
 
     document.addEventListener(sendData.cmd.id, function _onData(evt) {
       if (!evt.detail) {
-        if (PictureView.connectLoadingId >= 0) {
-          AppManager.animationLoadingDialog.stopAnimation(PictureView.connectLoadingId);
-          PictureView.connectLoadingId = -1;
-        }
+        document.removeEventListener(sendData.cmd.id, _onData);
+        AppManager.animationLoadingDialog.stopAnimation();
         _updateControls();
         return;
       }
@@ -156,16 +154,13 @@ var PictureView = (function() {
         _updateChangedPictures();
         _updateUI();
         _updateControls();
-        if (PictureView.connectLoadingId >= 0) {
-          AppManager.animationLoadingDialog.stopAnimation(PictureView.connectLoadingId);
-          PictureView.connectLoadingId = -1;
-        }
+        AppManager.animationLoadingDialog.stopAnimation();
         picturesCount = getPicturesIndex;
         return;
       }
       var picture = JSON.parse(array2String(evt.detail));
       getPicturesIndex++;
-      _addPicture(picture.detail);
+      _addPicture(picture);
     });
   }
 
@@ -425,26 +420,17 @@ var PictureView = (function() {
     var picList = $expr('li', _getListContainer());
     function onsuccess () {
       callback(true, cachedUrl);
-      if (PictureView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(PictureView.connectLoadingId);
-        PictureView.connectLoadingId = -1;
-      }
+      AppManager.animationLoadingDialog.stopAnimation();
     };
     function onerror () {
       new AlertDialog({
         message: _('operation-failed'),
         showCancelButton: false
       });
-      if (PictureView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(PictureView.connectLoadingId);
-        PictureView.connectLoadingId = -1;
-      }
+      AppManager.animationLoadingDialog.stopAnimation();
     };
     function oncancel () {
-      if (PictureView.connectLoadingId >= 0) {
-        AppManager.animationLoadingDialog.stopAnimation(PictureView.connectLoadingId);
-        PictureView.connectLoadingId = -1;
-      }
+      AppManager.animationLoadingDialog.stopAnimation();
     };
     if (picList[index]) {
       var name = picList[index].dataset.picUrl.substr(picList[index].dataset.picUrl.lastIndexOf('/'));
@@ -452,7 +438,7 @@ var PictureView = (function() {
       name = decodeURIComponent(name);
       var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
       var aFrom = picList[index].dataset.picUrl;
-      PictureView.connectLoadingId = AppManager.animationLoadingDialog.startAnimation();
+      AppManager.animationLoadingDialog.startAnimation();
       StorageView.pullFile(aFrom, path + name, onsuccess, onerror, oncancel);
     }
   }
@@ -462,6 +448,6 @@ var PictureView = (function() {
     show: show,
     hide: hide,
     deletePicture: deletePicture,
-    connectLoadingId: connectLoadingId
+    isFirstShow: isFirstShow
   };
 })();
