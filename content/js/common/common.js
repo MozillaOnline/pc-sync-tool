@@ -1,5 +1,5 @@
 var TITLE_SIZE = 12;
-
+//CMD_TYPE from 0 to 50
 var CMD_TYPE = {
   app_connected: 0,
   app_disconnect: 1,
@@ -25,22 +25,22 @@ var CMD_TYPE = {
   file_pull: 21,
   file_push: 22,
 };
-
+//CMD_TYPE from 50 to 100
 var CMD_ID = {
-  app_connected: 0,
-  app_disconnect: 1,
-  app_accepted: 2,
-  app_rejected: 3,
-  app_error: 4,
-  listen_contact_create: 5,
-  listen_contact_update: 6,
-  listen_contact_delete: 7,
-  listen_picture_create: 8,
-  listen_picture_delete: 9,
-  listen_music_create: 10,
-  listen_music_delete: 11,
-  listen_video_create: 12,
-  listen_video_delete: 13,
+  app_connected: 50,
+  app_disconnect: 51,
+  app_accepted: 52,
+  app_rejected: 53,
+  app_error: 54,
+  listen_contact_create: 55,
+  listen_contact_update: 56,
+  listen_contact_delete: 57,
+  listen_picture_create: 58,
+  listen_picture_delete: 59,
+  listen_music_create: 60,
+  listen_music_delete: 61,
+  listen_video_create: 62,
+  listen_video_delete: 63,
 };
 
 var RS_OK = 0;

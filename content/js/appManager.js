@@ -2,10 +2,9 @@
  License, v. 2.0. If a copy of the MPL was not distributed with this
  file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var CHANGE_SELECTED_VIEW = "change-selected-view";
-var DISCONNECT_CURRENT_DEVICE = "disconnect-current-device";
 var AppManager = (function() {
-
+  var CHANGE_SELECTED_VIEW = "change-selected-view";
+  var DISCONNECT_CURRENT_DEVICE = "disconnect-current-device";
   const PRE_PATH = 'chrome://ffosassistant/content/';
   const CACHE_FOLDER = 'media_tmp';
   var viewList = [{tabId: "side-view", viewHandler: ConnectView},
@@ -18,7 +17,7 @@ var AppManager = (function() {
 
   function init() {
     AppManager.animationLoadingDialog = new AnimationLoadingDialog();
-    document.addEventListener(CHANGE_SELECTED_VIEW, function(e) {
+    document.addEventListener(AppManager.CHANGE_SELECTED_VIEW, function(e) {
       _setSectedView(e.detail);
     });
 
@@ -32,7 +31,7 @@ var AppManager = (function() {
     }
 
     $id('disconnect-button').onclick = function onclick_disconnect(event) {
-      var evt = new CustomEvent(DISCONNECT_CURRENT_DEVICE, {});
+      var evt = new CustomEvent(AppManager.DISCONNECT_CURRENT_DEVICE, {});
       document.dispatchEvent(evt);
     };
     _setSectedView("side-view");
@@ -59,7 +58,9 @@ var AppManager = (function() {
     init: init,
     animationLoadingDialog: animationLoadingDialog,
     CACHE_FOLDER: CACHE_FOLDER,
-    PRE_PATH: PRE_PATH
+    PRE_PATH: PRE_PATH,
+    DISCONNECT_CURRENT_DEVICE: DISCONNECT_CURRENT_DEVICE,
+    CHANGE_SELECTED_VIEW: CHANGE_SELECTED_VIEW
   };
 })();
 

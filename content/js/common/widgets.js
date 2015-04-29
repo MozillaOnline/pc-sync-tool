@@ -399,7 +399,8 @@ FilesOPDialog.prototype = {
           type = 'pull';
           aFrom = self.options.files[self._fileIndex].dataset.id;
           aDest = decodeURI(self.options.dir) + '/' +
-                  self.options.files[self._fileIndex].dataset.name + '.' + self.options.files[self._fileIndex].dataset.type;
+                  convertToOutputFileName(self.options.files[self._fileIndex].dataset.name) +
+                  '.' + self.options.files[self._fileIndex].dataset.type;
           break;
         case 3:
           type = 'push';
@@ -500,10 +501,6 @@ FilesOPDialog.prototype = {
         self._processbar.finish(self.options.files.length);
         self.closeAll();
         self.options.callback(filesToBeDone);
-        new AlertDialog({
-          message: _('operation-failed'),
-          showCancelButton: false
-        });
       }
     };
   },
@@ -767,6 +764,9 @@ var AnimationLoadingDialog = function() {
 
 AnimationLoadingDialog.prototype = {
   startAnimation: function() {
+    if (this.isStart) {
+      return;
+    }
     this.isStart = true;
     var containerHeight = $id('container').clientHeight;
     var documentHeight = document.documentElement.clientHeight;

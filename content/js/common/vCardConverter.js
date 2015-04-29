@@ -14,11 +14,9 @@ vCardConverter = {
     items.forEach(function(item) {
       var contact = {
         "name": [],
-        "honorificPrefix": [],
         "givenName": [],
         "additionalName": [],
         "familyName": [],
-        "honorificSuffix": [],
         "nickname": [],
         "email": [],
         "photo": [],
@@ -27,13 +25,9 @@ vCardConverter = {
         "tel": [],
         "org": [""],
         "jobTitle": [],
-        "bday": null,
         "note": [],
-        "impp": null,
         "url": null,
-        "anniversary": null,
-        "sex": null,
-        "genderIdentity": null
+        "sex": null
       };
       if (item.prodid) {
         //contacts exported from Apple

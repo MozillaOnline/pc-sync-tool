@@ -4,6 +4,19 @@ var MusicView = (function() {
   var isFirstShow = true;
   function init() {
     MusicView.isFirstShow = true;
+    document.addEventListener(AppManager.CHANGE_SELECTED_VIEW, function(e) {
+      if (e.detail != "side-view") {
+        return;
+      }
+      MusicView.isFirstShow = true;
+      if (!MusicView.playedAudio) {
+        return;
+      }
+      MusicView.playedAudio.pause();
+      MusicView.playedAudio.src = '';
+      MusicView.playedAudio.removeAttribute('src');
+      MusicView.playedAudio = null;
+    });
     $id('selectAll-musics').onclick = function onclick_selectAll(event) {
       // Do nothing if the button is disabled.
       if (this.dataset.disabled == 'true') {

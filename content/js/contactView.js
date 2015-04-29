@@ -7,6 +7,15 @@ var ContactView = (function() {
   var changedCount = 0;
   function init() {
     ContactView.isFirstShow = true;
+    document.addEventListener(AppManager.CHANGE_SELECTED_VIEW, function(e) {
+      if (e.detail != "side-view") {
+        return;
+      }
+      ContactView.isFirstShow = true;
+      ContactView.groupedList = null;
+      ContactView.fields = {};
+      ContactView.changedCount = 0;
+    });
     document.addEventListener(CMD_ID.listen_contact_create, function(e) {
       if (!e.detail) {
         return;
@@ -1025,11 +1034,9 @@ var ContactView = (function() {
         id: null,
         photo: [],
         name: [],
-        honorificPrefix: [],
         givenName: [],
         familyName: [],
         additionalName: [],
-        honorificSuffix: [],
         nickname: [],
         email: [],
         url: [],
@@ -1038,12 +1045,8 @@ var ContactView = (function() {
         tel: [],
         org: [],
         jobTitle: [],
-        bday: null,
         note: [],
-        impp: [],
-        anniversary: null,
-        sex: 'male',
-        genderIdentity: null
+        sex: 'male'
       };
     }
 
@@ -1096,11 +1099,9 @@ var ContactView = (function() {
       id: null,
       photo: [],
       name: [],
-      honorificPrefix: [],
       givenName: [],
       familyName: [],
       additionalName: [],
-      honorificSuffix: [],
       nickname: [],
       email: [],
       url: [],
@@ -1109,12 +1110,8 @@ var ContactView = (function() {
       tel: [],
       org: [],
       jobTitle: [],
-      bday: null,
       note: [],
-      impp: [],
-      anniversary: null,
-      sex: 'male',
-      genderIdentity: null
+      sex: 'male'
     };
     var index = fullName.lastIndexOf(' ');
     if (index != -1) {
