@@ -26,14 +26,11 @@ var ConnectView = (function() {
       ConnectView.alertDialog = new AlertDialog({
         message: _('connection-info-wait-accept'),
         showOkButton: false,
-        cancelCallback: ConnectView.reset
+        cancelCallback: function() {
+          SocketManager.stop();
+          ConnectView.reset();
+        }
       });
-    });
-    document.addEventListener(CMD_ID.app_disconnect, function(e) {
-      ConnectView.reset();
-      var event = new CustomEvent(CHANGE_SELECTED_VIEW,
-                                  {'detail': "side-view"});
-      document.dispatchEvent(event);
     });
     document.addEventListener(CMD_ID.app_accepted, function(e) {
       $id('device-connected').classList.remove('hiddenElement');
@@ -42,42 +39,26 @@ var ConnectView = (function() {
         ConnectView.alertDialog.close();
         ConnectView.alertDialog = null;
       }
-      var event = new CustomEvent(CHANGE_SELECTED_VIEW,
+      var event = new CustomEvent(AppManager.CHANGE_SELECTED_VIEW,
                                   {'detail': "storage-tab"});
       document.dispatchEvent(event);
     });
     document.addEventListener(CMD_ID.app_rejected, function(e) {
+      SocketManager.stop();
+      ConnectView.reset();
+    });
+    document.addEventListener(CMD_ID.app_disconnect, function(e) {
+      if (ConnectView.deviceSocketState == connectState.connecting) {
+        _showConnectError();
+      }
       ConnectView.reset();
     });
     document.addEventListener(CMD_ID.app_error, function(e) {
+      _showConnectError();
       ConnectView.reset();
-      var event = new CustomEvent(CHANGE_SELECTED_VIEW,
-                                  {'detail': "side-view"});
-      document.dispatchEvent(event);
-      //display error
-      var contentInfo = [_('connection-alert-dialog-message-check-version')];
-      if (ConnectView.isWifiConnected) {
-        contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
-      }
-      var url = 'http://os.firefox.com.cn/pcsync.html';
-      if (navigator.mozL10n.language.code == 'zh-CN') {
-        url = 'http://os.firefox.com.cn/pcsync-cn.html';
-      }
-      new AlertDialog({
-        id: 'popup_dialog',
-        titleL10nId: 'alert-dialog-title',
-        message: {
-          head: _('connection-alert-dialog-title'),
-          description: _('connection-alert-dialog-message-header'),
-          content: contentInfo,
-          detail: _('connection-alert-dialog-detail'),
-          href: url
-        },
-        okCallback: null,
-        cancelCallback: null
-      });
     });
-    document.addEventListener(DISCONNECT_CURRENT_DEVICE, function(e) {
+    document.addEventListener(AppManager.DISCONNECT_CURRENT_DEVICE, function(e) {
+      SocketManager.stop();
       ConnectView.reset();
     });
     $id('usb-connection-button').onclick = function() {
@@ -173,14 +154,40 @@ var ConnectView = (function() {
     $id('device-connected').classList.add('hiddenElement');
     $id('device-unconnected').classList.remove('hiddenElement');
     ConnectView.deviceSocketState = connectState.disconnected;
-    SocketManager.stop();
     if (ConnectView.alertDialog) {
       ConnectView.alertDialog.close();
       ConnectView.alertDialog = null;
     }
     AppManager.animationLoadingDialog.stopAnimation();
+    var event = new CustomEvent(AppManager.CHANGE_SELECTED_VIEW,
+                                {'detail': "side-view"});
+    document.dispatchEvent(event);
   }
 
+  function _showConnectError() {
+    //display error
+    var contentInfo = [_('connection-alert-dialog-message-check-version')];
+    if (ConnectView.isWifiConnected) {
+      contentInfo.push(_('connection-alert-dialog-message-check-wificode'));
+    }
+    var url = 'http://os.firefox.com.cn/pcsync.html';
+    if (navigator.mozL10n.language.code == 'zh-CN') {
+      url = 'http://os.firefox.com.cn/pcsync-cn.html';
+    }
+    new AlertDialog({
+      id: 'popup_dialog',
+      titleL10nId: 'alert-dialog-title',
+      message: {
+        head: _('connection-alert-dialog-title'),
+        description: _('connection-alert-dialog-message-header'),
+        content: contentInfo,
+        detail: _('connection-alert-dialog-detail'),
+        href: url
+      },
+      okCallback: null,
+      cancelCallback: null
+    });
+  }
   function _showUsbConnection() {
     $id('wifi-connection-button').dataset.checked = false;
     $id('devices').innerHTML = '';
@@ -266,6 +273,7 @@ var ConnectView = (function() {
       ConnectView.observer.unregister();
     }
     ConnectView.reset();
+    SocketManager.stop();
   });
 
   return {

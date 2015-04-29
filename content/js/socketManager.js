@@ -65,10 +65,17 @@ var SocketManager = (function() {
 
   // Main socket closed
   function _onSocketClosed(event) {
-    window.clearInterval(connectingTimer);
-    connectingTimer = undefined;
-    mainSocket = null;
-    stop();
+    if (connectingTimer) {
+      window.clearInterval(connectingTimer);
+      connectingTimer = undefined;
+    }
+    if (sendTimer) {
+      window.clearInterval(sendTimer);
+      sendTimer = undefined;
+    }
+    SocketManager.mainSocket = null;
+    SocketManager.dataSocket = null;
+    SocketManager.dataSocketWrapper = null;
     var customEvent = new CustomEvent(CMD_ID.app_disconnect, {});
     document.dispatchEvent(customEvent);
   }
@@ -77,8 +84,9 @@ var SocketManager = (function() {
   function _onSocketError() {
     window.clearInterval(connectingTimer);
     connectingTimer = undefined;
-    mainSocket = null;
-    stop();
+    SocketManager.mainSocket = null;
+    SocketManager.dataSocket = null;
+    SocketManager.dataSocketWrapper = null;
     var customEvent = new CustomEvent(CMD_ID.app_error, {});
     document.dispatchEvent(customEvent);
   }
@@ -93,11 +101,11 @@ var SocketManager = (function() {
   }
 
   function _createMainSocket() {
-    mainSocket = tcpSocket.open(curHost, curPort, {
+    SocketManager.mainSocket = tcpSocket.open(curHost, curPort, {
       binaryType: 'arraybuffer'
     });
 
-    mainSocket.onopen = function(event) {
+    SocketManager.mainSocket.onopen = function(event) {
       var socketWrapper = new TCPSocketWrapper({
         socket: event.target,
         onmessage: _handleChangedData,
@@ -109,24 +117,16 @@ var SocketManager = (function() {
   }
 
   function _createDataSocket() {
-    dataSocket = tcpSocket.open(curHost, curPort, {
+    SocketManager.dataSocket = tcpSocket.open(curHost, curPort, {
       binaryType: 'arraybuffer'
     });
 
-    dataSocket.onopen = function(event) {
-      dataSocketWrapper = new TCPSocketWrapper({
+    SocketManager.dataSocket.onopen = function(event) {
+      SocketManager.dataSocketWrapper = new TCPSocketWrapper({
         socket: event.target,
         onmessage: onWrapperMessage,
-        onerror: function() {
-          console.log('error occured in data socket');
-          dataSocket.close();
-        },
-        onclose: function() {
-          dataSocket = null;
-          dataSocketWrapper = null;
-          window.clearInterval(sendTimer);
-          sendTimer = undefined;
-        }
+        onerror: _onSocketError,
+        onclose: _onSocketClosed
       });
       if (!sendTimer) {
         sendTimer = window.setInterval(sendQueuedMsg, 500);
@@ -141,26 +141,31 @@ var SocketManager = (function() {
   }
 
   function send(obj) {
-    if (!dataSocketWrapper) {
+    if (!SocketManager.dataSocketWrapper) {
       _createDataSocket();
     }
     sendMsgQueue.push(obj);
   }
 
   function sendQueuedMsg() {
-    if (sendMsgQueue.length > 0 && dataSocketWrapper) {
+    if (sendMsgQueue.length > 0 && SocketManager.dataSocketWrapper) {
       var message = sendMsgQueue.shift();
-      dataSocketWrapper.send(message.cmd,
+      SocketManager.dataSocketWrapper.send(message.cmd,
                              message.dataArray);
     }
   }
 
   function stop() {
-    if (dataSocket) {
-      dataSocket.close();
+    if (SocketManager.dataSocketWrapper) {
+      SocketManager.dataSocketWrapper = null;
     }
-    if (mainSocket) {
-      mainSocket.close();
+    if (SocketManager.dataSocket) {
+      SocketManager.dataSocket.close();
+      SocketManager.dataSocket = null;
+    }
+    if (SocketManager.mainSocket) {
+      SocketManager.mainSocket.close();
+      SocketManager.mainSocket = null;
     }
   };
 
@@ -169,6 +174,9 @@ var SocketManager = (function() {
     start: start,
     send: send,
     stop: stop,
-    commandId: commandId
+    commandId: commandId,
+    mainSocket: mainSocket,
+    dataSocket: dataSocket,
+    dataSocketWrapper: dataSocketWrapper
   };
 })(window);

@@ -1,8 +1,21 @@
 var StorageView = (function() {
   var storageViewId = "storage-view";
   var storageInfoList = {};
+  var fileProgressCancel = null;
+
   function init() {
+    document.addEventListener(AppManager.CHANGE_SELECTED_VIEW, function(e) {
+      if (e.detail != "side-view") {
+        return;
+      }
+      if (StorageView.fileProgressCancel) {
+        StorageView.fileProgressCancel();
+        StorageView.fileProgressCancel = null;
+      }
+      storageInfoList = {};
+    });
   }
+
   function show() {
     $id(storageViewId).hidden = false;
     if (ConnectView.isWifiConnected) {
@@ -25,6 +38,7 @@ var StorageView = (function() {
       cancelCallback();
       return;
     }
+    StorageView.fileProgressCancel = cancelCallback;
     if (ConnectView.isWifiConnected) {
       var name = aFrom.substring(aFrom.indexOf(storage) + storage.length + 1);
       var fileInfo = {
@@ -43,6 +57,7 @@ var StorageView = (function() {
 
       document.addEventListener(sendData.cmd.id, function _onData(evt) {
         document.removeEventListener(sendData.cmd.id, _onData);
+        StorageView.fileProgressCancel = null;
         if (!evt.detail) {
           errorCallback();
           return;
@@ -64,11 +79,12 @@ var StorageView = (function() {
     } else {
       if (!ConnectView.usbDevice) {
         cancelCallback();
-        return;
+      } else {
+        console.log('adb pull from: ' + aFrom + ' to: ' + aDest);
+        aFrom = aFrom.replace(reg, StorageView.storageInfoList[storage].path);
+        ConnectView.usbDevice.pull(aFrom, aDest).then(successCallback, errorCallback);
       }
-      console.log('adb pull from: ' + aFrom + ' to: ' + aDest);
-      aFrom = aFrom.replace(reg, StorageView.storageInfoList[storage].path);
-      ConnectView.usbDevice.pull(aFrom, aDest).then(successCallback, errorCallback);
+      StorageView.fileProgressCancel = null;
     }
   }
 
@@ -78,14 +94,17 @@ var StorageView = (function() {
       errorCallback('file-too-big');
       return;
     }
+    StorageView.fileProgressCancel = cancelCallback;
     StorageView.getStorageFree(function _onData(evt) {
       if (!evt.detail) {
         errorCallback('space-not-enough');
+        StorageView.fileProgressCancel = null;
         return;
       }
       var recvLength = evt.detail.byteLength !== undefined ? evt.detail.byteLength : evt.detail.length;
       if (recvLength == 4) {
         errorCallback('space-not-enough');
+        StorageView.fileProgressCancel = null;
         return;
       }
       var dataJSON = JSON.parse(array2String(evt.detail));
@@ -93,6 +112,7 @@ var StorageView = (function() {
         defaultFreeSpace = StorageView.storageInfoList[uname].freeSpace = dataJSON[uname] ? dataJSON[uname] : 0;
         if (defaultFreeSpace < file.size) {
           errorCallback('space-not-enough');
+          StorageView.fileProgressCancel = null;
           return;
         }
         if (ConnectView.isWifiConnected) {
@@ -121,23 +141,26 @@ var StorageView = (function() {
                 document.removeEventListener(sendData.cmd.id, _onData);
                 if (!evt.detail || array2Int(evt.detail) != RS_OK) {
                   errorCallback();
-                  return;
+                } else {
+                  successCallback();
                 }
-                successCallback();
+                StorageView.fileProgressCancel = null;
               });
             },
             function onError(e) {
               errorCallback();
+              StorageView.fileProgressCancel = null;
             }
           );
         } else {
           if (!ConnectView.usbDevice || !file.size) {
             cancelCallback();
-            return;
+          } else {
+            aDest = StorageView.storageInfoList[uname].path + aDest;
+            console.log('adb push from: ' + aFrom + ' to: ' + aDest);
+            ConnectView.usbDevice.push(aFrom, aDest).then(successCallback, errorCallback);
           }
-          aDest = StorageView.storageInfoList[uname].path + aDest;
-          console.log('adb push from: ' + aFrom + ' to: ' + aDest);
-          ConnectView.usbDevice.push(aFrom, aDest).then(successCallback, errorCallback);
+          StorageView.fileProgressCancel = null;
         }
         return;
       }
@@ -251,7 +274,7 @@ var StorageView = (function() {
             templateData.displayName = 'sdcard';
           }
           if (templateDataList.length == 2 && StorageView.storageInfoList['sdcard'] && StorageView.storageInfoList['sdcard0']) { //Dolphin is special
-            StorageView.storageInfoList['sdcard'].path = '/storage/emulated/';
+            StorageView.storageInfoList['sdcard'].path = '/storage/sdcard/';
             StorageView.storageInfoList['sdcard'].freeSpace = 0;
             StorageView.storageInfoList['sdcard0'].path = '/storage/sdcard0/';
           } else if (templateDataList.length == 2 && StorageView.storageInfoList['sdcard'] && StorageView.storageInfoList['sdcard1']) { //flame v1.4 is special

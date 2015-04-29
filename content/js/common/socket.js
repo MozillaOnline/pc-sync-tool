@@ -4,13 +4,13 @@ function TCPSocketWrapper(options) {
 
 TCPSocketWrapper.prototype = {
   initialize: function(options) {
+    console.log('TCPSocketWrapper.js initialize');
     if (typeof options.socket !== 'object') {
       console.log('Socket object is required.');
       return;
     }
     this.options = options;
     this.socket = options.socket;
-    this.jsonCmd = null;
     this.lastRecvLength = 0;
     this.socket.ondata = this.onData.bind(this);
     this.socket.ondrain = this.onDrain.bind(this);
@@ -18,7 +18,10 @@ TCPSocketWrapper.prototype = {
     this.socket.onclose = this.onClose.bind(this);
     this._messageQueue = [];
     this._messageRecvingTimer = null;
-    this.remaindData = [];
+    this.cmdData = null;
+    this.funcData = null;
+    this.funcDataLen = 0;
+    this.jsonCmd = null;
     console.log('TCPSocketWrapper.js initialize !!!!!!!!!!!!!!');
     this._recvQueuedMsg();
     if (!this._messageRecvingTimer) {
@@ -37,48 +40,95 @@ TCPSocketWrapper.prototype = {
       return;
     }
     var receivedData = this._messageQueue.shift();
+    receivedData = new Uint8Array(receivedData);
     var recvLength = receivedData.byteLength !== undefined ? receivedData.byteLength : receivedData.length;
-    var remaindDataLength = this.remaindData.byteLength !== undefined ? this.remaindData.byteLength : this.remaindData.length;
-    if (receivedData.byteLength !== undefined) {
-      var dataBufferView = new Uint8Array(recvLength + remaindDataLength);
-      var recvBufferView = new Uint8Array(receivedData);
-      dataBufferView.set(this.remaindData, 0);
-      dataBufferView.set(recvBufferView, remaindDataLength);
-      receivedData = dataBufferView;
-    } else {
-      receivedData = this.remaindData + event.data;
-    }
-    recvLength = receivedData.length;
-    var datalen = recvLength;
-    while (datalen > 0) {
-      if (datalen < TITLE_SIZE) {
-        this.remaindData = receivedData.subarray(0, recvLength);
-        break;
-      }
-      this.jsonCmd = titleArray2Json(receivedData);
-      datalen -= TITLE_SIZE;
-      if (!this.jsonCmd) {
-        continue;
-      }
-      if (this.jsonCmd.datalength > 0) {
-        this.lastRecvLength = this.jsonCmd.datalength - datalen;
-        if (this.lastRecvLength > 0) {
-          this.remaindData = receivedData.subarray(0, recvLength);
-          break;
-        } else if (this.lastRecvLength < 0) {
-          this.handleMessage(this.jsonCmd, receivedData.subarray(TITLE_SIZE, TITLE_SIZE + this.jsonCmd.datalength));
-          datalen -= this.jsonCmd.datalength;
-          receivedData = receivedData.subarray(TITLE_SIZE + this.jsonCmd.datalength, recvLength);
-          recvLength = receivedData.length;
+    while (recvLength > 0) {
+      if (this.cmdData == null) {
+        if (recvLength < TITLE_SIZE) {
+          this.cmdData = receivedData.subarray(0, recvLength);
+          return;
         } else {
-          this.handleMessage(this.jsonCmd, receivedData.subarray(TITLE_SIZE, recvLength));
-          this.remaindData = [];
-          break;
+          this.cmdData = receivedData.subarray(0, TITLE_SIZE);
+          this.jsonCmd = titleArray2Json(this.cmdData);
+          if (this.jsonCmd.datalength > 0) {
+            this.funcData = new Uint8Array(this.jsonCmd.datalength);
+            if (this.jsonCmd.datalength > recvLength - TITLE_SIZE) {
+              this.funcData.set(receivedData.subarray(TITLE_SIZE, recvLength), 0);
+              this.funcDataLen = recvLength - TITLE_SIZE;
+              return;
+            } else {
+              this.funcData.set(receivedData.subarray(TITLE_SIZE, this.jsonCmd.datalength + TITLE_SIZE), 0);
+              this.handleMessage(this.jsonCmd, this.funcData);
+              this.funcData = null;
+              this.cmdData = null;
+              receivedData = receivedData.subarray(TITLE_SIZE + this.jsonCmd.datalength, recvLength);
+              recvLength = recvLength - TITLE_SIZE - this.jsonCmd.datalength;
+              this.funcDataLen = 0;
+              continue;
+            }
+          } else {
+            this.handleMessage(this.jsonCmd, null);
+            this.funcData = null;
+            this.cmdData = null;
+            receivedData = receivedData.subarray(TITLE_SIZE, recvLength);
+            recvLength = recvLength - TITLE_SIZE;
+            this.funcDataLen = 0;
+            continue;
+          }
         }
       } else {
-        this.handleMessage(this.jsonCmd, null);
-        receivedData = receivedData.subarray(TITLE_SIZE, recvLength);
-        recvLength = receivedData.length;
+        var cmdDataLength = this.cmdData.byteLength !== undefined ?
+          this.cmdData.byteLength : this.cmdData.length;
+        if (cmdDataLength < TITLE_SIZE) {
+          if (recvLength + cmdDataLength < TITLE_SIZE) {
+            this.cmdData = receivedData.subarray(cmdDataLength, recvLength);
+            return;
+          } else {
+            this.cmdData = receivedData.subarray(cmdDataLength, TITLE_SIZE - cmdDataLength);
+            this.jsonCmd = titleArray2Json(this.cmdData);
+            if (this.jsonCmd.datalength > 0) {
+              this.funcData = new Uint8Array(this.jsonCmd.datalength);
+              if (this.jsonCmd.datalength > recvLength - TITLE_SIZE + cmdDataLength) {
+                this.funcData.set(receivedData.subarray(TITLE_SIZE - cmdDataLength, recvLength), 0);
+                this.funcDataLen = recvLength - TITLE_SIZE + cmdDataLength;
+                return;
+              } else {
+                this.funcData.set(receivedData.subarray(TITLE_SIZE - cmdDataLength, this.jsonCmd.datalength + TITLE_SIZE - cmdDataLength), 0);
+                this.handleMessage(this.jsonCmd, this.funcData);
+                this.funcData = null;
+                this.cmdData = null;
+                receivedData = receivedData.subarray(TITLE_SIZE - cmdDataLength + this.jsonCmd.datalength, recvLength);
+                recvLength = recvLength - TITLE_SIZE + cmdDataLength - this.jsonCmd.datalength;
+                this.funcDataLen = 0;
+                continue;
+              }
+            } else {
+              this.handleMessage(this.jsonCmd, null);
+              this.funcData = null;
+              this.cmdData = null;
+              receivedData = receivedData.subarray(TITLE_SIZE - cmdDataLength, recvLength);
+              recvLength = recvLength - TITLE_SIZE + cmdDataLength;
+              this.funcDataLen = 0;
+              continue;
+            }
+          }
+        } else {
+          if (this.jsonCmd.datalength > recvLength + this.funcDataLen) {
+            this.funcData.set(receivedData.subarray(0, recvLength), this.funcDataLen);
+            this.funcDataLen = recvLength + this.funcDataLen;
+            return;
+          } else {
+            this.funcData.set(receivedData.subarray(0, this.jsonCmd.datalength - this.funcDataLen), this.funcDataLen);
+            console.log("buffer ok: " + this.jsonCmd.datalength);
+            this.handleMessage(this.jsonCmd, this.funcData);
+            this.funcData = null;
+            this.cmdData = null;
+            receivedData = receivedData.subarray(this.jsonCmd.datalength - this.funcDataLen, recvLength);
+            recvLength = recvLength + this.funcDataLen - this.jsonCmd.datalength;
+            this.funcDataLen = 0;
+            continue;
+          }
+        }
       }
     }
   },
@@ -105,16 +155,25 @@ TCPSocketWrapper.prototype = {
     if (this.options.onerror) {
       this.options.onerror(event);
     }
+    this.socket = null;
+    this._messageQueue = [];
+    this._messageRecvingTimer = null;
+    this.funcData = null;
+    this.cmdData = null;
+    this.funcDataLen = 0;
   },
 
   onClose: function(event) {
+    console.log('TCPSocketWrapper.js onClose');
     if (this.options.onclose) {
       this.options.onclose(event);
     }
     this.socket = null;
     this._messageQueue = [];
     this._messageRecvingTimer = null;
-    this.remaindData = [];
+    this.funcData = null;
+    this.cmdData = null;
+    this.funcDataLen = 0;
   },
 
   send: function(jsonCmd, arrayData) {

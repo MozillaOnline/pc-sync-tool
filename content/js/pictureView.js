@@ -3,6 +3,12 @@ var PictureView = (function() {
   var isFirstShow = true;
   function init() {
     PictureView.isFirstShow = true;
+    document.addEventListener(AppManager.CHANGE_SELECTED_VIEW, function(e) {
+      if (e.detail != "side-view") {
+        return;
+      }
+      PictureView.isFirstShow = true;
+    });
     document.addEventListener(CMD_ID.listen_picture_create, function(e) {
       var picture = JSON.parse(array2String(e.detail));
       _addPicture(picture);
@@ -434,9 +440,9 @@ var PictureView = (function() {
     };
     if (picList[index]) {
       var name = picList[index].dataset.picUrl.substr(picList[index].dataset.picUrl.lastIndexOf('/'));
-      var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', CACHE_FOLDER]);
+      var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', AppManager.CACHE_FOLDER]);
       name = decodeURIComponent(name);
-      var cachedUrl = PRE_PATH + CACHE_FOLDER + name;
+      var cachedUrl = AppManager.PRE_PATH + AppManager.CACHE_FOLDER + name;
       var aFrom = picList[index].dataset.picUrl;
       AppManager.animationLoadingDialog.startAnimation();
       StorageView.pullFile(aFrom, path + name, onsuccess, onerror, oncancel);

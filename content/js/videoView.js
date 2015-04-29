@@ -3,6 +3,12 @@ var VideoView = (function() {
   var isFirstShow = true;
   function init() {
     VideoView.isFirstShow = true;
+    document.addEventListener(AppManager.CHANGE_SELECTED_VIEW, function(e) {
+      if (e.detail != "side-view") {
+        return;
+      }
+      VideoView.isFirstShow = true;
+    });
     document.addEventListener(CMD_ID.listen_video_create, function(e) {
       var video = JSON.parse(array2String(e.detail));
       _addVideo(video);
