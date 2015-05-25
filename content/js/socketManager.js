@@ -141,7 +141,7 @@ var SocketManager = (function() {
   }
 
   function send(obj) {
-    if (!SocketManager.dataSocketWrapper) {
+    if (SocketManager.mainSocket && !SocketManager.dataSocketWrapper) {
       _createDataSocket();
     }
     sendMsgQueue.push(obj);
@@ -156,6 +156,14 @@ var SocketManager = (function() {
   }
 
   function stop() {
+    if (connectingTimer) {
+      window.clearInterval(connectingTimer);
+      connectingTimer = undefined;
+    }
+    if (sendTimer) {
+      window.clearInterval(sendTimer);
+      sendTimer = undefined;
+    }
     if (SocketManager.dataSocketWrapper) {
       SocketManager.dataSocketWrapper = null;
     }

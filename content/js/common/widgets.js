@@ -640,7 +640,7 @@ ImageViewer.prototype = {
   },
 
   _build: function() {
-    this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
+    this.options.getPictureAt(this.options.currentIndex, function(bCached) {
       if (!bCached) {
         new AlertDialog({
           message: _('cache-picture-error')
@@ -656,8 +656,10 @@ ImageViewer.prototype = {
       this._modalElement = document.createElement('div');
       this._modalElement.className = 'dialog';
 
+      var tempPic = FileUtils.getFile("TmpD", ["ffos-assistant", "temp_pic"]);
+      var tempPicUrl = Services.io.newFileURI(tempPic);
       var templateData = {
-        cachedUrl: cachedUrl
+        cachedUrl: tempPicUrl.spec + '?t=' + Date.now()
       };
       this._modalElement.innerHTML = tmpl('tmpl_img_viewer', templateData);
       container.appendChild(this._modalElement);
@@ -699,7 +701,7 @@ ImageViewer.prototype = {
     if (this.options.currentIndex < 0) {
       this.options.currentIndex += this.options.count;
     }
-    this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
+    this.options.getPictureAt(this.options.currentIndex, function(bCached) {
       if (!bCached) {
         $id('pic-content').setAttribute('src', '');
         new AlertDialog({
@@ -707,7 +709,9 @@ ImageViewer.prototype = {
         });
         return;
       }
-      $id('pic-content').setAttribute('src', cachedUrl);
+      var tempPic = FileUtils.getFile("TmpD", ["ffos-assistant", "temp_pic"]);
+      var tempPicUrl = Services.io.newFileURI(tempPic);
+      $id('pic-content').setAttribute('src', tempPicUrl.spec + '?t=' + Date.now());
     });
   },
 
@@ -716,7 +720,7 @@ ImageViewer.prototype = {
     if (this.options.currentIndex >= this.options.count) {
       this.options.currentIndex -= this.options.count;
     }
-    this.options.getPictureAt(this.options.currentIndex, function(bCached, cachedUrl) {
+    this.options.getPictureAt(this.options.currentIndex, function(bCached) {
       if (!bCached) {
         $id('pic-content').setAttribute('src', '');
         new AlertDialog({
@@ -724,7 +728,9 @@ ImageViewer.prototype = {
         });
         return;
       }
-      $id('pic-content').setAttribute('src', cachedUrl);
+      var tempPic = FileUtils.getFile("TmpD", ["ffos-assistant", "temp_pic"]);
+      var tempPicUrl = Services.io.newFileURI(tempPic);
+      $id('pic-content').setAttribute('src', tempPicUrl.spec + '?t=' + Date.now());
     });
   },
 

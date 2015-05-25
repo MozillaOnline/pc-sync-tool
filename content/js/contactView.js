@@ -435,7 +435,7 @@ var ContactView = (function() {
       return elem;
     }
 
-    var searchInfo = getSearchString(contact);
+    var searchInfo = _getSearchString(contact);
     var escapedValue = _escapeHTML(searchInfo.join(' '), true);
     //search key word
     var key = searchInput.value;

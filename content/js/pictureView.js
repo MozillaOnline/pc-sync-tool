@@ -425,7 +425,7 @@ var PictureView = (function() {
   function _getPictureAt(index, callback) {
     var picList = $expr('li', _getListContainer());
     function onsuccess () {
-      callback(true, cachedUrl);
+      callback(true);
       AppManager.animationLoadingDialog.stopAnimation();
     };
     function onerror () {
@@ -439,13 +439,9 @@ var PictureView = (function() {
       AppManager.animationLoadingDialog.stopAnimation();
     };
     if (picList[index]) {
-      var name = picList[index].dataset.picUrl.substr(picList[index].dataset.picUrl.lastIndexOf('/'));
-      var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', AppManager.CACHE_FOLDER]);
-      name = decodeURIComponent(name);
-      var cachedUrl = AppManager.PRE_PATH + AppManager.CACHE_FOLDER + name;
       var aFrom = picList[index].dataset.picUrl;
       AppManager.animationLoadingDialog.startAnimation();
-      StorageView.pullFile(aFrom, path + name, onsuccess, onerror, oncancel);
+      StorageView.pullFile(aFrom, AppManager.cache_folder + '/temp_pic', onsuccess, onerror, oncancel);
     }
   }
 
