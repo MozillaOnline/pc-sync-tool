@@ -36,8 +36,9 @@ var MusicView = (function() {
       $expr('#music-list-container .music-list-item[data-checked="true"]').forEach(function(item) {
         var name = JSON.parse(item.dataset.music).name;
         files.push(name);
-        var cachedUrl = AppManager.PRE_PATH + AppManager.CACHE_FOLDER + name;
-        if (MusicView.playedAudio && decodeURI(MusicView.playedAudio.src) == cachedUrl) {
+        var tempMusic = FileUtils.getFile("TmpD", ["ffos-assistant", "temp_music"]);
+        var tempMusicUrl = Services.io.newFileURI(tempMusic);
+        if (MusicView.playedAudio && decodeURI(MusicView.playedAudio.src) == tempMusicUrl.spec) {
           isPlay = true;
         }
       });
@@ -213,7 +214,9 @@ var MusicView = (function() {
     var self = this;
     function onsuccess () {
       self.classList.add('playing');
-      MusicView.playedAudio.src = cachedUrl;
+      var tempMusic = FileUtils.getFile("TmpD", ["ffos-assistant", "temp_music"]);
+      var tempMusicUrl = Services.io.newFileURI(tempMusic);
+      MusicView.playedAudio.src = tempMusicUrl.spec;
       MusicView.playedAudio.onended = function() {
         MusicView.playedAudio.pause();
         MusicView.playedAudio.src = '';
@@ -251,13 +254,8 @@ var MusicView = (function() {
       return;
     }
     var file = JSON.parse(self.parentNode.parentNode.dataset.music).name;
-    var index = file.lastIndexOf('/');
-    var name = file.substr(index);
-    name = decodeURIComponent(name);
-    var path = getCachedDir(['extensions', 'ffosassistant@mozillaonline.com', 'content', AppManager.CACHE_FOLDER]);
-    var cachedUrl = AppManager.PRE_PATH + AppManager.CACHE_FOLDER + name;
     AppManager.animationLoadingDialog.startAnimation();
-    StorageView.pullFile(file, path + name, onsuccess, onerror, oncancel);
+    StorageView.pullFile(file, AppManager.cache_folder + '/temp_music', onsuccess, onerror, oncancel);
   }
 
   function _updateControls() {

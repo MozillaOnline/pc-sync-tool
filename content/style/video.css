@@ -157,6 +157,7 @@
   background-position: 0.2rem 0;
   background-repeat: no-repeat;
   display: inline-block;
+  height: 2rem;
 }
 
 .video-thread[data-checked=true] label {

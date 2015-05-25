@@ -97,12 +97,13 @@ function removeFromArray(objOrFunc, array) {
 function convertToOutputFileName(path) {
   var arrayPath = path.split('/');
   var length = arrayPath.length;
-
+  var aName;
   if (length <= 1) {
-    return path;
+    aName = path;
   } else {
-    return arrayPath[length - 2] + '_' + arrayPath[length - 1];
+    aName = arrayPath[length - 2] + '_' + arrayPath[length - 1];
   }
+  return decodeURIComponent(aName);
 }
 
 function getFileName(path) {
