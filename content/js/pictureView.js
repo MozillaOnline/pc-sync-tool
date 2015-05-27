@@ -1,6 +1,7 @@
 var PictureView = (function() {
   var pictureViewId = "picture-view";
   var isFirstShow = true;
+  var imageViewer;
   function init() {
     PictureView.isFirstShow = true;
     document.addEventListener(AppManager.CHANGE_SELECTED_VIEW, function(e) {
@@ -8,6 +9,10 @@ var PictureView = (function() {
         return;
       }
       PictureView.isFirstShow = true;
+      if (PictureView.imageViewer) {
+        PictureView.imageViewer.close();
+        PictureView.imageViewer = null;
+      }
     });
     document.addEventListener(CMD_ID.listen_picture_create, function(e) {
       var picture = JSON.parse(array2String(e.detail));
@@ -312,7 +317,7 @@ var PictureView = (function() {
         }
       }
 
-      new ImageViewer({
+      PictureView.imageViewer = new ImageViewer({
         count: picList.length,
         currentIndex: currentIndex,
         getPictureAt: _getPictureAt
@@ -450,6 +455,7 @@ var PictureView = (function() {
     show: show,
     hide: hide,
     deletePicture: deletePicture,
-    isFirstShow: isFirstShow
+    isFirstShow: isFirstShow,
+    imageViewer: imageViewer
   };
 })();
