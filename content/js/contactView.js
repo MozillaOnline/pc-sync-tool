@@ -12,9 +12,17 @@ var ContactView = (function() {
         return;
       }
       ContactView.isFirstShow = true;
-      ContactView.groupedList = null;
+      _showSubView('contact-quick-add-view');
+      _selectAllContacts(false);
+      var container = _getListContainer();
+      container.innerHTML = '';
       ContactView.fields = {};
       ContactView.changedCount = 0;
+      ContactView.groupedList = null;
+      var searchInput = $id('search-contact-input');
+      if (searchInput) {
+        searchInput.value = '';
+      }
     });
     document.addEventListener(CMD_ID.listen_contact_create, function(e) {
       if (!e.detail) {
@@ -436,10 +444,10 @@ var ContactView = (function() {
     }
 
     var searchInfo = _getSearchString(contact);
-    var escapedValue = _escapeHTML(searchInfo.join(' '), true);
+    var escapedValue = _escapeHTML(searchInfo.join(' '), true).toLowerCase();
     //search key word
     var key = searchInput.value;
-    elem.hidden = !escapedValue || escapedValue.indexOf(key) == -1;
+    elem.hidden = (!escapedValue || escapedValue.indexOf(key.toLowerCase()) == -1);
     return elem;
   }
 
