@@ -4,7 +4,7 @@
     <Description about="urn:mozilla:install-manifest">
         <em:id>ffosassistant@mozillaonline.com</em:id>
         <em:name>Firefox OS Assistant</em:name>
-        <em:version>2.3.0</em:version>
+        <em:version>2.4.0</em:version>
         <em:iconURL>chrome://ffosassistant/content/style/icons/ffosassistant64.png</em:iconURL>
         <em:description>Manage Firefox OS device</em:description>
         <em:creator>Mozilla Online Limited.</em:creator>
@@ -18,7 +18,7 @@
            <Description>
                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
                 <em:minVersion>27.*</em:minVersion>
-                <em:maxVersion>35.*</em:maxVersion>
+                <em:maxVersion>39.*</em:maxVersion>
            </Description>
         </em:targetApplication>
     </Description>
